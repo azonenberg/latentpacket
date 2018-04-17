@@ -5,8 +5,8 @@ EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 2 3
-Title "LATENTRED Line Card"
-Date "2018-04-15"
+Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
+Date "2018-04-17"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 ""
@@ -470,7 +470,7 @@ F 3 "" H 5000 2650 60  0000 C CNN
 	0    -1   1    0   
 $EndComp
 Wire Wire Line
-	5300 2700 5450 2700
+	5300 2700 5350 2700
 $Comp
 L passive-azonenberg:R-4TERM R8
 U 1 1 5AD7274B
@@ -483,7 +483,7 @@ F 3 "" H 5000 4450 60  0000 C CNN
 	0    -1   1    0   
 $EndComp
 Wire Wire Line
-	5300 4500 5450 4500
+	5300 4500 5350 4500
 $Comp
 L passive-azonenberg:R-4TERM R9
 U 1 1 5AD754E8
@@ -496,7 +496,7 @@ F 3 "" H 5000 6250 60  0000 C CNN
 	0    -1   1    0   
 $EndComp
 Wire Wire Line
-	5300 6300 5450 6300
+	5300 6300 5350 6300
 Text Label 14700 7200 0    50   ~ 0
 1V0_SHUNT_LO
 Text Label 14700 7100 0    50   ~ 0
@@ -1139,4 +1139,260 @@ Wire Wire Line
 Wire Wire Line
 	3750 6300 4700 6300
 Connection ~ 3750 6300
+$Comp
+L device:C C33
+U 1 1 5B0C811E
+P 1450 800
+F 0 "C33" H 1565 846 50  0000 L CNN
+F 1 "47 uF" H 1565 755 50  0000 L CNN
+F 2 "" H 1488 650 50  0001 C CNN
+F 3 "" H 1450 800 50  0001 C CNN
+	1    1450 800 
+	1    0    0    -1  
+$EndComp
+Text Label 1200 650  2    50   ~ 0
+5V0
+Text Label 1200 950  2    50   ~ 0
+GND
+$Comp
+L device:C C36
+U 1 1 5B0C8758
+P 1950 800
+F 0 "C36" H 2065 846 50  0000 L CNN
+F 1 "47 uF" H 2065 755 50  0000 L CNN
+F 2 "" H 1988 650 50  0001 C CNN
+F 3 "" H 1950 800 50  0001 C CNN
+	1    1950 800 
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C38
+U 1 1 5B0C87E0
+P 2450 800
+F 0 "C38" H 2565 846 50  0000 L CNN
+F 1 "47 uF" H 2565 755 50  0000 L CNN
+F 2 "" H 2488 650 50  0001 C CNN
+F 3 "" H 2450 800 50  0001 C CNN
+	1    2450 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1200 650  1450 650 
+Wire Wire Line
+	1450 650  1950 650 
+Connection ~ 1450 650 
+$Comp
+L device:C C41
+U 1 1 5B0E130E
+P 2950 800
+F 0 "C41" H 3065 846 50  0000 L CNN
+F 1 "0.47 uF" H 3065 755 50  0000 L CNN
+F 2 "" H 2988 650 50  0001 C CNN
+F 3 "" H 2950 800 50  0001 C CNN
+	1    2950 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 650  2450 650 
+Wire Wire Line
+	2450 650  1950 650 
+Connection ~ 2450 650 
+Connection ~ 1950 650 
+$Comp
+L device:C C43
+U 1 1 5B0FAB51
+P 3500 800
+F 0 "C43" H 3615 846 50  0000 L CNN
+F 1 "4.7 uF" H 3615 755 50  0000 L CNN
+F 2 "" H 3538 650 50  0001 C CNN
+F 3 "" H 3500 800 50  0001 C CNN
+	1    3500 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3500 650  2950 650 
+Connection ~ 2950 650 
+Wire Wire Line
+	3500 950  2950 950 
+Wire Wire Line
+	2950 950  2450 950 
+Connection ~ 2950 950 
+Wire Wire Line
+	2450 950  1950 950 
+Connection ~ 2450 950 
+Wire Wire Line
+	1950 950  1450 950 
+Connection ~ 1950 950 
+Wire Wire Line
+	1450 950  1200 950 
+Connection ~ 1450 950 
+Text Notes 1200 1050 0    50   ~ 0
+SMPS input caps
+Text Notes 1200 1650 0    50   ~ 0
+SMPS output caps
+$Comp
+L device:C C34
+U 1 1 5B15ACE1
+P 1450 1400
+F 0 "C34" H 1565 1446 50  0000 L CNN
+F 1 "47 uF" H 1565 1355 50  0000 L CNN
+F 2 "" H 1488 1250 50  0001 C CNN
+F 3 "" H 1450 1400 50  0001 C CNN
+	1    1450 1400
+	1    0    0    -1  
+$EndComp
+Text Label 1200 1250 2    50   ~ 0
+1V8_DECOUPLE
+Wire Wire Line
+	1200 1250 1450 1250
+Text Label 1200 1550 2    50   ~ 0
+GND
+Wire Wire Line
+	1200 1550 1450 1550
+Text Label 5350 2350 2    50   ~ 0
+1V0_DECOUPLE
+Wire Wire Line
+	5350 2350 5350 2700
+Connection ~ 5350 2700
+Wire Wire Line
+	5350 2700 5450 2700
+Text Label 5350 4150 2    50   ~ 0
+2V5_DECOUPLE
+Wire Wire Line
+	5350 4150 5350 4500
+Connection ~ 5350 4500
+Wire Wire Line
+	5350 4500 5450 4500
+Text Label 5350 6000 2    50   ~ 0
+1V8_DECOUPLE
+Wire Wire Line
+	5350 6000 5350 6300
+Connection ~ 5350 6300
+Wire Wire Line
+	5350 6300 5450 6300
+Text Label 2450 1250 2    50   ~ 0
+2V5_DECOUPLE
+$Comp
+L device:C C39
+U 1 1 5B1B4555
+P 2450 1400
+F 0 "C39" H 2565 1446 50  0000 L CNN
+F 1 "47 uF" H 2565 1355 50  0000 L CNN
+F 2 "" H 2488 1250 50  0001 C CNN
+F 3 "" H 2450 1400 50  0001 C CNN
+	1    2450 1400
+	1    0    0    -1  
+$EndComp
+Text Label 3700 1250 2    50   ~ 0
+1V0_DECOUPLE
+Wire Wire Line
+	1450 1550 2450 1550
+Connection ~ 1450 1550
+Text Notes 1250 2250 0    50   ~ 0
+LDO caps
+$Comp
+L device:C C35
+U 1 1 5B1D48D9
+P 1450 2000
+F 0 "C35" H 1565 2046 50  0000 L CNN
+F 1 "4.7 uF" H 1565 1955 50  0000 L CNN
+F 2 "" H 1488 1850 50  0001 C CNN
+F 3 "" H 1450 2000 50  0001 C CNN
+	1    1450 2000
+	1    0    0    -1  
+$EndComp
+Text Label 1150 1850 2    50   ~ 0
+5V0
+Text Label 1150 2150 2    50   ~ 0
+GND
+Wire Wire Line
+	1150 2150 1450 2150
+Wire Wire Line
+	1150 1850 1450 1850
+Text Label 1950 1850 2    50   ~ 0
+3V3
+$Comp
+L device:C C37
+U 1 1 5B1F4F21
+P 1950 2000
+F 0 "C37" H 2065 2046 50  0000 L CNN
+F 1 "4.7 uF" H 2065 1955 50  0000 L CNN
+F 2 "" H 1988 1850 50  0001 C CNN
+F 3 "" H 1950 2000 50  0001 C CNN
+	1    1950 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C40
+U 1 1 5B205288
+P 2450 2000
+F 0 "C40" H 2565 2046 50  0000 L CNN
+F 1 "0.47 uF" H 2565 1955 50  0000 L CNN
+F 2 "" H 2488 1850 50  0001 C CNN
+F 3 "" H 2450 2000 50  0001 C CNN
+	1    2450 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1950 1850 2450 1850
+Wire Wire Line
+	2450 2150 1950 2150
+Wire Wire Line
+	1950 2150 1450 2150
+Connection ~ 1950 2150
+Connection ~ 1450 2150
+$Comp
+L device:C C42
+U 1 1 5B26AB60
+P 2950 1400
+F 0 "C42" H 3065 1446 50  0000 L CNN
+F 1 "47 uF" H 3065 1355 50  0000 L CNN
+F 2 "" H 2988 1250 50  0001 C CNN
+F 3 "" H 2950 1400 50  0001 C CNN
+	1    2950 1400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 1250 2450 1250
+Wire Wire Line
+	2450 1550 2950 1550
+Connection ~ 2450 1550
+$Comp
+L device:C C44
+U 1 1 5B28CAA0
+P 3700 1400
+F 0 "C44" H 3815 1446 50  0000 L CNN
+F 1 "47 uF" H 3815 1355 50  0000 L CNN
+F 2 "" H 3738 1250 50  0001 C CNN
+F 3 "" H 3700 1400 50  0001 C CNN
+	1    3700 1400
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C45
+U 1 1 5B29DD3C
+P 4200 1400
+F 0 "C45" H 4315 1446 50  0000 L CNN
+F 1 "47 uF" H 4315 1355 50  0000 L CNN
+F 2 "" H 4238 1250 50  0001 C CNN
+F 3 "" H 4200 1400 50  0001 C CNN
+	1    4200 1400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4200 1250 3700 1250
+Wire Wire Line
+	4200 1550 3700 1550
+Wire Wire Line
+	3700 1550 2950 1550
+Connection ~ 3700 1550
+Connection ~ 2950 1550
+Text Notes 1400 600  0    50   ~ 0
+1210 size
+Text Notes 2450 1250 0    50   ~ 0
+1210 size
+Text Notes 3700 1250 0    50   ~ 0
+0805 size
+Text Notes 1200 1250 0    50   ~ 0
+0805 size
 $EndSCHEMATC
