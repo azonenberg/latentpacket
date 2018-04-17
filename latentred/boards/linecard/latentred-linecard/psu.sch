@@ -139,12 +139,12 @@ $Comp
 L passive-azonenberg:INDUCTOR_PWROUT L1
 U 1 1 5AD4397D
 P 5750 2700
-F 0 "L1" V 5595 2700 40  0000 C CNN
-F 1 "NR6028T2R2N" V 5671 2700 40  0000 C CNN
+F 0 "L1" V 5900 2900 40  0000 C CNN
+F 1 "NR6028T2R2N" V 5850 2700 40  0000 C CNN
 F 2 "" H 5750 2700 60  0000 C CNN
 F 3 "" H 5750 2700 60  0000 C CNN
 	1    5750 2700
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 Text Label 6550 2500 2    50   ~ 0
 5V0
@@ -178,8 +178,6 @@ Text Label 6550 6700 2    50   ~ 0
 5V0
 Wire Wire Line
 	6550 6700 6650 6700
-Text Notes 7350 1100 0    50   ~ 0
-TODO: Input caps\n10 uF input, 22 uF output (per channel)\n\n2ch: 22 / 47 uF\nProbably also should get a cap at Vcc
 Text HLabel 9700 1900 2    50   Output ~ 0
 PGOOD
 Text Label 8200 2000 0    50   ~ 0
@@ -273,23 +271,23 @@ $Comp
 L passive-azonenberg:INDUCTOR_PWROUT L2
 U 1 1 5AD494EC
 P 5750 4500
-F 0 "L2" V 5595 4500 40  0000 C CNN
-F 1 "NR6028T2R2N" V 5671 4500 40  0000 C CNN
+F 0 "L2" V 5950 4600 40  0000 C CNN
+F 1 "NR6028T2R2N" V 5850 4500 40  0000 C CNN
 F 2 "" H 5750 4500 60  0000 C CNN
 F 3 "" H 5750 4500 60  0000 C CNN
 	1    5750 4500
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
 L passive-azonenberg:INDUCTOR_PWROUT L3
 U 1 1 5AD49C68
 P 5750 6300
-F 0 "L3" V 5595 6300 40  0000 C CNN
-F 1 "NR6028T2R2N" V 5671 6300 40  0000 C CNN
+F 0 "L3" V 5950 6450 40  0000 C CNN
+F 1 "NR6028T2R2N" V 5850 6300 40  0000 C CNN
 F 2 "" H 5750 6300 60  0000 C CNN
 F 3 "" H 5750 6300 60  0000 C CNN
 	1    5750 6300
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
 L power-azonenberg:MCP1703T-xx U1
@@ -1395,4 +1393,61 @@ Text Notes 3700 1250 0    50   ~ 0
 0805 size
 Text Notes 1200 1250 0    50   ~ 0
 0805 size
+Text Label 11050 2300 2    50   ~ 0
+1V0_EN
+$Comp
+L device:R R152
+U 1 1 68FFFDEA
+P 11300 2300
+F 0 "R152" V 11250 2550 50  0000 C CNN
+F 1 "10K" V 11300 2300 50  0000 C CNN
+F 2 "" V 11230 2300 50  0001 C CNN
+F 3 "" H 11300 2300 50  0001 C CNN
+	1    11300 2300
+	0    1    1    0   
+$EndComp
+Text Label 11050 2550 2    50   ~ 0
+1V8_EN
+$Comp
+L device:R R153
+U 1 1 69002ADA
+P 11300 2550
+F 0 "R153" V 11250 2800 50  0000 C CNN
+F 1 "10K" V 11300 2550 50  0000 C CNN
+F 2 "" V 11230 2550 50  0001 C CNN
+F 3 "" H 11300 2550 50  0001 C CNN
+	1    11300 2550
+	0    1    1    0   
+$EndComp
+$Comp
+L device:R R154
+U 1 1 69002B6E
+P 11300 2800
+F 0 "R154" V 11250 3050 50  0000 C CNN
+F 1 "10K" V 11300 2800 50  0000 C CNN
+F 2 "" V 11230 2800 50  0001 C CNN
+F 3 "" H 11300 2800 50  0001 C CNN
+	1    11300 2800
+	0    1    1    0   
+$EndComp
+Text Label 11050 2800 2    50   ~ 0
+2V5_EN
+Wire Wire Line
+	11050 2800 11150 2800
+Wire Wire Line
+	11050 2550 11150 2550
+Wire Wire Line
+	11050 2300 11150 2300
+Text Label 11650 2300 0    50   ~ 0
+GND
+Wire Wire Line
+	11650 2300 11450 2300
+Text Label 11650 2550 0    50   ~ 0
+GND
+Wire Wire Line
+	11650 2550 11450 2550
+Text Label 11650 2800 0    50   ~ 0
+GND
+Wire Wire Line
+	11650 2800 11450 2800
 $EndSCHEMATC

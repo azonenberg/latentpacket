@@ -81,8 +81,8 @@ F42 "SGMII6_RX_N" O L 3000 4550 50
 F43 "SGMII7_RX_P" I L 3000 4750 50 
 F44 "SGMII7_RX_N" I L 3000 4850 50 
 $EndSheet
-Text Notes 1500 5700 0    50   ~ 0
-TODO: I2C pullups
+Text Notes 1300 5600 0    50   ~ 0
+I2C pullups
 $Comp
 L special-azonenberg:CONN_LATENTRED_LINECARD_DEVICE J1
 U 1 1 5AF659DD
@@ -188,8 +188,6 @@ Text Label 1600 1000 0    50   ~ 0
 3V3
 Wire Wire Line
 	1600 1000 1500 1000
-Text Notes 1500 5800 0    50   ~ 0
-TODO: pulldowns on *_EN inputs
 Text Label 4550 900  0    50   ~ 0
 MGMT_MDIO
 Text Label 4550 1000 0    50   ~ 0
@@ -414,4 +412,38 @@ Wire Wire Line
 	7250 4750 7150 4750
 Wire Wire Line
 	7150 4850 7250 4850
+$Comp
+L device:R R155
+U 1 1 6910FC55
+P 1400 5350
+F 0 "R155" V 1350 5550 50  0000 C CNN
+F 1 "4.7k" V 1400 5350 50  0000 C CNN
+F 2 "" V 1330 5350 50  0001 C CNN
+F 3 "" H 1400 5350 50  0001 C CNN
+	1    1400 5350
+	0    1    1    0   
+$EndComp
+Text Label 1250 5350 2    50   ~ 0
+I2C_SDA
+Text Label 1750 5350 0    50   ~ 0
+3V3
+Wire Wire Line
+	1550 5350 1750 5350
+$Comp
+L device:R R156
+U 1 1 6911860F
+P 1400 5450
+F 0 "R156" V 1350 5650 50  0000 C CNN
+F 1 "4.7k" V 1400 5450 50  0000 C CNN
+F 2 "" V 1330 5450 50  0001 C CNN
+F 3 "" H 1400 5450 50  0001 C CNN
+	1    1400 5450
+	0    1    1    0   
+$EndComp
+Text Label 1250 5450 2    50   ~ 0
+I2C_SCL
+Text Label 1750 5450 0    50   ~ 0
+3V3
+Wire Wire Line
+	1550 5450 1750 5450
 $EndSCHEMATC
