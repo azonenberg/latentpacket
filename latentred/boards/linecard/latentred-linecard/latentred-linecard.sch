@@ -6,7 +6,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-18"
+Date "2018-04-21"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "Top Level"
@@ -446,4 +446,54 @@ Text Label 1750 5450 0    50   ~ 0
 3V3
 Wire Wire Line
 	1550 5450 1750 5450
+$Comp
+L Connector:Conn_01x01 MH1
+U 1 1 6915631E
+P 10500 700
+F 0 "MH1" H 10579 742 50  0000 L CNN
+F 1 "HOLE_4_40" H 10579 651 50  0000 L CNN
+F 2 "azonenberg_pcb:MECHANICAL_CLEARANCEHOLE_4_40" H 10500 700 50  0001 C CNN
+F 3 "~" H 10500 700 50  0001 C CNN
+	1    10500 700 
+	1    0    0    -1  
+$EndComp
+NoConn ~ 10300 700 
+$Comp
+L Connector:Conn_01x01 MH2
+U 1 1 6915AA4F
+P 10500 900
+F 0 "MH2" H 10579 942 50  0000 L CNN
+F 1 "HOLE_4_40" H 10579 851 50  0000 L CNN
+F 2 "azonenberg_pcb:MECHANICAL_CLEARANCEHOLE_4_40" H 10500 900 50  0001 C CNN
+F 3 "~" H 10500 900 50  0001 C CNN
+	1    10500 900 
+	1    0    0    -1  
+$EndComp
+NoConn ~ 10300 900 
+$Comp
+L Connector:Conn_01x01 MH3
+U 1 1 6915F08B
+P 10500 1100
+F 0 "MH3" H 10579 1142 50  0000 L CNN
+F 1 "HOLE_4_40" H 10579 1051 50  0000 L CNN
+F 2 "azonenberg_pcb:MECHANICAL_CLEARANCEHOLE_4_40" H 10500 1100 50  0001 C CNN
+F 3 "~" H 10500 1100 50  0001 C CNN
+	1    10500 1100
+	1    0    0    -1  
+$EndComp
+NoConn ~ 10300 1100
+$Comp
+L Connector:Conn_01x01 MH4
+U 1 1 6915F092
+P 10500 1300
+F 0 "MH4" H 10579 1342 50  0000 L CNN
+F 1 "HOLE_4_40" H 10579 1251 50  0000 L CNN
+F 2 "azonenberg_pcb:MECHANICAL_CLEARANCEHOLE_4_40" H 10500 1300 50  0001 C CNN
+F 3 "~" H 10500 1300 50  0001 C CNN
+	1    10500 1300
+	1    0    0    -1  
+$EndComp
+NoConn ~ 10300 1300
+Text Notes 9050 2050 0    50   ~ 0
+TODO: run 5V on the other blade of the QTH-DP
 $EndSCHEMATC
