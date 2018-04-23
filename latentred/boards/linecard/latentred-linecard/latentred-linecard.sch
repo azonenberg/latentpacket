@@ -496,4 +496,6 @@ $EndComp
 NoConn ~ 10300 1300
 Text Notes 9050 2050 0    50   ~ 0
 TODO: run 5V on the other blade of the QTH-DP
+Text Notes 9050 2350 0    50   ~ 0
+TODO: Add reserved GPIO signal to connector\nTODO: Add reserved LVDS signal to connector
 $EndSCHEMATC
