@@ -6,7 +6,7 @@ $Descr A1 33110 23386
 encoding utf-8
 Sheet 3 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-21"
+Date "2018-04-23"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "PHYs"
@@ -931,7 +931,7 @@ Connection ~ 10650 2300
 Wire Wire Line
 	10650 2300 10650 2400
 Text Label 11350 2300 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	11350 2300 11150 2300
 $Comp
@@ -1854,7 +1854,7 @@ Connection ~ 10650 7050
 Wire Wire Line
 	10650 7050 10650 7150
 Text Label 11350 7050 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	11350 7050 11150 7050
 $Comp
@@ -2831,7 +2831,7 @@ Connection ~ 10700 11750
 Wire Wire Line
 	10700 11750 10700 11850
 Text Label 11400 11750 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	11400 11750 11200 11750
 $Comp
@@ -3806,7 +3806,7 @@ Connection ~ 10700 16500
 Wire Wire Line
 	10700 16500 10700 16600
 Text Label 11400 16500 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	11400 16500 11200 16500
 $Comp
@@ -4777,7 +4777,7 @@ Connection ~ 22500 2300
 Wire Wire Line
 	22500 2300 22500 2400
 Text Label 23200 2300 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	23200 2300 23000 2300
 $Comp
@@ -5700,7 +5700,7 @@ Connection ~ 22500 7050
 Wire Wire Line
 	22500 7050 22500 7150
 Text Label 23200 7050 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	23200 7050 23000 7050
 $Comp
@@ -6677,7 +6677,7 @@ Connection ~ 22550 11750
 Wire Wire Line
 	22550 11750 22550 11850
 Text Label 23250 11750 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	23250 11750 23050 11750
 $Comp
@@ -7650,7 +7650,7 @@ Connection ~ 22550 16500
 Wire Wire Line
 	22550 16500 22550 16600
 Text Label 23250 16500 0    50   ~ 0
-GND
+SHIELD
 Wire Wire Line
 	23250 16500 23050 16500
 $Comp
@@ -8392,8 +8392,8 @@ Wire Wire Line
 	29000 4150 29200 4150
 Wire Wire Line
 	29200 4250 29000 4250
-Text Notes 30900 750  0    50   ~ 0
-TODO: Add connections for RJ45 shield
+Text Notes 30750 7550 0    50   ~ 0
+TODO: R/C between shield and ground
 Wire Wire Line
 	17000 16650 17200 16650
 Wire Wire Line
@@ -8714,4 +8714,83 @@ Text Label 10850 3600 2    50   ~ 0
 ETH0_DM_P
 Text Label 10850 3700 2    50   ~ 0
 ETH0_DM_N
+$Comp
+L special-azonenberg:STEWART_SS_74500_024 J2
+U 9 1 6893DE21
+P 30700 9000
+F 0 "J2" H 31377 9701 50  0000 L CNN
+F 1 "STEWART_SS_74500_024" H 31377 9610 50  0000 L CNN
+F 2 "azonenberg_pcb:CONN_STEWART_SS_74500_024" H 30700 9000 50  0001 C CNN
+F 3 "" H 30700 9000 50  0001 C CNN
+	9    30700 9000
+	1    0    0    -1  
+$EndComp
+Text Label 30500 8950 2    50   ~ 0
+SHIELD
+Wire Wire Line
+	30500 8950 30600 8950
+$Comp
+L device:C C238
+U 1 1 68E3168F
+P 30500 9400
+F 0 "C238" H 30615 9446 50  0000 L CNN
+F 1 "TBD" H 30615 9355 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_1206_CAP_NOSILK" H 30538 9250 50  0001 C CNN
+F 3 "" H 30500 9400 50  0001 C CNN
+	1    30500 9400
+	1    0    0    -1  
+$EndComp
+Text Label 30500 9250 2    50   ~ 0
+SHIELD
+Text Label 30500 9550 2    50   ~ 0
+GND
+$Comp
+L device:C C239
+U 1 1 68E32774
+P 30900 9400
+F 0 "C239" H 31015 9446 50  0000 L CNN
+F 1 "TBD" H 31015 9355 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_1206_CAP_NOSILK" H 30938 9250 50  0001 C CNN
+F 3 "" H 30900 9400 50  0001 C CNN
+	1    30900 9400
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:R R157
+U 1 1 68E32FEB
+P 31300 9400
+F 0 "R157" H 31370 9446 50  0000 L CNN
+F 1 "TBD" H 31370 9355 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_1206_CAP_NOSILK" V 31230 9400 50  0001 C CNN
+F 3 "" H 31300 9400 50  0001 C CNN
+	1    31300 9400
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:R R158
+U 1 1 68E34123
+P 31650 9400
+F 0 "R158" H 31720 9446 50  0000 L CNN
+F 1 "TBD" H 31720 9355 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_1206_CAP_NOSILK" V 31580 9400 50  0001 C CNN
+F 3 "" H 31650 9400 50  0001 C CNN
+	1    31650 9400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	31650 9250 31300 9250
+Wire Wire Line
+	31300 9250 30900 9250
+Connection ~ 31300 9250
+Wire Wire Line
+	30900 9250 30500 9250
+Connection ~ 30900 9250
+Wire Wire Line
+	30500 9550 30900 9550
+Wire Wire Line
+	30900 9550 31300 9550
+Connection ~ 30900 9550
+Wire Wire Line
+	31300 9550 31650 9550
+Connection ~ 31300 9550
 $EndSCHEMATC

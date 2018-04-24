@@ -6,7 +6,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-21"
+Date "2018-04-23"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "Top Level"
