@@ -6,7 +6,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-23"
+Date "2018-04-24"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "Top Level"
@@ -494,8 +494,10 @@ F 3 "~" H 10500 1300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 10300 1300
-Text Notes 9050 2050 0    50   ~ 0
+Text Notes 9050 2200 0    50   ~ 0
 TODO: run 5V on the other blade of the QTH-DP
 Text Notes 9050 2350 0    50   ~ 0
 TODO: Add reserved GPIO signal to connector\nTODO: Add reserved LVDS signal to connector
+Text Notes 9050 2450 0    50   ~ 0
+TODO: Pulldown on PHY_RST_N
 $EndSCHEMATC

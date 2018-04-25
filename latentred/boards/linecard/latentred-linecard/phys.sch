@@ -6,7 +6,7 @@ $Descr A1 33110 23386
 encoding utf-8
 Sheet 3 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-23"
+Date "2018-04-24"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "PHYs"
@@ -3899,14 +3899,8 @@ Text Label 5350 18050 0    50   ~ 0
 JTAG_TMS
 Text Label 5350 17850 0    50   ~ 0
 JTAG_TCK
-Text HLabel 17200 5250 0    50   Input ~ 0
-GND
-Text HLabel 17200 5900 0    50   Input ~ 0
-1V0
 Text HLabel 17200 5450 0    50   Input ~ 0
 1V8
-Text HLabel 17200 4950 0    50   Input ~ 0
-2V5
 Text HLabel 14450 4100 0    50   Input ~ 0
 SGMII4_TX_P
 Text HLabel 14450 4300 0    50   Input ~ 0
@@ -3954,32 +3948,10 @@ Wire Wire Line
 	15100 3150 15200 3150
 Wire Wire Line
 	15100 3050 15200 3050
-$Comp
-L passive-azonenberg:INDUCTOR_PWROUT L20
-U 1 1 5BB3FA15
-P 17900 4950
-F 0 "L20" V 17850 4700 40  0000 C CNN
-F 1 "600R" V 17850 5200 40  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" H 17900 4950 60  0001 C CNN
-F 3 "" H 17900 4950 60  0000 C CNN
-	1    17900 4950
-	0    1    1    0   
-$EndComp
 Text Label 15100 2650 2    50   ~ 0
-A1V0_4
+A1V0_5
 Text Label 15100 3050 2    50   ~ 0
 A1V8_4
-$Comp
-L passive-azonenberg:INDUCTOR_PWROUT L22
-U 1 1 5BB3FA1D
-P 17900 5900
-F 0 "L22" V 17850 5650 40  0000 C CNN
-F 1 "600R" V 17850 6150 40  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" H 17900 5900 60  0001 C CNN
-F 3 "" H 17900 5900 60  0000 C CNN
-	1    17900 5900
-	0    1    1    0   
-$EndComp
 $Comp
 L passive-azonenberg:INDUCTOR_PWROUT L21
 U 1 1 5BB3FA23
@@ -4139,19 +4111,8 @@ Wire Wire Line
 	14450 4800 14650 4800
 Wire Wire Line
 	14450 5000 14650 5000
-$Comp
-L device:C C146
-U 1 1 5BB3FA7F
-P 17300 5100
-F 0 "C146" H 17415 5146 50  0000 L CNN
-F 1 "4.7 uF" H 17415 5055 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 17338 4950 50  0001 C CNN
-F 3 "" H 17300 5100 50  0001 C CNN
-	1    17300 5100
-	1    0    0    -1  
-$EndComp
 Text Label 15100 2450 2    50   ~ 0
-A2V5_4
+A2V5_5
 $Comp
 L device:C C165
 U 1 1 5BB3FA86
@@ -4186,15 +4147,7 @@ F 3 "" H 19400 5100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	17200 4950 17300 4950
-Wire Wire Line
-	17300 4950 17600 4950
-Connection ~ 17300 4950
-Wire Wire Line
-	18200 4950 18350 4950
-Wire Wire Line
 	18350 4950 18850 4950
-Connection ~ 18350 4950
 Wire Wire Line
 	18850 4950 19400 4950
 Connection ~ 18850 4950
@@ -4203,13 +4156,7 @@ GND
 Wire Wire Line
 	15100 3550 15200 3550
 Wire Wire Line
-	17200 5250 17300 5250
-Wire Wire Line
-	17300 5250 18350 5250
-Connection ~ 17300 5250
-Wire Wire Line
 	18850 5250 18350 5250
-Connection ~ 18350 5250
 Wire Wire Line
 	18850 5250 19400 5250
 Connection ~ 18850 5250
@@ -4245,7 +4192,7 @@ F 3 "" H 18350 5600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 19500 4950 0    50   ~ 0
-A2V5_4
+A2V5_5
 Wire Wire Line
 	19500 4950 19400 4950
 Connection ~ 19400 4950
@@ -4290,22 +4237,6 @@ Connection ~ 18350 5750
 Wire Wire Line
 	18850 5750 19400 5750
 Connection ~ 18850 5750
-$Comp
-L device:C C148
-U 1 1 5BB3FAD5
-P 17300 6050
-F 0 "C148" H 17415 6096 50  0000 L CNN
-F 1 "4.7 uF" H 17415 6005 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 17338 5900 50  0001 C CNN
-F 3 "" H 17300 6050 50  0001 C CNN
-	1    17300 6050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	17600 5900 17300 5900
-Wire Wire Line
-	17200 5900 17300 5900
-Connection ~ 17300 5900
 $Comp
 L device:C C167
 U 1 1 5BB3FADE
@@ -4363,10 +4294,7 @@ F 3 "" H 20500 6050 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	20500 5900 19950 5900
-Wire Wire Line
-	18200 5900 18350 5900
 Connection ~ 19950 5900
-Connection ~ 18350 5900
 Wire Wire Line
 	18350 5900 18850 5900
 Connection ~ 18850 5900
@@ -4375,9 +4303,6 @@ Wire Wire Line
 Connection ~ 19400 5900
 Wire Wire Line
 	19400 5900 19950 5900
-Wire Wire Line
-	17300 6200 18350 6200
-Connection ~ 18350 6200
 Wire Wire Line
 	18350 6200 18850 6200
 Connection ~ 18850 6200
@@ -4390,7 +4315,7 @@ Connection ~ 19950 6200
 Wire Wire Line
 	19950 6200 20500 6200
 Text Label 20600 5900 0    50   ~ 0
-A1V0_4
+A1V0_5
 Wire Wire Line
 	20600 5900 20500 5900
 Connection ~ 20500 5900
@@ -4429,11 +4354,8 @@ F 3 "" H 18500 4650 50  0001 C CNN
 $EndComp
 Text Label 17200 4500 2    50   ~ 0
 1V8
-Text Label 17200 6200 2    50   ~ 0
+Text Label 20500 6200 0    50   ~ 0
 GND
-Wire Wire Line
-	17200 6200 17300 6200
-Connection ~ 17300 6200
 Text Label 17200 4800 2    50   ~ 0
 GND
 Wire Wire Line
@@ -5800,14 +5722,6 @@ Text Notes 15300 6300 0    50   ~ 0
 PHY_ADDR = 5'h4
 Text Notes 15300 11050 0    50   ~ 0
 PHY_ADDR = 5'h5
-Text HLabel 17250 14700 0    50   Input ~ 0
-GND
-Text HLabel 17250 15350 0    50   Input ~ 0
-1V0
-Text HLabel 17250 14900 0    50   Input ~ 0
-1V8
-Text HLabel 17250 14400 0    50   Input ~ 0
-2V5
 Text HLabel 14500 13550 0    50   Input ~ 0
 SGMII6_TX_P
 Text HLabel 14500 13750 0    50   Input ~ 0
@@ -5855,43 +5769,10 @@ Wire Wire Line
 	15150 12600 15250 12600
 Wire Wire Line
 	15150 12500 15250 12500
-$Comp
-L passive-azonenberg:INDUCTOR_PWROUT L26
-U 1 1 5BB3FE75
-P 17950 14400
-F 0 "L26" V 17900 14150 40  0000 C CNN
-F 1 "600R" V 17900 14650 40  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" H 17950 14400 60  0001 C CNN
-F 3 "" H 17950 14400 60  0000 C CNN
-	1    17950 14400
-	0    1    1    0   
-$EndComp
 Text Label 15150 12100 2    50   ~ 0
-A1V0_6
+A1V0_7
 Text Label 15150 12500 2    50   ~ 0
-A1V8_6
-$Comp
-L passive-azonenberg:INDUCTOR_PWROUT L28
-U 1 1 5BB3FE7D
-P 17950 15350
-F 0 "L28" V 17900 15100 40  0000 C CNN
-F 1 "600R" V 17900 15600 40  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" H 17950 15350 60  0001 C CNN
-F 3 "" H 17950 15350 60  0000 C CNN
-	1    17950 15350
-	0    1    1    0   
-$EndComp
-$Comp
-L passive-azonenberg:INDUCTOR_PWROUT L27
-U 1 1 5BB3FE83
-P 17950 14900
-F 0 "L27" V 17900 14650 40  0000 C CNN
-F 1 "600R" V 17900 15150 40  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" H 17950 14900 60  0001 C CNN
-F 3 "" H 17950 14900 60  0000 C CNN
-	1    17950 14900
-	0    1    1    0   
-$EndComp
+A1V8_7
 Text Label 15150 12700 2    50   ~ 0
 1V8
 Wire Wire Line
@@ -6039,19 +5920,8 @@ Wire Wire Line
 	14500 14250 14700 14250
 Wire Wire Line
 	14500 14450 14700 14450
-$Comp
-L device:C C154
-U 1 1 5BB3FEDB
-P 17350 14550
-F 0 "C154" H 17465 14596 50  0000 L CNN
-F 1 "4.7 uF" H 17465 14505 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 17388 14400 50  0001 C CNN
-F 3 "" H 17350 14550 50  0001 C CNN
-	1    17350 14550
-	1    0    0    -1  
-$EndComp
 Text Label 15150 11900 2    50   ~ 0
-A2V5_6
+A2V5_7
 $Comp
 L device:C C171
 U 1 1 5BB3FEE2
@@ -6086,15 +5956,7 @@ F 3 "" H 19450 14550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	17250 14400 17350 14400
-Wire Wire Line
-	17350 14400 17650 14400
-Connection ~ 17350 14400
-Wire Wire Line
-	18250 14400 18400 14400
-Wire Wire Line
 	18400 14400 18900 14400
-Connection ~ 18400 14400
 Wire Wire Line
 	18900 14400 19450 14400
 Connection ~ 18900 14400
@@ -6103,36 +5965,10 @@ GND
 Wire Wire Line
 	15150 13000 15250 13000
 Wire Wire Line
-	17250 14700 17350 14700
-Wire Wire Line
-	17350 14700 18400 14700
-Connection ~ 17350 14700
-Wire Wire Line
 	18900 14700 18400 14700
-Connection ~ 18400 14700
 Wire Wire Line
 	18900 14700 19450 14700
 Connection ~ 18900 14700
-$Comp
-L device:C C155
-U 1 1 5BB3FF05
-P 17350 15050
-F 0 "C155" H 17465 15096 50  0000 L CNN
-F 1 "4.7 uF" H 17465 15005 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 17388 14900 50  0001 C CNN
-F 3 "" H 17350 15050 50  0001 C CNN
-	1    17350 15050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	17650 14900 17350 14900
-Wire Wire Line
-	17350 14900 17250 14900
-Connection ~ 17350 14900
-Text Label 17250 15200 2    50   ~ 0
-GND
-Wire Wire Line
-	17250 15200 17350 15200
 $Comp
 L device:C C172
 U 1 1 5BB3FF10
@@ -6145,17 +5981,14 @@ F 3 "" H 18400 15050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 19550 14400 0    50   ~ 0
-A2V5_6
+A2V5_7
 Wire Wire Line
 	19550 14400 19450 14400
 Connection ~ 19450 14400
 Text Label 19450 14900 0    50   ~ 0
-A1V8_6
+A1V8_7
 Wire Wire Line
 	19450 14900 18900 14900
-Wire Wire Line
-	18400 14900 18250 14900
-Connection ~ 18400 14900
 $Comp
 L device:C C192
 U 1 1 5BB3FF1D
@@ -6182,30 +6015,10 @@ F 3 "" H 19450 15050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	17350 15200 18400 15200
-Connection ~ 17350 15200
-Wire Wire Line
 	18400 15200 18900 15200
-Connection ~ 18400 15200
 Wire Wire Line
 	18900 15200 19450 15200
 Connection ~ 18900 15200
-$Comp
-L device:C C156
-U 1 1 5BB3FF31
-P 17350 15500
-F 0 "C156" H 17465 15546 50  0000 L CNN
-F 1 "4.7 uF" H 17465 15455 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 17388 15350 50  0001 C CNN
-F 3 "" H 17350 15500 50  0001 C CNN
-	1    17350 15500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	17650 15350 17350 15350
-Wire Wire Line
-	17250 15350 17350 15350
-Connection ~ 17350 15350
 $Comp
 L device:C C173
 U 1 1 5BB3FF3A
@@ -6263,10 +6076,7 @@ F 3 "" H 20550 15500 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	20550 15350 20000 15350
-Wire Wire Line
-	18250 15350 18400 15350
 Connection ~ 20000 15350
-Connection ~ 18400 15350
 Wire Wire Line
 	18400 15350 18900 15350
 Connection ~ 18900 15350
@@ -6275,9 +6085,6 @@ Wire Wire Line
 Connection ~ 19450 15350
 Wire Wire Line
 	19450 15350 20000 15350
-Wire Wire Line
-	17350 15650 18400 15650
-Connection ~ 18400 15650
 Wire Wire Line
 	18400 15650 18900 15650
 Connection ~ 18900 15650
@@ -6290,7 +6097,7 @@ Connection ~ 20000 15650
 Wire Wire Line
 	20000 15650 20550 15650
 Text Label 20650 15350 0    50   ~ 0
-A1V0_6
+A1V0_7
 Wire Wire Line
 	20650 15350 20550 15350
 Connection ~ 20550 15350
@@ -6329,11 +6136,8 @@ F 3 "" H 18550 14100 50  0001 C CNN
 $EndComp
 Text Label 17250 13950 2    50   ~ 0
 1V8
-Text Label 17250 15650 2    50   ~ 0
+Text Label 20550 15650 0    50   ~ 0
 GND
-Wire Wire Line
-	17250 15650 17350 15650
-Connection ~ 17350 15650
 Text Label 17250 14250 2    50   ~ 0
 GND
 Wire Wire Line
@@ -7859,13 +7663,13 @@ Wire Wire Line
 Wire Wire Line
 	17000 17950 17200 17950
 Text Label 15200 19050 2    50   ~ 0
-RX_D2_7
+SGMII7_RX_C_P
 Text Label 15200 19150 2    50   ~ 0
-RX_D3_7
+SGMII7_RX_C_N
 Text Label 20850 19600 0    50   ~ 0
-RX_D2_7
+SGMII7_RX_C_P
 Text Label 20850 19800 0    50   ~ 0
-RX_D3_7
+SGMII7_RX_C_N
 $Comp
 L device:R R95
 U 1 1 5FE1B1BA
@@ -7934,9 +7738,9 @@ Wire Wire Line
 	21750 19800 21650 19800
 Connection ~ 21750 19600
 Text Label 20850 14850 0    50   ~ 0
-RX_D2_6
+SGMII6_RX_C_P
 Text Label 20850 15050 0    50   ~ 0
-RX_D3_6
+SGMII6_RX_C_N
 $Comp
 L device:R R91
 U 1 1 608BA0CD
@@ -8086,9 +7890,9 @@ Wire Wire Line
 Text Label 17150 8400 0    50   ~ 0
 JTAG_TCK
 Text Label 15200 14300 2    50   ~ 0
-RX_D2_6
+SGMII6_RX_C_P
 Text Label 15200 14400 2    50   ~ 0
-RX_D3_6
+SGMII6_RX_C_N
 Text Label 15150 9600 2    50   ~ 0
 RX_D2_5
 Text Label 15150 9700 2    50   ~ 0
@@ -8410,21 +8214,21 @@ Wire Wire Line
 	17000 17250 17200 17250
 Wire Wire Line
 	17200 17350 17000 17350
-Text Label 20400 17800 2    50   ~ 0
-ETH7_A_P
 Text Label 20400 17900 2    50   ~ 0
+ETH7_A_P
+Text Label 20400 17800 2    50   ~ 0
 ETH7_A_N
-Text Label 20400 17600 2    50   ~ 0
-ETH7_B_P
 Text Label 20400 17700 2    50   ~ 0
+ETH7_B_P
+Text Label 20400 17600 2    50   ~ 0
 ETH7_B_N
-Text Label 20400 17400 2    50   ~ 0
-ETH7_C_P
 Text Label 20400 17500 2    50   ~ 0
+ETH7_C_P
+Text Label 20400 17400 2    50   ~ 0
 ETH7_C_N
-Text Label 20400 17200 2    50   ~ 0
-ETH7_D_P
 Text Label 20400 17300 2    50   ~ 0
+ETH7_D_P
+Text Label 20400 17200 2    50   ~ 0
 ETH7_D_N
 Wire Wire Line
 	22600 17900 22750 17900
@@ -8490,21 +8294,21 @@ Wire Wire Line
 	20400 17200 20500 17200
 Wire Wire Line
 	20500 17900 20400 17900
-Text Label 20450 3600 2    50   ~ 0
-ETH4_A_P
 Text Label 20450 3700 2    50   ~ 0
+ETH4_A_P
+Text Label 20450 3600 2    50   ~ 0
 ETH4_A_N
-Text Label 20450 3400 2    50   ~ 0
-ETH4_B_P
 Text Label 20450 3500 2    50   ~ 0
+ETH4_B_P
+Text Label 20450 3400 2    50   ~ 0
 ETH4_B_N
-Text Label 20450 3200 2    50   ~ 0
-ETH4_C_P
 Text Label 20450 3300 2    50   ~ 0
+ETH4_C_P
+Text Label 20450 3200 2    50   ~ 0
 ETH4_C_N
-Text Label 20450 3000 2    50   ~ 0
-ETH4_D_P
 Text Label 20450 3100 2    50   ~ 0
+ETH4_D_P
+Text Label 20450 3000 2    50   ~ 0
 ETH4_D_N
 Text Label 21450 3600 0    50   ~ 0
 ETH4_AM_P
@@ -8554,21 +8358,21 @@ Text Label 8600 7750 2    50   ~ 0
 ETH1_D_P
 Text Label 8600 7850 2    50   ~ 0
 ETH1_D_N
-Text Label 20500 13050 2    50   ~ 0
-ETH6_A_P
 Text Label 20500 13150 2    50   ~ 0
+ETH6_A_P
+Text Label 20500 13050 2    50   ~ 0
 ETH6_A_N
-Text Label 20500 12850 2    50   ~ 0
-ETH6_B_P
 Text Label 20500 12950 2    50   ~ 0
+ETH6_B_P
+Text Label 20500 12850 2    50   ~ 0
 ETH6_B_N
-Text Label 20500 12650 2    50   ~ 0
-ETH6_C_P
 Text Label 20500 12750 2    50   ~ 0
+ETH6_C_P
+Text Label 20500 12650 2    50   ~ 0
 ETH6_C_N
-Text Label 20500 12450 2    50   ~ 0
-ETH6_D_P
 Text Label 20500 12550 2    50   ~ 0
+ETH6_D_P
+Text Label 20500 12450 2    50   ~ 0
 ETH6_D_N
 Text Label 21500 13050 0    50   ~ 0
 ETH6_AM_P
@@ -8586,21 +8390,21 @@ Text Label 21500 12450 0    50   ~ 0
 ETH6_DM_P
 Text Label 21500 12550 0    50   ~ 0
 ETH6_DM_N
-Text Label 20450 8350 2    50   ~ 0
-ETH5_A_P
 Text Label 20450 8450 2    50   ~ 0
+ETH5_A_P
+Text Label 20450 8350 2    50   ~ 0
 ETH5_A_N
-Text Label 20450 8150 2    50   ~ 0
-ETH5_B_P
 Text Label 20450 8250 2    50   ~ 0
+ETH5_B_P
+Text Label 20450 8150 2    50   ~ 0
 ETH5_B_N
-Text Label 20450 7950 2    50   ~ 0
-ETH5_C_P
 Text Label 20450 8050 2    50   ~ 0
+ETH5_C_P
+Text Label 20450 7950 2    50   ~ 0
 ETH5_C_N
-Text Label 20450 7750 2    50   ~ 0
-ETH5_D_P
 Text Label 20450 7850 2    50   ~ 0
+ETH5_D_P
+Text Label 20450 7750 2    50   ~ 0
 ETH5_D_N
 Text Label 21450 8350 0    50   ~ 0
 ETH5_AM_P
@@ -8793,4 +8597,30 @@ Connection ~ 30900 9550
 Wire Wire Line
 	31300 9550 31650 9550
 Connection ~ 31300 9550
+Text Notes 20050 18050 0    50   ~ 0
+Swap P/N pairs for easier layout. PHY auto-corrects.
+Text Notes 20150 13300 0    50   ~ 0
+Swap P/N pairs for easier layout. PHY auto-corrects.
+Text Label 19450 14700 0    50   ~ 0
+GND
+Text Notes 18400 15750 0    50   ~ 0
+Sharing analog rail with sandwiched PHY
+Text Notes 20100 8600 0    50   ~ 0
+Swap P/N pairs for easier layout. PHY auto-corrects.
+Text Notes 18350 6300 0    50   ~ 0
+Sharing analog rail with sandwiched PHY
+Text Label 19400 5250 0    50   ~ 0
+GND
+Text Notes 20100 3800 0    50   ~ 0
+Swap P/N pairs for easier layout. PHY auto-corrects.
+Text Label 19450 15200 0    50   ~ 0
+GND
+Text Label 15150 18350 2    50   ~ 0
+SGMII7_TX_C_P
+Text Label 15150 18450 2    50   ~ 0
+SGMII7_TX_C_N
+Text Label 15250 13600 2    50   ~ 0
+SGMII6_TX_C_P
+Text Label 15250 13700 2    50   ~ 0
+SGMII6_TX_C_N
 $EndSCHEMATC
