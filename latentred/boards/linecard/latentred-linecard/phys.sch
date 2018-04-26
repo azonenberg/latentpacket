@@ -6,7 +6,7 @@ $Descr A1 33110 23386
 encoding utf-8
 Sheet 3 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-24"
+Date "2018-04-25"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "PHYs"
@@ -3899,8 +3899,6 @@ Text Label 5350 18050 0    50   ~ 0
 JTAG_TMS
 Text Label 5350 17850 0    50   ~ 0
 JTAG_TCK
-Text HLabel 17200 5450 0    50   Input ~ 0
-1V8
 Text HLabel 14450 4100 0    50   Input ~ 0
 SGMII4_TX_P
 Text HLabel 14450 4300 0    50   Input ~ 0
@@ -3951,18 +3949,7 @@ Wire Wire Line
 Text Label 15100 2650 2    50   ~ 0
 A1V0_5
 Text Label 15100 3050 2    50   ~ 0
-A1V8_4
-$Comp
-L passive-azonenberg:INDUCTOR_PWROUT L21
-U 1 1 5BB3FA23
-P 17900 5450
-F 0 "L21" V 17850 5200 40  0000 C CNN
-F 1 "600R" V 17850 5700 40  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" H 17900 5450 60  0001 C CNN
-F 3 "" H 17900 5450 60  0000 C CNN
-	1    17900 5450
-	0    1    1    0   
-$EndComp
+A1V8_5
 Text Label 15100 3250 2    50   ~ 0
 1V8
 Wire Wire Line
@@ -4160,26 +4147,8 @@ Wire Wire Line
 Wire Wire Line
 	18850 5250 19400 5250
 Connection ~ 18850 5250
-$Comp
-L device:C C147
-U 1 1 5BB3FAA9
-P 17300 5600
-F 0 "C147" H 17415 5646 50  0000 L CNN
-F 1 "4.7 uF" H 17415 5555 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 17338 5450 50  0001 C CNN
-F 3 "" H 17300 5600 50  0001 C CNN
-	1    17300 5600
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	17600 5450 17300 5450
-Wire Wire Line
-	17300 5450 17200 5450
-Connection ~ 17300 5450
-Text Label 17200 5750 2    50   ~ 0
+Text Label 19400 5750 0    50   ~ 0
 GND
-Wire Wire Line
-	17200 5750 17300 5750
 $Comp
 L device:C C166
 U 1 1 5BB3FAB4
@@ -4197,12 +4166,9 @@ Wire Wire Line
 	19500 4950 19400 4950
 Connection ~ 19400 4950
 Text Label 19400 5450 0    50   ~ 0
-A1V8_4
+A1V8_5
 Wire Wire Line
 	19400 5450 18850 5450
-Wire Wire Line
-	18350 5450 18200 5450
-Connection ~ 18350 5450
 $Comp
 L device:C C186
 U 1 1 5BB3FAC1
@@ -4229,11 +4195,7 @@ F 3 "" H 19400 5600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	17300 5750 18350 5750
-Connection ~ 17300 5750
-Wire Wire Line
 	18350 5750 18850 5750
-Connection ~ 18350 5750
 Wire Wire Line
 	18850 5750 19400 5750
 Connection ~ 18850 5750
@@ -7580,13 +7542,13 @@ JTAG_TDO_4
 Wire Wire Line
 	16950 3750 17150 3750
 Text Label 15150 4850 2    50   ~ 0
-RX_D2_4
+SGMII4_RX_C_P
 Text Label 15150 4950 2    50   ~ 0
-RX_D3_4
+SGMII4_RX_C_N
 Text Label 20800 5250 0    50   ~ 0
-RX_D2_4
+SGMII4_RX_C_P
 Text Label 20800 5450 0    50   ~ 0
-RX_D3_4
+SGMII4_RX_C_N
 $Comp
 L device:R R83
 U 1 1 5E6EB3A3
@@ -7810,9 +7772,9 @@ Wire Wire Line
 	20500 15050 20550 15050
 Connection ~ 20500 14850
 Text Label 20800 10200 0    50   ~ 0
-RX_D2_5
+SGMII5_RX_C_P
 Text Label 20800 10400 0    50   ~ 0
-RX_D3_5
+SGMII5_RX_C_N
 $Comp
 L device:R R87
 U 1 1 619F38A7
@@ -7893,10 +7855,10 @@ Text Label 15200 14300 2    50   ~ 0
 SGMII6_RX_C_P
 Text Label 15200 14400 2    50   ~ 0
 SGMII6_RX_C_N
-Text Label 15150 9600 2    50   ~ 0
-RX_D2_5
-Text Label 15150 9700 2    50   ~ 0
-RX_D3_5
+Text Label 15100 9600 2    50   ~ 0
+SGMII5_RX_C_P
+Text Label 15100 9700 2    50   ~ 0
+SGMII5_RX_C_N
 $Comp
 L osc-azonenberg:OSC U16
 U 1 1 6342EFD0
@@ -8623,4 +8585,12 @@ Text Label 15250 13600 2    50   ~ 0
 SGMII6_TX_C_P
 Text Label 15250 13700 2    50   ~ 0
 SGMII6_TX_C_N
+Text Label 15150 8900 2    50   ~ 0
+SGMII5_TX_C_P
+Text Label 15150 9000 2    50   ~ 0
+SGMII5_TX_C_N
+Text Label 15100 4150 2    50   ~ 0
+SGMII4_TX_C_P
+Text Label 15100 4250 2    50   ~ 0
+SGMII4_TX_C_N
 $EndSCHEMATC
