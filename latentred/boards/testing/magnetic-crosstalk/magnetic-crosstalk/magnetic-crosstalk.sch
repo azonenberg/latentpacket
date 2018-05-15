@@ -1,12 +1,13 @@
 EESchema Schematic File Version 4
+LIBS:magnetic-crosstalk-cache
 EELAYER 26 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 1
 Title "Ethernet Magnetic EMC Characterization Board"
-Date "2018-04-30"
-Rev "0.1"
+Date "2018-05-14"
+Rev "0.2"
 Comp "Andrew D. Zonenberg"
 Comment1 ""
 Comment2 ""
@@ -16,13 +17,13 @@ $EndDescr
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L1
 U 1 1 5AE6D5A4
-P 2300 2300
-F 0 "L1" H 2700 3875 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 2700 3784 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 2350 2250 50  0001 C CNN
-F 3 "" H 2350 2250 50  0001 C CNN
-	1    2300 2300
-	1    0    0    -1  
+P 3100 2300
+F 0 "L1" H 3500 3875 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 3500 3784 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 3150 2250 50  0001 C CNN
+F 3 "" H 3150 2250 50  0001 C CNN
+	1    3100 2300
+	-1   0    0    -1  
 $EndComp
 $Comp
 L special-azonenberg:STEWART_SS_74500_024 J1
@@ -143,13 +144,13 @@ $EndComp
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L2
 U 1 1 5AE6F7DC
-P 12700 2700
-F 0 "L2" H 13100 4275 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 13100 4184 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 12750 2650 50  0001 C CNN
-F 3 "" H 12750 2650 50  0001 C CNN
-	1    12700 2700
-	1    0    0    -1  
+P 13500 2700
+F 0 "L2" H 13900 4275 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 13900 4184 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 13550 2650 50  0001 C CNN
+F 3 "" H 13550 2650 50  0001 C CNN
+	1    13500 2700
+	-1   0    0    -1  
 $EndComp
 NoConn ~ 14450 2850
 NoConn ~ 14450 2950
@@ -373,7 +374,7 @@ F 3 "" H 11150 1500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	12600 1650 11150 1650
+	12600 1650 11800 1650
 Wire Wire Line
 	11150 1350 11150 1050
 Connection ~ 12400 1050
@@ -390,7 +391,7 @@ Connection ~ 11600 1050
 Wire Wire Line
 	11600 1050 12000 1050
 Wire Wire Line
-	11600 1550 12600 1550
+	11600 1550 11800 1550
 $Comp
 L device:R R7
 U 1 1 5AE85607
@@ -688,8 +689,6 @@ F 3 "" H 750 1100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2200 1250 750  1250
-Wire Wire Line
 	750  950  750  650 
 Connection ~ 2000 650 
 Wire Wire Line
@@ -704,8 +703,6 @@ Wire Wire Line
 Connection ~ 1200 650 
 Wire Wire Line
 	1200 650  1600 650 
-Wire Wire Line
-	1200 1150 2200 1150
 Text Notes 12700 2950 0    50   ~ 0
 VICTIM port\nTerminations plus test points\nSwap A/B/C/D pairs for easier routing
 $Comp
@@ -1638,4 +1635,14 @@ Text Label 3200 7050 0    50   ~ 0
 A2Y_D_N
 NoConn ~ 1950 4500
 NoConn ~ 1950 6600
+Wire Wire Line
+	750  1250 2200 1250
+Wire Wire Line
+	1200 1150 2200 1150
+Connection ~ 11800 1650
+Wire Wire Line
+	11800 1650 11150 1650
+Connection ~ 11800 1550
+Wire Wire Line
+	11800 1550 12600 1550
 $EndSCHEMATC
