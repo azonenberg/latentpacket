@@ -1,0 +1,51 @@
+Total available capacity on a 7k70t (worst case) is 270 2KB blocks, 7k160t is 650 blocks
+
+Small input queues on 1G ports since they get emptied as fast as they fill
+	4x BRAM = 8 KB = 5.4 MTU-sized frames
+
+Large input queues on 10G ports
+	16x BRAM = 32 KB = 21.8 MTU-sized frames
+
+Total input queue size
+	24x small = 24*4 = 96
+	4x large = 4*16 = 64
+	Total brams = 160 blocks
+
+Small exit queues on 10G ports since they get emptied fast
+	2x BRAM = 4 KB
+
+Large exit queues on 1G ports since they fill fast
+	8x BRAM = 16 KB = 10.9 MTU-sized frames
+
+Total exit queue size
+	4x small = 4*2 = 8 blocks
+	24x large = 24*8 = 192 blocks
+	Total brams = 200 blocks
+
+Max packet throughput
+	* 2 Mpps per 1G link
+	* 20 Mpps per 10G link
+
+	Total 4x 10G, 24x 1G = 128 Mpps (1 lookup per 7.81 ns)
+
+	Address table is 64x 2KB blocks @ 156.25 MHz
+	4K rows, 4 way set associative, 72 bits per entry.
+	1 lookup per clock, pipelined
+
+Total RAM usage
+	Input queues = 160
+	Exit queues = 200
+	MAC table = 64
+	Total = 424 = 65% of 7k160t
+
+Switch fabric link selection
+	Driven by exit ports
+	Every clock, if not already forwarding a packet...
+		Each port has a bitmask indicating whether it wants to send to us
+		If our bit is set, read the packet into our queue
+
+		How to handle multi/broadcast? (for now treat as the same?)
+		Global barrier sync is the easiest option but will potentially hurt performance
+		Set RTS to all ports that have broadcasts pending
+		Wait until they finish forwarding and assert CTS
+		Then push the packet
