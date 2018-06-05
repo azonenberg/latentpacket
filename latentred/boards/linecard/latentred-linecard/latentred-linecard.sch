@@ -6,7 +6,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-27"
+Date "2018-06-05"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "Top Level"
@@ -500,4 +500,6 @@ Text Notes 9050 2350 0    50   ~ 0
 TODO: Add reserved GPIO signal to connector\nTODO: Add reserved LVDS signal to connector
 Text Notes 9050 2450 0    50   ~ 0
 TODO: Pulldown on PHY_RST_N
+Text Notes 5750 5150 0    50   ~ 0
+Swap some P/N pairs for easier routing\nCan correct FPGA-side or on backplane
 $EndSCHEMATC

@@ -6,7 +6,7 @@ $Descr A1 33110 23386
 encoding utf-8
 Sheet 3 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-27"
+Date "2018-06-05"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "PHYs"
@@ -651,13 +651,13 @@ ETH0_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L7
 U 1 1 5B32F294
-P 8700 3750
-F 0 "L7" H 9100 5325 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 9100 5234 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 8750 3700 50  0001 C CNN
-F 3 "" H 8750 3700 50  0001 C CNN
-	1    8700 3750
-	1    0    0    -1  
+P 9500 3750
+F 0 "L7" H 9900 5325 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 9900 5234 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 9550 3700 50  0001 C CNN
+F 3 "" H 9550 3700 50  0001 C CNN
+	1    9500 3750
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C49
@@ -706,17 +706,11 @@ F 3 "" H 6800 2250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7800 2400 7800 2500
-Wire Wire Line
 	7800 2500 8600 2500
 Wire Wire Line
 	7300 2400 7300 2600
 Wire Wire Line
-	7300 2600 8600 2600
-Wire Wire Line
 	6800 2400 6800 2700
-Wire Wire Line
-	6800 2700 8600 2700
 Text Label 6600 2100 2    50   ~ 0
 GND
 Wire Wire Line
@@ -827,21 +821,21 @@ F 3 "" H 10950 4250 50  0001 C CNN
 	1    10950 4250
 	1    0    0    -1  
 $EndComp
-Text Label 9600 3600 0    50   ~ 0
-ETH0_AM_P
-Text Label 9600 3700 0    50   ~ 0
-ETH0_AM_N
-Text Label 9600 3400 0    50   ~ 0
-ETH0_BM_P
-Text Label 9600 3500 0    50   ~ 0
-ETH0_BM_N
-Text Label 9600 3200 0    50   ~ 0
-ETH0_CM_P
-Text Label 9600 3300 0    50   ~ 0
-ETH0_CM_N
 Text Label 9600 3000 0    50   ~ 0
-ETH0_DM_P
+ETH0_AM_P
 Text Label 9600 3100 0    50   ~ 0
+ETH0_AM_N
+Text Label 9600 3300 0    50   ~ 0
+ETH0_BM_P
+Text Label 9600 3200 0    50   ~ 0
+ETH0_BM_N
+Text Label 9600 3400 0    50   ~ 0
+ETH0_CM_P
+Text Label 9600 3500 0    50   ~ 0
+ETH0_CM_N
+Text Label 9600 3700 0    50   ~ 0
+ETH0_DM_P
+Text Label 9600 3600 0    50   ~ 0
 ETH0_DM_N
 Text Label 10700 4200 2    50   ~ 0
 LED1_0_N
@@ -1574,13 +1568,13 @@ ETH1_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L17
 U 1 1 5B47B727
-P 8700 8500
-F 0 "L17" H 9100 10075 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 9100 9984 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 8750 8450 50  0001 C CNN
-F 3 "" H 8750 8450 50  0001 C CNN
-	1    8700 8500
-	1    0    0    -1  
+P 9500 8500
+F 0 "L17" H 9900 10075 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 9900 9984 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 9550 8450 50  0001 C CNN
+F 3 "" H 9550 8450 50  0001 C CNN
+	1    9500 8500
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C120
@@ -1629,17 +1623,11 @@ F 3 "" H 6800 7000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7800 7150 7800 7250
-Wire Wire Line
 	7800 7250 8600 7250
 Wire Wire Line
 	7300 7150 7300 7350
 Wire Wire Line
-	7300 7350 8600 7350
-Wire Wire Line
 	6800 7150 6800 7450
-Wire Wire Line
-	6800 7450 8600 7450
 Text Label 6600 6850 2    50   ~ 0
 GND
 Wire Wire Line
@@ -2431,13 +2419,13 @@ ETH2_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L18
 U 1 1 5B5CE7E9
-P 8750 13200
-F 0 "L18" H 9150 14775 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 9150 14684 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 8800 13150 50  0001 C CNN
-F 3 "" H 8800 13150 50  0001 C CNN
-	1    8750 13200
-	1    0    0    -1  
+P 9550 13200
+F 0 "L18" H 9950 14775 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 9950 14684 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 9600 13150 50  0001 C CNN
+F 3 "" H 9600 13150 50  0001 C CNN
+	1    9550 13200
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C121
@@ -2486,17 +2474,11 @@ F 3 "" H 6850 11700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7850 11850 7850 11950
-Wire Wire Line
 	7850 11950 8650 11950
 Wire Wire Line
 	7350 11850 7350 12050
 Wire Wire Line
-	7350 12050 8650 12050
-Wire Wire Line
 	6850 11850 6850 12150
-Wire Wire Line
-	6850 12150 8650 12150
 Text Label 6650 11550 2    50   ~ 0
 GND
 Wire Wire Line
@@ -3406,13 +3388,13 @@ ETH3_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L19
 U 1 1 5B6DCE40
-P 8750 17950
-F 0 "L19" H 9150 19525 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 9150 19434 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 8800 17900 50  0001 C CNN
-F 3 "" H 8800 17900 50  0001 C CNN
-	1    8750 17950
-	1    0    0    -1  
+P 9550 17950
+F 0 "L19" H 9950 19525 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 9950 19434 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 9600 17900 50  0001 C CNN
+F 3 "" H 9600 17900 50  0001 C CNN
+	1    9550 17950
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C122
@@ -3461,17 +3443,11 @@ F 3 "" H 6850 16450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7850 16600 7850 16700
-Wire Wire Line
 	7850 16700 8650 16700
 Wire Wire Line
 	7350 16600 7350 16800
 Wire Wire Line
-	7350 16800 8650 16800
-Wire Wire Line
 	6850 16600 6850 16900
-Wire Wire Line
-	6850 16900 8650 16900
 Text Label 6650 16300 2    50   ~ 0
 GND
 Wire Wire Line
@@ -4261,13 +4237,13 @@ ETH4_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L32
 U 1 1 5BB3FB88
-P 20550 3750
-F 0 "L32" H 20950 5325 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 20950 5234 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 20600 3700 50  0001 C CNN
-F 3 "" H 20600 3700 50  0001 C CNN
-	1    20550 3750
-	1    0    0    -1  
+P 21350 3750
+F 0 "L32" H 21750 5325 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 21750 5234 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 21400 3700 50  0001 C CNN
+F 3 "" H 21400 3700 50  0001 C CNN
+	1    21350 3750
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C221
@@ -4316,17 +4292,11 @@ F 3 "" H 18650 2250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	19650 2400 19650 2500
-Wire Wire Line
 	19650 2500 20450 2500
 Wire Wire Line
 	19150 2400 19150 2600
 Wire Wire Line
-	19150 2600 20450 2600
-Wire Wire Line
 	18650 2400 18650 2700
-Wire Wire Line
-	18650 2700 20450 2700
 Text Label 18450 2100 2    50   ~ 0
 GND
 Wire Wire Line
@@ -4439,7 +4409,7 @@ F 3 "" H 22800 4250 50  0001 C CNN
 $EndComp
 Text Label 22700 3000 2    50   ~ 0
 ETH4_AM_P
-Text Label 21450 3700 0    50   ~ 0
+Text Label 21450 3100 0    50   ~ 0
 ETH4_AM_N
 Text Label 22700 3200 2    50   ~ 0
 ETH4_BM_P
@@ -5184,13 +5154,13 @@ ETH5_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L33
 U 1 1 5BB3FDAA
-P 20550 8500
-F 0 "L33" H 20950 10075 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 20950 9984 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 20600 8450 50  0001 C CNN
-F 3 "" H 20600 8450 50  0001 C CNN
-	1    20550 8500
-	1    0    0    -1  
+P 21350 8500
+F 0 "L33" H 21750 10075 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 21750 9984 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 21400 8450 50  0001 C CNN
+F 3 "" H 21400 8450 50  0001 C CNN
+	1    21350 8500
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C222
@@ -5239,17 +5209,11 @@ F 3 "" H 18650 7000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	19650 7150 19650 7250
-Wire Wire Line
 	19650 7250 20450 7250
 Wire Wire Line
 	19150 7150 19150 7350
 Wire Wire Line
-	19150 7350 20450 7350
-Wire Wire Line
 	18650 7150 18650 7450
-Wire Wire Line
-	18650 7450 20450 7450
 Text Label 18450 6850 2    50   ~ 0
 GND
 Wire Wire Line
@@ -6043,13 +6007,13 @@ ETH6_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L34
 U 1 1 5BB3FFE4
-P 20600 13200
-F 0 "L34" H 21000 14775 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 21000 14684 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 20650 13150 50  0001 C CNN
-F 3 "" H 20650 13150 50  0001 C CNN
-	1    20600 13200
-	1    0    0    -1  
+P 21400 13200
+F 0 "L34" H 21800 14775 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 21800 14684 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 21450 13150 50  0001 C CNN
+F 3 "" H 21450 13150 50  0001 C CNN
+	1    21400 13200
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C223
@@ -6098,17 +6062,11 @@ F 3 "" H 18700 11700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	19700 11850 19700 11950
-Wire Wire Line
 	19700 11950 20500 11950
 Wire Wire Line
 	19200 11850 19200 12050
 Wire Wire Line
-	19200 12050 20500 12050
-Wire Wire Line
 	18700 11850 18700 12150
-Wire Wire Line
-	18700 12150 20500 12150
 Text Label 18500 11550 2    50   ~ 0
 GND
 Wire Wire Line
@@ -7016,13 +6974,13 @@ ETH7_D_N
 $Comp
 L special-azonenberg:BOURNS_PT6120EL L35
 U 1 1 5BB4021F
-P 20600 17950
-F 0 "L35" H 21000 19525 50  0000 C CNN
-F 1 "BOURNS_PT6120EL" H 21000 19434 50  0000 C CNN
-F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 20650 17900 50  0001 C CNN
-F 3 "" H 20650 17900 50  0001 C CNN
-	1    20600 17950
-	1    0    0    -1  
+P 21400 17950
+F 0 "L35" H 21800 19525 50  0000 C CNN
+F 1 "BOURNS_PT6120EL" H 21800 19434 50  0000 C CNN
+F 2 "azonenberg_pcb:BOURNS_PT61020EL" H 21450 17900 50  0001 C CNN
+F 3 "" H 21450 17900 50  0001 C CNN
+	1    21400 17950
+	-1   0    0    -1  
 $EndComp
 $Comp
 L device:C C224
@@ -7071,17 +7029,11 @@ F 3 "" H 18700 16450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	19700 16600 19700 16700
-Wire Wire Line
 	19700 16700 20500 16700
 Wire Wire Line
 	19200 16600 19200 16800
 Wire Wire Line
-	19200 16800 20500 16800
-Wire Wire Line
 	18700 16600 18700 16900
-Wire Wire Line
-	18700 16900 20500 16900
 Text Label 18500 16300 2    50   ~ 0
 GND
 Wire Wire Line
@@ -7192,7 +7144,7 @@ F 3 "" H 22850 18450 50  0001 C CNN
 	8    22850 18450
 	1    0    0    -1  
 $EndComp
-Text Label 21600 17800 0    50   ~ 0
+Text Label 21600 17300 0    50   ~ 0
 ETH7_AM_P
 Text Label 22600 17300 2    50   ~ 0
 ETH7_AM_N
@@ -7920,8 +7872,6 @@ Wire Wire Line
 	29000 4150 29200 4150
 Wire Wire Line
 	29200 4250 29000 4250
-Text Notes 30750 7550 0    50   ~ 0
-TODO: R/C between shield and ground
 Wire Wire Line
 	17000 16650 17200 16650
 Wire Wire Line
@@ -7938,21 +7888,21 @@ Wire Wire Line
 	17000 17250 17200 17250
 Wire Wire Line
 	17200 17350 17000 17350
-Text Label 20400 17900 2    50   ~ 0
-ETH7_A_P
-Text Label 20400 17800 2    50   ~ 0
-ETH7_A_N
-Text Label 20400 17700 2    50   ~ 0
-ETH7_B_P
-Text Label 20400 17600 2    50   ~ 0
-ETH7_B_N
-Text Label 20400 17500 2    50   ~ 0
-ETH7_C_P
-Text Label 20400 17400 2    50   ~ 0
-ETH7_C_N
-Text Label 20400 17300 2    50   ~ 0
-ETH7_D_P
 Text Label 20400 17200 2    50   ~ 0
+ETH7_A_P
+Text Label 20400 17300 2    50   ~ 0
+ETH7_A_N
+Text Label 20400 17400 2    50   ~ 0
+ETH7_B_P
+Text Label 20400 17500 2    50   ~ 0
+ETH7_B_N
+Text Label 20400 17600 2    50   ~ 0
+ETH7_C_P
+Text Label 20400 17700 2    50   ~ 0
+ETH7_C_N
+Text Label 20400 17800 2    50   ~ 0
+ETH7_D_P
+Text Label 20400 17900 2    50   ~ 0
 ETH7_D_N
 Wire Wire Line
 	22600 17900 22750 17900
@@ -7974,19 +7924,19 @@ Wire Wire Line
 	21600 17900 21500 17900
 Text Label 22600 17200 2    50   ~ 0
 ETH7_AM_P
-Text Label 21600 17900 0    50   ~ 0
-ETH7_AM_N
-Text Label 21600 17600 0    50   ~ 0
-ETH7_BM_P
-Text Label 21600 17700 0    50   ~ 0
-ETH7_BM_N
-Text Label 21600 17400 0    50   ~ 0
-ETH7_CM_P
-Text Label 21600 17500 0    50   ~ 0
-ETH7_CM_N
 Text Label 21600 17200 0    50   ~ 0
+ETH7_AM_N
+Text Label 21600 17400 0    50   ~ 0
+ETH7_BM_P
+Text Label 21600 17500 0    50   ~ 0
+ETH7_BM_N
+Text Label 21600 17700 0    50   ~ 0
+ETH7_CM_P
+Text Label 21600 17600 0    50   ~ 0
+ETH7_CM_N
+Text Label 21600 17900 0    50   ~ 0
 ETH7_DM_P
-Text Label 21600 17300 0    50   ~ 0
+Text Label 21600 17800 0    50   ~ 0
 ETH7_DM_N
 Wire Wire Line
 	21600 17300 21500 17300
@@ -8018,213 +7968,213 @@ Wire Wire Line
 	20400 17200 20500 17200
 Wire Wire Line
 	20500 17900 20400 17900
-Text Label 20450 3700 2    50   ~ 0
-ETH4_A_P
-Text Label 20450 3600 2    50   ~ 0
-ETH4_A_N
-Text Label 20450 3500 2    50   ~ 0
-ETH4_B_P
-Text Label 20450 3400 2    50   ~ 0
-ETH4_B_N
-Text Label 20450 3300 2    50   ~ 0
-ETH4_C_P
-Text Label 20450 3200 2    50   ~ 0
-ETH4_C_N
-Text Label 20450 3100 2    50   ~ 0
-ETH4_D_P
 Text Label 20450 3000 2    50   ~ 0
+ETH4_A_P
+Text Label 20450 3100 2    50   ~ 0
+ETH4_A_N
+Text Label 20450 3200 2    50   ~ 0
+ETH4_B_P
+Text Label 20450 3300 2    50   ~ 0
+ETH4_B_N
+Text Label 20450 3400 2    50   ~ 0
+ETH4_C_P
+Text Label 20450 3500 2    50   ~ 0
+ETH4_C_N
+Text Label 20450 3600 2    50   ~ 0
+ETH4_D_P
+Text Label 20450 3700 2    50   ~ 0
 ETH4_D_N
-Text Label 21450 3600 0    50   ~ 0
+Text Label 21450 3000 0    50   ~ 0
 ETH4_AM_P
 Text Label 22700 3100 2    50   ~ 0
 ETH4_AM_N
-Text Label 21450 3400 0    50   ~ 0
-ETH4_BM_P
-Text Label 21450 3500 0    50   ~ 0
-ETH4_BM_N
-Text Label 21450 3200 0    50   ~ 0
-ETH4_CM_P
 Text Label 21450 3300 0    50   ~ 0
+ETH4_BM_P
+Text Label 21450 3200 0    50   ~ 0
+ETH4_BM_N
+Text Label 21450 3400 0    50   ~ 0
+ETH4_CM_P
+Text Label 21450 3500 0    50   ~ 0
 ETH4_CM_N
-Text Label 21450 3000 0    50   ~ 0
+Text Label 21450 3700 0    50   ~ 0
 ETH4_DM_P
-Text Label 21450 3100 0    50   ~ 0
+Text Label 21450 3600 0    50   ~ 0
 ETH4_DM_N
-Text Label 9600 8350 0    50   ~ 0
-ETH1_AM_P
-Text Label 9600 8450 0    50   ~ 0
-ETH1_AM_N
-Text Label 9600 8150 0    50   ~ 0
-ETH1_BM_P
-Text Label 9600 8250 0    50   ~ 0
-ETH1_BM_N
-Text Label 9600 7950 0    50   ~ 0
-ETH1_CM_P
-Text Label 9600 8050 0    50   ~ 0
-ETH1_CM_N
 Text Label 9600 7750 0    50   ~ 0
-ETH1_DM_P
+ETH1_AM_P
 Text Label 9600 7850 0    50   ~ 0
+ETH1_AM_N
+Text Label 9600 8050 0    50   ~ 0
+ETH1_BM_P
+Text Label 9600 7950 0    50   ~ 0
+ETH1_BM_N
+Text Label 9600 8150 0    50   ~ 0
+ETH1_CM_P
+Text Label 9600 8250 0    50   ~ 0
+ETH1_CM_N
+Text Label 9600 8450 0    50   ~ 0
+ETH1_DM_P
+Text Label 9600 8350 0    50   ~ 0
 ETH1_DM_N
-Text Label 8600 8450 2    50   ~ 0
-ETH1_A_P
-Text Label 8600 8350 2    50   ~ 0
-ETH1_A_N
-Text Label 8600 8250 2    50   ~ 0
-ETH1_B_P
-Text Label 8600 8150 2    50   ~ 0
-ETH1_B_N
-Text Label 8600 8050 2    50   ~ 0
-ETH1_C_P
-Text Label 8600 7950 2    50   ~ 0
-ETH1_C_N
-Text Label 8600 7850 2    50   ~ 0
-ETH1_D_P
 Text Label 8600 7750 2    50   ~ 0
+ETH1_A_P
+Text Label 8600 7850 2    50   ~ 0
+ETH1_A_N
+Text Label 8600 7950 2    50   ~ 0
+ETH1_B_P
+Text Label 8600 8050 2    50   ~ 0
+ETH1_B_N
+Text Label 8600 8150 2    50   ~ 0
+ETH1_C_P
+Text Label 8600 8250 2    50   ~ 0
+ETH1_C_N
+Text Label 8600 8350 2    50   ~ 0
+ETH1_D_P
+Text Label 8600 8450 2    50   ~ 0
 ETH1_D_N
-Text Label 20500 13150 2    50   ~ 0
-ETH6_A_P
-Text Label 20500 13050 2    50   ~ 0
-ETH6_A_N
-Text Label 20500 12950 2    50   ~ 0
-ETH6_B_P
-Text Label 20500 12850 2    50   ~ 0
-ETH6_B_N
-Text Label 20500 12750 2    50   ~ 0
-ETH6_C_P
-Text Label 20500 12650 2    50   ~ 0
-ETH6_C_N
-Text Label 20500 12550 2    50   ~ 0
-ETH6_D_P
 Text Label 20500 12450 2    50   ~ 0
+ETH6_A_P
+Text Label 20500 12550 2    50   ~ 0
+ETH6_A_N
+Text Label 20500 12650 2    50   ~ 0
+ETH6_B_P
+Text Label 20500 12750 2    50   ~ 0
+ETH6_B_N
+Text Label 20500 12850 2    50   ~ 0
+ETH6_C_P
+Text Label 20500 12950 2    50   ~ 0
+ETH6_C_N
+Text Label 20500 13050 2    50   ~ 0
+ETH6_D_P
+Text Label 20500 13150 2    50   ~ 0
 ETH6_D_N
-Text Label 21500 13050 0    50   ~ 0
-ETH6_AM_P
-Text Label 21500 13150 0    50   ~ 0
-ETH6_AM_N
-Text Label 21500 12850 0    50   ~ 0
-ETH6_BM_P
-Text Label 21500 12950 0    50   ~ 0
-ETH6_BM_N
-Text Label 21500 12650 0    50   ~ 0
-ETH6_CM_P
-Text Label 21500 12750 0    50   ~ 0
-ETH6_CM_N
 Text Label 21500 12450 0    50   ~ 0
-ETH6_DM_P
+ETH6_AM_P
 Text Label 21500 12550 0    50   ~ 0
+ETH6_AM_N
+Text Label 21500 12650 0    50   ~ 0
+ETH6_BM_P
+Text Label 21500 12750 0    50   ~ 0
+ETH6_BM_N
+Text Label 21500 12850 0    50   ~ 0
+ETH6_CM_P
+Text Label 21500 12950 0    50   ~ 0
+ETH6_CM_N
+Text Label 21500 13150 0    50   ~ 0
+ETH6_DM_P
+Text Label 21500 13050 0    50   ~ 0
 ETH6_DM_N
-Text Label 20450 8450 2    50   ~ 0
-ETH5_A_P
-Text Label 20450 8350 2    50   ~ 0
-ETH5_A_N
-Text Label 20450 8250 2    50   ~ 0
-ETH5_B_P
-Text Label 20450 8150 2    50   ~ 0
-ETH5_B_N
-Text Label 20450 8050 2    50   ~ 0
-ETH5_C_P
-Text Label 20450 7950 2    50   ~ 0
-ETH5_C_N
-Text Label 20450 7850 2    50   ~ 0
-ETH5_D_P
 Text Label 20450 7750 2    50   ~ 0
+ETH5_A_P
+Text Label 20450 7850 2    50   ~ 0
+ETH5_A_N
+Text Label 20450 7950 2    50   ~ 0
+ETH5_B_P
+Text Label 20450 8050 2    50   ~ 0
+ETH5_B_N
+Text Label 20450 8150 2    50   ~ 0
+ETH5_C_P
+Text Label 20450 8250 2    50   ~ 0
+ETH5_C_N
+Text Label 20450 8350 2    50   ~ 0
+ETH5_D_P
+Text Label 20450 8450 2    50   ~ 0
 ETH5_D_N
-Text Label 21450 8350 0    50   ~ 0
-ETH5_AM_P
-Text Label 21450 8450 0    50   ~ 0
-ETH5_AM_N
-Text Label 21450 8150 0    50   ~ 0
-ETH5_BM_P
-Text Label 21450 8250 0    50   ~ 0
-ETH5_BM_N
-Text Label 21450 7950 0    50   ~ 0
-ETH5_CM_P
-Text Label 21450 8050 0    50   ~ 0
-ETH5_CM_N
-Text Label 21450 7750 0    50   ~ 0
-ETH5_DM_P
 Text Label 21450 7850 0    50   ~ 0
+ETH5_AM_P
+Text Label 21450 7750 0    50   ~ 0
+ETH5_AM_N
+Text Label 21450 8050 0    50   ~ 0
+ETH5_BM_P
+Text Label 21450 7950 0    50   ~ 0
+ETH5_BM_N
+Text Label 21450 8150 0    50   ~ 0
+ETH5_CM_P
+Text Label 21450 8250 0    50   ~ 0
+ETH5_CM_N
+Text Label 21450 8450 0    50   ~ 0
+ETH5_DM_P
+Text Label 21450 8350 0    50   ~ 0
 ETH5_DM_N
-Text Label 8650 17900 2    50   ~ 0
-ETH3_A_P
-Text Label 8650 17800 2    50   ~ 0
-ETH3_A_N
-Text Label 8650 17700 2    50   ~ 0
-ETH3_B_P
-Text Label 8650 17600 2    50   ~ 0
-ETH3_B_N
-Text Label 8650 17500 2    50   ~ 0
-ETH3_C_P
-Text Label 8650 17400 2    50   ~ 0
-ETH3_C_N
-Text Label 8650 17300 2    50   ~ 0
-ETH3_D_P
 Text Label 8650 17200 2    50   ~ 0
+ETH3_A_P
+Text Label 8650 17300 2    50   ~ 0
+ETH3_A_N
+Text Label 8650 17400 2    50   ~ 0
+ETH3_B_P
+Text Label 8650 17500 2    50   ~ 0
+ETH3_B_N
+Text Label 8650 17600 2    50   ~ 0
+ETH3_C_P
+Text Label 8650 17700 2    50   ~ 0
+ETH3_C_N
+Text Label 8650 17800 2    50   ~ 0
+ETH3_D_P
+Text Label 8650 17900 2    50   ~ 0
 ETH3_D_N
-Text Label 9650 17800 0    50   ~ 0
-ETH3_AM_P
-Text Label 9650 17900 0    50   ~ 0
-ETH3_AM_N
-Text Label 9650 17600 0    50   ~ 0
-ETH3_BM_P
-Text Label 9650 17700 0    50   ~ 0
-ETH3_BM_N
-Text Label 9650 17400 0    50   ~ 0
-ETH3_CM_P
-Text Label 9650 17500 0    50   ~ 0
-ETH3_CM_N
 Text Label 9650 17200 0    50   ~ 0
-ETH3_DM_P
+ETH3_AM_P
 Text Label 9650 17300 0    50   ~ 0
+ETH3_AM_N
+Text Label 9650 17500 0    50   ~ 0
+ETH3_BM_P
+Text Label 9650 17400 0    50   ~ 0
+ETH3_BM_N
+Text Label 9650 17600 0    50   ~ 0
+ETH3_CM_P
+Text Label 9650 17700 0    50   ~ 0
+ETH3_CM_N
+Text Label 9650 17900 0    50   ~ 0
+ETH3_DM_P
+Text Label 9650 17800 0    50   ~ 0
 ETH3_DM_N
-Text Label 9650 13050 0    50   ~ 0
-ETH2_AM_P
-Text Label 9650 13150 0    50   ~ 0
-ETH2_AM_N
-Text Label 9650 12850 0    50   ~ 0
-ETH2_BM_P
-Text Label 9650 12950 0    50   ~ 0
-ETH2_BM_N
-Text Label 9650 12650 0    50   ~ 0
-ETH2_CM_P
-Text Label 9650 12750 0    50   ~ 0
-ETH2_CM_N
 Text Label 9650 12450 0    50   ~ 0
-ETH2_DM_P
+ETH2_AM_P
 Text Label 9650 12550 0    50   ~ 0
+ETH2_AM_N
+Text Label 9650 12750 0    50   ~ 0
+ETH2_BM_P
+Text Label 9650 12650 0    50   ~ 0
+ETH2_BM_N
+Text Label 9650 12850 0    50   ~ 0
+ETH2_CM_P
+Text Label 9650 12950 0    50   ~ 0
+ETH2_CM_N
+Text Label 9650 13150 0    50   ~ 0
+ETH2_DM_P
+Text Label 9650 13050 0    50   ~ 0
 ETH2_DM_N
-Text Label 8650 13150 2    50   ~ 0
-ETH2_A_P
-Text Label 8650 13050 2    50   ~ 0
-ETH2_A_N
-Text Label 8650 12950 2    50   ~ 0
-ETH2_B_P
-Text Label 8650 12850 2    50   ~ 0
-ETH2_B_N
-Text Label 8650 12750 2    50   ~ 0
-ETH2_C_P
-Text Label 8650 12650 2    50   ~ 0
-ETH2_C_N
-Text Label 8650 12550 2    50   ~ 0
-ETH2_D_P
 Text Label 8650 12450 2    50   ~ 0
+ETH2_A_P
+Text Label 8650 12550 2    50   ~ 0
+ETH2_A_N
+Text Label 8650 12650 2    50   ~ 0
+ETH2_B_P
+Text Label 8650 12750 2    50   ~ 0
+ETH2_B_N
+Text Label 8650 12850 2    50   ~ 0
+ETH2_C_P
+Text Label 8650 12950 2    50   ~ 0
+ETH2_C_N
+Text Label 8650 13050 2    50   ~ 0
+ETH2_D_P
+Text Label 8650 13150 2    50   ~ 0
 ETH2_D_N
-Text Label 8600 3700 2    50   ~ 0
-ETH0_A_P
-Text Label 8600 3600 2    50   ~ 0
-ETH0_A_N
-Text Label 8600 3500 2    50   ~ 0
-ETH0_B_P
-Text Label 8600 3400 2    50   ~ 0
-ETH0_B_N
-Text Label 8600 3300 2    50   ~ 0
-ETH0_C_P
-Text Label 8600 3200 2    50   ~ 0
-ETH0_C_N
-Text Label 8600 3100 2    50   ~ 0
-ETH0_D_P
 Text Label 8600 3000 2    50   ~ 0
+ETH0_A_P
+Text Label 8600 3100 2    50   ~ 0
+ETH0_A_N
+Text Label 8600 3200 2    50   ~ 0
+ETH0_B_P
+Text Label 8600 3300 2    50   ~ 0
+ETH0_B_N
+Text Label 8600 3400 2    50   ~ 0
+ETH0_C_P
+Text Label 8600 3500 2    50   ~ 0
+ETH0_C_N
+Text Label 8600 3600 2    50   ~ 0
+ETH0_D_P
+Text Label 8600 3700 2    50   ~ 0
 ETH0_D_N
 Text Label 10850 3000 2    50   ~ 0
 ETH0_AM_P
@@ -8405,4 +8355,52 @@ Text Label 3250 4950 2    50   ~ 0
 SGMII0_RX_C_N
 Text Label 7550 5250 0    50   ~ 0
 GND
+Wire Wire Line
+	7300 2600 8600 2600
+Wire Wire Line
+	6800 2700 8600 2700
+Wire Wire Line
+	6800 7450 8600 7450
+Wire Wire Line
+	7300 7350 8600 7350
+Wire Wire Line
+	7350 12050 8650 12050
+Wire Wire Line
+	6850 12150 8650 12150
+Wire Wire Line
+	7350 16800 8650 16800
+Wire Wire Line
+	6850 16900 8650 16900
+Wire Wire Line
+	19200 16800 20500 16800
+Wire Wire Line
+	18700 16900 20500 16900
+Wire Wire Line
+	19200 12050 20500 12050
+Wire Wire Line
+	18700 12150 20500 12150
+Wire Wire Line
+	19150 7350 20450 7350
+Wire Wire Line
+	18650 7450 20450 7450
+Wire Wire Line
+	19650 7150 19650 7250
+Wire Wire Line
+	19150 2600 20450 2600
+Wire Wire Line
+	18650 2700 20450 2700
+Wire Wire Line
+	19700 11850 19700 11950
+Wire Wire Line
+	19700 16600 19700 16700
+Wire Wire Line
+	19650 2400 19650 2500
+Wire Wire Line
+	7800 2400 7800 2500
+Wire Wire Line
+	7800 7150 7800 7250
+Wire Wire Line
+	7850 11850 7850 11950
+Wire Wire Line
+	7850 16600 7850 16700
 $EndSCHEMATC

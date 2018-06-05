@@ -6,7 +6,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 2 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-04-27"
+Date "2018-06-05"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 ""
@@ -50,34 +50,34 @@ $EndComp
 $Comp
 L power-azonenberg:LTC3374-QFN U2
 U 4 1 5AD42D7F
-P 6850 4650
-F 0 "U2" H 7777 4958 60  0000 L CNN
-F 1 "LTC3374-QFN" H 7777 4852 60  0000 L CNN
-F 2 "azonenberg_pcb:QFN_38_0.5MM_5x7MM" H 6850 4650 60  0001 C CNN
-F 3 "" H 6850 4650 60  0000 C CNN
-	4    6850 4650
-	1    0    0    -1  
-$EndComp
-$Comp
-L power-azonenberg:LTC3374-QFN U2
-U 5 1 5AD42DF1
-P 6850 5250
-F 0 "U2" H 7777 5558 60  0000 L CNN
-F 1 "LTC3374-QFN" H 7777 5452 60  0000 L CNN
-F 2 "azonenberg_pcb:QFN_38_0.5MM_5x7MM" H 6850 5250 60  0001 C CNN
-F 3 "" H 6850 5250 60  0000 C CNN
-	5    6850 5250
-	1    0    0    -1  
-$EndComp
-$Comp
-L power-azonenberg:LTC3374-QFN U2
-U 6 1 5AD42E61
 P 6850 5850
 F 0 "U2" H 7777 6158 60  0000 L CNN
 F 1 "LTC3374-QFN" H 7777 6052 60  0000 L CNN
 F 2 "azonenberg_pcb:QFN_38_0.5MM_5x7MM" H 6850 5850 60  0001 C CNN
 F 3 "" H 6850 5850 60  0000 C CNN
-	6    6850 5850
+	4    6850 5850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power-azonenberg:LTC3374-QFN U2
+U 5 1 5AD42DF1
+P 6850 4650
+F 0 "U2" H 7777 4958 60  0000 L CNN
+F 1 "LTC3374-QFN" H 7777 4852 60  0000 L CNN
+F 2 "azonenberg_pcb:QFN_38_0.5MM_5x7MM" H 6850 4650 60  0001 C CNN
+F 3 "" H 6850 4650 60  0000 C CNN
+	5    6850 4650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power-azonenberg:LTC3374-QFN U2
+U 6 1 5AD42E61
+P 6850 5250
+F 0 "U2" H 7777 5558 60  0000 L CNN
+F 1 "LTC3374-QFN" H 7777 5452 60  0000 L CNN
+F 2 "azonenberg_pcb:QFN_38_0.5MM_5x7MM" H 6850 5250 60  0001 C CNN
+F 3 "" H 6850 5250 60  0000 C CNN
+	6    6850 5250
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -166,10 +166,6 @@ Text Label 6550 4900 2    50   ~ 0
 5V0
 Wire Wire Line
 	6550 4900 6650 4900
-Text Label 6550 5500 2    50   ~ 0
-5V0
-Wire Wire Line
-	6550 5500 6650 5500
 Text Label 6550 6100 2    50   ~ 0
 5V0
 Wire Wire Line
@@ -318,43 +314,6 @@ Text HLabel 2450 10400 2    50   Output ~ 0
 3V3
 Wire Wire Line
 	2450 10400 2000 10400
-$Comp
-L device:C C4
-U 1 1 5AD4D5DE
-P 14000 1000
-F 0 "C4" H 14115 1046 50  0000 L CNN
-F 1 "4.7 uF" H 14115 955 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 14038 850 50  0001 C CNN
-F 3 "" H 14000 1000 50  0001 C CNN
-	1    14000 1000
-	1    0    0    -1  
-$EndComp
-Text Notes 14000 1250 0    50   ~ 0
-LDO caps
-Text Label 13800 850  2    50   ~ 0
-5V0
-Text Label 13800 1150 2    50   ~ 0
-GND
-Wire Wire Line
-	13800 1150 14000 1150
-Wire Wire Line
-	13800 850  14000 850 
-Text Label 14550 850  0    50   ~ 0
-3V3
-$Comp
-L device:C C8
-U 1 1 5AD4ECA1
-P 14550 1000
-F 0 "C8" H 14665 1046 50  0000 L CNN
-F 1 "4.7 uF" H 14665 955 50  0000 L CNN
-F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 14588 850 50  0001 C CNN
-F 3 "" H 14550 1000 50  0001 C CNN
-	1    14550 1000
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	14000 1150 14550 1150
-Connection ~ 14000 1150
 Text Notes 14000 1800 0    50   ~ 0
 ADC decoupling
 $Comp
@@ -638,7 +597,7 @@ Text Label 14700 5000 0    50   ~ 0
 Text Label 14700 4900 0    50   ~ 0
 2V5_SHUNT_HI
 Text Label 13500 5100 0    50   ~ 0
-1V8
+2V5
 Wire Wire Line
 	13350 5100 13500 5100
 Text Label 13500 5200 0    50   ~ 0
@@ -926,10 +885,6 @@ Text Label 6550 5200 2    50   ~ 0
 5V0
 Wire Wire Line
 	6550 5200 6650 5200
-Text Label 6550 5800 2    50   ~ 0
-5V0
-Wire Wire Line
-	6550 5800 6650 5800
 Text Label 6550 7000 2    50   ~ 0
 5V0
 Wire Wire Line
@@ -942,10 +897,6 @@ Text Label 6550 5100 2    50   ~ 0
 2V5_SW
 Wire Wire Line
 	6550 5100 6650 5100
-Text Label 6550 5700 2    50   ~ 0
-2V5_SW
-Wire Wire Line
-	6550 5700 6650 5700
 Text Label 6550 3900 2    50   ~ 0
 1V0_SW
 Wire Wire Line
@@ -1450,4 +1401,7 @@ Text Label 11650 2800 0    50   ~ 0
 GND
 Wire Wire Line
 	11650 2800 11450 2800
+NoConn ~ 6650 5500
+NoConn ~ 6650 5700
+NoConn ~ 6650 5800
 $EndSCHEMATC
