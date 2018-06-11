@@ -1,0 +1,3 @@
+[submodule "antikernel-ipcores"]
+	path = antikernel-ipcores
+	url = git@github.com:azonenberg/antikernel-ipcores.git
