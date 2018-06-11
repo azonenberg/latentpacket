@@ -498,8 +498,23 @@ Text Notes 9050 2200 0    50   ~ 0
 TODO: run 5V on the other blade of the QTH-DP
 Text Notes 9050 2350 0    50   ~ 0
 TODO: Add reserved GPIO signal to connector\nTODO: Add reserved LVDS signal to connector
-Text Notes 9050 2450 0    50   ~ 0
-TODO: Pulldown on PHY_RST_N
 Text Notes 5750 5150 0    50   ~ 0
 Swap some P/N pairs for easier routing\nCan correct FPGA-side or on backplane
+$Comp
+L device:R R159
+U 1 1 62C8F62F
+P 1400 5800
+F 0 "R159" V 1350 6000 50  0000 C CNN
+F 1 "1K" V 1400 5800 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" V 1330 5800 50  0001 C CNN
+F 3 "" H 1400 5800 50  0001 C CNN
+	1    1400 5800
+	0    1    1    0   
+$EndComp
+Text Label 1250 5800 2    50   ~ 0
+PHY_RST_N
+Text Label 1750 5800 0    50   ~ 0
+GND
+Wire Wire Line
+	1750 5800 1550 5800
 $EndSCHEMATC
