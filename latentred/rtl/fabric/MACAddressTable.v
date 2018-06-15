@@ -257,6 +257,10 @@ module MACAddressTable #(
 						lookup_rdata[i][INDEX_PORT +: 5]
 					);
 
+					//TODO: If this address needs to have the GC mark bit set, do that
+					if(!lookup_rdata[i][INDEX_GC]) begin
+						$display("             Need to set GC mark");
+					end
 
 				end
 
@@ -291,6 +295,8 @@ module MACAddressTable #(
 	reg[ROW_BITS-1:0]	pend_wr_addr	= 0;
 	reg					pend_wr_done	= 0;
 
+	reg					pend_wr_done_fwd	= 0;
+
 	always @(*) begin
 
 		//Default to not doing anything
@@ -298,7 +304,7 @@ module MACAddressTable #(
 		learn_wr			<= 0;
 		learn_addr			<= 0;
 		learn_wdata			<= 0;
-		pend_wr_done		<= 0;
+		pend_wr_done_fwd	<= 0;
 
 		//If an incoming packet is arriving, look up the source
 		if(lookup_en) begin
@@ -308,14 +314,18 @@ module MACAddressTable #(
 		end
 
 		//Write pending data to the table
-		else if(pend_wr_en) begin
-			learn_en		<= 1;
-			learn_wr		<= 1;
-			learn_addr		<= pend_wr_addr;
-			learn_wdata		<= pend_wr_data;
-			pend_wr_done	<= 1;
+		else if(pend_wr_en && !pend_wr_done) begin
+			learn_en			<= 1;
+			learn_wr[pend_col]	<= 1;
+			learn_addr			<= pend_wr_addr;
+			learn_wdata			<= pend_wr_data;
+			pend_wr_done_fwd	<= 1;
 		end
 
+	end
+
+	always @(posedge clk) begin
+		pend_wr_done			<= pend_wr_done_fwd;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -323,15 +333,17 @@ module MACAddressTable #(
 
 	//The pending queue
 	reg[PENDING_SIZE-1:0]	pending_valid	= 0;
-	reg[47:0]			pending_addr[PENDING_SIZE-1:0];
-	reg[11:0]			pending_vlan[PENDING_SIZE-1:0];
-	reg[4:0]			pending_port[PENDING_SIZE-1:0];
+	reg[47:0]				pending_addr[PENDING_SIZE-1:0];
+	reg[11:0]				pending_vlan[PENDING_SIZE-1:0];
+	reg[4:0]				pending_port[PENDING_SIZE-1:0];
+	reg[ASSOC_BITS-1:0]		pending_col[PENDING_SIZE-1:0];
 
 	//New data being added to the pending queue
 	reg					need_to_learn	= 0;
 	reg[47:0]			pend_addr		= 0;
 	reg[11:0]			pend_vlan		= 0;
 	reg[4:0]			pend_port		= 0;
+	reg[ASSOC_BITS-1:0]	pend_col		= 0;
 
 	//Clear completed entries once written to memory
 	reg					pend_clear		= 0;
@@ -344,6 +356,7 @@ module MACAddressTable #(
 			pending_addr[i]	<= 0;
 			pending_vlan[i]	<= 0;
 			pending_port[i]	<= 0;
+			pending_col[i] <= 0;
 		end
 	end
 
@@ -357,11 +370,12 @@ module MACAddressTable #(
 		found_opening	= 0;
 
 		if(need_to_learn) begin
-			$display("[%t] Need to learn -  Source %x:%x:%x:%x:%x:%x in vlan %d (from port %d) is not in table",
+			$display("[%t] Need to learn -  Source %x:%x:%x:%x:%x:%x in vlan %d (from port %d) is not in table, adding at column %d",
 					$time(),
 					pend_addr[47:40], pend_addr[39:32], pend_addr[31:24], pend_addr[23:16], pend_addr[15:8], pend_addr[7:0],
 					pend_vlan,
-					pend_port
+					pend_port,
+					pend_col
 				);
 
 			//Iterate over table entries and see if it's already in the learn queue
@@ -374,7 +388,7 @@ module MACAddressTable #(
 					(pending_port[i] == pend_port)
 				) begin
 					$display("             Already in pending set");
-					already_pending	<= 1;
+					already_pending	= 1;
 				end
 
 			end
@@ -393,6 +407,7 @@ module MACAddressTable #(
 						pending_vlan[i]		<= pend_vlan;
 						pending_port[i]		<= pend_port;
 						pending_addr[i]		<= pend_addr;
+						pending_col[i]		<= pend_col;
 						found_opening		= 1;
 						$display("             Added to pending set (slot %d)", i[7:0]);
 					end
@@ -402,9 +417,12 @@ module MACAddressTable #(
 
 		end
 
-		//Once we've written a pending item to the table, remove it from the queu
-		if(pend_clear)
+		//Once we've written a pending item to the table, remove it from the queue
+		if(pend_clear) begin
 			pending_valid[pend_clear_slot]	<= 0;
+
+			$display("             Clearing slot %d of pending set", pend_clear_slot);
+		end
 
 	end
 
@@ -416,6 +434,7 @@ module MACAddressTable #(
 	always @(posedge clk) begin
 
 		need_to_learn	<= 0;
+		bump_set		<= 0;
 
 		if(lookup_en_ff2) begin
 
@@ -430,8 +449,6 @@ module MACAddressTable #(
 
 					//It's a hit! Report the target
 					learned_comb		= 1;
-					lookup_hit			<= 1;
-					lookup_dst_port		<= learn_rdata[i][INDEX_PORT +: 5];
 					$display("[%t] OK - Source %x:%x:%x:%x:%x:%x in vlan %d is on port %d",
 						$time(),
 						lookup_src_mac_ff2[47:40], lookup_src_mac_ff2[39:32], lookup_src_mac_ff2[31:24], lookup_src_mac_ff2[23:16], lookup_src_mac_ff2[15:8], lookup_src_mac_ff2[7:0],
@@ -455,6 +472,9 @@ module MACAddressTable #(
 				pend_addr		<= lookup_src_mac_ff2;
 				pend_vlan		<= lookup_src_vlan_ff2;
 				pend_port		<= lookup_src_port_ff2;
+
+				pend_col		<= cache_set;
+				bump_set		<= 1;
 			end
 
 		end
@@ -464,7 +484,54 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop data from the pending set and push it into the table proper
 
+	reg	found_slot		= 0;
+
+	//Clear slots out combinatorially
+	always @(*) begin
+		pend_clear	<= pend_wr_done;
+	end
+
 	always @(posedge clk) begin
+
+		pend_wr_data	<= 0;
+		pend_wr_addr	<= 0;
+
+		found_slot		= 0;
+
+		if(pend_wr_done)
+			pend_wr_en	<= 0;
+
+		//If we don't have another write in progress, go look for a free table slot and write it
+		if(!pend_wr_en || pend_wr_done) begin
+
+			for(i=0; i<PENDING_SIZE; i=i+1) begin
+
+				//If we're in the process of clearing this slot, don't look at it
+				if(pend_clear && (pend_clear_slot == i)) begin
+				end
+
+				//This slot is eligible to be looked at
+				else if(pending_valid[i] && !found_slot) begin
+					found_slot		= 1;
+
+					pend_clear_slot	<= i;
+
+					pend_wr_en		<= 1;
+					pend_wr_data	<= {1'b1, 1'b1, pending_vlan[i], pending_port[i], pending_addr[i]};
+					pend_wr_addr	<=
+						pending_addr[i][47:32] ^ pending_addr[i][31:16] ^ pending_addr[i][15:0] ^ pending_vlan[i];
+
+					$display("[%t] Learning address %x:%x:%x:%x:%x:%x in vlan %d (from port %d) at column %d",
+						$time(),
+						pending_addr[i][47:40], pending_addr[i][39:32], pending_addr[i][31:24], pending_addr[i][23:16], pending_addr[i][15:8], pending_addr[i][7:0],
+						pending_vlan[i],
+						pending_port[i],
+						pending_col[i]
+					);
+				end
+			end
+
+		end
 
 	end
 

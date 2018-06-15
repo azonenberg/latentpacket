@@ -74,8 +74,8 @@ module MACAddressTable_sim();
 		.lookup_src_port(lookup_src_port),
 		.lookup_dst_mac(lookup_dst_mac),
 
-		.lookup_hit(),
-		.lookup_dst_port(),
+		.lookup_hit(lookup_hit),
+		.lookup_dst_port(lookup_dst_port),
 
 		.gc_en(gc_en),
 		.gc_done(gc_done)
@@ -85,6 +85,7 @@ module MACAddressTable_sim();
 	// Test state machine
 
 	reg[7:0] state = 0;
+	reg[3:0] count = 0;
 
 	always @(posedge clk) begin
 
@@ -115,7 +116,22 @@ module MACAddressTable_sim();
 				lookup_dst_mac	<= 48'h02deadbeef0c;
 
 				state			<= 2;
+				count			<= 0;
 
+			end
+
+			//Look up the original address again
+			2: begin
+				count				<= count + 1'h1;
+				if(count == 7) begin
+					lookup_en		<= 1;
+					lookup_src_vlan	<= 2;
+					lookup_src_mac	<= 48'h02deadbeef0c;
+					lookup_src_port	<= 5'h0c;
+					lookup_dst_mac	<= 48'h02deadbeef0a;
+
+					state			<= 3;
+				end
 			end
 
 		endcase
