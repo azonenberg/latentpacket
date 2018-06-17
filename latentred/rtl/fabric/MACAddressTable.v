@@ -162,7 +162,7 @@ module MACAddressTable #(
 			) mem (
 				.porta_clk(clk),
 				.porta_en(lookup_en),
-				.porta_addr(lookup_src_index),
+				.porta_addr(lookup_dst_index),
 				.porta_we(1'b0),
 				.porta_din(67'h0),
 				.porta_dout(lookup_rdata[g]),
@@ -263,6 +263,21 @@ module MACAddressTable #(
 					end
 
 				end
+
+				/*
+				else begin
+					$display("             Lookup slot %d doesn't match: valid=%d, vlan=%d, mac=%x:%x:%x:%x:%x:%x",
+						i,
+						lookup_rdata[i][INDEX_VALID],
+						lookup_rdata[i][INDEX_VLAN +: 12],
+						lookup_rdata[i][INDEX_MAC + 40 +: 8],
+						lookup_rdata[i][INDEX_MAC + 32 +: 8],
+						lookup_rdata[i][INDEX_MAC + 24 +: 8],
+						lookup_rdata[i][INDEX_MAC + 16 +: 8],
+						lookup_rdata[i][INDEX_MAC + 8 +: 8],
+						lookup_rdata[i][INDEX_MAC + 0 +: 8]);
+				end
+				*/
 
 			end
 

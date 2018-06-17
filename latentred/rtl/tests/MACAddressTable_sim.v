@@ -123,7 +123,7 @@ module MACAddressTable_sim();
 			//Look up the original address again
 			2: begin
 				count				<= count + 1'h1;
-				if(count == 7) begin
+				if(count == 6) begin
 					lookup_en		<= 1;
 					lookup_src_vlan	<= 2;
 					lookup_src_mac	<= 48'h02deadbeef0c;
@@ -132,6 +132,17 @@ module MACAddressTable_sim();
 
 					state			<= 3;
 				end
+			end
+
+			//Look it up again but in a different vlan. Should be a miss.
+			3: begin
+				lookup_en		<= 1;
+				lookup_src_vlan	<= 5;
+				lookup_src_mac	<= 48'h02deadbeef0c;
+				lookup_src_port	<= 5'h0c;
+				lookup_dst_mac	<= 48'h02deadbeef0a;
+
+				state			<= 4;
 			end
 
 		endcase
