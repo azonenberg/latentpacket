@@ -88,7 +88,10 @@ enum rcc_ahb1
 
 enum rcc_apb1
 {
-	RCC_APB1_UART4 = 0x80000
+	RCC_APB1_UART5 = 0x100000,
+	RCC_APB1_UART4 = 0x080000,
+	RCC_APB1_USART3 = 0x040000,
+	RCC_APB1_USART2 = 0x020000
 };
 
 typedef struct
