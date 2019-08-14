@@ -43,3 +43,9 @@ volatile gpio_t GPIOK __attribute__((section(".gpiok")));
 
 volatile rcc_t RCC __attribute__((section(".rcc")));
 
+volatile flash_t FLASH __attribute__((section(".flash")));
+
+volatile usart_t USART2 __attribute__((section(".usart2")));
+volatile usart_t USART3 __attribute__((section(".usart3")));
+volatile usart_t UART4 __attribute__((section(".uart4")));
+volatile usart_t UART5 __attribute__((section(".uart5")));

@@ -9,6 +9,7 @@ MEMORY
 
 	/* SFRs */
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
+	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
 }
 
 SECTIONS
@@ -50,7 +51,6 @@ SECTIONS
 	/* SFRs */
 	.sfr_ahb1 :
 	{
-
 		. = ALIGN(1024);
 		*(.gpioa)
 		. = ALIGN(1024);
@@ -80,5 +80,38 @@ SECTIONS
 
 		. = ALIGN(1024);
 		*(.rcc)
+		. = ALIGN(1024);
+		*(.flash)
+
 	} > AHB1
+
+	.sfr_apb1 :
+	{
+		. += 1024;		/* TIM2 not yet implemented */
+		. += 1024;		/* TIM3 not yet implemented */
+		. += 1024;		/* TIM4 not yet implemented */
+		. += 1024;		/* TIM5 not yet implemented */
+		. += 1024;		/* TIM6 not yet implemented */
+		. += 1024;		/* TIM7 not yet implemented */
+		. += 1024;		/* TIM12 not yet implemented */
+		. += 1024;		/* TIM13 not yet implemented */
+		. += 1024;		/* TIM14 not yet implemented */
+		. += 1024;		/* LPTIM1 not yet implemented */
+		. += 1024;		/* RTC not yet implemented */
+		. += 1024;		/* WWDG not yet implemented */
+		. += 1024;		/* IWDG not yet implemented */
+		. += 1024;		/* CAN3 not yet implemented */
+		. += 1024;		/* SPI2 not yet implemented */
+		. += 1024;		/* SPI3 not yet implemented */
+		. += 1024;		/* SPDIFRX not yet implemented */
+
+		. = ALIGN(1024);
+		*(.usart2)
+		. = ALIGN(1024);
+		*(.usart3)
+		. = ALIGN(1024);
+		*(.uart4)
+		. = ALIGN(1024);
+		*(.uart5)
+	} > APB1
 }

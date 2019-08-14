@@ -34,6 +34,19 @@
 
 typedef struct
 {
+	uint32_t ACR;
+	uint32_t KEYR;
+	uint32_t OPTKEYR;
+	uint32_t SR;
+	uint32_t CR;
+	uint32_t OPTCR;
+	uint32_t OPTCR1;
+} flash_t;
+
+extern volatile flash_t FLASH;
+
+typedef struct
+{
 	uint32_t MODER;
 	uint32_t OTYPER;
 	uint32_t OSPEEDR;
@@ -71,6 +84,11 @@ enum rcc_ahb1
 	RCC_AHB1_GPIOI = 0x0100,
 	RCC_AHB1_GPIOJ = 0x0200,
 	RCC_AHB1_GPIOK = 0x0400
+};
+
+enum rcc_apb1
+{
+	RCC_APB1_UART4 = 0x80000
 };
 
 typedef struct
@@ -114,6 +132,32 @@ typedef struct
 	uint32_t DCKCFGR2;
 } rcc_t;
 
+enum rcc_pll_bits
+{
+	RCC_PLL_READY  = 0x2000000,
+	RCC_PLL_ENABLE = 0x1000000
+};
+
 extern volatile rcc_t RCC;
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t CR3;
+	uint32_t BRR;
+	uint32_t GTPR;
+	uint32_t RTOR;
+	uint32_t RQR;
+	uint32_t ISR;
+	uint32_t ICR;
+	uint32_t RDR;
+	uint32_t TDR;
+} usart_t;
+
+extern volatile usart_t USART2;
+extern volatile usart_t USART3;
+extern volatile usart_t UART4;
+extern volatile usart_t UART5;
 
 #endif
