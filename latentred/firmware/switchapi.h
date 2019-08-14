@@ -50,6 +50,23 @@ typedef struct
 } port_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// System level configuration
+
+/**
+	@brief Gets the hostname of the switch
+	
+	@return Pointer to a global buffer storing the hostname
+ */
+const char* GetHostname();
+
+/**
+	@brief Sets the hostname of the switch
+ */
+void SetHostname(const char* hostname);
+
+//TODO: RTC access?
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Slot configuration
 
 /**
@@ -298,6 +315,103 @@ void GetTrunkVlanMask(port_t port, uint32_t* vlanmask);
  */
 void SetTrunkVlanMask(port_t port, uint32_t* vlanmask);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Port info for debug commands etc
+
+/**
+	@brief Gets a description of the hardware attached to the specified port.
+	
+	Example return values are "DP83867 (SGMII)" or "SFP+"
+	
+	@param port			Port ID
+	
+	@return				Constant string identifiying the port
+ */
+const char* GetPortHwDescription(port_t port);
+
+/**
+	@brief Connector type for an interface
+ */
+enum ConnectorType
+{
+	CONNECTOR_RJ45,
+	CONNECTOR_LC,
+	CONNECTOR_MPO,
+	CONNECTOR_UNKNOWN
+};
+
+/**
+	@brief Gets the type of connector attached to a given port
+	
+	@param port			Port ID
+	
+	@return				Type of connector
+ */
+ConnectorType GetPortConnectorType(port_t port);
+
+/**
+	@brief Media types for an interface
+ */
+enum MediaType
+{
+	MEDIA_1GBASE_T,
+	MEDIA_1GBASE_SX,
+	MEDIA_1GBASE_LX,
+	MEDIA_10GBASE_SR,
+	MEDIA_10GBASE_LR,
+	MEDIA_40GBASE_SR4,
+	MEDIA_40GBASE_SR4_BIDI
+};
+
+/**
+	@brief Gets the physical media a port is connected to
+	
+	@param port			Port ID
+	
+	@return				Type of media
+ */
+MediaType GetPortMediaType(port_t port);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Performance counters
+
+/**
+	@brief Stats for a switch port
+ */
+struct perfcount_t
+{
+	//Total data seen, whether good or not
+	uint64_t bytes_in;
+	uint64_t frames_in;
+	
+	//Errors on the inbound interface
+	uint64_t runts_in;
+	uint64_t jumbos_in;
+	uint64_t crc_in;
+	uint64_t overflow_in:
+	
+	//Types of frame
+	uint64_t unicasts_in;
+	uint64_t broadcasts_in;
+	uint64_t unicasts_out;
+	uint64_t broadcasts_out;
+	
+	//Total data forwarded
+	uint64_t bytes_out;
+	uint64_t frames_out;
+	
+	//Link load (0-255)
+	uint8_t tx_load;
+	uint8_t rx_load;
+};
+
+/**
+	@brief Gets stats for a switch port
+	
+	@param port				Port ID
+	@return					Performance counters
+ */
+perfcount_t GetPortPerformanceCounters(port_t port);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copper port stuff
@@ -409,6 +523,24 @@ bool IsTransceiverPresent(port_t port);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MAC table access
+
+/**
+	@brief A single entry in the MAC address table
+ */
+typedef struct
+{
+	bool		valid;
+	uint16_t	vlan;
+	port_t		port;
+	uint8_t		mac_addr[6];
+} macentry_t;
+
+/**
+	@brief Gets the number of entries in the MAC address table
+	
+	@return Size of the MAC table
+ */
+uint32_t GetMacTableSize();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RTC stuff
