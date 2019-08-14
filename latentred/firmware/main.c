@@ -32,43 +32,46 @@
 void PlatformInit();
 void UartInit();
 
+void PrintString(const char* str);
+void PrintChar(char ch);
+
 int main()
 {
 	PlatformInit();
-
-	//enable gpio port a
-	RCC.AHB1ENR |= RCC_AHB1_GPIOA;
-
-	//set as low drive output
-	GPIOA.OSPEEDR = 0x0c000000;
-	GPIOA.MODER |= 0x40;
-
 	UartInit();
 
-	//toggle PA3 in a loop
 	while(1)
 	{
-		//Transmit a byte of data
-		GPIOA.ODR = 0x8;
-		UART4.TDR = 'A';
-		GPIOA.ODR = 0x0;
-
-		//Poll until it's done
-		while(0 == (UART4.ISR & 0x40))
-		{}
-
-		//DEBUG: Sleep a little longer
-		for(int i=0; i<128; i++)
-		{
-			asm("nop");
-		}
+		PrintString("hello world\n");
 	}
 
 	return 0;
 }
 
+void PrintString(const char* str)
+{
+	while(*str != 0)
+	{
+		if(*str == '\n')
+			PrintChar('\r');
+		PrintChar(*str);
+		str++;
+	}
+}
+
+void PrintChar(char ch)
+{
+	UART4.TDR = ch;
+
+	while(0 == (UART4.ISR & 0x80))
+	{}
+}
+
 void UartInit()
 {
+	//Enable GPIO port A
+	RCC.AHB1ENR |= RCC_AHB1_GPIOA;
+
 	//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5)
 	GPIOA.MODER = (GPIOA.MODER & 0xfffffffc) | 0x2;
 	GPIOA.AFRL = (GPIOA.AFRL & 0xfffffff0) | 0x8;
