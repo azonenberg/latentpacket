@@ -103,6 +103,9 @@ enum LinkState
 	///Working normally, but no link
 	LINK_DOWN,
 
+	///Transceiver is physically absent
+	LINK_NOSFP,
+
 	///Err-disabled
 	LINK_ERRDOWN,
 
@@ -148,16 +151,24 @@ LinkSpeed GetLinkSpeed(port_t port);
 enum PortMode
 {
 	/**
-		@brief Native VLAN mode.
+		@brief Native VLAN mode, roughly analogous to Cisco "trunk" mode
 
 		802.1q frames are treated as the respective vlan, untagged traffic is treated as the native vlan.
 	 */
 	MODE_NATIVE,
 
-	///Trunk mode only. Only 802.1q traffic is passed, untagged traffic is dropped.
+	/**
+		@brief Forced trunk mode.
+
+		Only 802.1q traffic is passed, untagged traffic is dropped.
+	 */
 	MODE_TRUNK,
 
-	///Untagged frames only. All ethertypes are passed except 802.1q which is dropped.
+	/**
+		@brief Forced access mode, roughly analogous to Cisco "access" mode
+
+		Untagged frames only. All ethertypes are passed except 802.1q which is dropped.
+	 */
 	MODE_ACCESS
 };
 
