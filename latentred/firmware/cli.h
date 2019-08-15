@@ -30,26 +30,33 @@
 #ifndef cli_h
 #define cli_h
 
+#include <stdint.h>
+
 /**
 	@file
 	@author Andrew D. Zonenberg
 	@brief Functions related to the command-line interface itself (not specific commands)
  */
- 
+
 /**
 	@brief A single keyword in the CLI command tree
  */
-typedef struct
+typedef struct clikeyword
 {
 	///ASCII representation of the unabbreviated keyword
-	const char* keyword;
-	
+	const char*			keyword;
+
 	///Integer identifier used by the command parser
-	uint32_t	id;
-	
+	uint32_t			id;
+
 	///Child nodes for subsequent words
-	clikeyword_t* children;
-} 
+	struct clikeyword*	children;
+}
 clikeyword_t;
+
+/**
+	@brief Shows the prompt, then reads a line of input
+ */
+void RunPrompt(const char* prompt);
 
 #endif

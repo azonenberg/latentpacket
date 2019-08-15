@@ -27,144 +27,80 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32f777_h
-#define stm32f777_h
+#include "stm32f777.h"
+#include "uart.h"
 
-#include <stdint.h>
-
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
-
-typedef struct
+/**
+	@brief Prints a byte as hex
+ */
+void PrintHex(char ch)
 {
-	uint32_t ACR;
-	uint32_t KEYR;
-	uint32_t OPTKEYR;
-	uint32_t SR;
-	uint32_t CR;
-	uint32_t OPTCR;
-	uint32_t OPTCR1;
-} flash_t;
+	static const char hex[] = "0123456789abcdef";
+	PrintChar(hex[ch >> 4]);
+	PrintChar(hex[ch & 0xf]);
+}
 
-extern volatile flash_t FLASH;
-
-typedef struct
+/**
+	@brief Reads a single character from the UART (blocking)
+ */
+char ReadChar()
 {
-	uint32_t MODER;
-	uint32_t OTYPER;
-	uint32_t OSPEEDR;
-	uint32_t PUPDR;
-	uint32_t IDR;
-	uint32_t ODR;
-	uint32_t BSRR;
-	uint32_t LCKR;
-	uint32_t AFRL;
-	uint32_t AFRH;
-} gpio_t;
+	while(0 == (USART2.ISR & 0x20) )
+	{}
 
-extern volatile gpio_t GPIOA;
-extern volatile gpio_t GPIOB;
-extern volatile gpio_t GPIOC;
-extern volatile gpio_t GPIOD;
-extern volatile gpio_t GPIOE;
-extern volatile gpio_t GPIOF;
-extern volatile gpio_t GPIOG;
-extern volatile gpio_t GPIOH;
-extern volatile gpio_t GPIOI;
-extern volatile gpio_t GPIOJ;
-extern volatile gpio_t GPIOK;
+	return USART2.RDR;
+}
 
-enum rcc_ahb1
+/**
+	@brief Prints a null-terminated string to the UART, converting \n to \r\n as needed
+ */
+void PrintString(const char* str)
 {
-	RCC_AHB1_GPIOA = 0x0001,
-	RCC_AHB1_GPIOB = 0x0002,
-	RCC_AHB1_GPIOC = 0x0004,
-	RCC_AHB1_GPIOD = 0x0008,
-	RCC_AHB1_GPIOE = 0x0010,
-	RCC_AHB1_GPIOF = 0x0020,
-	RCC_AHB1_GPIOG = 0x0040,
-	RCC_AHB1_GPIOH = 0x0080,
-	RCC_AHB1_GPIOI = 0x0100,
-	RCC_AHB1_GPIOJ = 0x0200,
-	RCC_AHB1_GPIOK = 0x0400
-};
+	while(*str != 0)
+	{
+		if(*str == '\n')
+			PrintChar('\r');
+		PrintChar(*str);
+		str++;
+	}
+}
 
-enum rcc_apb1
+/**
+	@brief Prints a single character to the UART (blocking)
+ */
+void PrintChar(char ch)
 {
-	RCC_APB1_UART5 = 0x100000,
-	RCC_APB1_UART4 = 0x080000,
-	RCC_APB1_USART3 = 0x040000,
-	RCC_APB1_USART2 = 0x020000
-};
+	UART4.TDR = ch;
 
-typedef struct
+	while(0 == (UART4.ISR & 0x80))
+	{}
+}
+
+/**
+	@brief Initializes the UART
+ */
+void UartInit()
 {
-	uint32_t CR;
-	uint32_t PLLCFGR;
-	uint32_t CFGR;
-	uint32_t CIR;
-	uint32_t AHB1RSTR;
-	uint32_t AHB2RSTR;
-	uint32_t AHB3RSTR;
-	uint32_t field_1c;
-	uint32_t APB1RSTR;
-	uint32_t APB2RSTR;
-	uint32_t field_28;
-	uint32_t field_2c;
-	uint32_t AHB1ENR;
-	uint32_t AHB2ENR;
-	uint32_t AHB3ENR;
-	uint32_t field_3c;
-	uint32_t APB1ENR;
-	uint32_t APB2ENR;
-	uint32_t field_48;
-	uint32_t field_4c;
-	uint32_t AHB1LPENR;
-	uint32_t AHB2LPENR;
-	uint32_t AHB3LPENR;
-	uint32_t field_5c;
-	uint32_t APB1LPENR;
-	uint32_t APB2LPENR;
-	uint32_t field_68;
-	uint32_t field_6c;
-	uint32_t BDCR;
-	uint32_t CSR;
-	uint32_t field_78;
-	uint32_t field_7c;
-	uint32_t SSCGR;
-	uint32_t PLLI2SCFGR;
-	uint32_t PLLSAICFGR;
-	uint32_t DCKCFGR1;
-	uint32_t DCKCFGR2;
-} rcc_t;
+	//Enable GPIO port A
+	RCC.AHB1ENR |= RCC_AHB1_GPIOA;
 
-enum rcc_pll_bits
-{
-	RCC_PLL_READY  = 0x2000000,
-	RCC_PLL_ENABLE = 0x1000000
-};
+	//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3
+	GPIOA.MODER = (GPIOA.MODER & 0xffffff3c) | 0x82;
+	GPIOA.AFRL = (GPIOA.AFRL & 0xffff0ff0) | 0x7008;
 
-extern volatile rcc_t RCC;
+	//Enable the UARTS
+	RCC.APB1ENR |= RCC_APB1_UART4 | RCC_APB1_USART2;
 
-typedef struct
-{
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t CR3;
-	uint32_t BRR;
-	uint32_t GTPR;
-	uint32_t RTOR;
-	uint32_t RQR;
-	uint32_t ISR;
-	uint32_t ICR;
-	uint32_t RDR;
-	uint32_t TDR;
-} usart_t;
+	//Configure UART4
+	UART4.BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
+						//This is suggestive of APB1 being 20.85 MHz instead of 25.
+	UART4.CR3 = 0x0;
+	UART4.CR2 = 0x0;
+	UART4.CR1 = 0x9;
 
-extern volatile usart_t USART2;
-extern volatile usart_t USART3;
-extern volatile usart_t UART4;
-extern volatile usart_t UART5;
-
-#endif
+	//Configure USART2, but only enable RX
+	USART2.BRR = 181;
+	USART2.CR3 = 0x0;
+	USART2.CR2 = 0x0;
+	USART2.CR1 = 0x5;
+}

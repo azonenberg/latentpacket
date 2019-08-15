@@ -28,12 +28,10 @@
 ***********************************************************************************************************************/
 
 #include "stm32f777.h"
+#include "uart.h"
+#include "cli.h"
 
 void PlatformInit();
-void UartInit();
-
-void PrintString(const char* str);
-void PrintChar(char ch);
 
 int main()
 {
@@ -42,61 +40,10 @@ int main()
 
 	while(1)
 	{
-		//PrintString("hello world\n");
-
-		//Wait until we get something
-		while(0 == (USART2.ISR & 0x20) )
-		{}
-
-		PrintChar(USART2.RDR + 1);
+		RunPrompt("switch# ");
 	}
 
 	return 0;
-}
-
-void PrintString(const char* str)
-{
-	while(*str != 0)
-	{
-		if(*str == '\n')
-			PrintChar('\r');
-		PrintChar(*str);
-		str++;
-	}
-}
-
-void PrintChar(char ch)
-{
-	UART4.TDR = ch;
-
-	while(0 == (UART4.ISR & 0x80))
-	{}
-}
-
-void UartInit()
-{
-	//Enable GPIO port A
-	RCC.AHB1ENR |= RCC_AHB1_GPIOA;
-
-	//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3
-	GPIOA.MODER = (GPIOA.MODER & 0xffffff3c) | 0x82;
-	GPIOA.AFRL = (GPIOA.AFRL & 0xffff0ff0) | 0x7008;
-
-	//Enable the UARTS
-	RCC.APB1ENR |= RCC_APB1_UART4 | RCC_APB1_USART2;
-
-	//Configure UART4
-	UART4.BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
-						//This is suggestive of APB1 being 20.85 MHz instead of 25.
-	UART4.CR3 = 0x0;
-	UART4.CR2 = 0x0;
-	UART4.CR1 = 0x9;
-
-	//Configure USART2, but only enable RX
-	USART2.BRR = 181;
-	USART2.CR3 = 0x0;
-	USART2.CR2 = 0x0;
-	USART2.CR1 = 0x5;
 }
 
 void PlatformInit()
