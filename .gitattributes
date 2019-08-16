@@ -1,2 +1,3 @@
 *.h linguist-language=c++
+latentred/firmware/*.h linguist-language=c++
 antikernel-ipcores linguist-vendored
