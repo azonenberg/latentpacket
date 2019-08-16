@@ -27,70 +27,21 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "cli.h"
-#include "uart.h"
-#include <ctype.h>
+#include "latentred.h"
 
-void RunPrompt(const char* prompt)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Top level commands
+
+enum top_commands
 {
-	//Show the prompt
-	PrintString(prompt);
+	CMD_CONFIGURE,
+	CMD_EXIT,
+	CMD_SHOW,
+};
 
-	int xpos = 0;
-	/*
-	while(1)
-	{
-		char c = ReadChar();
-
-		//Handle newlines
-		if( (c == '\r') || (c == '\n') )
-		{
-			PrintString("\n");
-			return;
-		}
-
-		//Backspace
-		else if(c == 0x7f)
-		{
-			//TODO
-		}
-
-		//Handle escape sequences
-		else if(c == 0x1b)
-		{
-			char brace = ReadChar();
-			char code = ReadChar();
-
-			//Next char should be a [
-			if(brace != '[')
-			{
-				PrintString("Malformed escape sequence, expected [ after esc\n");
-				continue;
-			}
-
-			//Now comes the actual escape code
-			//D = left, C = right, B = down, A = up
-		}
-
-		//If not printable, ignore for now
-		else if(!isprint(c))
-		{
-			PrintString("Nonprintable: 0x");
-			PrintHex(c);
-			PrintString("\n");
-
-			//TODO: tab complete
-			if(c == '\t')
-			{
-			}
-		}
-
-		//Echo characters as typed
-		else
-		{
-			PrintChar(c);
-			xpos ++;
-		}
-	}
-	*/
-}
+static const clikeyword_t g_topCommands[]=
+{
+	{ "configure",	CMD_CONFIGURE,	NULL },
+	{ "exit",		CMD_EXIT,		NULL },
+	{ "show",		CMD_SHOW,		NULL }
+};

@@ -29,104 +29,65 @@
 
 #include "stm32f777.h"
 #include "uart.h"
+#include "cli.h"
 #include <stdbool.h>
 
-extern bool g_uartDataReady;
-extern char g_uartData;
+void PlatformInit();
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Actual UART driver
+bool g_uartDataReady = false;
+char g_uartData;
 
-void __attribute__((isr)) USART2_IRQHandler()
+int main()
 {
-	//Check why we got the IRQ.
-	//For now, ignore anything other than "data ready"
-	if(0 == (USART2.ISR & USART_ISR_RXNE))
-		return;
+	PlatformInit();
+	UartInit();
+	EnableInterrupts();
 
-	//save the byte, no fifo yet
-	g_uartData = USART2.RDR;
-	g_uartDataReady = true;
-}
-
-/**
-	@brief Initializes the UART (TODO: nicer constant values here)
- */
-void UartInit()
-{
-	//Enable GPIO port A
-	RCC.AHB1ENR |= RCC_AHB1_GPIOA;
-
-	//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3
-	GPIOA.MODER = (GPIOA.MODER & 0xffffff3c) | 0x82;
-	GPIOA.AFRL = (GPIOA.AFRL & 0xffff0ff0) | 0x7008;
-
-	//Enable the UARTs
-	RCC.APB1ENR |= RCC_APB1_UART4 | RCC_APB1_USART2;
-
-	//Configure UART4
-	UART4.BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
-						//This is suggestive of APB1 being 20.85 MHz instead of 25.
-	UART4.CR3 = 0x0;
-	UART4.CR2 = 0x0;
-	UART4.CR1 = 0x9;
-
-	//Configure USART2, but only enable RX. Enable RXNE interrupt
-	USART2.BRR = 181;
-	USART2.CR3 = 0x0;
-	USART2.CR2 = 0x0;
-	USART2.CR1 = 0x25;
-
-	//Enable IRQ38. This is bit 6 of NVIC_ISER1.
-	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
-	*NVIC_ISER1 = 0x40;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Output helpers
-
-/**
-	@brief Prints a byte as hex
- */
-void PrintHex(char ch)
-{
-	static const char hex[] = "0123456789abcdef";
-	PrintChar(hex[ch >> 4]);
-	PrintChar(hex[ch & 0xf]);
-}
-
-/**
-	@brief Prints a 32-bit integer as hex
- */
-void PrintHex32(uint32_t n)
-{
-	PrintHex((n >> 24) & 0xff);
-	PrintHex((n >> 16) & 0xff);
-	PrintHex((n >> 8) & 0xff);
-	PrintHex(n & 0xff);
-}
-
-/**
-	@brief Prints a null-terminated string to the UART, converting \n to \r\n as needed
- */
-void PrintString(const char* str)
-{
-	while(*str != 0)
+	while(1)
 	{
-		if(*str == '\n')
-			PrintChar('\r');
-		PrintChar(*str);
-		str++;
+		if(g_uartDataReady)
+		{
+			uint32_t cpu_sr = EnterCriticalSection();
+			char c = g_uartData;
+			g_uartDataReady = false;
+			LeaveCriticalSection(cpu_sr);
+
+			PrintString("Got a byte:");
+			PrintChar(c);
+			PrintString("\n");
+		}
 	}
+
+	return 0;
 }
 
-/**
-	@brief Prints a single character to the UART (blocking)
- */
-void PrintChar(char ch)
+void PlatformInit()
 {
-	UART4.TDR = ch;
+	//For 200 MHz @ 3.3V we need 6 wait states on flash
+	FLASH.ACR = FLASH_ACR_ARTEN | FLASH_ACR_PREFETCHEN | 6;
 
-	while(0 == (UART4.ISR & USART_ISR_TXE))
+	/*
+		configure main PLL (TODO: some kind of bitfield struct/union here)
+			Input: HSI clock (16 MHz RC)
+			M = 8, so PLL input = 2 MHz
+			N = 200, so VCO = 400 MHz
+			P = 2, so Fcpu = 200 MHz
+			Q = 10, so Frng = 40 MHz
+			R = 10, so Fdsi = 40 MHz (ignored, no DSI on this chip)
+	 */
+	RCC.PLLCFGR = (RCC.PLLCFGR & RCC_PLLCFGR_RESERVED_MASK) | 0xaa002808;
+
+	//Start the PLL, then wait for it to lock
+	RCC.CR |= RCC_PLL_ENABLE;
+	while(0 == (RCC.CR & RCC_PLL_READY))
 	{}
+
+	/*
+		Configure main system clocks
+		APB2 must be <= 90 MHz, /4 = 50 MHz
+		APB1 must be <= 45 MHz, /8 = 25 MHz
+		AHB must be >25 MHz, no division needed
+		Use PLL
+	 */
+	RCC.CFGR = RCC_APB2_DIV4 | RCC_APB1_DIV8 | RCC_AHB_DIV1 | RCC_SYSCLK_PLL;
 }

@@ -41,7 +41,7 @@
 /**
 	@brief A single keyword in the CLI command tree
  */
-typedef struct clikeyword
+struct clikeyword_t
 {
 	///ASCII representation of the unabbreviated keyword
 	const char*			keyword;
@@ -50,9 +50,8 @@ typedef struct clikeyword
 	uint32_t			id;
 
 	///Child nodes for subsequent words
-	struct clikeyword*	children;
-}
-clikeyword_t;
+	clikeyword_t*		children;
+};
 
 /**
 	@brief Shows the prompt, then reads a line of input

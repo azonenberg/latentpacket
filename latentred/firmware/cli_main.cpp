@@ -27,69 +27,69 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "stm32f777.h"
-#include "uart.h"
-#include "cli.h"
-#include <stdbool.h>
+#include "latentred.h"
+#include <ctype.h>
 
-void PlatformInit();
-
-bool g_uartDataReady = false;
-char g_uartData;
-
-int main()
+void RunPrompt(const char* prompt)
 {
-	PlatformInit();
-	UartInit();
+	//Show the prompt
+	PrintString(prompt);
 
-	//enable interrupts globally
-	__enable_interrupts();
-
+	int xpos = 0;
+	/*
 	while(1)
 	{
-		if(g_uartDataReady)
-		{
-			__disable_interrupts();
-			char c = g_uartData;
-			g_uartDataReady = false;
-			__enable_interrupts();
+		char c = ReadChar();
 
-			PrintString("Got a byte:");
-			PrintChar(c);
+		//Handle newlines
+		if( (c == '\r') || (c == '\n') )
+		{
 			PrintString("\n");
+			return;
+		}
+
+		//Backspace
+		else if(c == 0x7f)
+		{
+			//TODO
+		}
+
+		//Handle escape sequences
+		else if(c == 0x1b)
+		{
+			char brace = ReadChar();
+			char code = ReadChar();
+
+			//Next char should be a [
+			if(brace != '[')
+			{
+				PrintString("Malformed escape sequence, expected [ after esc\n");
+				continue;
+			}
+
+			//Now comes the actual escape code
+			//D = left, C = right, B = down, A = up
+		}
+
+		//If not printable, ignore for now
+		else if(!isprint(c))
+		{
+			PrintString("Nonprintable: 0x");
+			PrintHex(c);
+			PrintString("\n");
+
+			//TODO: tab complete
+			if(c == '\t')
+			{
+			}
+		}
+
+		//Echo characters as typed
+		else
+		{
+			PrintChar(c);
+			xpos ++;
 		}
 	}
-
-	return 0;
-}
-
-void PlatformInit()
-{
-	//For 200 MHz @ 3.3V we need 6 wait states on flash
-	FLASH.ACR = FLASH_ACR_ARTEN | FLASH_ACR_PREFETCHEN | 6;
-
-	/*
-		configure main PLL (TODO: some kind of bitfield struct/union here)
-			Input: HSI clock (16 MHz RC)
-			M = 8, so PLL input = 2 MHz
-			N = 200, so VCO = 400 MHz
-			P = 2, so Fcpu = 200 MHz
-			Q = 10, so Frng = 40 MHz
-			R = 10, so Fdsi = 40 MHz (ignored, no DSI on this chip)
-	 */
-	RCC.PLLCFGR = (RCC.PLLCFGR & RCC_PLLCFGR_RESERVED_MASK) | 0xaa002808;
-
-	//Start the PLL, then wait for it to lock
-	RCC.CR |= RCC_PLL_ENABLE;
-	while(0 == (RCC.CR & RCC_PLL_READY))
-	{}
-
-	/*
-		Configure main system clocks
-		APB2 must be <= 90 MHz, /4 = 50 MHz
-		APB1 must be <= 45 MHz, /8 = 25 MHz
-		AHB must be >25 MHz, no division needed
-		Use PLL
-	 */
-	RCC.CFGR = RCC_APB2_DIV4 | RCC_APB1_DIV8 | RCC_AHB_DIV1 | RCC_SYSCLK_PLL;
+	*/
 }

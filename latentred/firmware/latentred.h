@@ -27,22 +27,17 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+#ifndef latentred_h
+#define latentred_h
+
+#include <stdint.h>
+
 #include "stm32f777.h"
+
 #include "cli.h"
+#include "fifo.h"
+#include "uart.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Top level commands
+#define NULL nullptr
 
-enum top_commands
-{
-	CMD_CONFIGURE,
-	CMD_EXIT,
-	CMD_SHOW,
-};
-
-static const clikeyword_t g_topCommands[]=
-{
-	{ "configure",	CMD_CONFIGURE,	NULL },
-	{ "exit",		CMD_EXIT,		NULL },
-	{ "show",		CMD_SHOW,		NULL }
-};
+#endif

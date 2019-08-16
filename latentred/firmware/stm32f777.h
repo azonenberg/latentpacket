@@ -32,10 +32,6 @@
 
 #include <stdint.h>
 
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
-
 typedef struct
 {
 	uint32_t ACR;
@@ -199,21 +195,21 @@ extern volatile nvic_t NVIC;
 /**
 	@brief Disables interrupts without saving the previous enable state
  */
-void __disable_interrupts();
+extern "C" void DisableInterrupts();
 
 /**
 	@brief Enables interrupts without saving the previous enable state
  */
-void __enable_interrupts();
+extern "C" void EnableInterrupts();
 
 /**
 	@brief Enters a critical section, disables interrupts, and returns the previous PRIMASK value
  */
-uint32_t __enter_critical_section();
+extern "C" uint32_t EnterCriticalSection();
 
 /**
 	@brief Leaves a critical section and restores the previous PRIMASK value
  */
-uint32_t __leave_critical_section();
+extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
 
 #endif

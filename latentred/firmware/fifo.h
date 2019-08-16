@@ -26,3 +26,23 @@
 * POSSIBILITY OF SUCH DAMAGE.                                                                                          *
 *                                                                                                                      *
 ***********************************************************************************************************************/
+
+#ifndef fifo_h
+#define fifo_h
+
+/**
+	@file
+	@author	Andrew D. Zonenberg
+	@brief	Declaration of Fifo class
+ */
+
+/**
+	@brief A generic FIFO interlocked for safe use across interrupt domains
+ */
+template<class T>
+class Fifo
+{
+public:
+};
+
+#endif

@@ -27,23 +27,23 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-.globl __disable_interrupts
-__disable_interrupts:
+.globl DisableInterrupts
+DisableInterrupts:
 	cpsid	i
 	bx		lr
 
-.globl __enable_interrupts
-__enable_interrupts:
+.globl EnableInterrupts
+EnableInterrupts:
 	cpsie	i
 	bx		lr
 
-.globl __enter_critical_section
-__enter_critical_section:
+.globl EnterCriticalSection
+EnterCriticalSection:
 	mrs		r0, primask
 	cpsid	i
 	bx		lr
 
-.globl __leave_critical_section
-__leave_critical_section:
+.globl LeaveCriticalSection
+LeaveCriticalSection:
 	msr		primask, r0
 	bx		lr
