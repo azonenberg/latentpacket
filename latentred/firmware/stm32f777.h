@@ -167,4 +167,7 @@ extern volatile usart_t USART3;
 extern volatile usart_t UART4;
 extern volatile usart_t UART5;
 
+#define __enable_interrupts() asm volatile("cpsie i")
+#define __disable_interrupts() asm volatile("cpsid i")
+
 #endif

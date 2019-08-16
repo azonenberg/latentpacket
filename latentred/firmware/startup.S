@@ -31,10 +31,70 @@
 // Interrupt vector table
 
 .section .vector
-.word __stack_end
-.word _start
+vectorTable:
+	.word __stack_end
+	.word _start
+	.word defaultISR	//NMI
+	.word defaultISR	//hardfault
+	.word defaultISR	//mmufault
+	.word defaultISR	//busfault
+	.word defaultISR	//usagefault
+	.word defaultISR	//reserved_7
+	.word defaultISR	//reserved_8
+	.word defaultISR	//reserved_9
+	.word defaultISR	//reserved_10
+	.word defaultISR	//svcall
+	.word defaultISR	//debug
+	.word defaultISR	//reserved_13
+	.word defaultISR	//pend_sv
+	.word defaultISR	//systick
+	.word defaultISR	//irq0 WWDG
+	.word defaultISR	//irq1 PVD
+	.word defaultISR	//irq2 TIME_STAMP
+	.word defaultISR	//irq3 RTC_WKUP
+	.word defaultISR	//irq4 FLASH
+	.word defaultISR	//irq5 RCC
+	.word defaultISR	//irq6 EXTI0
+	.word defaultISR	//irq7 EXTI1
+	.word defaultISR	//irq8 EXTI2
+	.word defaultISR	//irq9 EXTI3
+	.word defaultISR	//irq10 EXTI4
+	.word defaultISR	//irq11 DMA1_Stream0
+	.word defaultISR	//irq12 DMA1_Stream1
+	.word defaultISR	//irq13 DMA1_Stream2
+	.word defaultISR	//irq14 DMA1_Stream3
+	.word defaultISR	//irq15 DMA1_Stream4
+	.word defaultISR	//irq16 DMA1_Stream5
+	.word defaultISR	//irq17 DMA1_Stream6
+	.word defaultISR	//irq18 ADC
+	.word defaultISR	//irq19 CAN1_TX
+	.word defaultISR	//irq20 CAN1_RX0
+	.word defaultISR	//irq21 CAN1_RX1
+	.word defaultISR	//irq22 CAN1_SCE
+	.word defaultISR	//irq23 EXTI9_5
+	.word defaultISR	//irq24 TIM1_BRK_TIM9
+	.word defaultISR	//irq25 TIM1_UP_TIM10
+	.word defaultISR	//irq26 TIM1_TRG_COM_TIM11
+	.word defaultISR	//irq27 TIM1_CC
+	.word defaultISR	//irq28 TIM2
+	.word defaultISR	//irq29 TIM3
+	.word defaultISR	//irq30 TIM4
+	.word defaultISR	//irq31 I2C1_EV
+	.word defaultISR	//irq32 I2C1_ER
+	.word defaultISR	//irq33 I2C2_EV
+	.word defaultISR	//irq34 I2C2_ER
+	.word defaultISR	//irq35 SPI1
+	.word defaultISR	//irq36 SPI2
+	.word defaultISR	//irq37 USART1
+	.word USART2_IRQHandler		//irq38 USART2
 
 //TODO: add other vectors here
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Default ISR if not used: infinite loop
+
+defaultISR:
+	b	defaultISR
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Startup code
@@ -72,5 +132,5 @@ dataloop:
 
 	//If we get here, something is wrong
 die:
-	ldr r5, =die
-	bx r5
+	b	die
+

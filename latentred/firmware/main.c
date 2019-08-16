@@ -30,17 +30,38 @@
 #include "stm32f777.h"
 #include "uart.h"
 #include "cli.h"
+#include <stdbool.h>
 
 void PlatformInit();
+
+bool g_uartDataReady = false;
+char g_uartData;
 
 int main()
 {
 	PlatformInit();
 	UartInit();
 
+	//enable interrupts globally
+	__enable_interrupts();
+
+	volatile uint32_t* NVIC_ISER = (volatile uint32_t*)(0xe000e100);
+	volatile uint32_t* NVIC_IABR = (volatile uint32_t*)(0xe000e300);
+	volatile uint32_t* NVIC_ISPR = (volatile uint32_t*)(0xe000e200);
+
 	while(1)
 	{
-		RunPrompt("switch# ");
+		if(g_uartDataReady)
+		{
+			__disable_interrupts();
+			char c = g_uartData;
+			g_uartDataReady = false;
+			__enable_interrupts();
+
+			PrintString("Got a byte:");
+			PrintChar(c);
+			PrintString("\n");
+		}
 	}
 
 	return 0;

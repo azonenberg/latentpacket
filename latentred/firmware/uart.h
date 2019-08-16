@@ -43,5 +43,8 @@ void PrintChar(char ch);
 
 char ReadChar();
 void PrintHex(char ch);
+void PrintHex32(uint32_t n);
+
+void USART2_IRQHandler();
 
 #endif
