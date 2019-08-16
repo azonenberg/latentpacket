@@ -27,70 +27,23 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "cli.h"
-#include "uart.h"
-#include <ctype.h>
+.globl __disable_interrupts
+__disable_interrupts:
+	cpsid	i
+	bx		lr
 
-void RunPrompt(const char* prompt)
-{
-	//Show the prompt
-	PrintString(prompt);
+.globl __enable_interrupts
+__enable_interrupts:
+	cpsie	i
+	bx		lr
 
-	int xpos = 0;
-	/*
-	while(1)
-	{
-		char c = ReadChar();
+.globl __enter_critical_section
+__enter_critical_section:
+	mrs		r0, primask
+	cpsid	i
+	bx		lr
 
-		//Handle newlines
-		if( (c == '\r') || (c == '\n') )
-		{
-			PrintString("\n");
-			return;
-		}
-
-		//Backspace
-		else if(c == 0x7f)
-		{
-			//TODO
-		}
-
-		//Handle escape sequences
-		else if(c == 0x1b)
-		{
-			char brace = ReadChar();
-			char code = ReadChar();
-
-			//Next char should be a [
-			if(brace != '[')
-			{
-				PrintString("Malformed escape sequence, expected [ after esc\n");
-				continue;
-			}
-
-			//Now comes the actual escape code
-			//D = left, C = right, B = down, A = up
-		}
-
-		//If not printable, ignore for now
-		else if(!isprint(c))
-		{
-			PrintString("Nonprintable: 0x");
-			PrintHex(c);
-			PrintString("\n");
-
-			//TODO: tab complete
-			if(c == '\t')
-			{
-			}
-		}
-
-		//Echo characters as typed
-		else
-		{
-			PrintChar(c);
-			xpos ++;
-		}
-	}
-	*/
-}
+.globl __leave_critical_section
+__leave_critical_section:
+	msr		primask, r0
+	bx		lr

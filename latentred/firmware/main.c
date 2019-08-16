@@ -45,10 +45,6 @@ int main()
 	//enable interrupts globally
 	__enable_interrupts();
 
-	volatile uint32_t* NVIC_ISER = (volatile uint32_t*)(0xe000e100);
-	volatile uint32_t* NVIC_IABR = (volatile uint32_t*)(0xe000e300);
-	volatile uint32_t* NVIC_ISPR = (volatile uint32_t*)(0xe000e200);
-
 	while(1)
 	{
 		if(g_uartDataReady)
@@ -69,11 +65,11 @@ int main()
 
 void PlatformInit()
 {
-	//Configure wait states for flash. For 200 MHz @ 3.3V we need 6 wait states
-	FLASH.ACR = 0x00000306;
+	//For 200 MHz @ 3.3V we need 6 wait states on flash
+	FLASH.ACR = FLASH_ACR_ARTEN | FLASH_ACR_PREFETCHEN | 6;
 
 	/*
-		configure main PLL
+		configure main PLL (TODO: some kind of bitfield struct/union here)
 			Input: HSI clock (16 MHz RC)
 			M = 8, so PLL input = 2 MHz
 			N = 200, so VCO = 400 MHz
@@ -81,7 +77,7 @@ void PlatformInit()
 			Q = 10, so Frng = 40 MHz
 			R = 10, so Fdsi = 40 MHz (ignored, no DSI on this chip)
 	 */
-	RCC.PLLCFGR = (RCC.PLLCFGR & 0x80BC8000) | 0xaa002808;
+	RCC.PLLCFGR = (RCC.PLLCFGR & RCC_PLLCFGR_RESERVED_MASK) | 0xaa002808;
 
 	//Start the PLL, then wait for it to lock
 	RCC.CR |= RCC_PLL_ENABLE;
@@ -95,6 +91,5 @@ void PlatformInit()
 		AHB must be >25 MHz, no division needed
 		Use PLL
 	 */
-	//keep bits 9:8
-	RCC.CFGR = 0xb802;
+	RCC.CFGR = RCC_APB2_DIV4 | RCC_APB1_DIV8 | RCC_AHB_DIV1 | RCC_SYSCLK_PLL;
 }

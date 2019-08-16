@@ -41,7 +41,7 @@ void __attribute__((isr)) USART2_IRQHandler()
 {
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
-	if(0 == (USART2.ISR & 0x20))
+	if(0 == (USART2.ISR & USART_ISR_RXNE))
 		return;
 
 	//save the byte, no fifo yet
@@ -50,18 +50,7 @@ void __attribute__((isr)) USART2_IRQHandler()
 }
 
 /**
-	@brief Reads a single character from the UART (blocking)
- */
-char ReadChar()
-{
-	while(0 == (USART2.ISR & 0x20) )
-	{}
-
-	return USART2.RDR;
-}
-
-/**
-	@brief Initializes the UART
+	@brief Initializes the UART (TODO: nicer constant values here)
  */
 void UartInit()
 {
@@ -138,6 +127,6 @@ void PrintChar(char ch)
 {
 	UART4.TDR = ch;
 
-	while(0 == (UART4.ISR & 0x80))
+	while(0 == (UART4.ISR & USART_ISR_TXE))
 	{}
 }

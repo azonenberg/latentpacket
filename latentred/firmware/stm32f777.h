@@ -49,6 +49,13 @@ typedef struct
 
 extern volatile flash_t FLASH;
 
+enum flash_acr
+{
+	FLASH_ACR_ARTEN = 0x20,
+	FLASH_ACR_PREFETCHEN = 0x10,
+};
+
+
 typedef struct
 {
 	uint32_t MODER;
@@ -141,8 +148,15 @@ typedef struct
 
 enum rcc_pll_bits
 {
-	RCC_PLL_READY  = 0x2000000,
-	RCC_PLL_ENABLE = 0x1000000
+	RCC_PLL_READY	= 0x2000000,
+	RCC_PLL_ENABLE 	= 0x1000000,
+
+	RCC_APB2_DIV4 	= 0xA000,
+	RCC_APB1_DIV8	= 0x1800,
+	RCC_AHB_DIV1	= 0x0,
+	RCC_SYSCLK_PLL	= 0x2,
+
+	RCC_PLLCFGR_RESERVED_MASK = 0x80BC8000
 };
 
 extern volatile rcc_t RCC;
@@ -162,12 +176,44 @@ typedef struct
 	uint32_t TDR;
 } usart_t;
 
+enum usart_bits
+{
+	USART_ISR_TXE = 0x80,
+	USART_ISR_RXNE = 0x20
+};
+
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
 extern volatile usart_t UART5;
 
-#define __enable_interrupts() asm volatile("cpsie i")
-#define __disable_interrupts() asm volatile("cpsid i")
+typedef struct
+{
+	uint32_t reserved_0;
+	uint32_t ictr;
+	uint32_t reserved_8[62];
+} nvic_t;
+
+extern volatile nvic_t NVIC;
+
+/**
+	@brief Disables interrupts without saving the previous enable state
+ */
+void __disable_interrupts();
+
+/**
+	@brief Enables interrupts without saving the previous enable state
+ */
+void __enable_interrupts();
+
+/**
+	@brief Enters a critical section, disables interrupts, and returns the previous PRIMASK value
+ */
+uint32_t __enter_critical_section();
+
+/**
+	@brief Leaves a critical section and restores the previous PRIMASK value
+ */
+uint32_t __leave_critical_section();
 
 #endif
