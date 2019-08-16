@@ -27,10 +27,7 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "stm32f777.h"
-#include "uart.h"
-#include "cli.h"
-#include <stdbool.h>
+#include "latentred.h"
 
 void PlatformInit();
 

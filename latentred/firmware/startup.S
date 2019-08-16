@@ -126,6 +126,16 @@ dataloop:
 	cmp r2, r3
 	ble dataloop
 
+	//Call all global constructors
+	ldr r1, = __ctor_start
+	ldr r2, = __ctor_end
+ctorloop:
+	ldr r0, [r1]
+	blx r0
+	add r1, r1, #4
+	cmp r1, r2
+	ble ctorloop
+
 	//Done initializing, jump to main
 	ldr r0, =main
 	blx r0
@@ -133,4 +143,3 @@ dataloop:
 	//If we get here, something is wrong
 die:
 	b	die
-

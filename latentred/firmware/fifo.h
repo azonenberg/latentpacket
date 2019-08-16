@@ -37,12 +37,19 @@
  */
 
 /**
-	@brief A generic FIFO interlocked for safe use across interrupt domains
+	@brief A circular buffer based FIFO interlocked for safe use across interrupt domains
  */
-template<class T>
+template<class objtype, unsigned long depth>
 class Fifo
 {
 public:
+	Fifo()
+	{
+
+	}
+
+protected:
+	objtype m_storage[depth];
 };
 
 #endif

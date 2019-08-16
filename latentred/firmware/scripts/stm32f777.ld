@@ -18,8 +18,13 @@ SECTIONS
 	.text :
 	{
 		*(.vector)
-		*(.text)
+		*(.text.*)
 		*(.rodata)
+		*(.ctors)
+		. = ALIGN(4);
+		__ctor_start = .;
+		*(.init_array)
+		__ctor_end = .;
 	} > FLASH
 
 	/* Initialized data needs special handling because it lives in two places */

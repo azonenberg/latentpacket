@@ -46,4 +46,6 @@ void PrintHex32(uint32_t n);
 
 extern "C" void USART2_IRQHandler();
 
+extern Fifo<char, 32> g_uartRxFifo;
+
 #endif
