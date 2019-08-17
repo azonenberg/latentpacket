@@ -31,9 +31,10 @@
 #define latentred_h
 
 #define NULL nullptr
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned char uint8_t;
+typedef unsigned int	uint32_t;
+typedef unsigned short	uint16_t;
+typedef unsigned char	uint8_t;
+typedef uint32_t		size_t;
 
 #include "stm32f777.h"
 
@@ -46,11 +47,14 @@ void puts(const char* str);
 
 //stdlib functions
 char* itoa(int n, char* s);
+void* memset(void* s, int c, size_t n);
 
 //string functions
 char* reverse(char* s);
 int strlen(const char* str);
 
+#include "token.h"
+#include "command.h"
 #include "cli.h"
 #include "fifo.h"
 #include "uart.h"

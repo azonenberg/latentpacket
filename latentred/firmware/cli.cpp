@@ -29,30 +29,65 @@
 
 #include "latentred.h"
 
-void RunPrompt(const char* prompt)
+void CLI::RunPrompt(const char* prompt)
 {
 	//Show the prompt
 	g_uart.PrintString(prompt);
 
-	int xpos = 0;
+	//The line of user input we're parsing
+	Command command;
+
+	//The token we're currently typing
+	size_t currentToken = 0;
+
+	//The byte offset within the token we're typing
+	size_t tokenOffset = 0;
+
 	while(1)
 	{
 		char c = g_uart.BlockingRead();
 
-		//Handle newlines
+		//End of line means the command is ready to execute
 		if( (c == '\r') || (c == '\n') )
 		{
 			g_uart.PrintString("\n");
-			return;
+			break;
 		}
 
 		//Backspace
 		else if(c == 0x7f)
 		{
-			//TODO
+			//We're at the end of the current token
+			//TODO: handle being in the middle of a token (can't happen until we implement arrow keys)
+			if(tokenOffset > 0)
+			{
+				//Delete the character
+				//move left, space over the deleted character, move left for good this time
+				g_uart.PrintString("\x1b[D \x1b[D");
+
+				//Move back one character and wipe the previous token byte
+				tokenOffset --;
+				command.m_tokens[currentToken].m_text[tokenOffset] = '\0';
+			}
+
+			//We just started a new token and changed our mind.
+			else if(currentToken > 0)
+			{
+				//Delete the space
+				g_uart.PrintString("\x1b[D");
+
+				//Move to end of previous token
+				currentToken --;
+				tokenOffset = strlen(command.m_tokens[currentToken].m_text);
+			}
+
+			//Backspace at the start of the prompt. Ignore it.
+			else
+			{
+			}
 		}
 
-		//Handle escape sequences
+		//Escape sequences
 		else if(c == 0x1b)
 		{
 			char brace = g_uart.BlockingRead();
@@ -73,27 +108,57 @@ void RunPrompt(const char* prompt)
 			//TODO: handle left/right
 		}
 
-		//If not printable, ignore for now
-		else if(!isprint(c))
+		//Tab complete the current token
+		else if(c == '\t')
 		{
-			//TODO: tab complete
-			if(c == '\t')
-			{
-			}
+			//TODO
+		}
 
-			else
-			{
-				g_uart.PrintString("Nonprintable: 0x");
-				//PrintHex(c);
-				g_uart.PrintString("\n");
-			}
+		//Ignore other non-printable characters
+		else if(!isprint(c))
+			g_uart.Printf("\nIgnoring nonprintable: 0x%02x\n", c);
+
+		//Space ends the current token
+		else if(c == ' ')
+		{
+			g_uart.PrintBinary(c);
+			tokenOffset = 0;
+
+			//If the current token is empty, don't move to another one (ignore consecutive spaces)
+			if(strlen(command.m_tokens[currentToken].m_text) == 0)
+				continue;
+
+			//Not empty. Start a new token.
+			currentToken ++;
+
+			//If we're out of token space, stop
+			if(currentToken >= MAX_TOKENS)
+				break;
 		}
 
 		//Echo characters as typed
 		else
 		{
 			g_uart.PrintBinary(c);
-			xpos ++;
+
+			//Save the character
+			//TODO: handle insertion before end of token
+			command.m_tokens[currentToken].m_text[tokenOffset ++] = c;
+
+			//If the token is stupidly long, abort
+			if(tokenOffset >= MAX_TOKEN_LEN)
+				break;
 		}
 	}
+
+	//Done, print the final output
+	g_uart.Printf("Parsed command:\n");
+	for(size_t i=0; i<MAX_TOKENS; i++)
+	{
+		if(strlen(command.m_tokens[i].m_text) == 0)
+			break;
+		g_uart.Printf("    %d: %s\n", i, command.m_tokens[i].m_text);
+	}
+	g_uart.Printf("currentToken: %d\n", currentToken);
+	g_uart.Printf("tokenOffset: %d\n", tokenOffset);
 }

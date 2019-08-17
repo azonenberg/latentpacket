@@ -52,13 +52,17 @@ struct clikeyword_t
 };
 
 /**
-	@brief Shows the prompt, then reads a line of input
+	@brief The command-line interface
  */
-void RunPrompt(const char* prompt);
+class CLI
+{
+public:
 
-/**
-	@brief Reads a byte of input from the FIFO, blocking if nothing is there
- */
-char CliReadChar();
+	/**
+		@brief Shows the prompt, then reads a line of input
+	 */
+	void RunPrompt(const char* prompt);
+
+};
 
 #endif

@@ -55,3 +55,13 @@ char* itoa(int n, char* s)
 
 	return reverse(s);
 }
+
+/**
+	@brief Simple, unoptimized memset
+ */
+void* memset(void* s, int c, size_t n)
+{
+	char* ps = (char*)s;
+	for(size_t i=0; i<n; i++)
+		ps[i] = c;
+}
