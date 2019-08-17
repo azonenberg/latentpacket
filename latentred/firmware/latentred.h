@@ -52,7 +52,7 @@ void* memset(void* s, int c, size_t n);
 //string functions
 char* reverse(char* s);
 int strlen(const char* str);
-char* strncpy(char* dst, const char* src, int n);
+char* strncpy(char* dst, const char* src, size_t n);
 
 #include "token.h"
 #include "command.h"

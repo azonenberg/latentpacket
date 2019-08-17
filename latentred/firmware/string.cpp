@@ -45,16 +45,17 @@ int strlen(const char* str)
 
 	@return dst
  */
-char* strncpy(char* dst, const char* src, int n)
+char* strncpy(char* dst, const char* src, size_t n)
 {
-	int i = 0;
+	size_t i = 0;
 	for(; i<n-1; i++)
 	{
 		dst[i] = src[i];
 		if(src[i] == '\0')
 			break;
 	}
-	dst[i] = '\0';
+	for(; i<n; i++)
+		dst[i] = '\0';
 	return dst;
 }
 

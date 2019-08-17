@@ -218,7 +218,24 @@ void CLI::OnSpace(Command& command)
 
 	//If we have tokens to the right, move them right and wipe the current one.
 	for(size_t i = m_lastToken; i > m_currentToken; i-- )
+	{
+		g_uart.Printf("Moving \"%s\" from position %d to %d\n", command.m_tokens[i-1].m_text, i-1, i);
+		g_uart.Printf("BEFORE:\n");
+		for(size_t j=0; j <= m_lastToken; j++)
+			g_uart.Printf("    %d: %s\n", j, command.m_tokens[j].m_text);
+
+		g_uart.Printf("i = %d\n", i);
+		g_uart.Printf("m_lastToken = %d\n", m_lastToken);
+		g_uart.Printf("command.m_tokens[i-i].m_text = %s\n", command.m_tokens[i-i].m_text);
+		g_uart.Printf("command.m_tokens[i].m_text = %s\n", command.m_tokens[i].m_text);
+
 		strncpy(command.m_tokens[i].m_text, command.m_tokens[i-i].m_text, MAX_TOKEN_LEN);
+
+		g_uart.Printf("AFTER:\n");
+		for(size_t j=0; j <= m_lastToken; j++)
+			g_uart.Printf("    %d: %s\n", j, command.m_tokens[j].m_text);
+	}
+
 	memset(command.m_tokens[m_currentToken].m_text, 0, MAX_TOKEN_LEN);
 
 	//TODO: if we're in the middle of a token, split it
@@ -309,8 +326,8 @@ void CLI::OnLeftArrow(Command& command)
 	else if(m_currentToken > 0)
 	{
 		g_uart.PrintString(CURSOR_LEFT);
-		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
 		m_currentToken --;
+		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
 	}
 
 	//Start of prompt, can't go left any further
