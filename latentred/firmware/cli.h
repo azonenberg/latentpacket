@@ -78,6 +78,7 @@ protected:
 	void OnTabComplete(Command& command);
 	void OnSpace(Command& command);
 	void OnLeftArrow(Command& command);
+	void OnRightArrow(Command& command);
 	void OnKey(Command& command, char c);
 };
 

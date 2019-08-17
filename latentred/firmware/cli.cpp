@@ -30,6 +30,7 @@
 #include "latentred.h"
 
 static const char* CURSOR_LEFT = "\x1b[D";
+static const char* CURSOR_RIGHT = "\x1b[C";
 
 void CLI::RunPrompt(const char* prompt)
 {
@@ -72,7 +73,11 @@ void CLI::RunPrompt(const char* prompt)
 			char code = g_uart.BlockingRead();
 			switch(code)
 			{
-				//C = right, B = down, A = up
+				//B = down, A = up
+
+				case 'C':
+					OnRightArrow(command);
+					break;
 
 				case 'D':
 					OnLeftArrow(command);
@@ -180,7 +185,8 @@ void CLI::OnSpace(Command& command)
 
 	//Not empty. Start a new token.
 	m_currentToken ++;
-	//TODO: if we have tokens to the right, move them
+	//TODO: if we have tokens to the right, move them right
+	//TODO: if we're in the middle of a token, split it
 }
 
 void CLI::OnTabComplete(Command& command)
@@ -190,6 +196,8 @@ void CLI::OnTabComplete(Command& command)
 
 void CLI::OnBackspace(Command& command)
 {
+	//TODO: better handling of tokens to the right@
+
 	//We're in the current token
 	if(m_tokenOffset > 0)
 	{
@@ -218,6 +226,34 @@ void CLI::OnBackspace(Command& command)
 	//Backspace at the start of the prompt. Ignore it.
 	else
 	{
+	}
+}
+
+void CLI::OnRightArrow(Command& command)
+{
+	//Are we at the end of the current token?
+	char* text = command.m_tokens[m_currentToken].m_text;
+	if(m_tokenOffset == strlen(text))
+	{
+		//Is this the last token? Can't go any further
+		if(m_currentToken == m_lastToken)
+		{
+		}
+
+		//Move to the start of the next one
+		else
+		{
+			m_tokenOffset = 0;
+			m_currentToken ++;
+			g_uart.PrintString(CURSOR_RIGHT);
+		}
+	}
+
+	//Nope, just move one to the right
+	else
+	{
+		m_tokenOffset ++;
+		g_uart.PrintString(CURSOR_RIGHT);
 	}
 }
 
