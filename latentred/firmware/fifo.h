@@ -69,6 +69,9 @@ public:
 			m_empty = false;
 		}
 
+		if(m_wptr == depth)
+			m_wptr = 0;
+
 		LeaveCriticalSection(sr);
 	}
 
@@ -89,6 +92,9 @@ public:
 			if(m_rptr == m_wptr)
 				m_empty = true;
 		}
+
+		if(m_rptr == depth)
+			m_rptr = 0;
 
 		LeaveCriticalSection(sr);
 
