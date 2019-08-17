@@ -41,6 +41,24 @@ int strlen(const char* str)
 }
 
 /**
+	@brief Copies a null terminated string to another one
+
+	@return dst
+ */
+char* strncpy(char* dst, const char* src, int n)
+{
+	int i = 0;
+	for(; i<n-1; i++)
+	{
+		dst[i] = src[i];
+		if(src[i] == '\0')
+			break;
+	}
+	dst[i] = '\0';
+	return dst;
+}
+
+/**
 	@brief Reverses a string in-place (K&R implementation)
 
 	@param s Input

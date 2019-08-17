@@ -80,6 +80,8 @@ protected:
 	void OnLeftArrow(Command& command);
 	void OnRightArrow(Command& command);
 	void OnKey(Command& command, char c);
+
+	void RedrawLineRightOfCursor(Command& command);
 };
 
 #endif

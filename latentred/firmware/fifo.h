@@ -89,12 +89,13 @@ public:
 		if(!IsEmpty())
 		{
 			m_rptr ++;
+
+			if(m_rptr == depth)
+				m_rptr = 0;
+
 			if(m_rptr == m_wptr)
 				m_empty = true;
 		}
-
-		if(m_rptr == depth)
-			m_rptr = 0;
 
 		LeaveCriticalSection(sr);
 

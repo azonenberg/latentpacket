@@ -107,11 +107,26 @@ void CLI::RunPrompt(const char* prompt)
 		//Update the last token (TODO: only when needed)
 		for(size_t i=0; i<MAX_TOKENS; i++)
 		{
+			//Don't break. If we type two spaces in the middle of a command we can have a null command momentarily.
 			if(strlen(command.m_tokens[i].m_text) == 0)
-				break;
+				continue;
 			m_lastToken = i;
 		}
 	}
+
+	//DEBUG: Print cursor location
+	size_t cursorPos = strlen(prompt);
+	for(size_t i=0; i<m_currentToken; i++)
+	{
+		cursorPos += strlen(command.m_tokens[i].m_text);
+		cursorPos ++;	//space between tokens
+	}
+	cursorPos += m_tokenOffset;
+	for(size_t i=0; i<cursorPos; i++)
+		g_uart.PrintBinary(' ');
+	g_uart.PrintString("^\n");
+
+	//TODO: if we have any empty strings move stuff left
 
 	//Done, print the final output
 	g_uart.Printf("Parsed command:\n");
@@ -120,6 +135,34 @@ void CLI::RunPrompt(const char* prompt)
 	g_uart.Printf("currentToken: %d\n", m_currentToken);
 	g_uart.Printf("lastToken: %d\n", m_lastToken);
 	g_uart.Printf("tokenOffset: %d\n", m_tokenOffset);
+}
+
+/**
+	@brief Redraws everything right of the cursor
+ */
+void CLI::RedrawLineRightOfCursor(Command& command)
+{
+	//Draw the remainder of this token
+	char* token = command.m_tokens[m_currentToken].m_text;
+	char* restOfToken = token + m_tokenOffset;
+	size_t charsDrawn = strlen(restOfToken);
+	g_uart.PrintString(restOfToken);
+
+	//Draw all subsequent tokens
+	for(size_t i = m_currentToken + 1; i < MAX_TOKENS; i++)
+	{
+		char* tok = command.m_tokens[i].m_text;
+		charsDrawn += strlen(tok) + 1;
+		g_uart.Printf(" %s", tok);
+	}
+
+	//Draw a space at the end to clean up anything we may have deleted
+	g_uart.PrintBinary(' ');
+	charsDrawn ++;
+
+	//Move the cursor back to where it belongs
+	for(size_t i=0; i<charsDrawn; i++)
+		g_uart.PrintString(CURSOR_LEFT);
 }
 
 void CLI::OnKey(Command& command, char c)
@@ -147,26 +190,8 @@ void CLI::OnKey(Command& command, char c)
 	g_uart.PrintBinary(c);
 
 	//Update the remainder of the line.
-	//Keep track of how many characters we drew so we can move back here.
 	if(redrawLine)
-	{
-		//Draw the remainder of this token
-		char* restOfToken = token + m_tokenOffset;
-		size_t charsDrawn = strlen(restOfToken);
-		g_uart.PrintString(restOfToken);
-
-		//Draw all subsequent tokens
-		for(size_t i = m_currentToken + 1; i < MAX_TOKENS; i++)
-		{
-			char* tok = command.m_tokens[i].m_text;
-			charsDrawn += strlen(tok) + 1;
-			g_uart.Printf(" %s", tok);
-		}
-
-		//Move the cursor back to where it belongs
-		for(size_t i=0; i<charsDrawn; i++)
-			g_uart.PrintString(CURSOR_LEFT);
-	}
+		RedrawLineRightOfCursor(command);
 }
 
 void CLI::OnSpace(Command& command)
@@ -176,17 +201,30 @@ void CLI::OnSpace(Command& command)
 	if(m_currentToken >= MAX_TOKENS)
 		return;
 
-	g_uart.PrintBinary(' ' );
-	m_tokenOffset = 0;
-
 	//If the current token is empty, don't move to another one (ignore consecutive spaces)
 	if(strlen(command.m_tokens[m_currentToken].m_text) == 0)
 		return;
 
+	g_uart.PrintBinary(' ' );
+	m_tokenOffset = 0;
+
 	//Not empty. Start a new token.
 	m_currentToken ++;
-	//TODO: if we have tokens to the right, move them right
+
+	//If this was the last token, nothing more to do.
+	if(m_currentToken > m_lastToken)
+		return;
+	m_lastToken ++;
+
+	//If we have tokens to the right, move them right and wipe the current one.
+	for(size_t i = m_lastToken; i > m_currentToken; i-- )
+		strncpy(command.m_tokens[i].m_text, command.m_tokens[i-i].m_text, MAX_TOKEN_LEN);
+	memset(command.m_tokens[m_currentToken].m_text, 0, MAX_TOKEN_LEN);
+
 	//TODO: if we're in the middle of a token, split it
+
+	//Definitely have to redraw after doing this!
+	RedrawLineRightOfCursor(command);
 }
 
 void CLI::OnTabComplete(Command& command)
@@ -196,7 +234,7 @@ void CLI::OnTabComplete(Command& command)
 
 void CLI::OnBackspace(Command& command)
 {
-	//TODO: better handling of tokens to the right@
+	//TODO: better handling of tokens to the right
 
 	//We're in the current token
 	if(m_tokenOffset > 0)
