@@ -36,16 +36,38 @@
 	@brief UART driver
  */
 
-void UartInit();
+extern "C" void USART2_Handler();
 
-void PrintString(const char* str);
-void PrintChar(char ch);
+/**
+	@brief Driver for a UART
+ */
+class UART
+{
+public:
 
-void PrintHex(char ch);
-void PrintHex32(uint32_t n);
+	UART(volatile usart_t* lane)
+	 : UART(lane, lane)
+	{}
 
-extern "C" void USART2_IRQHandler();
+	UART(volatile usart_t* txlane, volatile usart_t* rxlane);
 
-extern Fifo<char, 32> g_uartRxFifo;
+	//Normal APIs
+	void PrintBinary(char ch);
+	void PrintText(char ch);
+	void PrintString(const char* str);
+	char BlockingRead();
+
+	//Interrupt handlers
+	void OnIRQRxData(char ch)
+	{ m_rxFifo.Push(ch); }
+
+protected:
+	volatile usart_t* m_txlane;
+	volatile usart_t* m_rxlane;
+
+	Fifo<char, 32> m_rxFifo;
+};
+
+extern UART g_uart;
 
 #endif

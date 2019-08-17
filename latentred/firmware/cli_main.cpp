@@ -28,23 +28,21 @@
 ***********************************************************************************************************************/
 
 #include "latentred.h"
-#include <ctype.h>
 
 void RunPrompt(const char* prompt)
 {
 	//Show the prompt
-	PrintString(prompt);
+	g_uart.PrintString(prompt);
 
 	int xpos = 0;
-	/*
 	while(1)
 	{
-		char c = ReadChar();
+		char c = g_uart.BlockingRead();
 
 		//Handle newlines
 		if( (c == '\r') || (c == '\n') )
 		{
-			PrintString("\n");
+			g_uart.PrintString("\n");
 			return;
 		}
 
@@ -57,39 +55,45 @@ void RunPrompt(const char* prompt)
 		//Handle escape sequences
 		else if(c == 0x1b)
 		{
-			char brace = ReadChar();
-			char code = ReadChar();
+			char brace = g_uart.BlockingRead();
+			char code = g_uart.BlockingRead();
 
 			//Next char should be a [
 			if(brace != '[')
 			{
-				PrintString("Malformed escape sequence, expected [ after esc\n");
+				g_uart.PrintString("Malformed escape sequence, expected [ after esc\n");
 				continue;
 			}
 
 			//Now comes the actual escape code
 			//D = left, C = right, B = down, A = up
+
+			//TODO: handle up/down
+
+			//TODO: handle left/right
 		}
 
 		//If not printable, ignore for now
 		else if(!isprint(c))
 		{
-			PrintString("Nonprintable: 0x");
-			PrintHex(c);
-			PrintString("\n");
-
 			//TODO: tab complete
 			if(c == '\t')
 			{
+			}
+
+			else
+			{
+				g_uart.PrintString("Nonprintable: 0x");
+				//PrintHex(c);
+				g_uart.PrintString("\n");
 			}
 		}
 
 		//Echo characters as typed
 		else
 		{
-			PrintChar(c);
+			g_uart.PrintBinary(c);
 			xpos ++;
 		}
 	}
-	*/
 }

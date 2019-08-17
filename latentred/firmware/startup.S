@@ -34,11 +34,11 @@
 vectorTable:
 	.word __stack_end
 	.word _start
-	.word defaultISR	//NMI
-	.word defaultISR	//hardfault
-	.word defaultISR	//mmufault
-	.word defaultISR	//busfault
-	.word defaultISR	//usagefault
+	.word NMI_Handler			//NMI
+	.word HardFault_Handler		//hardfault
+	.word MMUFault_Handler		//mmufault
+	.word BusFault_Handler		//busfault
+	.word UsageFault_Handler		//usagefault
 	.word defaultISR	//reserved_7
 	.word defaultISR	//reserved_8
 	.word defaultISR	//reserved_9
@@ -86,7 +86,7 @@ vectorTable:
 	.word defaultISR	//irq35 SPI1
 	.word defaultISR	//irq36 SPI2
 	.word defaultISR	//irq37 USART1
-	.word USART2_IRQHandler		//irq38 USART2
+	.word USART2_Handler		//irq38 USART2
 
 //TODO: add other vectors here
 

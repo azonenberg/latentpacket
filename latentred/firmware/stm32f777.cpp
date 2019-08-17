@@ -27,7 +27,7 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "stm32f777.h"
+#include "latentred.h"
 
 volatile gpio_t GPIOA __attribute__((section(".gpioa")));
 volatile gpio_t GPIOB __attribute__((section(".gpiob")));

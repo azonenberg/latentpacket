@@ -30,8 +30,6 @@
 #ifndef cli_h
 #define cli_h
 
-#include <stdint.h>
-
 /**
 	@file
 	@author Andrew D. Zonenberg
@@ -57,5 +55,10 @@ struct clikeyword_t
 	@brief Shows the prompt, then reads a line of input
  */
 void RunPrompt(const char* prompt);
+
+/**
+	@brief Reads a byte of input from the FIFO, blocking if nothing is there
+ */
+char CliReadChar();
 
 #endif

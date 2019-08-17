@@ -29,30 +29,19 @@
 
 #include "latentred.h"
 
-void PlatformInit();
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initialization
 
-bool g_uartDataReady = false;
-char g_uartData;
+void PlatformInit();
 
 int main()
 {
 	PlatformInit();
-	UartInit();
 	EnableInterrupts();
 
 	while(1)
 	{
-		if(g_uartDataReady)
-		{
-			uint32_t cpu_sr = EnterCriticalSection();
-			char c = g_uartData;
-			g_uartDataReady = false;
-			LeaveCriticalSection(cpu_sr);
-
-			PrintString("Got a byte:");
-			PrintChar(c);
-			PrintString("\n");
-		}
+		RunPrompt("switch# ");
 	}
 
 	return 0;
@@ -87,4 +76,89 @@ void PlatformInit()
 		Use PLL
 	 */
 	RCC.CFGR = RCC_APB2_DIV4 | RCC_APB1_DIV8 | RCC_AHB_DIV1 | RCC_SYSCLK_PLL;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Exception vectors
+
+extern "C" void NMI_Handler()
+{
+	g_uart.PrintString("NMI\n");
+	while(1)
+	{}
+}
+
+extern "C" void HardFault_Handler()
+{
+	uint32_t* msp;
+	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
+
+	g_uart.PrintString("Hard fault\n");
+	/*
+	volatile uint32_t* HFSR = (volatile uint32_t*)(0xe000ed2C);
+	volatile uint32_t* MMFAR = (volatile uint32_t*)(0xe000ed34);
+	volatile uint32_t* BFAR = (volatile uint32_t*)(0xe000ed38);
+	volatile uint32_t* CFSR = (volatile uint32_t*)(0xe000ed28);
+	volatile uint16_t* UFSR = (volatile uint16_t*)(0xe000ed2a);
+	volatile uint32_t* DFSR = (volatile uint32_t*)(0xe000ed30);
+
+	PrintString("    HFSR=");
+	PrintHex32(*HFSR);
+	PrintString("\n");
+
+	PrintString("    MMFAR=");
+	PrintHex32(*MMFAR);
+	PrintString("\n");
+
+	PrintString("    BFAR=");
+	PrintHex32(*BFAR);
+	PrintString("\n");
+
+	PrintString("    CFSR=");
+	PrintHex32(*CFSR);
+	PrintString("\n");
+
+	PrintString("    DFSR=");
+	PrintHex32(*DFSR);
+	PrintString("\n");
+
+	PrintString("    UFSR=");
+	PrintHex32(*UFSR);
+	PrintString("\n");
+
+	PrintString("    MSP=");
+	PrintHex32((uint32_t)msp);
+	PrintString("\n");
+
+	PrintString("Stack:\n");
+	for(int i=0; i<16; i++)
+	{
+		PrintString("    ");
+		PrintHex32(msp[i]);
+		PrintString("\n");
+	}
+	*/
+	while(1)
+	{}
+}
+
+extern "C" void BusFault_Handler()
+{
+	g_uart.PrintString("Bus fault\n");
+	while(1)
+	{}
+}
+
+extern "C" void UsageFault_Handler()
+{
+	g_uart.PrintString("Usage fault\n");
+	while(1)
+	{}
+}
+
+extern "C" void MMUFault_Handler()
+{
+	g_uart.PrintString("MMU fault\n");
+	while(1)
+	{}
 }

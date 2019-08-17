@@ -30,8 +30,6 @@
 #ifndef stm32f777_h
 #define stm32f777_h
 
-#include <stdint.h>
-
 typedef struct
 {
 	uint32_t ACR;
@@ -211,5 +209,14 @@ extern "C" uint32_t EnterCriticalSection();
 	@brief Leaves a critical section and restores the previous PRIMASK value
  */
 extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
+
+extern char __heap_start;
+extern char __heap_end;
+
+extern "C" void NMI_Handler();
+extern "C" void HardFault_Handler();
+extern "C" void BusFault_Handler();
+extern "C" void UsageFault_Handler();
+extern "C" void MMUFault_Handler();
 
 #endif

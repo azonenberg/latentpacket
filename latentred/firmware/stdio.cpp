@@ -27,24 +27,8 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef latentred_h
-#define latentred_h
+#include "latentred.h"
 
-#define NULL nullptr
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned char uint8_t;
+int write_padded(int fd, const char* st, int minlen, char padding, int prepad);
 
-#include "stm32f777.h"
-
-//ctype functions
-bool isprint(char ch);
-
-//stdio functions
 void puts(const char* str);
-
-#include "cli.h"
-#include "fifo.h"
-#include "uart.h"
-
-#endif

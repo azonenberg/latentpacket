@@ -49,9 +49,19 @@ SECTIONS
 	{
 		__stack_start = .;
 		. = ALIGN(4);
-		. += 0x8000;
+		. += 0x10000;
 		__stack_end = .;
 	} > DTCM
+
+	/* Fill all remaining SRAM1 space with the heap */
+	.heap :
+	{
+		. = ALIGN(4);
+		__heap_start = .;
+		. = ORIGIN(SRAM1) + LENGTH(SRAM1) - 4;
+		__heap_end = .;
+		PROVIDE(end = .);
+	} > SRAM1
 
 	/* SFRs */
 	.sfr_ahb1 :
