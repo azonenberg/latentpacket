@@ -108,9 +108,20 @@ void CLI::RunPrompt(const char* prompt)
 		for(size_t i=0; i<MAX_TOKENS; i++)
 		{
 			//Don't break. If we type two spaces in the middle of a command we can have a null command momentarily.
-			if(strlen(command.m_tokens[i].m_text) == 0)
+			if(command.m_tokens[i].IsEmpty())
 				continue;
 			m_lastToken = i;
+		}
+	}
+
+	//If we have any empty strings move stuff left over them
+	for(size_t i=0; i<m_lastToken; i++)
+	{
+		if(command.m_tokens[i].IsEmpty())
+		{
+			for(int j=i+1; j <= m_lastToken; j++)
+				strncpy(command.m_tokens[j-1].m_text, command.m_tokens[j].m_text, MAX_TOKEN_LEN);
+			m_lastToken --;
 		}
 	}
 
@@ -125,8 +136,6 @@ void CLI::RunPrompt(const char* prompt)
 	for(size_t i=0; i<cursorPos; i++)
 		g_uart.PrintBinary(' ');
 	g_uart.PrintString("^\n");
-
-	//TODO: if we have any empty strings move stuff left
 
 	//Done, print the final output
 	g_uart.Printf("Parsed command:\n");
@@ -201,8 +210,9 @@ void CLI::OnSpace(Command& command)
 	if(m_currentToken >= MAX_TOKENS)
 		return;
 
-	//If the current token is empty, don't move to another one (ignore consecutive spaces)
-	if(strlen(command.m_tokens[m_currentToken].m_text) == 0)
+	//Ignore consecutive spaces - if we already made an empty token between the existing ones,
+	//there's no need to do another one
+	if(command.m_tokens[m_currentToken].IsEmpty())
 		return;
 
 	g_uart.PrintBinary(' ' );
@@ -218,24 +228,7 @@ void CLI::OnSpace(Command& command)
 
 	//If we have tokens to the right, move them right and wipe the current one.
 	for(size_t i = m_lastToken; i > m_currentToken; i-- )
-	{
-		g_uart.Printf("Moving \"%s\" from position %d to %d\n", command.m_tokens[i-1].m_text, i-1, i);
-		g_uart.Printf("BEFORE:\n");
-		for(size_t j=0; j <= m_lastToken; j++)
-			g_uart.Printf("    %d: %s\n", j, command.m_tokens[j].m_text);
-
-		g_uart.Printf("i = %d\n", i);
-		g_uart.Printf("m_lastToken = %d\n", m_lastToken);
-		g_uart.Printf("command.m_tokens[i-i].m_text = %s\n", command.m_tokens[i-i].m_text);
-		g_uart.Printf("command.m_tokens[i].m_text = %s\n", command.m_tokens[i].m_text);
-
-		strncpy(command.m_tokens[i].m_text, command.m_tokens[i-i].m_text, MAX_TOKEN_LEN);
-
-		g_uart.Printf("AFTER:\n");
-		for(size_t j=0; j <= m_lastToken; j++)
-			g_uart.Printf("    %d: %s\n", j, command.m_tokens[j].m_text);
-	}
-
+		strncpy(command.m_tokens[i].m_text, command.m_tokens[i-1].m_text, MAX_TOKEN_LEN);
 	memset(command.m_tokens[m_currentToken].m_text, 0, MAX_TOKEN_LEN);
 
 	//TODO: if we're in the middle of a token, split it
