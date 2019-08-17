@@ -71,6 +71,9 @@ protected:
 	///@brief Our position within that token
 	size_t m_tokenOffset;
 
+	///@brief Index of the last token we currently have
+	size_t m_lastToken;
+
 	void OnBackspace(Command& command);
 	void OnTabComplete(Command& command);
 	void OnSpace(Command& command);

@@ -29,6 +29,8 @@
 
 #include "latentred.h"
 
+static const char* CURSOR_LEFT = "\x1b[D";
+
 void CLI::RunPrompt(const char* prompt)
 {
 	//Show the prompt
@@ -39,6 +41,7 @@ void CLI::RunPrompt(const char* prompt)
 
 	m_currentToken = 0;
 	m_tokenOffset = 0;
+	m_lastToken = 0;
 
 	while(1)
 	{
@@ -95,31 +98,70 @@ void CLI::RunPrompt(const char* prompt)
 		//Echo characters as typed
 		else
 			OnKey(command, c);
+
+		//Update the last token (TODO: only when needed)
+		for(size_t i=0; i<MAX_TOKENS; i++)
+		{
+			if(strlen(command.m_tokens[i].m_text) == 0)
+				break;
+			m_lastToken = i;
+		}
 	}
 
 	//Done, print the final output
 	g_uart.Printf("Parsed command:\n");
-	for(size_t i=0; i<MAX_TOKENS; i++)
-	{
-		if(strlen(command.m_tokens[i].m_text) == 0)
-			break;
+	for(size_t i=0; i<=m_lastToken; i++)
 		g_uart.Printf("    %d: %s\n", i, command.m_tokens[i].m_text);
-	}
 	g_uart.Printf("currentToken: %d\n", m_currentToken);
+	g_uart.Printf("lastToken: %d\n", m_lastToken);
 	g_uart.Printf("tokenOffset: %d\n", m_tokenOffset);
 }
 
 void CLI::OnKey(Command& command, char c)
 {
-	//If the token is stupidly long, abort
-	if(m_tokenOffset >= (MAX_TOKEN_LEN - 1))
+	//If the token doesn't have room for another character, abort
+	char* token = command.m_tokens[m_currentToken].m_text;
+	size_t len = strlen(token);
+	if(len >= (MAX_TOKEN_LEN - 1))
 		return;
 
+	//If we're NOT at the end of the token, we need to move everything right to make room for the new character
+	bool redrawLine = (m_currentToken != m_lastToken);
+	if(m_tokenOffset != len)
+	{
+		redrawLine = true;
+		for(size_t i=len; i > m_tokenOffset; i--)
+			token[i] = token[i-1];
+	}
+
+	//Append the character
+	token[m_tokenOffset ++] = c;
+	len++;
+
+	//Draw the new character
 	g_uart.PrintBinary(c);
 
-	//Save the character
-	//TODO: handle insertion before end of token
-	command.m_tokens[m_currentToken].m_text[m_tokenOffset ++] = c;
+	//Update the remainder of the line.
+	//Keep track of how many characters we drew so we can move back here.
+	if(redrawLine)
+	{
+		//Draw the remainder of this token
+		char* restOfToken = token + m_tokenOffset;
+		size_t charsDrawn = strlen(restOfToken);
+		g_uart.PrintString(restOfToken);
+
+		//Draw all subsequent tokens
+		for(size_t i = m_currentToken + 1; i < MAX_TOKENS; i++)
+		{
+			char* tok = command.m_tokens[i].m_text;
+			charsDrawn += strlen(tok) + 1;
+			g_uart.Printf(" %s", tok);
+		}
+
+		//Move the cursor back to where it belongs
+		for(size_t i=0; i<charsDrawn; i++)
+			g_uart.PrintString(CURSOR_LEFT);
+	}
 }
 
 void CLI::OnSpace(Command& command)
@@ -138,7 +180,6 @@ void CLI::OnSpace(Command& command)
 
 	//Not empty. Start a new token.
 	m_currentToken ++;
-
 	//TODO: if we have tokens to the right, move them
 }
 
@@ -154,7 +195,7 @@ void CLI::OnBackspace(Command& command)
 	{
 		//Delete the character
 		//move left, space over the deleted character, move left for good this time
-		g_uart.PrintString("\x1b[D \x1b[D");
+		g_uart.Printf("%s %s", CURSOR_LEFT, CURSOR_LEFT);
 
 		//Move back one character and shift the token left
 		m_tokenOffset --;
@@ -167,7 +208,7 @@ void CLI::OnBackspace(Command& command)
 	else if(m_currentToken > 0)
 	{
 		//Delete the space
-		g_uart.PrintString("\x1b[D");
+		g_uart.PrintString(CURSOR_LEFT);
 
 		//Move to end of previous token
 		m_currentToken --;
@@ -187,13 +228,13 @@ void CLI::OnLeftArrow(Command& command)
 	if(m_tokenOffset > 0)
 	{
 		m_tokenOffset --;
-		g_uart.PrintString("\x1b[D");
+		g_uart.PrintString(CURSOR_LEFT);
 	}
 
 	//Move left, but go to the previous token
 	else if(m_currentToken > 0)
 	{
-		g_uart.PrintString("\x1b[D");
+		g_uart.PrintString(CURSOR_LEFT);
 		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
 		m_currentToken --;
 	}
