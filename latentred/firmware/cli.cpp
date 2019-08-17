@@ -37,11 +37,8 @@ void CLI::RunPrompt(const char* prompt)
 	//The line of user input we're parsing
 	Command command;
 
-	//The token we're currently typing
-	size_t currentToken = 0;
-
-	//The byte offset within the token we're typing
-	size_t tokenOffset = 0;
+	m_currentToken = 0;
+	m_tokenOffset = 0;
 
 	while(1)
 	{
@@ -56,63 +53,36 @@ void CLI::RunPrompt(const char* prompt)
 
 		//Backspace
 		else if(c == 0x7f)
-		{
-			//We're at the end of the current token
-			//TODO: handle being in the middle of a token (can't happen until we implement arrow keys)
-			if(tokenOffset > 0)
-			{
-				//Delete the character
-				//move left, space over the deleted character, move left for good this time
-				g_uart.PrintString("\x1b[D \x1b[D");
-
-				//Move back one character and wipe the previous token byte
-				tokenOffset --;
-				command.m_tokens[currentToken].m_text[tokenOffset] = '\0';
-			}
-
-			//We just started a new token and changed our mind.
-			else if(currentToken > 0)
-			{
-				//Delete the space
-				g_uart.PrintString("\x1b[D");
-
-				//Move to end of previous token
-				currentToken --;
-				tokenOffset = strlen(command.m_tokens[currentToken].m_text);
-			}
-
-			//Backspace at the start of the prompt. Ignore it.
-			else
-			{
-			}
-		}
+			OnBackspace(command);
 
 		//Escape sequences
 		else if(c == 0x1b)
 		{
-			char brace = g_uart.BlockingRead();
-			char code = g_uart.BlockingRead();
-
 			//Next char should be a [
-			if(brace != '[')
+			if(g_uart.BlockingRead() != '[')
 			{
 				g_uart.PrintString("Malformed escape sequence, expected [ after esc\n");
 				continue;
 			}
 
-			//Now comes the actual escape code
-			//D = left, C = right, B = down, A = up
+			//and the actual escape code
+			char code = g_uart.BlockingRead();
+			switch(code)
+			{
+				//C = right, B = down, A = up
 
-			//TODO: handle up/down
+				case 'D':
+					OnLeftArrow(command);
+					break;
 
-			//TODO: handle left/right
+				default:
+					break;
+			}
 		}
 
 		//Tab complete the current token
 		else if(c == '\t')
-		{
-			//TODO
-		}
+			OnTabComplete(command);
 
 		//Ignore other non-printable characters
 		else if(!isprint(c))
@@ -120,35 +90,11 @@ void CLI::RunPrompt(const char* prompt)
 
 		//Space ends the current token
 		else if(c == ' ')
-		{
-			g_uart.PrintBinary(c);
-			tokenOffset = 0;
-
-			//If the current token is empty, don't move to another one (ignore consecutive spaces)
-			if(strlen(command.m_tokens[currentToken].m_text) == 0)
-				continue;
-
-			//Not empty. Start a new token.
-			currentToken ++;
-
-			//If we're out of token space, stop
-			if(currentToken >= MAX_TOKENS)
-				break;
-		}
+			OnSpace(command);
 
 		//Echo characters as typed
 		else
-		{
-			g_uart.PrintBinary(c);
-
-			//Save the character
-			//TODO: handle insertion before end of token
-			command.m_tokens[currentToken].m_text[tokenOffset ++] = c;
-
-			//If the token is stupidly long, abort
-			if(tokenOffset >= MAX_TOKEN_LEN)
-				break;
-		}
+			OnKey(command, c);
 	}
 
 	//Done, print the final output
@@ -159,6 +105,101 @@ void CLI::RunPrompt(const char* prompt)
 			break;
 		g_uart.Printf("    %d: %s\n", i, command.m_tokens[i].m_text);
 	}
-	g_uart.Printf("currentToken: %d\n", currentToken);
-	g_uart.Printf("tokenOffset: %d\n", tokenOffset);
+	g_uart.Printf("currentToken: %d\n", m_currentToken);
+	g_uart.Printf("tokenOffset: %d\n", m_tokenOffset);
+}
+
+void CLI::OnKey(Command& command, char c)
+{
+	//If the token is stupidly long, abort
+	if(m_tokenOffset >= (MAX_TOKEN_LEN - 1))
+		return;
+
+	g_uart.PrintBinary(c);
+
+	//Save the character
+	//TODO: handle insertion before end of token
+	command.m_tokens[m_currentToken].m_text[m_tokenOffset ++] = c;
+}
+
+void CLI::OnSpace(Command& command)
+{
+	//If we're out of token space, stop
+	//TODO: handle insertion into the middle of the token list
+	if(m_currentToken >= MAX_TOKENS)
+		return;
+
+	g_uart.PrintBinary(' ' );
+	m_tokenOffset = 0;
+
+	//If the current token is empty, don't move to another one (ignore consecutive spaces)
+	if(strlen(command.m_tokens[m_currentToken].m_text) == 0)
+		return;
+
+	//Not empty. Start a new token.
+	m_currentToken ++;
+
+	//TODO: if we have tokens to the right, move them
+}
+
+void CLI::OnTabComplete(Command& command)
+{
+	//TODO
+}
+
+void CLI::OnBackspace(Command& command)
+{
+	//We're in the current token
+	if(m_tokenOffset > 0)
+	{
+		//Delete the character
+		//move left, space over the deleted character, move left for good this time
+		g_uart.PrintString("\x1b[D \x1b[D");
+
+		//Move back one character and shift the token left
+		m_tokenOffset --;
+		char* text = command.m_tokens[m_currentToken].m_text;
+		for(size_t i=m_tokenOffset; i<MAX_TOKEN_LEN-1; i++)
+			text[i] = text[i+1];
+	}
+
+	//We just started a new token and changed our mind.
+	else if(m_currentToken > 0)
+	{
+		//Delete the space
+		g_uart.PrintString("\x1b[D");
+
+		//Move to end of previous token
+		m_currentToken --;
+		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
+	}
+
+	//Backspace at the start of the prompt. Ignore it.
+	else
+	{
+	}
+}
+
+void CLI::OnLeftArrow(Command& command)
+{
+	//At somewhere other than the start of the current token?
+	//Just move left and go to the previous character
+	if(m_tokenOffset > 0)
+	{
+		m_tokenOffset --;
+		g_uart.PrintString("\x1b[D");
+	}
+
+	//Move left, but go to the previous token
+	else if(m_currentToken > 0)
+	{
+		g_uart.PrintString("\x1b[D");
+		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
+		m_currentToken --;
+	}
+
+	//Start of prompt, can't go left any further
+	else
+	{
+	}
 }

@@ -63,6 +63,19 @@ public:
 	 */
 	void RunPrompt(const char* prompt);
 
+protected:
+
+	///@brief The token we're currently typing into
+	size_t m_currentToken;
+
+	///@brief Our position within that token
+	size_t m_tokenOffset;
+
+	void OnBackspace(Command& command);
+	void OnTabComplete(Command& command);
+	void OnSpace(Command& command);
+	void OnLeftArrow(Command& command);
+	void OnKey(Command& command, char c);
 };
 
 #endif
