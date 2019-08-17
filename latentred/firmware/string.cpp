@@ -27,32 +27,35 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef latentred_h
-#define latentred_h
+#include "latentred.h"
 
-#define NULL nullptr
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned char uint8_t;
+/**
+	@brief Returns the length of a null terminated string
+ */
+int strlen(const char* str)
+{
+	int i=0;
+	while(str[i] != 0)
+		i++;
+	return i;
+}
 
-#include "stm32f777.h"
+/**
+	@brief Reverses a string in-place (K&R implementation)
 
-//ctype functions
-bool isprint(char ch);
-bool isdigit(char ch);
+	@param s Input
+	@return s after reversing
+ */
+char* reverse(char* s)
+{
+	int i, j;
+	char c;
 
-//stdio functions
-void puts(const char* str);
-
-//stdlib functions
-char* itoa(int n, char* s);
-
-//string functions
-char* reverse(char* s);
-int strlen(const char* str);
-
-#include "cli.h"
-#include "fifo.h"
-#include "uart.h"
-
-#endif
+	for (i = 0, j = strlen(s)-1; i<j; i++, j--)
+	{
+		c = s[i];
+		s[i] = s[j];
+		s[j] = c;
+	}
+	return s;
+}

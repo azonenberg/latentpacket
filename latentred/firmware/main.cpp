@@ -41,6 +41,7 @@ int main()
 
 	while(1)
 	{
+		asm("bkpt");
 		RunPrompt("switch# ");
 	}
 
@@ -93,51 +94,18 @@ extern "C" void HardFault_Handler()
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
 
-	g_uart.PrintString("Hard fault\n");
-	/*
-	volatile uint32_t* HFSR = (volatile uint32_t*)(0xe000ed2C);
-	volatile uint32_t* MMFAR = (volatile uint32_t*)(0xe000ed34);
-	volatile uint32_t* BFAR = (volatile uint32_t*)(0xe000ed38);
-	volatile uint32_t* CFSR = (volatile uint32_t*)(0xe000ed28);
-	volatile uint16_t* UFSR = (volatile uint16_t*)(0xe000ed2a);
-	volatile uint32_t* DFSR = (volatile uint32_t*)(0xe000ed30);
-
-	PrintString("    HFSR=");
-	PrintHex32(*HFSR);
-	PrintString("\n");
-
-	PrintString("    MMFAR=");
-	PrintHex32(*MMFAR);
-	PrintString("\n");
-
-	PrintString("    BFAR=");
-	PrintHex32(*BFAR);
-	PrintString("\n");
-
-	PrintString("    CFSR=");
-	PrintHex32(*CFSR);
-	PrintString("\n");
-
-	PrintString("    DFSR=");
-	PrintHex32(*DFSR);
-	PrintString("\n");
-
-	PrintString("    UFSR=");
-	PrintHex32(*UFSR);
-	PrintString("\n");
-
-	PrintString("    MSP=");
-	PrintHex32((uint32_t)msp);
-	PrintString("\n");
-
-	PrintString("Stack:\n");
+	g_uart.Printf("Hard fault\n");
+	g_uart.Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
+	g_uart.Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
+	g_uart.Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
+	g_uart.Printf("    CFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed28));
+	g_uart.Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
+	g_uart.Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
+	g_uart.Printf("    MSP   = %08x\n", msp);
+	g_uart.Printf("    Stack:\n");
 	for(int i=0; i<16; i++)
-	{
-		PrintString("    ");
-		PrintHex32(msp[i]);
-		PrintString("\n");
-	}
-	*/
+		g_uart.Printf("        %08x\n", msp[i]);
+
 	while(1)
 	{}
 }

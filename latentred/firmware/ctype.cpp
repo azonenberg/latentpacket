@@ -33,3 +33,9 @@ bool isprint(char ch)
 {
 	return (ch >= ' ') && (ch <= '~');
 }
+
+bool isdigit(char ch)
+{
+	return (ch >= '0') && (ch <= '9');
+}
+

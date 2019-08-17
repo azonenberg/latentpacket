@@ -105,7 +105,164 @@ void UART::PrintString(const char* str)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Actual UART driver
+// Output formatting
+
+void UART::WritePadded(const char* str, int minlen, char padding, int prepad)
+{
+	int len = strlen(str);
+	int npads =	minlen - len;
+
+	if(npads < 0)
+		npads = 0;
+
+	if(prepad)
+		for(int i=0; i<npads; i++)
+			PrintBinary(padding);
+
+	PrintString(str);
+
+	if(!prepad)
+		for(int i=0; i<npads; i++)
+			PrintBinary(padding);
+}
+
+/**
+	@brief Stripped-down printf implementation adapted from my old PICNIX project.
+
+	Much ligher than a full ANSI compatible version but good enough for typical embedded use.
+ */
+void UART::Printf(const char* format, ...)
+{
+	__builtin_va_list list;
+	__builtin_va_start(list, format);
+
+	//Parsing helpers
+	const int buflen = 32;	//must be large enough for INT_MAX plus null
+	char buf[buflen+1];
+	const char* pch;
+	int bufpos = 0;
+	static const char hex[] = "0123456789abcdef";
+	static const char Hex[] = "0123456789ABCDEF";
+	unsigned int d;
+
+	//Go through the format string and process it
+	int len = strlen(format);
+	for(int i=0; i<len; i++)
+	{
+		//Format character
+		if(format[i] == '%')
+		{
+			char type;				//format code
+			int length = 0;			//min length of field
+			char padchar = ' ';		//padding character
+			int prepad = 1;
+
+			//Flush the buffer
+			if(bufpos > 0)
+			{
+				buf[bufpos] = '\0';
+				PrintString(buf);
+				bufpos = 0;
+			}
+
+			//Read specifier
+			type = format[++i];
+			if(type == '-')
+			{
+				prepad = 0;
+				type = format[++i];
+			}
+			while(isdigit(type))
+			{
+				if(type == '0' && length == 0)
+					padchar = '0';
+				else
+					length = (length*10) + (type - '0');
+				type = format[++i];
+			}
+
+			switch(type)
+			{
+			case '%':
+				PrintBinary('%');
+				break;
+
+			case 'd':
+				itoa(__builtin_va_arg(list, int), buf);
+				WritePadded(buf, length, padchar, prepad);
+				break;
+
+			case 's':
+				pch = __builtin_va_arg(list, const char*);
+				WritePadded(pch, length, padchar, prepad);
+				break;
+
+			case 'x':
+			case 'X':
+				{
+					d = __builtin_va_arg(list, unsigned int);
+					int bFirst = 1;
+					for(int j=0; j<8; j++)
+					{
+						//Grab the next 4 bits
+						unsigned int x = d >> 28;
+
+						//Print it
+						char ch = hex[x];
+						if(format[i] == 'X')					//capitalize
+							ch = Hex[x];
+
+						//Skip leading zeros unless we are padding
+						//but print a single 0 if it's zero
+						if( (ch == '0') && bFirst && (j != 7) )
+						{
+							if( (8 - j) <= length)
+								PrintBinary(padchar);
+						}
+						else
+						{
+							PrintBinary(ch);
+							bFirst = 0;
+						}
+
+						//Shift off what we just printed
+						d <<= 4;
+					}
+				}
+				break;
+
+			default:
+				PrintBinary('*');
+				break;
+			}
+		}
+
+		//Nope, print it directly, buffering for improved performance
+		else
+		{
+			if(bufpos >= buflen)
+			{
+				buf[bufpos] = '\0';
+				PrintString(buf);
+				bufpos = 0;
+			}
+
+			buf[bufpos++] = format[i];
+		}
+	}
+
+	//Flush the buffer
+	if(bufpos > 0)
+	{
+		buf[bufpos] = '\0';
+		PrintString(buf);
+	}
+
+	__builtin_va_end(list);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Interrupt handlers
 
 extern "C" void __attribute__((isr)) USART2_Handler()
 {
@@ -117,28 +274,3 @@ extern "C" void __attribute__((isr)) USART2_Handler()
 	//save the byte, no fifo yet
 	g_uart.OnIRQRxData(USART2.RDR);
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Output helpers
-
-/**
-	@brief Prints a byte as hex
- */
-/*
-void PrintHex(char ch)
-{
-	static const char hex[] = "0123456789abcdef";
-	PrintChar(hex[ch >> 4]);
-	PrintChar(hex[ch & 0xf]);
-}*/
-
-/**
-	@brief Prints a 32-bit integer as hex
- */
-/*void PrintHex32(uint32_t n)
-{
-	PrintHex((n >> 24) & 0xff);
-	PrintHex((n >> 16) & 0xff);
-	PrintHex((n >> 8) & 0xff);
-	PrintHex(n & 0xff);
-}*/

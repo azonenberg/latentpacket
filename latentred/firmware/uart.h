@@ -51,10 +51,14 @@ public:
 
 	UART(volatile usart_t* txlane, volatile usart_t* rxlane);
 
-	//Normal APIs
+	//TX side
 	void PrintBinary(char ch);
 	void PrintText(char ch);
 	void PrintString(const char* str);
+	void Printf(const char* format, ...);
+	void WritePadded(const char* str, int minlen, char padding, int prepad);
+
+	//RX side
 	char BlockingRead();
 
 	//Interrupt handlers

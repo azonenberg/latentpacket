@@ -29,6 +29,29 @@
 
 #include "latentred.h"
 
-int write_padded(int fd, const char* st, int minlen, char padding, int prepad);
+/**
+	@brief Converts an int to a string (K&R implementation)
 
-void puts(const char* str);
+	@param n Input
+	@param s String to store into
+
+	@return str
+ */
+char* itoa(int n, char* s)
+{
+	int i, sign;
+
+	if ((sign = n) < 0)  /* record sign */
+		n = -n;          /* make n positive */
+	i = 0;
+	do
+	{       /* generate digits in reverse order */
+		s[i++] = n % 10 + '0';   /* get next digit */
+	} while ((n /= 10) > 0);     /* delete it */
+
+	if (sign < 0)
+		s[i++] = '-';
+	s[i] = '\0';
+
+	return reverse(s);
+}
