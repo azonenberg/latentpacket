@@ -57,11 +57,24 @@ struct clikeyword_t
 class CLI
 {
 public:
+	CLI();
+
+	/**
+		@brief Runs the CLI
+	 */
+	void Run();
+
+protected:
+
+	/**
+		@brief Runs the top level of the prompt
+	 */
+	void RunTopLevel();
 
 	/**
 		@brief Shows the prompt, then reads a line of input
 	 */
-	void RunPrompt(const char* prompt);
+	void RunPrompt(const char* prompt, Command& command);
 
 protected:
 
@@ -82,6 +95,8 @@ protected:
 	void OnKey(Command& command, char c);
 
 	void RedrawLineRightOfCursor(Command& command);
+
+	const char* m_hostname;
 };
 
 #endif

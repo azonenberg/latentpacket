@@ -78,3 +78,25 @@ char* reverse(char* s)
 	}
 	return s;
 }
+
+/**
+	@brief Compares two null terminated strings
+
+	@brief a string #1
+	@brief b string #2
+
+	@return >0 if a>b, <0 if a<b, 0 if a==b
+ */
+int strcmp(const char* a, const char* b)
+{
+	while(*a || *b)
+	{
+		if( (*a == 0) || (*a > *b) )
+			return 1;
+		if( (*b == 0) || (*a < *b) )
+			return -1;
+		a++;
+		b++;
+	}
+	return 0;
+}

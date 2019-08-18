@@ -32,13 +32,43 @@
 static const char* CURSOR_LEFT = "\x1b[D";
 static const char* CURSOR_RIGHT = "\x1b[C";
 
-void CLI::RunPrompt(const char* prompt)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+CLI::CLI()
+	: m_hostname("Mock-switch")
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Top level event loop
+
+void CLI::Run()
+{
+	while(true)
+		RunTopLevel();
+}
+
+void CLI::RunTopLevel()
+{
+	while(true)
+	{
+		//Get a line of input from the user
+		Command command;
+		RunPrompt("", command);
+
+		//Autocomplete the command
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Input handling
+
+void CLI::RunPrompt(const char* prompt, Command& command)
 {
 	//Show the prompt
-	g_uart.PrintString(prompt);
-
-	//The line of user input we're parsing
-	Command command;
+	g_uart.Printf("%s# ", m_hostname, prompt);
 
 	m_currentToken = 0;
 	m_tokenOffset = 0;
@@ -94,7 +124,9 @@ void CLI::RunPrompt(const char* prompt)
 
 		//Ignore other non-printable characters
 		else if(!isprint(c))
-			g_uart.Printf("\nIgnoring nonprintable: 0x%02x\n", c);
+		{
+			//g_uart.Printf("\nIgnoring nonprintable: 0x%02x\n", c);
+		}
 
 		//Space ends the current token
 		else if(c == ' ')
@@ -125,6 +157,7 @@ void CLI::RunPrompt(const char* prompt)
 		}
 	}
 
+	/*
 	//DEBUG: Print cursor location
 	size_t cursorPos = strlen(prompt);
 	for(size_t i=0; i<m_currentToken; i++)
@@ -144,6 +177,7 @@ void CLI::RunPrompt(const char* prompt)
 	g_uart.Printf("currentToken: %d\n", m_currentToken);
 	g_uart.Printf("lastToken: %d\n", m_lastToken);
 	g_uart.Printf("tokenOffset: %d\n", m_tokenOffset);
+	*/
 }
 
 /**

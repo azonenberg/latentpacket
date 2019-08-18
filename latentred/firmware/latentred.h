@@ -53,6 +53,7 @@ void* memset(void* s, int c, size_t n);
 char* reverse(char* s);
 int strlen(const char* str);
 char* strncpy(char* dst, const char* src, size_t n);
+int strcmp(const char* a, const char* b);
 
 #include "token.h"
 #include "command.h"

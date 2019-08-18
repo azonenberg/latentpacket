@@ -43,6 +43,16 @@ public:
 	{}
 
 	Token m_tokens[MAX_TOKENS];
+
+	size_t Size()
+	{
+		for(size_t s = 0; s<MAX_TOKENS; s++)
+		{
+			if(m_tokens[s].IsEmpty())
+				return s;
+		}
+		return MAX_TOKENS;
+	}
 };
 
 #endif

@@ -40,10 +40,7 @@ int main()
 	EnableInterrupts();
 
 	CLI cli;
-	while(1)
-	{
-		cli.RunPrompt("switch# ");
-	}
+	cli.Run();
 
 	return 0;
 }

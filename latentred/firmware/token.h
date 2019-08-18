@@ -49,6 +49,9 @@ public:
 	size_t Length()
 	{ return strlen(m_text); }
 
+	bool operator==(const char* rhs)
+	{ return strcmp(m_text, rhs) == 0; }
+
 	///@brief Text of the token
 	char m_text[MAX_TOKEN_LEN];
 
