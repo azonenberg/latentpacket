@@ -58,8 +58,70 @@ void CLI::RunTopLevel()
 		Command command;
 		RunPrompt("", command);
 
-		//Autocomplete the command
+		//Autocomplete/parse the command
+		if(!ParseCommand(command, g_topCommands))
+			continue;
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool CLI::ParseCommand(Command& command, const clikeyword_t* root)
+{
+	//Go through each token and figure out if it matches anything we know about
+	const clikeyword_t* node = root;
+	for(size_t i = 0; i < MAX_TOKENS; i ++)
+	{
+		if(command.m_tokens[i].IsEmpty())
+			break;
+
+		//Debug print
+		g_uart.Printf("    %d: %s ", i, command.m_tokens[i].m_text);
+
+		command.m_tokens[i].m_commandID = CMD_NULL;
+
+		for(const clikeyword_t* row = node; row->keyword != NULL; row++)
+		{
+			//TODO: handle wildcards
+
+			//If the token doesn't match the prefix, we're definitely not a hit
+			if(!command.m_tokens[i].PrefixMatch(row->keyword))
+				continue;
+
+			//If it matches, but the subsequent token matches too, the command is ambiguous!
+			//Fail with an error.
+			if(command.m_tokens[i].PrefixMatch(row[1].keyword))
+			{
+				g_uart.Printf(
+					"\nAmbiguous command (at word %d): you typed \"%s\", but this could be short for \"%s\" or \"%s\"\n",
+					i,
+					command.m_tokens[i].m_text,
+					row->keyword,
+					row[1].keyword);
+				return false;
+			}
+
+			//Debug print
+			g_uart.Printf("(matched \"%s\")\n", row->keyword);
+
+			//Match!
+			command.m_tokens[i].m_commandID = row->id;
+			node = row->children;
+		}
+
+		//Didn't match anything at all, give up
+		if(command.m_tokens[i].m_commandID == CMD_NULL)
+		{
+			g_uart.Printf(
+				"\nUnrecognized command (at word %d): you typed \"%s\", but this did not match any known commands\n",
+				command.m_tokens[i].m_text);
+			return false;
+		}
+
+	}
+
+	//If we get here, all good
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

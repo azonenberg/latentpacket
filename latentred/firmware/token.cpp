@@ -27,107 +27,27 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef cli_h
-#define cli_h
+#include "latentred.h"
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief Functions related to the command-line interface itself (not specific commands)
+	@brief Checks if a short-form command matches this token
  */
-
-/**
-	@brief Numeric ID for a single command word
- */
-enum cmdid_t
+bool Token::PrefixMatch(const char* fullcommand)
 {
-	//must be first
-	CMD_NULL,
+	//Null is legal to pass if we match against the end of the token array.
+	//It never matches, since it's not a valid command
+	if(fullcommand == NULL)
+		return false;
 
-	//placeholder for an argument, see text of token for details
-	CMD_ARGUMENT_PLACEHOLDER,
+	for(size_t i = 0; i < MAX_TOKEN_LEN; i++)
+	{
+		//End of input with no mismatches? It's a match
+		if(m_text[i] == '\0')
+			return true;
 
-	CMD_CONFIGURE,
-	CMD_COPY,
-	CMD_EXIT,
-	CMD_RUNNING_CONFIG,
-	CMD_SHOW,
-	CMD_STARTUP_CONFIG,
-	CMD_TERMINAL,
-	CMD_VERSION,
-
-	//must be last
-	CMD_LIST_SIZE
-};
-
-/**
-	@brief A single keyword in the CLI command tree
- */
-struct clikeyword_t
-{
-	///ASCII representation of the unabbreviated keyword
-	const char*			keyword;
-
-	///Integer identifier used by the command parser
-	uint32_t			id;
-
-	///Child nodes for subsequent words
-	const clikeyword_t*	children;
-};
-
-/**
-	@brief The command-line interface
- */
-class CLI
-{
-public:
-	CLI();
-
-	/**
-		@brief Runs the CLI
-	 */
-	void Run();
-
-protected:
-
-	/**
-		@brief Runs the top level of the prompt
-	 */
-	void RunTopLevel();
-
-	/**
-		@brief Shows the prompt, then reads a line of input
-	 */
-	void RunPrompt(const char* prompt, Command& command);
-
-	/**
-		@brief Parses/autocompletes a command
-	 */
-	bool ParseCommand(Command& command, const clikeyword_t* root);
-
-protected:
-
-	///@brief The token we're currently typing into
-	size_t m_currentToken;
-
-	///@brief Our position within that token
-	size_t m_tokenOffset;
-
-	///@brief Index of the last token we currently have
-	size_t m_lastToken;
-
-	void OnBackspace(Command& command);
-	void OnTabComplete(Command& command);
-	void OnSpace(Command& command);
-	void OnLeftArrow(Command& command);
-	void OnRightArrow(Command& command);
-	void OnKey(Command& command, char c);
-
-	void RedrawLineRightOfCursor(Command& command);
-
-	const char* m_hostname;
-};
-
-extern const clikeyword_t g_topCommands[];
-
-#endif
+		//Early-out on the first mismatch
+		if(m_text[i] != fullcommand[i])
+			return false;
+	}
+	return true;
+}

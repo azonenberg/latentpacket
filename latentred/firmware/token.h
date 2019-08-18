@@ -39,9 +39,7 @@ class Token
 {
 public:
 	Token()
-	{
-		memset(m_text, 0, sizeof(m_text));
-	}
+	{ memset(m_text, 0, sizeof(m_text)); }
 
 	bool IsEmpty()
 	{ return (Length() == 0); }
@@ -52,8 +50,15 @@ public:
 	bool operator==(const char* rhs)
 	{ return strcmp(m_text, rhs) == 0; }
 
+	bool PrefixMatch(const char* fullcommand);
+
+public:
+
 	///@brief Text of the token
 	char m_text[MAX_TOKEN_LEN];
+
+	///@brief Parsed command ID (if matched)
+	uint32_t m_commandID;
 
 };
 

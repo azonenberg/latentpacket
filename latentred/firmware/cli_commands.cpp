@@ -30,18 +30,67 @@
 #include "latentred.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Top level commands
+// Sub commands
 
-enum top_commands
+//configure ...
+const clikeyword_t g_configureCommands[] =
 {
-	CMD_CONFIGURE,
-	CMD_EXIT,
-	CMD_SHOW,
+	{ "terminal",   CMD_TERMINAL,	NULL },
+
+	//end of list
+	{ NULL,			CMD_NULL,		NULL }
 };
 
-static const clikeyword_t g_topCommands[]=
+//copy running-config ...
+const clikeyword_t g_copyDestsRun[] =
 {
-	{ "configure",	CMD_CONFIGURE,	NULL },
+	{ "startup-config",		CMD_STARTUP_CONFIG,	NULL },
+
+	//end of list
+	{ NULL,					CMD_NULL,			NULL }
+};
+
+//copy startup-config ...
+const clikeyword_t g_copyDestsStart[] =
+{
+	{ "running-config",		CMD_RUNNING_CONFIG,	g_copyDestsRun },
+
+	//end of list
+	{ NULL,					CMD_NULL,			NULL }
+};
+
+//copy...
+const clikeyword_t g_copySources[] =
+{
+	{ "running-config",		CMD_RUNNING_CONFIG,	g_copyDestsRun },
+	{ "startup-config",		CMD_STARTUP_CONFIG,	g_copyDestsStart },
+
+	//end of list
+	{ NULL,					CMD_NULL,			NULL }
+};
+
+//show...
+const clikeyword_t g_showCommands[] =
+{
+	{ "running-config",		CMD_RUNNING_CONFIG,	NULL },
+	{ "startup-config",		CMD_STARTUP_CONFIG,	NULL },
+	{ "version",			CMD_VERSION,		NULL },
+
+	//end of list
+	{ NULL,					CMD_NULL,			NULL }
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Top level commands
+
+//normal mode, not configuring anything
+const clikeyword_t g_topCommands[] =
+{
+	{ "configure",	CMD_CONFIGURE,	g_configureCommands },
+	{ "copy",		CMD_COPY,		g_copySources },
 	{ "exit",		CMD_EXIT,		NULL },
-	{ "show",		CMD_SHOW,		NULL }
+	{ "show",		CMD_SHOW,		g_showCommands },
+
+	//end of list
+	{ NULL,			CMD_NULL,		NULL }
 };
