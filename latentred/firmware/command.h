@@ -44,6 +44,9 @@ public:
 
 	Token m_tokens[MAX_TOKENS];
 
+	Token& operator[](size_t i)
+	{ return m_tokens[i]; }
+
 	size_t Size()
 	{
 		for(size_t s = 0; s<MAX_TOKENS; s++)

@@ -106,6 +106,10 @@ protected:
 	bool ParseCommand(Command& command, const clikeyword_t* root);
 
 protected:
+	void OnShowCommand(Command& command);
+	void OnShowVersion();
+
+protected:
 
 	///@brief The token we're currently typing into
 	size_t m_currentToken;
