@@ -206,8 +206,7 @@ void CLI::OnKey(Command& command, char c)
 void CLI::OnSpace(Command& command)
 {
 	//If we're out of token space, stop
-	//TODO: handle insertion into the middle of the token list
-	if(m_currentToken >= MAX_TOKENS)
+	if(m_lastToken >= (MAX_TOKENS - 1) )
 		return;
 
 	//Ignore consecutive spaces - if we already made an empty token between the existing ones,
@@ -215,23 +214,54 @@ void CLI::OnSpace(Command& command)
 	if(command.m_tokens[m_currentToken].IsEmpty())
 		return;
 
+	//OK, we're definitely adding a space. The only question now is where.
 	g_uart.PrintBinary(' ' );
-	m_tokenOffset = 0;
 
-	//Not empty. Start a new token.
-	m_currentToken ++;
+	//If we're at the end of the token, just insert a new token
+	if(m_tokenOffset == command.m_tokens[m_currentToken].Length())
+	{
+		//Not empty. Start a new token.
+		m_currentToken ++;
 
-	//If this was the last token, nothing more to do.
-	if(m_currentToken > m_lastToken)
-		return;
-	m_lastToken ++;
+		//If this was the last token, nothing more to do.
+		if(m_currentToken > m_lastToken)
+		{
+			m_tokenOffset = 0;
+			return;
+		}
 
-	//If we have tokens to the right, move them right and wipe the current one.
-	for(size_t i = m_lastToken; i > m_currentToken; i-- )
-		strncpy(command.m_tokens[i].m_text, command.m_tokens[i-1].m_text, MAX_TOKEN_LEN);
-	memset(command.m_tokens[m_currentToken].m_text, 0, MAX_TOKEN_LEN);
+		//If we have tokens to the right, move them right and wipe the current one.
+		for(size_t i = m_lastToken+1; i > m_currentToken; i-- )
+			strncpy(command.m_tokens[i].m_text, command.m_tokens[i-1].m_text, MAX_TOKEN_LEN);
+		memset(command.m_tokens[m_currentToken].m_text, 0, MAX_TOKEN_LEN);
 
-	//TODO: if we're in the middle of a token, split it
+		m_tokenOffset = 0;
+	}
+
+	//We're in the middle of a token. Need to split it.
+	else
+	{
+		//If we have tokens to the right, move them right
+		if(m_currentToken < m_lastToken)
+		{
+			for(size_t i = m_lastToken+1; i > (m_currentToken+1); i-- )
+				strncpy(command.m_tokens[i].m_text, command.m_tokens[i-1].m_text, MAX_TOKEN_LEN);
+		}
+
+		//Move the right half of the split token into a new one at right
+		strncpy(
+			command.m_tokens[m_currentToken+1].m_text,
+			command.m_tokens[m_currentToken].m_text + m_tokenOffset,
+			MAX_TOKEN_LEN);
+
+		//Truncate the left half of the split token
+		for(size_t i=m_tokenOffset; i<MAX_TOKEN_LEN; i++)
+			command.m_tokens[m_currentToken].m_text[i] = '\0';
+
+		//We're now at the start of the new token
+		m_currentToken ++;
+		m_tokenOffset = 0;
+	}
 
 	//Definitely have to redraw after doing this!
 	RedrawLineRightOfCursor(command);

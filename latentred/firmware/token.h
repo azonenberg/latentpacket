@@ -44,7 +44,10 @@ public:
 	}
 
 	bool IsEmpty()
-	{ return (strlen(m_text) == 0); }
+	{ return (Length() == 0); }
+
+	size_t Length()
+	{ return strlen(m_text); }
 
 	///@brief Text of the token
 	char m_text[MAX_TOKEN_LEN];
