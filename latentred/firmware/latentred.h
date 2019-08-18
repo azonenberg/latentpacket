@@ -55,10 +55,11 @@ int strlen(const char* str);
 char* strncpy(char* dst, const char* src, size_t n);
 int strcmp(const char* a, const char* b);
 
-#include "token.h"
-#include "command.h"
-#include "cli.h"
-#include "fifo.h"
-#include "uart.h"
+#include "Token.h"
+#include "Command.h"
+#include "Switch.h"
+#include "CLI.h"
+#include "FIFO.h"
+#include "UART.h"
 
 #endif

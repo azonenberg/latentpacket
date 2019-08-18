@@ -1,5 +1,5 @@
-CFLAGS=-march=armv7-m -mfloat-abi=hard
-CXXFLAGS=-march=armv7-m -mfloat-abi=hard --std=c++17 -fno-exceptions -nostdinc
+CFLAGS=-march=armv7-m -mfloat-abi=hard -nostdinc
+CXXFLAGS=$(CFLAGS) --std=c++17 -fno-exceptions -fno-rtti -nostdinc
 CC=arm-none-eabi-gcc
 CXX=arm-none-eabi-g++
 all:

@@ -27,116 +27,12 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef fifo_h
-#define fifo_h
+#include "latentred.h"
 
-/**
-	@file
-	@author	Andrew D. Zonenberg
-	@brief	Declaration of Fifo class
- */
-
-/**
-	@brief A circular buffer based FIFO interlocked for safe use across interrupt domains
- */
-template<class objtype, uint32_t depth>
-class Fifo
+Switch::Switch()
 {
-public:
+}
 
-	/**
-		@brief Creates a new FIFO
-	 */
-	Fifo()
-		: m_wptr(0)
-		, m_rptr(0)
-		, m_empty(true)
-	{}
-
-	/**
-		@brief Adds a new item to the FIFO.
-
-		Pushing when the FIFO is full is a legal no-op.
-	 */
-	void Push(objtype item)
-	{
-		uint32_t sr = EnterCriticalSection();
-
-		if(!InternalIsFull())
-		{
-			m_storage[m_wptr] = item;
-			m_wptr ++;
-			m_empty = false;
-		}
-
-		if(m_wptr == depth)
-			m_wptr = 0;
-
-		LeaveCriticalSection(sr);
-	}
-
-	/**
-		@brief Removes an item from the FIFO and returns it.
-
-		Popping an empty FIFO is a legal no-op with an undefined return value.
-	 */
-	objtype Pop()
-	{
-		uint32_t sr = EnterCriticalSection();
-
-		objtype ret = m_storage[m_rptr];
-
-		if(!IsEmpty())
-		{
-			m_rptr ++;
-
-			if(m_rptr == depth)
-				m_rptr = 0;
-
-			if(m_rptr == m_wptr)
-				m_empty = true;
-		}
-
-		LeaveCriticalSection(sr);
-
-		return ret;
-	}
-
-	/**
-		@brief Checks if the FIFO is empty
-	 */
-	bool IsEmpty()
-	{
-		return m_empty;
-	}
-
-	/**
-		@brief Checks if the FIFO is full
-	 */
-	bool IsFull()
-	{
-		uint32_t sr = EnterCriticalSection();
-		bool full = InternalIsFull();
-		LeaveCriticalSection(sr);
-		return full;
-	}
-
-protected:
-
-	/**
-		@brief Checks if the FIFO is full without any interlocks.
-	 */
-	bool InternalIsFull()
-	{
-		if(m_empty)
-			return false;
-		return (m_wptr == m_rptr);
-	}
-
-	objtype m_storage[depth];
-	uint32_t m_wptr;
-	uint32_t m_rptr;
-	bool m_empty;
-};
-
-#endif
+Switch::~Switch()
+{
+}

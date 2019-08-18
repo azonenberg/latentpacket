@@ -50,8 +50,10 @@ enum cmdid_t
 	CMD_CONFIGURE,
 	CMD_COPY,
 	CMD_EXIT,
+	CMD_INTERFACE,
 	CMD_RUNNING_CONFIG,
 	CMD_SHOW,
+	CMD_STATUS,
 	CMD_STARTUP_CONFIG,
 	CMD_TERMINAL,
 	CMD_VERSION,
@@ -81,7 +83,7 @@ struct clikeyword_t
 class CLI
 {
 public:
-	CLI();
+	CLI(Switch* sw);
 
 	/**
 		@brief Runs the CLI
@@ -107,6 +109,8 @@ protected:
 
 protected:
 	void OnShowCommand(Command& command);
+	void OnShowInterfaceCommand(Command& command);
+	void OnShowInterfaceStatus();
 	void OnShowVersion();
 
 protected:
@@ -130,6 +134,8 @@ protected:
 	void RedrawLineRightOfCursor(Command& command);
 
 	const char* m_hostname;
+
+	Switch* m_switch;
 };
 
 extern const clikeyword_t g_topCommands[];

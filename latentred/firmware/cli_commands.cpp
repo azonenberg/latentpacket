@@ -69,9 +69,19 @@ const clikeyword_t g_copySources[] =
 	{ NULL,					CMD_NULL,			NULL }
 };
 
+//show interface ...
+const clikeyword_t g_showInterfaceCommands[] =
+{
+	{ "status",  	CMD_STATUS,	NULL },
+
+	//end of list
+	{ NULL,			CMD_NULL,		NULL }
+};
+
 //show...
 const clikeyword_t g_showCommands[] =
 {
+	{ "interface",			CMD_INTERFACE,		g_showInterfaceCommands },
 	{ "running-config",		CMD_RUNNING_CONFIG,	NULL },
 	{ "startup-config",		CMD_STARTUP_CONFIG,	NULL },
 	{ "version",			CMD_VERSION,		NULL },

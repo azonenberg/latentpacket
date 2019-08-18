@@ -69,7 +69,7 @@ protected:
 	volatile usart_t* m_txlane;
 	volatile usart_t* m_rxlane;
 
-	Fifo<char, 32> m_rxFifo;
+	FIFO<char, 32> m_rxFifo;
 };
 
 extern UART g_uart;

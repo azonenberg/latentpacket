@@ -35,8 +35,9 @@ static const char* CURSOR_RIGHT = "\x1b[C";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-CLI::CLI()
+CLI::CLI(Switch* sw)
 	: m_hostname("Mock-switch")
+	, m_switch(sw)
 {
 
 }
@@ -84,7 +85,16 @@ bool CLI::ParseCommand(Command& command, const clikeyword_t* root)
 	for(size_t i = 0; i < MAX_TOKENS; i ++)
 	{
 		if(command[i].IsEmpty())
+		{
+			//If the node is not NULL, we're missing arguments!
+			if(node != NULL)
+			{
+				g_uart.Printf("\nIncomplete command\n");
+				return false;
+			}
+
 			break;
+		}
 
 		//Debug print
 		g_uart.Printf("    %d: %s ", i, command[i].m_text);
@@ -490,12 +500,19 @@ void CLI::OnShowCommand(Command& command)
 {
 	switch(command[1].m_commandID)
 	{
+		case CMD_INTERFACE:
+			OnShowInterfaceCommand(command);
+			break;
+
 		case CMD_VERSION:
 			OnShowVersion();
 			break;
 	}
 }
 
+/**
+	@brief Processes as "show version" command
+ */
 void CLI::OnShowVersion()
 {
 	//see STM32 programming manual section 45.1
@@ -565,4 +582,24 @@ void CLI::OnShowVersion()
 	g_uart.Printf("            [details unimplemented] 10Gbase-R SFP+ interfaces\n");
 	g_uart.Printf("        1: Pluggable line cards [details unimplemented]\n");
 	g_uart.Printf("            [details unimplemented] 10/100/1000base-TX RJ45 interfaces\n");
+}
+
+/**
+	@brief Processes a "show interface" command
+ */
+void CLI::OnShowInterfaceCommand(Command& command)
+{
+	switch(command[2].m_commandID)
+	{
+		case CMD_STATUS:
+			OnShowInterfaceStatus();
+			break;
+	}
+}
+
+/**
+	@brief Processes a "show interface status" command
+ */
+void CLI::OnShowInterfaceStatus()
+{
 }
