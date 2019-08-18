@@ -274,7 +274,7 @@ void CLI::OnTabComplete(Command& command)
 
 void CLI::OnBackspace(Command& command)
 {
-	//We're in the current token
+	//We're in the middle/end of a token
 	if(m_tokenOffset > 0)
 	{
 		//Delete the character
@@ -288,7 +288,7 @@ void CLI::OnBackspace(Command& command)
 			text[i] = text[i+1];
 	}
 
-	//We just started a new token and changed our mind.
+	//We're at the start of a token, but not the first one
 	else if(m_currentToken > 0)
 	{
 		//Delete the space
@@ -297,6 +297,12 @@ void CLI::OnBackspace(Command& command)
 		//Move to end of previous token
 		m_currentToken --;
 		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
+
+		//Merge the token we were in with the current one
+		strncpy(
+			command.m_tokens[m_currentToken].m_text + m_tokenOffset,
+			command.m_tokens[m_currentToken+1].m_text,
+			MAX_TOKEN_LEN - m_tokenOffset);
 
 		//If we have any tokens to the right of us, move them left
 		for(size_t i = m_currentToken+1; i < m_lastToken; i++)
