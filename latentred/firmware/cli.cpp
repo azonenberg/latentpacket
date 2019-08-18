@@ -274,8 +274,6 @@ void CLI::OnTabComplete(Command& command)
 
 void CLI::OnBackspace(Command& command)
 {
-	//TODO: better handling of tokens to the right
-
 	//We're in the current token
 	if(m_tokenOffset > 0)
 	{
@@ -299,12 +297,21 @@ void CLI::OnBackspace(Command& command)
 		//Move to end of previous token
 		m_currentToken --;
 		m_tokenOffset = strlen(command.m_tokens[m_currentToken].m_text);
+
+		//If we have any tokens to the right of us, move them left
+		for(size_t i = m_currentToken+1; i < m_lastToken; i++)
+			strncpy(command.m_tokens[i].m_text, command.m_tokens[i+1].m_text, MAX_TOKEN_LEN);
+
+		//Blow away the removed token at the far right
+		memset(command.m_tokens[m_lastToken].m_text, 0, MAX_TOKEN_LEN);
 	}
 
 	//Backspace at the start of the prompt. Ignore it.
 	else
 	{
 	}
+
+	RedrawLineRightOfCursor(command);
 }
 
 void CLI::OnRightArrow(Command& command)
