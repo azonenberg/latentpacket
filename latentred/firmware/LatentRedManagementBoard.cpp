@@ -112,3 +112,15 @@ void LatentRedManagementBoard::PrintFPGAInfo()
 {
 	g_uart.Printf("        FPGA:\n");
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Port access
+
+uint32_t LatentRedManagementBoard::GetPortCount()
+{
+}
+
+Port* LatentRedManagementBoard::GetPort(uint32_t i)
+{
+	
+}

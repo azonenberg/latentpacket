@@ -30,14 +30,59 @@
 #ifndef Port_h
 #define Port_h
 
+class Board;
+
 /**
 	@brief Abstract base class for a switch port
  */
 class Port
 {
 public:
-	Port();
+	Port(Board* board);
 	virtual ~Port();
+	
+	/**
+		@brief Gets a printable description of the port (display only)
+	 */
+	virtual const char* GetDescription();
+
+	/**
+		@brief Gets the hardware name of the port (ex: x1/3)
+	 */
+	virtual const char* GetName() =0;
+	
+	/**
+		@brief Data rate for a port.
+		
+		May be used as single values or bitmasks depending on context.
+	 */
+	enum speed_t
+	{
+		SPEED_DOWN	= 0,
+		SPEED_10M	= 1,
+		SPEED_100M	= 2,
+		SPEED_1G	= 4,
+		SPEED_5G	= 8,
+		SPEED_10G	= 0x10,
+		SPEED_40G	= 0x20
+	};
+	
+	/**
+		@brief Determines if the port is currently linked up
+		
+		@return True if link up, false if link down
+	 */
+	virtual bool IsLinkUp() =0;
+	
+	/**
+		@brief Gets the rate the port is currently operating at
+		
+		@return Current data rate, or SPEED_DOWN if link isn't up
+	 */
+	virtual uint32_t GetCurrentLinkSpeed() =0;
+	
+protected:
+	char m_description[64];
 };
 
 #endif

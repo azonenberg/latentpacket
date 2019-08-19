@@ -43,6 +43,12 @@ public:
 
 	virtual void PrintCPUInfo();
 	virtual void PrintFPGAInfo();
+	
+	virtual uint32_t GetPortCount();
+	virtual Port* GetPort(uint32_t i);
+	
+protected:
+	
 };
 
 #endif

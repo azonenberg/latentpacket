@@ -58,6 +58,7 @@ int strcmp(const char* a, const char* b);
 #include "Token.h"
 #include "Command.h"
 #include "Port.h"
+#include "LatentRedManagementPort.h"
 #include "Board.h"
 #include "LatentRedManagementBoard.h"
 #include "Switch.h"

@@ -27,27 +27,24 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Board_h
-#define Board_h
+#include "latentred.h"
 
-/**
-	@brief Abstract base class for a board containing one or more Ports
- */
-class Board
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+LatentRedManagementPort::LatentRedManagementPort(Board* board)
+	: Port(board)
 {
-public:
-	Board();
-	virtual ~Board();
+}
 
-	virtual const char* GetDescription() =0;
+LatentRedManagementPort::~LatentRedManagementPort()
+{
+}
 
-	//empty stubs provided since some boards may not have a cpu or fpga
-	virtual void PrintCPUInfo();
-	virtual void PrintFPGAInfo();
-	
-	//accessors for actual interfaces
-	virtual uint32_t GetPortCount() =0;
-	virtual Port* GetPort(uint32_t i) =0;
-};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accessors
 
-#endif
+const char* LatentRedManagementPort::GetName()
+{
+	return "Mgmt0";
+}

@@ -27,27 +27,19 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Board_h
-#define Board_h
+#ifndef LatentRedManagementPort_h
+#define LatentRedManagementPort_h
 
 /**
-	@brief Abstract base class for a board containing one or more Ports
+	@brief The management interface on the INTEGRALSTICK module
  */
-class Board
+class LatentRedManagementPort : public Port
 {
 public:
-	Board();
-	virtual ~Board();
-
-	virtual const char* GetDescription() =0;
-
-	//empty stubs provided since some boards may not have a cpu or fpga
-	virtual void PrintCPUInfo();
-	virtual void PrintFPGAInfo();
+	LatentRedManagementPort(Board* board);
+	virtual ~LatentRedManagementPort();
 	
-	//accessors for actual interfaces
-	virtual uint32_t GetPortCount() =0;
-	virtual Port* GetPort(uint32_t i) =0;
+	virtual const char* GetName();
 };
 
 #endif

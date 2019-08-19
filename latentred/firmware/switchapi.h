@@ -132,44 +132,12 @@ enum LinkState
 };
 
 /**
-	@brief Gets the current state of a port
-
-	@param port		Port ID
-
-	@return			State of the link
- */
-LinkState GetLinkState(port_t port);
-
-/**
 	@brief Enable or disable a port.
 	
 	@param port		Port ID
 	@param enable	Enables port if true, forces to LINK_ADMDOWN if false
  */
 void EnablePort(port_t port, bool enable);
-
-/**
-	@brief Speeds that a port can operate at
- */
-enum LinkSpeed
-{
-	SPEED_DOWN	= 0,
-	SPEED_10M	= 1,
-	SPEED_100M	= 2,
-	SPEED_1G	= 4,
-	SPEED_5G	= 8,
-	SPEED_10G	= 0x10,
-	SPEED_40G	= 0x20
-};
-
-/**
-	@brief Gets the current speed of a port
-
-	@param port		Port ID
-
-	@return			Link speed, or SPEED_DOWN if link is down
- */
-LinkSpeed GetLinkSpeed(port_t port);
 
 /**
 	@brief Forces a port to operate at a certain speed and disables negotiation
