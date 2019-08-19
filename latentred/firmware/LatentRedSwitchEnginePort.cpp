@@ -32,31 +32,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-LatentRedManagementPort::LatentRedManagementPort(Board* board)
+LatentRedSwitchEnginePort::LatentRedSwitchEnginePort(Board* board, uint32_t portNumber)
 	: Port(board)
+	, m_portNumber(portNumber)
 {
+	strncpy(m_name, "x0/0", sizeof(m_name));
+	m_name[3] += m_portNumber;
 }
 
-LatentRedManagementPort::~LatentRedManagementPort()
+LatentRedSwitchEnginePort::~LatentRedSwitchEnginePort()
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Accessors
 
-const char* LatentRedManagementPort::GetName()
+const char* LatentRedSwitchEnginePort::GetName()
 {
-	return "Mgmt0";
+	return m_name;
 }
 
-bool LatentRedManagementPort::IsLinkUp()
+bool LatentRedSwitchEnginePort::IsLinkUp()
 {
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
+	//TODO: query switch FPGA
 	return false;
 }
 
-Port::speed_t LatentRedManagementPort::GetCurrentLinkSpeed()
+Port::speed_t LatentRedSwitchEnginePort::GetCurrentLinkSpeed()
 {
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
+	//TODO: query switch FPGA
 	return SPEED_DOWN;
 }

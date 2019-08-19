@@ -31,7 +31,7 @@
 #define LatentRedManagementBoard_h
 
 /**
-	@brief Abstract base class for a board containing one or more Ports
+	@brief THe INTEGRALSTICK module for management (contains the management port only)
  */
 class LatentRedManagementBoard : public Board
 {
@@ -48,7 +48,7 @@ public:
 	virtual Port* GetPort(uint32_t i);
 	
 protected:
-	
+	LatentRedManagementPort m_mgmtPort;
 };
 
 #endif

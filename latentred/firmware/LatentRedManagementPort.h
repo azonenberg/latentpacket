@@ -39,6 +39,9 @@ public:
 	LatentRedManagementPort(Board* board);
 	virtual ~LatentRedManagementPort();
 	
+	virtual bool IsLinkUp();
+	virtual speed_t GetCurrentLinkSpeed();
+	
 	virtual const char* GetName();
 };
 

@@ -27,36 +27,26 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "latentred.h"
+#ifndef LatentRedSwitchEnginePort_h
+#define LatentRedSwitchEnginePort_h
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Construction / destruction
-
-LatentRedManagementPort::LatentRedManagementPort(Board* board)
-	: Port(board)
+/**
+	@brief A 10Gbase-R interface on the switch engine PCB
+ */
+class LatentRedSwitchEnginePort : public Port
 {
-}
+public:
+	LatentRedSwitchEnginePort(Board* board, uint32_t portNumber);
+	virtual ~LatentRedSwitchEnginePort();
+	
+	virtual bool IsLinkUp();
+	virtual speed_t GetCurrentLinkSpeed();
+	
+	virtual const char* GetName();
+	
+protected:
+	uint32_t m_portNumber;
+	char m_name[5];
+};
 
-LatentRedManagementPort::~LatentRedManagementPort()
-{
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Accessors
-
-const char* LatentRedManagementPort::GetName()
-{
-	return "Mgmt0";
-}
-
-bool LatentRedManagementPort::IsLinkUp()
-{
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
-	return false;
-}
-
-Port::speed_t LatentRedManagementPort::GetCurrentLinkSpeed()
-{
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
-	return SPEED_DOWN;
-}
+#endif

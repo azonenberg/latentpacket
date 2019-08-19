@@ -79,7 +79,7 @@ public:
 		
 		@return Current data rate, or SPEED_DOWN if link isn't up
 	 */
-	virtual uint32_t GetCurrentLinkSpeed() =0;
+	virtual speed_t GetCurrentLinkSpeed() =0;
 	
 protected:
 	char m_description[64];

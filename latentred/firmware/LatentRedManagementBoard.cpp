@@ -33,6 +33,7 @@
 // Construction / destruction
 
 LatentRedManagementBoard::LatentRedManagementBoard()
+	: m_mgmtPort(this)
 {
 }
 
@@ -89,11 +90,6 @@ void LatentRedManagementBoard::PrintCPUInfo()
 	g_uart.Printf("            Die (%d, %d), wafer %d, lot %s\n", waferX, waferY, waferNum, waferLot);
 
 	/*
-	g_uart.Printf("    Management engine FPGA:\n");
-	g_uart.Printf("        Xilinx [details unimplemented]\n");
-	g_uart.Printf("        Serial number 0x[details unimplemented]\n");
-	g_uart.Printf("        Bitstream version [details unimplemented]\n");
-
 	g_uart.Printf("    Switch fabric FPGA:\n");
 	g_uart.Printf("        Xilinx [details unimplemented]\n");
 	g_uart.Printf("        Serial number 0x[details unimplemented]\n");
@@ -118,9 +114,13 @@ void LatentRedManagementBoard::PrintFPGAInfo()
 
 uint32_t LatentRedManagementBoard::GetPortCount()
 {
+	return 1;
 }
 
 Port* LatentRedManagementBoard::GetPort(uint32_t i)
 {
-	
+	if(i == 0)
+		return &m_mgmtPort;
+	else
+		return NULL;
 }

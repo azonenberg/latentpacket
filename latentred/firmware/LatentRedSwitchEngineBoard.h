@@ -27,36 +27,27 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "latentred.h"
+#ifndef LatentRedSwitchEngineBoard_h
+#define LatentRedSwitchEngineBoard_h
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Construction / destruction
-
-LatentRedManagementPort::LatentRedManagementPort(Board* board)
-	: Port(board)
+/**
+	@brief The switch engine (main fabric FPGA + 4x 10Gbase-R interfaces)
+ */
+class LatentRedSwitchEngineBoard : public Board
 {
-}
+public:
+	LatentRedSwitchEngineBoard();
+	virtual ~LatentRedSwitchEngineBoard();
 
-LatentRedManagementPort::~LatentRedManagementPort()
-{
-}
+	virtual const char* GetDescription();
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Accessors
+	virtual void PrintFPGAInfo();
+	
+	virtual uint32_t GetPortCount();
+	virtual Port* GetPort(uint32_t i);
+	
+protected:
+	LatentRedSwitchEnginePort m_ports[4];
+};
 
-const char* LatentRedManagementPort::GetName()
-{
-	return "Mgmt0";
-}
-
-bool LatentRedManagementPort::IsLinkUp()
-{
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
-	return false;
-}
-
-Port::speed_t LatentRedManagementPort::GetCurrentLinkSpeed()
-{
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
-	return SPEED_DOWN;
-}
+#endif

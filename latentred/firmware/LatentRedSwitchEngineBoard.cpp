@@ -32,31 +32,47 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-LatentRedManagementPort::LatentRedManagementPort(Board* board)
-	: Port(board)
+LatentRedSwitchEngineBoard::LatentRedSwitchEngineBoard()
+	: m_ports
+	{
+		{ this, 0 },
+		{ this, 1 },
+		{ this, 2 },
+		{ this, 3 }
+	}
 {
 }
 
-LatentRedManagementPort::~LatentRedManagementPort()
+LatentRedSwitchEngineBoard::~LatentRedSwitchEngineBoard()
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Accessors
 
-const char* LatentRedManagementPort::GetName()
+const char* LatentRedSwitchEngineBoard::GetDescription()
 {
-	return "Mgmt0";
+	return "LATENTRED Switch Engine v0.1";
 }
 
-bool LatentRedManagementPort::IsLinkUp()
+void LatentRedSwitchEngineBoard::PrintFPGAInfo()
 {
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
-	return false;
+	g_uart.Printf("        FPGA:\n");
+	
+	g_uart.Printf("            Xilinx [details unimplemented]\n");
+	g_uart.Printf("            Serial number 0x[details unimplemented]\n");
+	g_uart.Printf("            Bitstream version [details unimplemented]\n");
 }
 
-Port::speed_t LatentRedManagementPort::GetCurrentLinkSpeed()
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Port access
+
+uint32_t LatentRedSwitchEngineBoard::GetPortCount()
 {
-	//TODO: query management FPGA (RMII link will always be up @ 100M)
-	return SPEED_DOWN;
+	return 4;
+}
+
+Port* LatentRedSwitchEngineBoard::GetPort(uint32_t i)
+{
+	
 }
