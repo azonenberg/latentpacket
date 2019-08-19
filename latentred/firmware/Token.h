@@ -50,6 +50,12 @@ public:
 	bool operator==(const char* rhs)
 	{ return strcmp(m_text, rhs) == 0; }
 
+	void Clear()
+	{
+		memset(m_text, 0, sizeof(m_text));
+		m_commandID = 0;
+	}
+
 	bool PrefixMatch(const char* fullcommand);
 
 public:

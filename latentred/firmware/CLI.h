@@ -86,30 +86,34 @@ public:
 	CLI(Switch* sw);
 
 	/**
-		@brief Runs the CLI
+		@brief Single iteration of the main loop
 	 */
-	void Run();
+	void Iteration();
 
 protected:
+	/**
+		@brief Handles one or more bytes of input
+	 */
+	void OnInputReady();
 
 	/**
-		@brief Runs the top level of the prompt
+		@brief Processes a line of user input
 	 */
-	void RunTopLevel();
+	void OnLineReady();
 
 	/**
-		@brief Shows the prompt, then reads a line of input
+		@brief Executes a parsed command
 	 */
-	void RunPrompt(const char* prompt, Command& command);
+	void OnExecuteCommand();
 
 	/**
 		@brief Parses/autocompletes a command
 	 */
-	bool ParseCommand(Command& command, const clikeyword_t* root);
+	bool ParseCommand(const clikeyword_t* root);
 
 protected:
-	void OnShowCommand(Command& command);
-	void OnShowInterfaceCommand(Command& command);
+	void OnShowCommand();
+	void OnShowInterfaceCommand();
 	void OnShowInterfaceStatus();
 	void OnShowVersion();
 
@@ -124,18 +128,29 @@ protected:
 	///@brief Index of the last token we currently have
 	size_t m_lastToken;
 
-	void OnBackspace(Command& command);
-	void OnTabComplete(Command& command);
-	void OnSpace(Command& command);
-	void OnLeftArrow(Command& command);
-	void OnRightArrow(Command& command);
-	void OnKey(Command& command, char c);
+	void OnBackspace();
+	void OnTabComplete();
+	void OnSpace();
+	void OnLeftArrow();
+	void OnRightArrow();
+	void OnKey(char c);
 
-	void RedrawLineRightOfCursor(Command& command);
+	void RedrawLineRightOfCursor();
 
 	const char* m_hostname;
 
 	Switch* m_switch;
+
+	//CLI state machine
+	enum state
+	{
+		STATE_SHOW_PROMPT,
+		STATE_EDIT,
+		STATE_PARSE,
+		STATE_EXECUTE
+	} m_state;
+
+	Command m_command;
 };
 
 extern const clikeyword_t g_topCommands[];

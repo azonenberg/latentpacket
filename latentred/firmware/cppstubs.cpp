@@ -27,53 +27,38 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
+#include "latentred.h"
 
-/**
-	@file
-	@author Andrew D. Zonenberg
-	@brief UART driver
- */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// C++ memory allocation (not supported)
 
-extern "C" void USART2_Handler();
-
-/**
-	@brief Driver for a UART
- */
-class UART
+void* operator new(size_t n)
 {
-public:
-
-	UART(volatile usart_t* lane)
-	 : UART(lane, lane)
+	g_uart.PrintString("new called\n");
+	while(1)
 	{}
+}
 
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane);
+void operator delete(void* p)
+{
+	g_uart.PrintString("delete(void*) called\n");
+	while(1)
+	{}
+}
 
-	//TX side
-	void PrintBinary(char ch);
-	void PrintText(char ch);
-	void PrintString(const char* str);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
+void operator delete(void* p, size_t size)
+{
+	g_uart.PrintString("delete(void*, size_t) called\n");
+	while(1)
+	{}
+}
 
-	//RX side
-	char BlockingRead();
-	bool HasInput()
-	{ return !m_rxFifo.IsEmpty(); }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Stub for pure virtual functions
 
-	//Interrupt handlers
-	void OnIRQRxData(char ch)
-	{ m_rxFifo.Push(ch); }
-
-protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
-
-	FIFO<char, 32> m_rxFifo;
-};
-
-extern UART g_uart;
-
-#endif
+extern "C" void __cxa_pure_virtual()
+{
+	g_uart.PrintString("pure virtual function called\n");
+	while(1)
+	{}
+}

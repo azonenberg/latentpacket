@@ -40,12 +40,15 @@ int main()
 	PlatformInit();
 	EnableInterrupts();
 
-	//Create the global switch object
-	Switch sw;
-
-	//Run the CLI
+	//Create the global switch and CLI objects
+	LatentRedSwitch sw;
 	CLI cli(&sw);
-	cli.Run();
+
+	//Wait for events, then process them
+	while(true)
+	{
+		cli.Iteration();
+	}
 
 	//should never get here
 	return 0;
@@ -132,24 +135,4 @@ extern "C" void MMUFault_Handler()
 	g_uart.PrintString("MMU fault\n");
 	while(1)
 	{}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// C++ memory allocation (not supported)
-
-void* operator new(size_t n)
-{
-	g_uart.PrintString("new called\n");
-	while(1)
-	{}
-}
-
-void operator delete(void* p)
-{
-	g_uart.PrintString("delete(void*) called\n");
-}
-
-void operator delete(void* p, size_t size)
-{
-	g_uart.PrintString("delete(void*, size_t) called\n");
 }

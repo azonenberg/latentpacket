@@ -27,53 +27,17 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
+#ifndef Board_h
+#define Board_h
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief UART driver
+	@brief Abstract base class for a board containing one or more Ports
  */
-
-extern "C" void USART2_Handler();
-
-/**
-	@brief Driver for a UART
- */
-class UART
+class Board
 {
 public:
-
-	UART(volatile usart_t* lane)
-	 : UART(lane, lane)
-	{}
-
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane);
-
-	//TX side
-	void PrintBinary(char ch);
-	void PrintText(char ch);
-	void PrintString(const char* str);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-
-	//RX side
-	char BlockingRead();
-	bool HasInput()
-	{ return !m_rxFifo.IsEmpty(); }
-
-	//Interrupt handlers
-	void OnIRQRxData(char ch)
-	{ m_rxFifo.Push(ch); }
-
-protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
-
-	FIFO<char, 32> m_rxFifo;
+	Board();
+	virtual ~Board();
 };
-
-extern UART g_uart;
 
 #endif

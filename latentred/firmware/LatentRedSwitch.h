@@ -27,53 +27,27 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
+#ifndef LatentRedSwitch_h
+#define LatentRedSwitch_h
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief UART driver
+	@brief An actual LATENTRED switch platform
  */
-
-extern "C" void USART2_Handler();
-
-/**
-	@brief Driver for a UART
- */
-class UART
+class LatentRedSwitch : public Switch
 {
 public:
+	LatentRedSwitch();
+	virtual ~LatentRedSwitch();
 
-	UART(volatile usart_t* lane)
-	 : UART(lane, lane)
-	{}
+	virtual const char* GetDescription();
 
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane);
+	virtual uint32_t GetMajorHwVersion();
+	virtual uint32_t GetMinorHwVersion();
 
-	//TX side
-	void PrintBinary(char ch);
-	void PrintText(char ch);
-	void PrintString(const char* str);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-
-	//RX side
-	char BlockingRead();
-	bool HasInput()
-	{ return !m_rxFifo.IsEmpty(); }
-
-	//Interrupt handlers
-	void OnIRQRxData(char ch)
-	{ m_rxFifo.Push(ch); }
+	virtual size_t GetBoardCount();
+	virtual Board* GetBoard(size_t i);
 
 protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
-
-	FIFO<char, 32> m_rxFifo;
 };
-
-extern UART g_uart;
 
 #endif
