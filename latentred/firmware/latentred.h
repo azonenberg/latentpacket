@@ -59,6 +59,7 @@ int strcmp(const char* a, const char* b);
 #include "Command.h"
 #include "Port.h"
 #include "Board.h"
+#include "LatentRedManagementBoard.h"
 #include "Switch.h"
 #include "LatentRedSwitch.h"
 #include "CLI.h"

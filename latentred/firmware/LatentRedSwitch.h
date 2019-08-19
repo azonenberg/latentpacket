@@ -41,13 +41,12 @@ public:
 
 	virtual const char* GetDescription();
 
-	virtual uint32_t GetMajorHwVersion();
-	virtual uint32_t GetMinorHwVersion();
-
 	virtual size_t GetBoardCount();
 	virtual Board* GetBoard(size_t i);
 
 protected:
+
+	LatentRedManagementBoard m_managementBoard;
 };
 
 #endif

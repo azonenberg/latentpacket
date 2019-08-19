@@ -38,17 +38,17 @@ int main()
 {
 	//Initialize the hardware
 	PlatformInit();
-	EnableInterrupts();
 
 	//Create the global switch and CLI objects
 	LatentRedSwitch sw;
 	CLI cli(&sw);
 
+	EnableInterrupts();
+	g_uart.PrintString("foobar\n");
+
 	//Wait for events, then process them
 	while(true)
-	{
 		cli.Iteration();
-	}
 
 	//should never get here
 	return 0;

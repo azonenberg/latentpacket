@@ -27,19 +27,19 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Board_h
-#define Board_h
+#ifndef LatentRedManagementBoard_h
+#define LatentRedManagementBoard_h
 
 /**
 	@brief Abstract base class for a board containing one or more Ports
  */
-class Board
+class LatentRedManagementBoard : public Board
 {
 public:
-	Board();
-	virtual ~Board();
+	LatentRedManagementBoard();
+	virtual ~LatentRedManagementBoard();
 
-	virtual const char* GetDescription() =0;
+	virtual const char* GetDescription();
 
 	virtual void PrintCPUInfo();
 	virtual void PrintFPGAInfo();

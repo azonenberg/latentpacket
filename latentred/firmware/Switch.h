@@ -41,9 +41,6 @@ public:
 
 	virtual const char* GetDescription() =0;
 
-	virtual uint32_t GetMajorHwVersion() =0;
-	virtual uint32_t GetMinorHwVersion() =0;
-
 	virtual size_t GetBoardCount() =0;
 	virtual Board* GetBoard(size_t i) =0;
 };

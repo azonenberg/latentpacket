@@ -75,5 +75,6 @@ protected:
 };
 
 extern UART g_uart;
+extern UART g_managementFpgaUart;
 
 #endif

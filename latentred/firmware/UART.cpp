@@ -57,7 +57,7 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 
 	//Configure TX lane
 	m_txlane->BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
-						//This is suggestive of APB1 being 20.85 MHz instead of 25.
+							//This is suggestive of APB1 being 20.85 MHz instead of 25.
 	m_txlane->CR3 = 0x0;
 	m_txlane->CR2 = 0x0;
 	m_txlane->CR1 = 0x9;
@@ -69,7 +69,6 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 	m_rxlane->CR1 = 0x25;
 
 	//Enable IRQ38. This is bit 6 of NVIC_ISER1.
-	//TODO: make this part generic
 	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
 	*NVIC_ISER1 = 0x40;
 }
@@ -273,4 +272,18 @@ extern "C" void __attribute__((isr)) USART2_Handler()
 
 	//save the byte, no fifo yet
 	g_uart.OnIRQRxData(USART2.RDR);
+}
+
+extern "C" void __attribute__((isr)) UART5_Handler()
+{
+	/*
+	//Check why we got the IRQ.
+	//For now, ignore anything other than "data ready"
+	if(0 == (UART5.ISR & USART_ISR_RXNE))
+		return;
+
+	//save the byte, no fifo yet
+	g_managementFpgaUart.OnIRQRxData(UART5.RDR);
+	*/
+	(void)UART5.RDR;
 }

@@ -27,22 +27,88 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Board_h
-#define Board_h
+#include "latentred.h"
 
-/**
-	@brief Abstract base class for a board containing one or more Ports
- */
-class Board
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+LatentRedManagementBoard::LatentRedManagementBoard()
 {
-public:
-	Board();
-	virtual ~Board();
+}
 
-	virtual const char* GetDescription() =0;
+LatentRedManagementBoard::~LatentRedManagementBoard()
+{
+}
 
-	virtual void PrintCPUInfo();
-	virtual void PrintFPGAInfo();
-};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accessors
 
-#endif
+const char* LatentRedManagementBoard::GetDescription()
+{
+	return "INTEGRALSTICK SoM v0.1";
+}
+
+void LatentRedManagementBoard::PrintCPUInfo()
+{
+	//see STM32 programming manual section 45.1
+	volatile const uint32_t* serial = (volatile const uint32_t*)0x1ff0f420;
+	uint16_t waferX = serial[0] >> 16;
+	uint16_t waferY = serial[0] & 0xffff;
+	uint8_t waferNum = serial[1] & 0xff;
+	char waferLot[8] =
+	{
+		static_cast<char>((serial[1] >> 24) & 0xff),
+		static_cast<char>((serial[1] >> 16) & 0xff),
+		static_cast<char>((serial[1] >> 8) & 0xff),
+		static_cast<char>((serial[2] >> 24) & 0xff),
+		static_cast<char>((serial[2] >> 16) & 0xff),
+		static_cast<char>((serial[2] >> 8) & 0xff),
+		static_cast<char>((serial[2] >> 0) & 0xff),
+		'\0'
+	};
+	const uint32_t flash_kb = (*(volatile uint32_t*)0x1ff0f440) >> 16;
+	const uint16_t package = ( (*(volatile uint16_t*)0x1fff7bf0) >> 8) & 0x7;
+
+	//see STM32 programming manual section 44.6.1
+	const uint32_t devid = *(volatile uint32_t*)0xe0042000;
+
+	g_uart.Printf("        CPU:\n");
+	if( (devid & 0xfff) == 0x451)
+	{
+		g_uart.Printf("            ST STM32F777NI stepping %d\n", (devid >> 16) & 0xfff);
+		g_uart.Printf("            ARM Cortex-M7 with FPU\n");
+		g_uart.Printf("            %d KB Flash\n", flash_kb);
+		g_uart.Printf("            512 KB SRAM\n");
+	}
+	else
+		g_uart.Printf("            Unknown CPU\n");
+	if(package == 0x7)
+		g_uart.Printf("            TFBGA216 package\n");
+	else
+		g_uart.Printf("            Unknown package\n");
+	g_uart.Printf("            Die (%d, %d), wafer %d, lot %s\n", waferX, waferY, waferNum, waferLot);
+
+	/*
+	g_uart.Printf("    Management engine FPGA:\n");
+	g_uart.Printf("        Xilinx [details unimplemented]\n");
+	g_uart.Printf("        Serial number 0x[details unimplemented]\n");
+	g_uart.Printf("        Bitstream version [details unimplemented]\n");
+
+	g_uart.Printf("    Switch fabric FPGA:\n");
+	g_uart.Printf("        Xilinx [details unimplemented]\n");
+	g_uart.Printf("        Serial number 0x[details unimplemented]\n");
+	g_uart.Printf("        Bitstream version [details unimplemented]\n");
+
+	g_uart.Printf("    Line cards:\n");
+	g_uart.Printf("        0: LATENTRED switch fabric board rev [details unimplemented]\n");
+	g_uart.Printf("            [details unimplemented] 10Gbase-R SFP+ interfaces\n");
+	g_uart.Printf("        1: Pluggable line cards [details unimplemented]\n");
+	g_uart.Printf("            [details unimplemented] 10/100/1000base-TX RJ45 interfaces\n");
+	*/
+	g_uart.Printf("\n");
+}
+
+void LatentRedManagementBoard::PrintFPGAInfo()
+{
+	g_uart.Printf("        FPGA:\n");
+}
