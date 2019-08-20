@@ -261,7 +261,7 @@ void UART::Printf(const char* format, ...)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Interrupt handlers
 
-extern "C" void __attribute__((isr)) USART2_Handler()
+void __attribute__((isr)) USART2_Handler()
 {
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
@@ -272,7 +272,7 @@ extern "C" void __attribute__((isr)) USART2_Handler()
 	g_platform.m_cliUart.OnIRQRxData(USART2.RDR);
 }
 
-extern "C" void __attribute__((isr)) UART5_Handler()
+void __attribute__((isr)) UART5_Handler()
 {
 	/*
 	//Check why we got the IRQ.

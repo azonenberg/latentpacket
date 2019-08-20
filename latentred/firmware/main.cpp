@@ -44,7 +44,6 @@ extern "C" const uint8_t __data_romstart;
 extern "C" uint8_t __data_start;
 extern "C" uint8_t __data_end;
 
-
 extern "C" void _start()
 {
 	//Zeroize .bss
@@ -66,72 +65,3 @@ extern "C" void _start()
 		g_platform.m_cli.Iteration();
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Exception vectors
-
-extern "C" void NMI_Handler()
-{
-	g_platform.m_cliUart.PrintString("NMI\n");
-	while(1)
-	{}
-}
-
-extern "C" void HardFault_Handler()
-{
-	uint32_t* msp;
-	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
-	msp += 12;	//locals/alignment
-	uint32_t r0 = msp[0];
-	uint32_t r1 = msp[1];
-	uint32_t r2 = msp[2];
-	uint32_t r3 = msp[3];
-	uint32_t r12 = msp[4];
-	uint32_t lr = msp[5];
-	uint32_t pc = msp[6];
-	uint32_t xpsr = msp[7];
-
-	g_platform.m_cliUart.Printf("Hard fault\n");
-	g_platform.m_cliUart.Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
-	g_platform.m_cliUart.Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
-	g_platform.m_cliUart.Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
-	g_platform.m_cliUart.Printf("    CFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed28));
-	g_platform.m_cliUart.Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
-	g_platform.m_cliUart.Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
-	g_platform.m_cliUart.Printf("    MSP   = %08x\n", msp);
-	g_platform.m_cliUart.Printf("    r0    = %08x\n", r0);
-	g_platform.m_cliUart.Printf("    r1    = %08x\n", r1);
-	g_platform.m_cliUart.Printf("    r2    = %08x\n", r2);
-	g_platform.m_cliUart.Printf("    r3    = %08x\n", r3);
-	g_platform.m_cliUart.Printf("    r12   = %08x\n", r12);
-	g_platform.m_cliUart.Printf("    lr    = %08x\n", lr);
-	g_platform.m_cliUart.Printf("    pc    = %08x\n", pc);
-	g_platform.m_cliUart.Printf("    xpsr  = %08x\n", xpsr);
-
-	g_platform.m_cliUart.Printf("    Stack:\n");
-	for(int i=0; i<16; i++)
-		g_platform.m_cliUart.Printf("        %08x\n", msp[i]);
-
-	while(1)
-	{}
-}
-
-extern "C" void BusFault_Handler()
-{
-	g_platform.m_cliUart.PrintString("Bus fault\n");
-	while(1)
-	{}
-}
-
-extern "C" void UsageFault_Handler()
-{
-	g_platform.m_cliUart.PrintString("Usage fault\n");
-	while(1)
-	{}
-}
-
-extern "C" void MMUFault_Handler()
-{
-	g_platform.m_cliUart.PrintString("MMU fault\n");
-	while(1)
-	{}
-}
