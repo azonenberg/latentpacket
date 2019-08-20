@@ -29,40 +29,42 @@
 
 #include "latentred.h"
 
-LatentRedPlatform g_platform;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Initialization
+// Entry point (doable in C++ as long as we don't rely on anything but the stack and ROM)
 
-Platform::~Platform()
+//symbols defined by linker
+
+extern "C" uint8_t __bss_start;
+extern "C" uint8_t __bss_end;
+
+extern "C" const uint32_t __ctor_start;
+extern "C" const uint32_t __ctor_end;
+
+extern "C" const uint8_t __data_romstart;
+extern "C" uint8_t __data_start;
+extern "C" uint8_t __data_end;
+
+
+extern "C" void _start()
 {
+	//Zeroize .bss
+	uint32_t len = &__bss_end - &__bss_start;
+	memset(&__bss_start, 0, len);
 
-}
+	//Copy .data to RAM
+	len = &__data_end - &__data_start;
+	memcpy(&__data_start, &__data_romstart, len);
 
-LatentRedPlatform::~LatentRedPlatform()
-{
-}
+	//Call all of the global constructors
+	for(uint32_t ctor = __ctor_start; ctor != __ctor_end; ctor ++)
+		reinterpret_cast<fnptr>(ctor)();
 
-LatentRedPlatform::LatentRedPlatform()
-	: m_cliUart(&UART4, &USART2)
-	, m_cli(&m_switch, &m_cliUart)
-{
-	g_platform.m_cliUart.PrintString("LatentRedPlatform::LatentRedPlatform()\n");
-	EnableInterrupts();
-}
-
-int main()
-{
 	g_platform.m_cliUart.Printf("start of main\n");
 
 	//Wait for events, then process them
-	while(true)
+	while(1)
 		g_platform.m_cli.Iteration();
-
-	//should never get here
-	return 0;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Exception vectors

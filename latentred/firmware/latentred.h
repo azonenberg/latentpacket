@@ -36,6 +36,8 @@ typedef unsigned short	uint16_t;
 typedef unsigned char	uint8_t;
 typedef uint32_t		size_t;
 
+typedef void(*fnptr)();
+
 #include "stm32f777.h"
 
 //ctype functions

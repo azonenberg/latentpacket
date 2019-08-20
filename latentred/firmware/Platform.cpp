@@ -29,67 +29,24 @@
 
 #include "latentred.h"
 
-//ignored
-void* __dso_handle;
-
-//atexit stuff
-volatile void* g_destructorArgs[1];
-volatile fnptr g_destructorPtrs[1];
-volatile void* g_dsos[1];
+LatentRedPlatform g_platform;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// C++ memory allocation (not supported)
+// Initialization
 
-void* operator new(size_t n)
+Platform::~Platform()
 {
-	//g_uart.PrintString("new called\n");
-	while(1)
-	{}
+
 }
 
-void operator delete(void* p)
+LatentRedPlatform::~LatentRedPlatform()
 {
-	//g_uart.PrintString("delete(void*) called\n");
-	while(1)
-	{}
 }
 
-void operator delete(void* p, size_t size)
+LatentRedPlatform::LatentRedPlatform()
+	: m_cliUart(&UART4, &USART2)
+	, m_cli(&m_switch, &m_cliUart)
 {
-	//g_uart.PrintString("delete(void*, size_t) called\n");
-	while(1)
-	{}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Stub for unused interrupts
-
-extern "C" void defaultISR()
-{
-	while(1)
-	{}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Stub for pure virtual functions
-
-extern "C" void __cxa_pure_virtual()
-{
-	//g_uart.PrintString("pure virtual function called\n");
-	while(1)
-	{}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// atexit calls (ignored, since main never returns)
-
-extern "C" int __aeabi_atexit(void* arg, void(*func)(), void* dso)
-{
-	g_destructorArgs[0] = arg;
-	g_destructorPtrs[0] = func;
-	g_dsos[0] = dso;
-
-	g_platform.m_cliUart.Printf("__aeabi_atexit called (arg=%x, func=%x, dso=%x)\n",
-		arg, func, dso);
-	return 0;
+	g_platform.m_cliUart.PrintString("LatentRedPlatform::LatentRedPlatform()\n");
+	EnableInterrupts();
 }
