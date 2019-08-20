@@ -268,9 +268,8 @@ extern "C" void __attribute__((isr)) USART2_Handler()
 	if(0 == (USART2.ISR & USART_ISR_RXNE))
 		return;
 
-	//save the byte, no fifo yet
-	//g_platform.m_cliUart.OnIRQRxData(USART2.RDR);
-	UART5.TDR = USART2.RDR;
+	//rx data? Shove it in the fifo
+	g_platform.m_cliUart.OnIRQRxData(USART2.RDR);
 }
 
 extern "C" void __attribute__((isr)) UART5_Handler()

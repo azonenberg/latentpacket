@@ -41,7 +41,6 @@ CLI::CLI(Switch* sw, UART* uart)
 	, m_uart(uart)
 	, m_state(STATE_SHOW_PROMPT)
 {
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +48,9 @@ CLI::CLI(Switch* sw, UART* uart)
 
 void CLI::Iteration()
 {
+	if(m_state != STATE_EDIT)
+		m_uart->Printf("CLI::Iteration (state=%d)\n", m_state);
+
 	switch(m_state)
 	{
 		//Show the prompt, then reset the command line for new input

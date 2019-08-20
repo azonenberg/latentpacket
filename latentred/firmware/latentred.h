@@ -69,4 +69,6 @@ int strcmp(const char* a, const char* b);
 #include "FIFO.h"
 #include "UART.h"
 
+#include "Platform.h"
+
 #endif

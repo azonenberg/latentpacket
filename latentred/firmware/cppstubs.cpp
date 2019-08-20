@@ -71,4 +71,7 @@ extern "C" void __cxa_pure_virtual()
 
 extern "C" int __aeabi_atexit(void* arg, void(*func), void* dso)
 {
+	g_platform.m_cliUart.Printf("__aeabi_atexit called (arg=%x, func=%x, dso=%x)\n",
+		arg, func, dso);
+	return 0;
 }
