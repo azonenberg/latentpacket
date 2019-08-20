@@ -45,8 +45,8 @@ public:
 	virtual Board* GetBoard(size_t i);
 
 protected:
-	LatentRedSwitchEngineBoard m_switchEngineBoard;
-	LatentRedManagementBoard m_managementBoard;
+	//LatentRedSwitchEngineBoard m_switchEngineBoard;
+	//LatentRedManagementBoard m_managementBoard;
 };
 
 #endif

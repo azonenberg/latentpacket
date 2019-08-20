@@ -111,7 +111,7 @@ int main()
 
 extern "C" void NMI_Handler()
 {
-	//g_uart.PrintString("NMI\n");
+	g_platform.m_cliUart.PrintString("NMI\n");
 	while(1)
 	{}
 }
@@ -121,17 +121,17 @@ extern "C" void HardFault_Handler()
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
 
-	/*g_uart.Printf("Hard fault\n");
-	g_uart.Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
-	g_uart.Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
-	g_uart.Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
-	g_uart.Printf("    CFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed28));
-	g_uart.Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
-	g_uart.Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
-	g_uart.Printf("    MSP   = %08x\n", msp);
-	g_uart.Printf("    Stack:\n");
+	g_platform.m_cliUart.Printf("Hard fault\n");
+	g_platform.m_cliUart.Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
+	g_platform.m_cliUart.Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
+	g_platform.m_cliUart.Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
+	g_platform.m_cliUart.Printf("    CFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed28));
+	g_platform.m_cliUart.Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
+	g_platform.m_cliUart.Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
+	g_platform.m_cliUart.Printf("    MSP   = %08x\n", msp);
+	g_platform.m_cliUart.Printf("    Stack:\n");
 	for(int i=0; i<16; i++)
-		g_uart.Printf("        %08x\n", msp[i]);*/
+		g_platform.m_cliUart.Printf("        %08x\n", msp[i]);
 
 	while(1)
 	{}
@@ -139,21 +139,21 @@ extern "C" void HardFault_Handler()
 
 extern "C" void BusFault_Handler()
 {
-	//g_uart.PrintString("Bus fault\n");
+	g_platform.m_cliUart.PrintString("Bus fault\n");
 	while(1)
 	{}
 }
 
 extern "C" void UsageFault_Handler()
 {
-	//g_uart.PrintString("Usage fault\n");
+	g_platform.m_cliUart.PrintString("Usage fault\n");
 	while(1)
 	{}
 }
 
 extern "C" void MMUFault_Handler()
 {
-	//g_uart.PrintString("MMU fault\n");
+	g_platform.m_cliUart.PrintString("MMU fault\n");
 	while(1)
 	{}
 }

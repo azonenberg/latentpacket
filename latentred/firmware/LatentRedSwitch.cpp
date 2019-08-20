@@ -71,10 +71,11 @@ size_t LatentRedSwitch::GetBoardCount()
 
 Board* LatentRedSwitch::GetBoard(size_t i)
 {
+	/*
 	if(i == 0)
 		return &m_switchEngineBoard;
 	else if(i == 1)
 		return &m_managementBoard;
-	else
+	else*/
 		return NULL;
 }
