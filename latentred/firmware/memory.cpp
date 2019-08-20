@@ -30,28 +30,29 @@
 #include "latentred.h"
 
 /**
-	@brief Converts an int to a string (K&R implementation)
-
-	@param n Input
-	@param s String to store into
-
-	@return str
+	@brief Simple, unoptimized memset
  */
-char* itoa(int n, char* s)
+void* memset(void* s, int c, size_t n)
 {
-	int i, sign;
+	char* ps = (char*)s;
+	for(size_t i=0; i<n; i++)
+		ps[i] = c;
+}
 
-	if ((sign = n) < 0)  /* record sign */
-		n = -n;          /* make n positive */
-	i = 0;
-	do
-	{       /* generate digits in reverse order */
-		s[i++] = n % 10 + '0';   /* get next digit */
-	} while ((n /= 10) > 0);     /* delete it */
+/**
+	@brief Copies non-overlapping blocks of memory
 
-	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
+	@param dest Destination block
+	@param src Source block
+	@param n Size of the blocks
 
-	return reverse(s);
+	@return dest
+ */
+void* memcpy(void* dest, const void* src, size_t n)
+{
+	char* d = (char*)dest;
+	char* s = (char*) src;
+	for(size_t i=0; i<n; i++)
+		d[i] = s[i];
+	return dest;
 }

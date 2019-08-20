@@ -32,6 +32,27 @@
 //ignored
 void* __dso_handle;
 
+typedef void(*fnptr)();
+
+extern "C" uint8_t __bss_start;
+extern "C" uint8_t __bss_end;
+
+//symbols defined by linker
+extern "C" const uint32_t __ctor_start;
+extern "C" const uint32_t __ctor_end;
+
+extern "C" const uint8_t __data_romstart;
+extern "C" uint8_t __data_start;
+extern "C" uint8_t __data_end;
+
+//atexit stuff
+volatile void* g_destructorArgs[1];
+volatile fnptr g_destructorPtrs[1];
+volatile void* g_dsos[1];
+
+//entry point
+extern "C" int main();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C++ memory allocation (not supported)
 
@@ -57,6 +78,15 @@ void operator delete(void* p, size_t size)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Stub for unused interrupts
+
+extern "C" void defaultISR()
+{
+	while(1)
+	{}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Stub for pure virtual functions
 
 extern "C" void __cxa_pure_virtual()
@@ -69,9 +99,38 @@ extern "C" void __cxa_pure_virtual()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // atexit calls (ignored, since main never returns)
 
-extern "C" int __aeabi_atexit(void* arg, void(*func), void* dso)
+extern "C" int __aeabi_atexit(void* arg, void(*func)(), void* dso)
 {
+	g_destructorArgs[0] = arg;
+	g_destructorPtrs[0] = func;
+	g_dsos[0] = dso;
+
 	g_platform.m_cliUart.Printf("__aeabi_atexit called (arg=%x, func=%x, dso=%x)\n",
 		arg, func, dso);
 	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Entry point (doable in C++ as long as we don't rely on anything but the stack and ROM)
+
+extern "C" void _start()
+{
+	//Zeroize .bss
+	uint32_t len = &__bss_end - &__bss_start;
+	memset(&__bss_start, 0, len);
+
+	//Copy .data to RAM
+	len = &__data_end - &__data_start;
+	memcpy(&__data_start, &__data_romstart, len);
+
+	//Call all of the global constructors
+	for(uint32_t ctor = __ctor_start; ctor != __ctor_end; ctor ++)
+		reinterpret_cast<fnptr>(ctor)();
+
+	//Call main() once everything is initialized
+	main();
+
+	//should never get here
+	while(1)
+	{}
 }

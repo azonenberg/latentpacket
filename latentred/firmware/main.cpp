@@ -47,6 +47,7 @@ LatentRedPlatform::LatentRedPlatform()
 	: m_cliUart(&UART4, &USART2)
 	, m_cli(&m_switch, &m_cliUart)
 {
+	g_platform.m_cliUart.PrintString("LatentRedPlatform::LatentRedPlatform()\n");
 	EnableInterrupts();
 }
 
@@ -77,6 +78,15 @@ extern "C" void HardFault_Handler()
 {
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
+	msp += 12;	//locals/alignment
+	uint32_t r0 = msp[0];
+	uint32_t r1 = msp[1];
+	uint32_t r2 = msp[2];
+	uint32_t r3 = msp[3];
+	uint32_t r12 = msp[4];
+	uint32_t lr = msp[5];
+	uint32_t pc = msp[6];
+	uint32_t xpsr = msp[7];
 
 	g_platform.m_cliUart.Printf("Hard fault\n");
 	g_platform.m_cliUart.Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
@@ -86,6 +96,15 @@ extern "C" void HardFault_Handler()
 	g_platform.m_cliUart.Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
 	g_platform.m_cliUart.Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
 	g_platform.m_cliUart.Printf("    MSP   = %08x\n", msp);
+	g_platform.m_cliUart.Printf("    r0    = %08x\n", r0);
+	g_platform.m_cliUart.Printf("    r1    = %08x\n", r1);
+	g_platform.m_cliUart.Printf("    r2    = %08x\n", r2);
+	g_platform.m_cliUart.Printf("    r3    = %08x\n", r3);
+	g_platform.m_cliUart.Printf("    r12   = %08x\n", r12);
+	g_platform.m_cliUart.Printf("    lr    = %08x\n", lr);
+	g_platform.m_cliUart.Printf("    pc    = %08x\n", pc);
+	g_platform.m_cliUart.Printf("    xpsr  = %08x\n", xpsr);
+
 	g_platform.m_cliUart.Printf("    Stack:\n");
 	for(int i=0; i<16; i++)
 		g_platform.m_cliUart.Printf("        %08x\n", msp[i]);
