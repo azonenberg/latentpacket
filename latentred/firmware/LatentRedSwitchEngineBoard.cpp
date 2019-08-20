@@ -74,5 +74,7 @@ uint32_t LatentRedSwitchEngineBoard::GetPortCount()
 
 Port* LatentRedSwitchEngineBoard::GetPort(uint32_t i)
 {
+	if(i < 4)
+		return &m_ports[i];
 	return NULL;
 }

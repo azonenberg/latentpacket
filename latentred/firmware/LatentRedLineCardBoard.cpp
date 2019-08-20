@@ -27,27 +27,49 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef LatentRedSwitch_h
-#define LatentRedSwitch_h
+#include "latentred.h"
 
-/**
-	@brief An actual LATENTRED switch platform
- */
-class LatentRedSwitch : public Switch
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+LatentRedLineCardBoard::LatentRedLineCardBoard()
+	: m_ports
+	{
+		{ this, 0 },
+		{ this, 1 },
+		{ this, 2 },
+		{ this, 3 },
+		{ this, 4 },
+		{ this, 5 },
+		{ this, 6 },
+		{ this, 7 },
+	}
 {
-public:
-	LatentRedSwitch();
-	virtual ~LatentRedSwitch();
+}
 
-	virtual const char* GetDescription();
+LatentRedLineCardBoard::~LatentRedLineCardBoard()
+{
+}
 
-	virtual size_t GetBoardCount();
-	virtual Board* GetBoard(size_t i);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accessors
 
-protected:
-	LatentRedSwitchEngineBoard m_switchEngineBoard;
-	LatentRedManagementBoard m_managementBoard;
-	LatentRedLineCardBoard m_lineCards[3];
-};
+const char* LatentRedLineCardBoard::GetDescription()
+{
+	return "LATENTRED BaseT Line Card v0.1";
+}
 
-#endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Port access
+
+uint32_t LatentRedLineCardBoard::GetPortCount()
+{
+	return 8;
+}
+
+Port* LatentRedLineCardBoard::GetPort(uint32_t i)
+{
+	if(i < 8)
+		return &m_ports[i];
+	return NULL;
+}

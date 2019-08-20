@@ -27,27 +27,26 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef LatentRedSwitch_h
-#define LatentRedSwitch_h
+#ifndef LatentRedLineCardPort_h
+#define LatentRedLineCardPort_h
 
 /**
-	@brief An actual LATENTRED switch platform
+	@brief A 1000base-T interface on the line card PCB
  */
-class LatentRedSwitch : public Switch
+class LatentRedLineCardPort : public Port
 {
 public:
-	LatentRedSwitch();
-	virtual ~LatentRedSwitch();
+	LatentRedLineCardPort(Board* board, uint32_t portNumber);
+	virtual ~LatentRedLineCardPort();
 
-	virtual const char* GetDescription();
+	virtual bool IsLinkUp();
+	virtual speed_t GetCurrentLinkSpeed();
 
-	virtual size_t GetBoardCount();
-	virtual Board* GetBoard(size_t i);
+	virtual const char* GetName();
 
 protected:
-	LatentRedSwitchEngineBoard m_switchEngineBoard;
-	LatentRedManagementBoard m_managementBoard;
-	LatentRedLineCardBoard m_lineCards[3];
+	uint32_t m_portNumber;
+	char m_name[5];
 };
 
 #endif

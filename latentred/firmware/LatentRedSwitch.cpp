@@ -66,14 +66,16 @@ const char* LatentRedSwitch::GetDescription()
 
 size_t LatentRedSwitch::GetBoardCount()
 {
-	return 2;
+	return 5;
 }
 
 Board* LatentRedSwitch::GetBoard(size_t i)
 {
 	if(i == 0)
 		return &m_switchEngineBoard;
-	else if(i == 1)
+	else if(i >= 1 && i <= 3)
+		return &m_lineCards[i-1];
+	else if(i == 4)
 		return &m_managementBoard;
 	else
 		return NULL;

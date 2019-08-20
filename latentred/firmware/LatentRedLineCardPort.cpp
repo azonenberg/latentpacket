@@ -27,27 +27,39 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef LatentRedSwitch_h
-#define LatentRedSwitch_h
+#include "latentred.h"
 
-/**
-	@brief An actual LATENTRED switch platform
- */
-class LatentRedSwitch : public Switch
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+LatentRedLineCardPort::LatentRedLineCardPort(Board* board, uint32_t portNumber)
+	: Port(board)
+	, m_portNumber(portNumber)
 {
-public:
-	LatentRedSwitch();
-	virtual ~LatentRedSwitch();
+	strncpy(m_name, "g?/0", sizeof(m_name));
+	m_name[3] += m_portNumber;
+}
 
-	virtual const char* GetDescription();
+LatentRedLineCardPort::~LatentRedLineCardPort()
+{
+}
 
-	virtual size_t GetBoardCount();
-	virtual Board* GetBoard(size_t i);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accessors
 
-protected:
-	LatentRedSwitchEngineBoard m_switchEngineBoard;
-	LatentRedManagementBoard m_managementBoard;
-	LatentRedLineCardBoard m_lineCards[3];
-};
+const char* LatentRedLineCardPort::GetName()
+{
+	return m_name;
+}
 
-#endif
+bool LatentRedLineCardPort::IsLinkUp()
+{
+	//TODO: query switch FPGA
+	return false;
+}
+
+Port::speed_t LatentRedLineCardPort::GetCurrentLinkSpeed()
+{
+	//TODO: query switch FPGA
+	return SPEED_DOWN;
+}
