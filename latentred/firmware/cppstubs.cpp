@@ -29,6 +29,9 @@
 
 #include "latentred.h"
 
+//ignored
+void* __dso_handle;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C++ memory allocation (not supported)
 
@@ -61,4 +64,11 @@ extern "C" void __cxa_pure_virtual()
 	g_uart.PrintString("pure virtual function called\n");
 	while(1)
 	{}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// atexit calls (ignored, since main never returns)
+
+extern "C" int __aeabi_atexit(void* arg, void(*func), void* dso)
+{
 }
