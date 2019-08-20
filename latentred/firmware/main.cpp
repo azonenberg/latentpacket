@@ -44,13 +44,6 @@ extern "C" const uint8_t __data_romstart;
 extern "C" uint8_t __data_start;
 extern "C" uint8_t __data_end;
 
-//extern "C" void _Z41__static_initialization_and_destruction_0ii(int, int);
-extern "C" void _ZN17LatentRedPlatformC2Ev(LatentRedPlatform* _this);
-extern "C" void _ZN17LatentRedPlatformD0Ev(void* _this);
-extern "C" void _GLOBAL__sub_I_g_platform();
-extern void* __dso_handle;
-extern "C" int __aeabi_atexit(void* arg, void(*func)(void*), void* dso);
-
 extern "C" void _start()
 {
 	//Zeroize .bss
