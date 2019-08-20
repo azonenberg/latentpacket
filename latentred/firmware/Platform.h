@@ -30,7 +30,6 @@
 #ifndef Platform_h
 #define Platform_h
 
-
 /**
 	@brief Generic hardware platform setup
  */

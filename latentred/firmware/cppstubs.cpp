@@ -32,31 +32,26 @@
 //ignored
 void* __dso_handle;
 
-//atexit stuff
-volatile void* g_destructorArgs[1];
-volatile fnptr g_destructorPtrs[1];
-volatile void* g_dsos[1];
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // C++ memory allocation (not supported)
 
 void* operator new(size_t n)
 {
-	//g_uart.PrintString("new called\n");
+	g_platform.m_cliUart.PrintString("new called\n");
 	while(1)
 	{}
 }
 
 void operator delete(void* p)
 {
-	//g_uart.PrintString("delete(void*) called\n");
+	g_platform.m_cliUart.PrintString("delete(void*) called\n");
 	while(1)
 	{}
 }
 
 void operator delete(void* p, size_t size)
 {
-	//g_uart.PrintString("delete(void*, size_t) called\n");
+	g_platform.m_cliUart.PrintString("delete(void*, size_t) called\n");
 	while(1)
 	{}
 }
@@ -66,7 +61,7 @@ void operator delete(void* p, size_t size)
 
 extern "C" void __cxa_pure_virtual()
 {
-	//g_uart.PrintString("pure virtual function called\n");
+	g_platform.m_cliUart.PrintString("pure virtual function called\n");
 	while(1)
 	{}
 }
@@ -76,11 +71,5 @@ extern "C" void __cxa_pure_virtual()
 
 extern "C" int __aeabi_atexit(void* arg, void(*func)(), void* dso)
 {
-	g_destructorArgs[0] = arg;
-	g_destructorPtrs[0] = func;
-	g_dsos[0] = dso;
-
-	g_platform.m_cliUart.Printf("__aeabi_atexit called (arg=%x, func=%x, dso=%x)\n",
-		arg, func, dso);
 	return 0;
 }

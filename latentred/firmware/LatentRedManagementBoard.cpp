@@ -49,7 +49,7 @@ const char* LatentRedManagementBoard::GetDescription()
 	return "INTEGRALSTICK SoM v0.1";
 }
 
-void LatentRedManagementBoard::PrintCPUInfo()
+void LatentRedManagementBoard::PrintCPUInfo(UART* uart)
 {
 	//see STM32 programming manual section 45.1
 	volatile const uint32_t* serial = (volatile const uint32_t*)0x1ff0f420;
@@ -72,23 +72,22 @@ void LatentRedManagementBoard::PrintCPUInfo()
 
 	//see STM32 programming manual section 44.6.1
 	const uint32_t devid = *(volatile uint32_t*)0xe0042000;
-/*
-	g_uart.Printf("        CPU:\n");
+
+	uart->Printf("        CPU:\n");
 	if( (devid & 0xfff) == 0x451)
 	{
-		g_uart.Printf("            ST STM32F777NI stepping %d\n", (devid >> 16) & 0xfff);
-		g_uart.Printf("            ARM Cortex-M7 with FPU\n");
-		g_uart.Printf("            %d KB Flash\n", flash_kb);
-		g_uart.Printf("            512 KB SRAM\n");
+		uart->Printf("            ST STM32F777NI stepping %d\n", (devid >> 16) & 0xfff);
+		uart->Printf("            ARM Cortex-M7 with FPU\n");
+		uart->Printf("            %d KB Flash\n", flash_kb);
+		uart->Printf("            512 KB SRAM\n");
 	}
 	else
-		g_uart.Printf("            Unknown CPU\n");
+		uart->Printf("            Unknown CPU\n");
 	if(package == 0x7)
-		g_uart.Printf("            TFBGA216 package\n");
+		uart->Printf("            TFBGA216 package\n");
 	else
-		g_uart.Printf("            Unknown package\n");
-	g_uart.Printf("            Die (%d, %d), wafer %d, lot %s\n", waferX, waferY, waferNum, waferLot);
-	*/
+		uart->Printf("            Unknown package\n");
+	uart->Printf("            Die (%d, %d), wafer %d, lot %s\n", waferX, waferY, waferNum, waferLot);
 
 	/*
 	g_uart.Printf("    Switch fabric FPGA:\n");
@@ -106,9 +105,12 @@ void LatentRedManagementBoard::PrintCPUInfo()
 	*/
 }
 
-void LatentRedManagementBoard::PrintFPGAInfo()
+void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 {
-	//g_uart.Printf("        FPGA:\n");
+	uart->Printf("        FPGA:\n");
+	uart->Printf("            Xilinx [details unimplemented]\n");
+	uart->Printf("            Serial number 0x[details unimplemented]\n");
+	uart->Printf("            Bitstream version [details unimplemented]\n");\
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

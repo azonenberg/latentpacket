@@ -41,12 +41,12 @@ public:
 
 	virtual const char* GetDescription();
 
-	virtual void PrintCPUInfo();
-	virtual void PrintFPGAInfo();
-	
+	virtual void PrintCPUInfo(UART* uart);
+	virtual void PrintFPGAInfo(UART* uart);
+
 	virtual uint32_t GetPortCount();
 	virtual Port* GetPort(uint32_t i);
-	
+
 protected:
 	LatentRedManagementPort m_mgmtPort;
 };

@@ -44,6 +44,13 @@ extern "C" const uint8_t __data_romstart;
 extern "C" uint8_t __data_start;
 extern "C" uint8_t __data_end;
 
+//extern "C" void _Z41__static_initialization_and_destruction_0ii(int, int);
+extern "C" void _ZN17LatentRedPlatformC2Ev(LatentRedPlatform* _this);
+extern "C" void _ZN17LatentRedPlatformD0Ev(void* _this);
+extern "C" void _GLOBAL__sub_I_g_platform();
+extern void* __dso_handle;
+extern "C" int __aeabi_atexit(void* arg, void(*func)(void*), void* dso);
+
 extern "C" void _start()
 {
 	//Zeroize .bss
@@ -55,10 +62,11 @@ extern "C" void _start()
 	memcpy(&__data_start, &__data_romstart, len);
 
 	//Call all of the global constructors
-	for(uint32_t ctor = __ctor_start; ctor != __ctor_end; ctor ++)
-		reinterpret_cast<fnptr>(ctor)();
+	for(const uint32_t* ctor = &__ctor_start; ctor != &__ctor_end; ctor ++)
+		reinterpret_cast<fnptr>(*ctor)();
 
-	g_platform.m_cliUart.Printf("start of main\n");
+	//Enable interrupts once everything is set up
+	EnableInterrupts();
 
 	//Wait for events, then process them
 	while(1)

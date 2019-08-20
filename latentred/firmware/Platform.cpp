@@ -47,6 +47,4 @@ LatentRedPlatform::LatentRedPlatform()
 	: m_cliUart(&UART4, &USART2)
 	, m_cli(&m_switch, &m_cliUart)
 {
-	g_platform.m_cliUart.PrintString("LatentRedPlatform::LatentRedPlatform()\n");
-	EnableInterrupts();
 }

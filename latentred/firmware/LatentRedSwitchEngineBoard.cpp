@@ -55,15 +55,13 @@ const char* LatentRedSwitchEngineBoard::GetDescription()
 	return "LATENTRED Switch Engine v0.1";
 }
 
-void LatentRedSwitchEngineBoard::PrintFPGAInfo()
+void LatentRedSwitchEngineBoard::PrintFPGAInfo(UART* uart)
 {
-	/*
-	g_uart.Printf("        FPGA:\n");
+	uart->Printf("        FPGA:\n");
 
-	g_uart.Printf("            Xilinx [details unimplemented]\n");
-	g_uart.Printf("            Serial number 0x[details unimplemented]\n");
-	g_uart.Printf("            Bitstream version [details unimplemented]\n");\
-	*/
+	uart->Printf("            Xilinx [details unimplemented]\n");
+	uart->Printf("            Serial number 0x[details unimplemented]\n");
+	uart->Printf("            Bitstream version [details unimplemented]\n");\
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,5 +74,5 @@ uint32_t LatentRedSwitchEngineBoard::GetPortCount()
 
 Port* LatentRedSwitchEngineBoard::GetPort(uint32_t i)
 {
-
+	return NULL;
 }

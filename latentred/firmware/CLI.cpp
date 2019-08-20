@@ -48,9 +48,6 @@ CLI::CLI(Switch* sw, UART* uart)
 
 void CLI::Iteration()
 {
-	if(m_state != STATE_EDIT)
-		m_uart->Printf("CLI::Iteration (state=%d)\n", m_state);
-
 	switch(m_state)
 	{
 		//Show the prompt, then reset the command line for new input
@@ -561,8 +558,8 @@ void CLI::OnShowVersion()
 	{
 		auto board = m_switch->GetBoard(i);
 		m_uart->Printf("    Board %d: %s\n", i, board->GetDescription());
-		board->PrintCPUInfo();
-		board->PrintFPGAInfo();
+		board->PrintCPUInfo(m_uart);
+		board->PrintFPGAInfo(m_uart);
 	}
 }
 

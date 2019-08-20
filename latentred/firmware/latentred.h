@@ -60,6 +60,8 @@ int strlen(const char* str);
 char* strncpy(char* dst, const char* src, size_t n);
 int strcmp(const char* a, const char* b);
 
+#include "FIFO.h"
+#include "UART.h"
 #include "Token.h"
 #include "Command.h"
 #include "Port.h"
@@ -71,9 +73,6 @@ int strcmp(const char* a, const char* b);
 #include "Switch.h"
 #include "LatentRedSwitch.h"
 #include "CLI.h"
-#include "FIFO.h"
-#include "UART.h"
-
 #include "Platform.h"
 
 #endif

@@ -42,9 +42,9 @@ public:
 	virtual const char* GetDescription() =0;
 
 	//empty stubs provided since some boards may not have a cpu or fpga
-	virtual void PrintCPUInfo();
-	virtual void PrintFPGAInfo();
-	
+	virtual void PrintCPUInfo(UART* uart);
+	virtual void PrintFPGAInfo(UART* uart);
+
 	//accessors for actual interfaces
 	virtual uint32_t GetPortCount() =0;
 	virtual Port* GetPort(uint32_t i) =0;

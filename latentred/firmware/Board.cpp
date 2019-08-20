@@ -43,10 +43,10 @@ Board::~Board()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // For "show ver"
 
-void Board::PrintCPUInfo()
+void Board::PrintCPUInfo(UART*)
 {
 }
 
-void Board::PrintFPGAInfo()
+void Board::PrintFPGAInfo(UART*)
 {
 }
