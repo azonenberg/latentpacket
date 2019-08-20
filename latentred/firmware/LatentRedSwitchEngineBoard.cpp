@@ -57,11 +57,13 @@ const char* LatentRedSwitchEngineBoard::GetDescription()
 
 void LatentRedSwitchEngineBoard::PrintFPGAInfo()
 {
+	/*
 	g_uart.Printf("        FPGA:\n");
-	
+
 	g_uart.Printf("            Xilinx [details unimplemented]\n");
 	g_uart.Printf("            Serial number 0x[details unimplemented]\n");
-	g_uart.Printf("            Bitstream version [details unimplemented]\n");
+	g_uart.Printf("            Bitstream version [details unimplemented]\n");\
+	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,5 +76,5 @@ uint32_t LatentRedSwitchEngineBoard::GetPortCount()
 
 Port* LatentRedSwitchEngineBoard::GetPort(uint32_t i)
 {
-	
+
 }

@@ -35,9 +35,10 @@ static const char* CURSOR_RIGHT = "\x1b[C";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-CLI::CLI(Switch* sw)
+CLI::CLI(Switch* sw, UART* uart)
 	: m_hostname("Mock-switch")
 	, m_switch(sw)
+	, m_uart(uart)
 	, m_state(STATE_SHOW_PROMPT)
 {
 
@@ -52,7 +53,7 @@ void CLI::Iteration()
 	{
 		//Show the prompt, then reset the command line for new input
 		case STATE_SHOW_PROMPT:
-			g_uart.Printf("%s# ", m_hostname);
+			m_uart->Printf("%s# ", m_hostname);
 
 			m_currentToken = 0;
 			m_tokenOffset = 0;
@@ -64,7 +65,7 @@ void CLI::Iteration()
 
 		//If we have any input ready to process, do that
 		case STATE_EDIT:
-			if(g_uart.HasInput())
+			if(m_uart->HasInput())
 				OnInputReady();
 			break;
 
@@ -104,16 +105,16 @@ void CLI::OnLineReady()
 	}
 	cursorPos += m_tokenOffset;
 	for(size_t i=0; i<cursorPos; i++)
-		g_uart.PrintBinary(' ');
-	g_uart.PrintString("^\n");
+		m_uart->PrintBinary(' ');
+	m_uart->PrintString("^\n");
 
 	//Done, print the final output
-	g_uart.Printf("Parsed command:\n");
+	m_uart->Printf("Parsed command:\n");
 	for(size_t i=0; i<=m_lastToken; i++)
-		g_uart.Printf("    %d: %s\n", i, command[i].m_text);
-	g_uart.Printf("currentToken: %d\n", m_currentToken);
-	g_uart.Printf("lastToken: %d\n", m_lastToken);
-	g_uart.Printf("tokenOffset: %d\n", m_tokenOffset);
+		m_uart->Printf("    %d: %s\n", i, command[i].m_text);
+	m_uart->Printf("currentToken: %d\n", m_currentToken);
+	m_uart->Printf("lastToken: %d\n", m_lastToken);
+	m_uart->Printf("tokenOffset: %d\n", m_tokenOffset);
 	*/
 
 	//Autocomplete/parse the command
@@ -151,7 +152,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 			//If the node is not NULL, we're missing arguments!
 			if(node != NULL)
 			{
-				g_uart.Printf("\nIncomplete command\n");
+				m_uart->Printf("\nIncomplete command\n");
 				return false;
 			}
 
@@ -159,7 +160,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 		}
 
 		//Debug print
-		g_uart.Printf("    %d: %s ", i, m_command[i].m_text);
+		m_uart->Printf("    %d: %s ", i, m_command[i].m_text);
 
 		m_command[i].m_commandID = CMD_NULL;
 
@@ -175,7 +176,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 			//Fail with an error.
 			if(m_command[i].PrefixMatch(row[1].keyword))
 			{
-				g_uart.Printf(
+				m_uart->Printf(
 					"\nAmbiguous command (at word %d): you typed \"%s\", but this could be short for \"%s\" or \"%s\"\n",
 					i,
 					m_command[i].m_text,
@@ -185,7 +186,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 			}
 
 			//Debug print
-			g_uart.Printf("(matched \"%s\")\n", row->keyword);
+			m_uart->Printf("(matched \"%s\")\n", row->keyword);
 
 			//Match!
 			m_command[i].m_commandID = row->id;
@@ -195,7 +196,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 		//Didn't match anything at all, give up
 		if(m_command[i].m_commandID == CMD_NULL)
 		{
-			g_uart.Printf(
+			m_uart->Printf(
 				"\nUnrecognized command (at word %d): you typed \"%s\", but this did not match any known commands\n",
 				i,
 				m_command[i].m_text);
@@ -214,12 +215,12 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 void CLI::OnInputReady()
 {
 	//If we get here, there's input ready
-	char c = g_uart.BlockingRead();
+	char c = m_uart->BlockingRead();
 
 	//End of line means the command is ready to execute
 	if( (c == '\r') || (c == '\n') )
 	{
-		g_uart.PrintString("\n");
+		m_uart->PrintString("\n");
 		m_state = STATE_PARSE;
 		return;
 	}
@@ -234,14 +235,14 @@ void CLI::OnInputReady()
 		//TODO: don't stall if there's nothing in the fifo
 
 		//Next char should be a [
-		if(g_uart.BlockingRead() != '[')
+		if(m_uart->BlockingRead() != '[')
 		{
-			g_uart.PrintString("Malformed escape sequence, expected [ after esc\n");
+			m_uart->PrintString("Malformed escape sequence, expected [ after esc\n");
 			return;
 		}
 
 		//and the actual escape code
-		char code = g_uart.BlockingRead();
+		char code = m_uart->BlockingRead();
 		switch(code)
 		{
 			//B = down, A = up
@@ -266,7 +267,7 @@ void CLI::OnInputReady()
 	//Ignore other non-printable characters
 	else if(!isprint(c))
 	{
-		//g_uart.Printf("\nIgnoring nonprintable: 0x%02x\n", c);
+		//m_uart->Printf("\nIgnoring nonprintable: 0x%02x\n", c);
 	}
 
 	//Space ends the current token
@@ -297,23 +298,23 @@ void CLI::RedrawLineRightOfCursor()
 	char* token = m_command[m_currentToken].m_text;
 	char* restOfToken = token + m_tokenOffset;
 	size_t charsDrawn = strlen(restOfToken);
-	g_uart.PrintString(restOfToken);
+	m_uart->PrintString(restOfToken);
 
 	//Draw all subsequent tokens
 	for(size_t i = m_currentToken + 1; i < MAX_TOKENS; i++)
 	{
 		char* tok = m_command[i].m_text;
 		charsDrawn += strlen(tok) + 1;
-		g_uart.Printf(" %s", tok);
+		m_uart->Printf(" %s", tok);
 	}
 
 	//Draw a space at the end to clean up anything we may have deleted
-	g_uart.PrintBinary(' ');
+	m_uart->PrintBinary(' ');
 	charsDrawn ++;
 
 	//Move the cursor back to where it belongs
 	for(size_t i=0; i<charsDrawn; i++)
-		g_uart.PrintString(CURSOR_LEFT);
+		m_uart->PrintString(CURSOR_LEFT);
 }
 
 void CLI::OnKey(char c)
@@ -338,7 +339,7 @@ void CLI::OnKey(char c)
 	len++;
 
 	//Draw the new character
-	g_uart.PrintBinary(c);
+	m_uart->PrintBinary(c);
 
 	//Update the remainder of the line.
 	if(redrawLine)
@@ -357,7 +358,7 @@ void CLI::OnSpace()
 		return;
 
 	//OK, we're definitely adding a space. The only question now is where.
-	g_uart.PrintBinary(' ' );
+	m_uart->PrintBinary(' ' );
 
 	//If we're at the end of the token, just insert a new token
 	if(m_tokenOffset == m_command[m_currentToken].Length())
@@ -421,7 +422,7 @@ void CLI::OnBackspace()
 	{
 		//Delete the character
 		//move left, space over the deleted character, move left for good this time
-		g_uart.Printf("%s %s", CURSOR_LEFT, CURSOR_LEFT);
+		m_uart->Printf("%s %s", CURSOR_LEFT, CURSOR_LEFT);
 
 		//Move back one character and shift the token left
 		m_tokenOffset --;
@@ -434,7 +435,7 @@ void CLI::OnBackspace()
 	else if(m_currentToken > 0)
 	{
 		//Delete the space
-		g_uart.PrintString(CURSOR_LEFT);
+		m_uart->PrintString(CURSOR_LEFT);
 
 		//Move to end of previous token
 		m_currentToken --;
@@ -478,7 +479,7 @@ void CLI::OnRightArrow()
 		{
 			m_tokenOffset = 0;
 			m_currentToken ++;
-			g_uart.PrintString(CURSOR_RIGHT);
+			m_uart->PrintString(CURSOR_RIGHT);
 		}
 	}
 
@@ -486,7 +487,7 @@ void CLI::OnRightArrow()
 	else
 	{
 		m_tokenOffset ++;
-		g_uart.PrintString(CURSOR_RIGHT);
+		m_uart->PrintString(CURSOR_RIGHT);
 	}
 }
 
@@ -497,13 +498,13 @@ void CLI::OnLeftArrow()
 	if(m_tokenOffset > 0)
 	{
 		m_tokenOffset --;
-		g_uart.PrintString(CURSOR_LEFT);
+		m_uart->PrintString(CURSOR_LEFT);
 	}
 
 	//Move left, but go to the previous token
 	else if(m_currentToken > 0)
 	{
-		g_uart.PrintString(CURSOR_LEFT);
+		m_uart->PrintString(CURSOR_LEFT);
 		m_currentToken --;
 		m_tokenOffset = strlen(m_command[m_currentToken].m_text);
 	}
@@ -540,24 +541,24 @@ void CLI::OnShowCommand()
 void CLI::OnShowVersion()
 {
 	//Lots of printing!
-	g_uart.Printf("LATENTPACKET Management Software\n");
-	g_uart.Printf("Copyright (c) 2019, Andrew D. Zonenberg.\n");
-	g_uart.Printf("License: 3-clause (\"new\" or \"modified\") BSD.\n");
-	g_uart.Printf("         (https://github.com/azonenberg/latentpacket/blob/master/LICENSE)\n");
-	g_uart.Printf("Source code: https://github.com/azonenberg/latentpacket/\n");
-	g_uart.Printf("This is free software: you are free to change and redistribute it.\n");
-	g_uart.Printf("There is NO WARRANTY, to the extent permitted by law.\n");
-	g_uart.Printf("\n");
-	g_uart.Printf("Firmware:\n");
-	g_uart.Printf("    LATENTRED CLI v0.1 (armv7-m)\n");
-	g_uart.Printf("    Compiled on: %s %s\n", __DATE__, __TIME__);
+	m_uart->Printf("LATENTPACKET Management Software\n");
+	m_uart->Printf("Copyright (c) 2019, Andrew D. Zonenberg.\n");
+	m_uart->Printf("License: 3-clause (\"new\" or \"modified\") BSD.\n");
+	m_uart->Printf("         (https://github.com/azonenberg/latentpacket/blob/master/LICENSE)\n");
+	m_uart->Printf("Source code: https://github.com/azonenberg/latentpacket/\n");
+	m_uart->Printf("This is free software: you are free to change and redistribute it.\n");
+	m_uart->Printf("There is NO WARRANTY, to the extent permitted by law.\n");
+	m_uart->Printf("\n");
+	m_uart->Printf("Firmware:\n");
+	m_uart->Printf("    LATENTRED CLI v0.1 (armv7-m)\n");
+	m_uart->Printf("    Compiled on: %s %s\n", __DATE__, __TIME__);
 
-	g_uart.Printf("Hardware:\n");
+	m_uart->Printf("Hardware:\n");
 
 	for(size_t i=0; i<m_switch->GetBoardCount(); i++)
 	{
 		auto board = m_switch->GetBoard(i);
-		g_uart.Printf("    Board %d: %s\n", i, board->GetDescription());
+		m_uart->Printf("    Board %d: %s\n", i, board->GetDescription());
 		board->PrintCPUInfo();
 		board->PrintFPGAInfo();
 	}

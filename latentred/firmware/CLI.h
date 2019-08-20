@@ -30,6 +30,8 @@
 #ifndef cli_h
 #define cli_h
 
+class UART;
+
 /**
 	@file
 	@author Andrew D. Zonenberg
@@ -83,7 +85,7 @@ struct clikeyword_t
 class CLI
 {
 public:
-	CLI(Switch* sw);
+	CLI(Switch* sw, UART* uart);
 
 	/**
 		@brief Single iteration of the main loop
@@ -140,6 +142,7 @@ protected:
 	const char* m_hostname;
 
 	Switch* m_switch;
+	UART* m_uart;
 
 	//CLI state machine
 	enum state

@@ -72,7 +72,7 @@ void LatentRedManagementBoard::PrintCPUInfo()
 
 	//see STM32 programming manual section 44.6.1
 	const uint32_t devid = *(volatile uint32_t*)0xe0042000;
-
+/*
 	g_uart.Printf("        CPU:\n");
 	if( (devid & 0xfff) == 0x451)
 	{
@@ -88,6 +88,7 @@ void LatentRedManagementBoard::PrintCPUInfo()
 	else
 		g_uart.Printf("            Unknown package\n");
 	g_uart.Printf("            Die (%d, %d), wafer %d, lot %s\n", waferX, waferY, waferNum, waferLot);
+	*/
 
 	/*
 	g_uart.Printf("    Switch fabric FPGA:\n");
@@ -100,13 +101,14 @@ void LatentRedManagementBoard::PrintCPUInfo()
 	g_uart.Printf("            [details unimplemented] 10Gbase-R SFP+ interfaces\n");
 	g_uart.Printf("        1: Pluggable line cards [details unimplemented]\n");
 	g_uart.Printf("            [details unimplemented] 10/100/1000base-TX RJ45 interfaces\n");
-	*/
+
 	g_uart.Printf("\n");
+	*/
 }
 
 void LatentRedManagementBoard::PrintFPGAInfo()
 {
-	g_uart.Printf("        FPGA:\n");
+	//g_uart.Printf("        FPGA:\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

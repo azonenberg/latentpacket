@@ -64,8 +64,6 @@ public:
 			Use PLL
 		 */
 		RCC.CFGR = RCC_APB2_DIV4 | RCC_APB1_DIV8 | RCC_AHB_DIV1 | RCC_SYSCLK_PLL;
-
-		EnableInterrupts();
 	}
 };
 
@@ -78,29 +76,30 @@ class LatentRedPlatform : public Platform
 {
 public:
 	LatentRedPlatform()
-		//: m_cli(&m_switch)
+		: m_cliUart(&UART4, &USART2)
+		//, m_cli(&m_switch, &m_cliUart)
 	{
+		EnableInterrupts();
 	}
 
+	UART			m_cliUart;
 	//LatentRedSwitch m_switch;
 	//CLI 			m_cli;
 };
 
-//LatentRedPlatform g_platform;
+LatentRedPlatform g_platform;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialization
 
 int main()
 {
-	Platform platform;
-
-	LatentRedSwitch g_switch;
-	CLI g_cli(&g_switch);
+	g_platform.m_cliUart.Printf("ohai\n");
 
 	//Wait for events, then process them
-	while(true)
-		g_cli.Iteration();
+	//while(true)
+	//	g_platform.m_cli.Iteration();
+	while(1) {}
 
 	//should never get here
 	return 0;
@@ -112,7 +111,7 @@ int main()
 
 extern "C" void NMI_Handler()
 {
-	g_uart.PrintString("NMI\n");
+	//g_uart.PrintString("NMI\n");
 	while(1)
 	{}
 }
@@ -122,7 +121,7 @@ extern "C" void HardFault_Handler()
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
 
-	g_uart.Printf("Hard fault\n");
+	/*g_uart.Printf("Hard fault\n");
 	g_uart.Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
 	g_uart.Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
 	g_uart.Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
@@ -132,7 +131,7 @@ extern "C" void HardFault_Handler()
 	g_uart.Printf("    MSP   = %08x\n", msp);
 	g_uart.Printf("    Stack:\n");
 	for(int i=0; i<16; i++)
-		g_uart.Printf("        %08x\n", msp[i]);
+		g_uart.Printf("        %08x\n", msp[i]);*/
 
 	while(1)
 	{}
@@ -140,21 +139,21 @@ extern "C" void HardFault_Handler()
 
 extern "C" void BusFault_Handler()
 {
-	g_uart.PrintString("Bus fault\n");
+	//g_uart.PrintString("Bus fault\n");
 	while(1)
 	{}
 }
 
 extern "C" void UsageFault_Handler()
 {
-	g_uart.PrintString("Usage fault\n");
+	//g_uart.PrintString("Usage fault\n");
 	while(1)
 	{}
 }
 
 extern "C" void MMUFault_Handler()
 {
-	g_uart.PrintString("MMU fault\n");
+	//g_uart.PrintString("MMU fault\n");
 	while(1)
 	{}
 }

@@ -37,21 +37,21 @@ void* __dso_handle;
 
 void* operator new(size_t n)
 {
-	g_uart.PrintString("new called\n");
+	//g_uart.PrintString("new called\n");
 	while(1)
 	{}
 }
 
 void operator delete(void* p)
 {
-	g_uart.PrintString("delete(void*) called\n");
+	//g_uart.PrintString("delete(void*) called\n");
 	while(1)
 	{}
 }
 
 void operator delete(void* p, size_t size)
 {
-	g_uart.PrintString("delete(void*, size_t) called\n");
+	//g_uart.PrintString("delete(void*, size_t) called\n");
 	while(1)
 	{}
 }
@@ -61,7 +61,7 @@ void operator delete(void* p, size_t size)
 
 extern "C" void __cxa_pure_virtual()
 {
-	g_uart.PrintString("pure virtual function called\n");
+	//g_uart.PrintString("pure virtual function called\n");
 	while(1)
 	{}
 }

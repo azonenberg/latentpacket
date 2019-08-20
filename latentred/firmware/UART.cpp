@@ -29,8 +29,6 @@
 
 #include "latentred.h"
 
-UART g_uart(&UART4, &USART2);
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // UART driver class
 
@@ -271,7 +269,8 @@ extern "C" void __attribute__((isr)) USART2_Handler()
 		return;
 
 	//save the byte, no fifo yet
-	g_uart.OnIRQRxData(USART2.RDR);
+	//g_platform.m_cliUart.OnIRQRxData(USART2.RDR);
+	UART5.TDR = USART2.RDR;
 }
 
 extern "C" void __attribute__((isr)) UART5_Handler()
