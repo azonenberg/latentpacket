@@ -48,38 +48,6 @@ CLI::CLI(Switch* sw, UART* uart)
 
 void CLI::Iteration()
 {
-	if(USART2.ISR & USART_ISR_RXNE)
-		m_uart->Printf("uart data\n");
-	else
-	{
-		/*
-		m_uart->Printf("no uart data\n");
-		m_uart->Printf("  GPIOA.MODER  = %08x\n", GPIOA.MODER);
-		m_uart->Printf("  GPIOA.OTYPER = %08x\n", GPIOA.OTYPER);
-		m_uart->Printf("  GPIOA.AFRL   = %08x\n", GPIOA.AFRL);
-		m_uart->Printf("  GPIOA.AFRH   = %08x\n", GPIOA.AFRH);
-		m_uart->Printf("  USART2.CR1   = %08x\n", USART2.CR1);
-		m_uart->Printf("  USART2.CR2   = %08x\n", USART2.CR2);
-		m_uart->Printf("  USART2.CR3   = %08x\n", USART2.CR3);
-		m_uart->Printf("  USART2.BRR   = %08x\n", USART2.BRR);
-		m_uart->Printf("  USART2.ISR   = %08x\n", USART2.ISR);
-		m_uart->Printf("  RCC.APB1ENR  = %08x\n", RCC.APB1ENR);
-		*/
-
-		/*
-		  GPIOA.MODER  = a8000082
-		  GPIOA.OTYPER = 00000000
-		  GPIOA.AFRL   = 00007008
-		  GPIOA.AFRH   = 00000000
-		  USART2.CR1   = 00000025
-		  USART2.CR2   = 00000000
-		  USART2.CR3   = 00000000
-		  USART2.BRR   = 000000b5
-		  USART2.ISR   = 004200c2
-		  RCC.APB1ENR  = 000a0400
-		*/
-	}
-
 	switch(m_state)
 	{
 		//Show the prompt, then reset the command line for new input
@@ -96,8 +64,8 @@ void CLI::Iteration()
 
 		//If we have any input ready to process, do that
 		case STATE_EDIT:
-			//if(m_uart->HasInput())
-			//	OnInputReady();
+			if(m_uart->HasInput())
+				OnInputReady();
 			break;
 
 		//Parse the input
@@ -113,7 +81,6 @@ void CLI::Iteration()
 	}
 
 	//DEBUG: Echo output from the management UART
-	/*
 	auto mgmt = (LatentRedManagementBoard*)m_switch->GetBoard(4);
 	auto uart = mgmt->GetUART();
 	while(uart->HasInput())
@@ -121,7 +88,6 @@ void CLI::Iteration()
 		auto c = uart->BlockingRead();
 		m_uart->Printf("FPGA says: %02x", c);
 	}
-	*/
 }
 
 void CLI::OnLineReady()

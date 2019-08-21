@@ -57,12 +57,6 @@ extern "C" void _start()
 	//Call all of the global constructors
 	for(const uint32_t* ctor = &__ctor_start; ctor != &__ctor_end; ctor ++)
 		reinterpret_cast<fnptr>(*ctor)();
-	USART2.ICR = 2;	//clear framing error flag
-
-	while(1)
-	{
-		g_platform.m_cliUart.Printf("USART2.ISR = %08x\n", USART2.ISR);
-	}
 
 	//Enable interrupts once everything is set up
 	EnableInterrupts();

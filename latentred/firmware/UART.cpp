@@ -288,8 +288,6 @@ void UART::Printf(const char* format, ...)
 
 void __attribute__((isr)) USART2_Handler()
 {
-	g_platform.m_cliUart.PrintString("USART2_Handler\n");
-
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
 	if(0 == (USART2.ISR & USART_ISR_RXNE))
@@ -301,16 +299,11 @@ void __attribute__((isr)) USART2_Handler()
 
 void __attribute__((isr)) UART5_Handler()
 {
-	g_platform.m_cliUart.PrintString("USART5_Handler\n");
-
-	/*
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
 	if(0 == (UART5.ISR & USART_ISR_RXNE))
 		return;
 
-	//save the byte, no fifo yet
-	g_managementFpgaUart.OnIRQRxData(UART5.RDR);
-	*/
-	(void)UART5.RDR;
+	//shove it in the FIFO
+	static_cast<LatentRedManagementBoard*>(g_platform.m_switch.GetBoard(4))->GetUART()->OnIRQRxData(UART5.RDR);
 }

@@ -34,7 +34,7 @@
 
 LatentRedManagementBoard::LatentRedManagementBoard()
 	: m_mgmtPort(this)
-	//, m_uart(&UART5)
+	, m_uart(&UART5)
 {
 
 }
@@ -114,8 +114,8 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 	uart->Printf("            Serial number 0x[details unimplemented]\n");
 	uart->Printf("            Bitstream version [details unimplemented]\n");
 
-	//m_uart.PrintBinary(0xaa);
-	//m_uart.PrintBinary(0xcc);
+	m_uart.PrintBinary(0xaa);
+	m_uart.PrintBinary(0xcc);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
