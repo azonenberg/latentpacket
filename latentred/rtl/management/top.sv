@@ -44,7 +44,7 @@ module top(
 	wire[7:0]	rx_data;
 	wire		rx_en;
 
-	wire[7:0]	tx_data;
+	logic[7:0]	tx_data		= 0;
 	logic		tx_en		= 0;
 
 	UART uart(
@@ -63,20 +63,25 @@ module top(
 	);
 
 	//blinky
-	logic[18:0] count = 0;
+	logic[98:0] count = 0;
 	always_ff @(posedge clk_25mhz) begin
 		count <= count + 1;
 		if(count == 0)
-			led <= led + 1;
+			led[3] <= !led[3];
+
+		led[2]	<= 0;
+		led[1]	<= 0;
 	end
 
 	//If we get 0xAA, send 0x69
 	//If we get anything else, send 0x41
-	/*always_ff @(posedge clk_25mhz) begin
+	always_ff @(posedge clk_25mhz) begin
 		tx_data	<= 0;
 		tx_en	<= 0;
 
 		if(rx_en) begin
+			led[0]	<= 1;
+
 			if(rx_data == 8'haa)
 				tx_data	<= 8'h69;
 			else
@@ -84,29 +89,6 @@ module top(
 
 			tx_en	<= 1;
 		end
-	end*/
-
-	wire	tx_en_vio;
-	logic	tx_en_vio_ff = 0;
-	always_ff @(posedge clk_25mhz) begin
-		tx_en_vio_ff	<= tx_en_vio;
-		if(tx_en_vio && !tx_en_vio_ff)
-			tx_en	<= 1;
 	end
-
-	vio_0 vio(
-		.clk(clk_25mhz),
-		.probe_in0(rx_en),
-		.probe_in1(rx_data),
-		.probe_out0(tx_en_vio),
-		.probe_out1(tx_data)
-		);
-
-	ila_0 ila(
-		.clk(clk_25mhz),
-		.probe0(uart_rxd),
-		.probe1(rx_en),
-		.probe2(rx_data)
-	);
 
 endmodule

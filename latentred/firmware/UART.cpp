@@ -42,8 +42,7 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 	, m_rxlane(rxlane)
 {
 	//TODO: make this part generic
-	//if(txlane == &UART4)
-	if(true)
+	if(txlane == &UART4)
 	{
 		//Enable GPIO port A
 		RCC.AHB1ENR |= RCC_AHB1_GPIOA;
@@ -68,23 +67,30 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 		RCC.APB1ENR |= RCC_APB1_UART5;
 	}
 
-	//Configure TX lane
+	//Set baud rates
 	m_txlane->BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
 							//This is suggestive of APB1 being 20.85 MHz instead of 25.
+	if(m_txlane != m_rxlane)
+		m_rxlane->BRR = 181;
+
+	//Wipe config register to default states
 	m_txlane->CR3 = 0x0;
 	m_txlane->CR2 = 0x0;
-	m_txlane->CR1 = 0x9;
+	m_txlane->CR1 = 0x0;
+	if(m_txlane != m_rxlane)
+	{
+		m_rxlane->CR3 = 0x0;
+		m_rxlane->CR2 = 0x0;
+		m_rxlane->CR1 = 0x0;
+	}
 
-	//Configure RX lane, but only enable RX. Enable RXNE interrupt
-	m_rxlane->BRR = 181;
-	m_rxlane->CR3 = 0x0;
-	m_rxlane->CR2 = 0x0;
-	m_rxlane->CR1 = 0x25;
+	//Configure TX/RX lanes appropriately
+	m_txlane->CR1 |= 0x9;
+	m_rxlane->CR1 |= 0x25;
 
 	//Enable interrupt vector
 	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
-	//if(txlane == &UART4)
-	if(true)
+	if(txlane == &UART4)
 	{
 		//Enable IRQ38. This is bit 6 of NVIC_ISER1.
 		*NVIC_ISER1 = 0x40;

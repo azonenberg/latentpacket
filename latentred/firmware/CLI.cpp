@@ -86,7 +86,7 @@ void CLI::Iteration()
 	while(uart->HasInput())
 	{
 		auto c = uart->BlockingRead();
-		m_uart->Printf("FPGA says: %02x", c);
+		m_uart->Printf("FPGA says: %02x\n", c);
 	}
 }
 
