@@ -32,27 +32,8 @@
 /**
 	@brief Link to the UART on the management FPGA
  */
-//UART g_managementFpgaUart(&UART5);
-
 LatentRedSwitch::LatentRedSwitch()
 {
-	/*
-	//TODO: make this part generic
-
-	//Enable GPIO port B
-	RCC.AHB1ENR |= RCC_AHB1_GPIOB;
-
-	//Configure UART5_TX as AF7 on PB9 and USART5_RX as AF7 on PB8
-	GPIOB.MODER = (GPIOB.MODER & 0xfff0ffff) | 0x000a0000;
-	GPIOB.AFRL = (GPIOB.AFRH & 0xffffff00) | 0x0077;
-
-	//Enable the UARTs
-	RCC.APB1ENR |= RCC_APB1_UART5;
-
-	//Enable IRQ53. This is bit 21 of NVIC_ISER1.
-	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
-	*NVIC_ISER1 = 0x200000;
-	*/
 }
 
 LatentRedSwitch::~LatentRedSwitch()
