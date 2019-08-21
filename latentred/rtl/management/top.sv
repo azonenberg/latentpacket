@@ -41,4 +41,49 @@ module top(
 	output logic[3:0]	led	= 0
 	);
 
+	wire[7:0]	rx_data;
+	wire		rx_en;
+
+	logic[7:0]	tx_data		= 0;
+	logic		tx_en		= 0;
+
+	UART uart(
+		.clk(clk_25mhz),
+		.clkdiv(16'd217),
+
+		.rx(uart_rxd),
+		.rxactive(),
+		.rx_data(rx_data),
+		.rx_en(rx_en),
+
+		.tx(uart_txd),
+		.tx_data(tx_data),
+		.tx_en(tx_en),
+		.txactive()
+	);
+
+	//blinky
+	logic[15:0] count = 0;
+	always_ff @(posedge clk_25mhz) begin
+		count <= count + 1;
+		if(count == 0)
+			led <= led + 1;
+	end
+
+	//If we get 0xAA, send 0x69
+	//If we get anything else, send 0x41
+	always_ff @(posedge clk_25mhz) begin
+		tx_data	<= 0;
+		tx_en	<= 0;
+
+		if(rx_en) begin
+			if(rx_data == 8'haa)
+				tx_data	<= 8'h69;
+			else
+				tx_data	<= 8'h41;
+
+			tx_en	<= 1;
+		end
+	end
+
 endmodule
