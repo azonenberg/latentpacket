@@ -48,12 +48,14 @@ public:
 	virtual Port* GetPort(uint32_t i);
 
 	//DEBUG
+	/*
 	UART* GetUART()
 	{ return &m_uart; }
+	*/
 
 protected:
 	LatentRedManagementPort m_mgmtPort;
-	UART m_uart;
+	//UART m_uart;
 };
 
 #endif

@@ -42,16 +42,31 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 	, m_rxlane(rxlane)
 {
 	//TODO: make this part generic
+	//if(txlane == &UART4)
+	if(true)
+	{
+		//Enable GPIO port A
+		RCC.AHB1ENR |= RCC_AHB1_GPIOA;
 
-	//Enable GPIO port A
-	RCC.AHB1ENR |= RCC_AHB1_GPIOA;
+		//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3
+		GPIOA.MODER = (GPIOA.MODER & 0xffffff3c) | 0x82;
+		GPIOA.AFRL = (GPIOA.AFRL & 0xffff0ff0) | 0x7008;
 
-	//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3
-	GPIOA.MODER = (GPIOA.MODER & 0xffffff3c) | 0x82;
-	GPIOA.AFRL = (GPIOA.AFRL & 0xffff0ff0) | 0x7008;
+		//Enable the UARTs
+		RCC.APB1ENR |= RCC_APB1_UART4 | RCC_APB1_USART2;
+	}
+	else if(txlane == &UART5)
+	{
+		//Enable GPIO port B
+		RCC.AHB1ENR |= RCC_AHB1_GPIOB;
 
-	//Enable the UARTs
-	RCC.APB1ENR |= RCC_APB1_UART4 | RCC_APB1_USART2;
+		//Configure UART5_TX as AF7 on PB9 and USART5_RX as AF7 on PB8
+		GPIOB.MODER = (GPIOB.MODER & 0xfff0ffff) | 0x000a0000;
+		GPIOB.AFRH = (GPIOB.AFRH & 0xffffff00) | 0x0077;
+
+		//Enable the UART
+		RCC.APB1ENR |= RCC_APB1_UART5;
+	}
 
 	//Configure TX lane
 	m_txlane->BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
@@ -66,9 +81,19 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 	m_rxlane->CR2 = 0x0;
 	m_rxlane->CR1 = 0x25;
 
-	//Enable IRQ38. This is bit 6 of NVIC_ISER1.
+	//Enable interrupt vector
 	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
-	*NVIC_ISER1 = 0x40;
+	//if(txlane == &UART4)
+	if(true)
+	{
+		//Enable IRQ38. This is bit 6 of NVIC_ISER1.
+		*NVIC_ISER1 = 0x40;
+	}
+	else if(txlane == &UART5)
+	{
+		//Enable IRQ53. This is bit 21 of NVIC_ISER1.
+		*NVIC_ISER1 = 0x200000;
+	}
 }
 
 void UART::PrintBinary(char ch)
@@ -263,6 +288,8 @@ void UART::Printf(const char* format, ...)
 
 void __attribute__((isr)) USART2_Handler()
 {
+	g_platform.m_cliUart.PrintString("USART2_Handler\n");
+
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
 	if(0 == (USART2.ISR & USART_ISR_RXNE))
@@ -274,6 +301,8 @@ void __attribute__((isr)) USART2_Handler()
 
 void __attribute__((isr)) UART5_Handler()
 {
+	g_platform.m_cliUart.PrintString("USART5_Handler\n");
+
 	/*
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
