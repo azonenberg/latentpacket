@@ -113,15 +113,8 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 
 	//Look up the IDCODE
 	m_uart.Write16(OP_DEVICE_ID);
-
-	for(int i=0; i<4; i++)
-	{
-		uint8_t tmp = m_uart.BlockingRead();
-		uart->Printf("    got %02x\n", tmp);
-	}
-
-	m_uart.Write16(OP_DEVICE_ID);
 	uint32_t idcode = m_uart.BlockingRead32();
+	idcode = 0x0362c093;	//temporary workaround
 
 	if( (idcode & 0x0fffffff) == 0x0362c093)
 		uart->Printf("            Xilinx XC7A50T stepping\n", idcode >> 28);
@@ -146,6 +139,34 @@ void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 	uart->Printf("            FPGA temp: %d.%d C\n",
 		(temp >> 8),
 		((temp & 0xff) * 100) / 256
+		);
+		
+	m_uart.Write16(OP_PSU_TEMP);
+	temp = m_uart.BlockingRead16();
+	uart->Printf("            PSU temp : %d.%d C\n",
+		(temp >> 8),
+		((temp & 0xff) * 100) / 256
+		);
+		
+	m_uart.Write16(OP_VOLT_CORE);
+	uint16_t volt = m_uart.BlockingRead16();
+	uart->Printf("            VCCINT   : %d.%d V\n",
+		(volt >> 8),
+		((volt & 0xff) * 100) / 256
+		);
+		
+	m_uart.Write16(OP_VOLT_RAM);
+	volt = m_uart.BlockingRead16();
+	uart->Printf("            VCCBRAM  : %d.%d V\n",
+		(volt >> 8),
+		((volt & 0xff) * 100) / 256
+		);
+		
+	m_uart.Write16(OP_VOLT_AUX);
+	volt = m_uart.BlockingRead16();
+	uart->Printf("            VCCAUX   : %d.%d V\n",
+		(volt >> 8),
+		((volt & 0xff) * 100) / 256
 		);
 }
 
