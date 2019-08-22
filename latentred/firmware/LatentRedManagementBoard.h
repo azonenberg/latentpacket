@@ -52,6 +52,26 @@ public:
 	{ return &m_uart; }
 
 protected:
+
+	enum
+	{
+		OP_NOP			= 0x0000,	//Do nothing, no reply
+		OP_ECHO			= 0x0001,	//Do nothing, reply with 0x55
+
+		OP_DEVICE_ID	= 0x0002,	//no arguments, FPGA responds with our 32-bit JTAG IDCODE
+		OP_FPGA_SERIAL	= 0x0003,	//no arguments, FPGA responds with our DNA extended to 64 bits
+
+		OP_DIE_TEMP		= 0x0004,	//no arguments, FPGA responds with die temperature in 8.8 fixed point degC
+		OP_VOLT_CORE	= 0x0005,	//no arguments, FPGA responds with VCCINT value in 8.8 fixed point volts
+		OP_VOLT_RAM		= 0x0006,	//no arguments, FPGA responds with VCCBRAM value in 8.8 fixed point volts
+		OP_VOLT_AUX		= 0x0007,	//no arguments, FPGA responds with VCCAUX value in 8.8 fixed point volts
+		OP_PSU_TEMP		= 0x0008,	//no arugments, FPGA responds with LTC3374 temperature in 8.8 fixed point degC
+									//(TODO: needs improved XADC support)
+
+		OP_COUNT					//number of legal opcodes, must be last
+
+	} opcode_t;
+
 	LatentRedManagementPort m_mgmtPort;
 	UART m_uart;
 };

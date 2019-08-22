@@ -57,9 +57,21 @@ public:
 	void PrintString(const char* str);
 	void Printf(const char* format, ...);
 	void WritePadded(const char* str, int minlen, char padding, int prepad);
+	void Write(const char* data, uint32_t len);
+	void Write16(uint16_t n)
+	{ Write((const char*)&n, 2); }
 
 	//RX side
 	char BlockingRead();
+	void BlockingRead(char* data, uint32_t len);
+
+	uint32_t BlockingRead32()
+	{
+		uint32_t tmp;
+		BlockingRead((char*)&tmp, 4);
+		return tmp;
+	}
+
 	bool HasInput()
 	{ return !m_rxFifo.IsEmpty(); }
 

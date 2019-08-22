@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -28,24 +30,26 @@
 ***********************************************************************************************************************/
 
 /**
-	@brief Top level module for the INTEGRALSTICK FPGA.
-
-	Protocol description:
+	@brief Top level module for the INTEGRALSTICK FPGA on the LATENTRED management board.
  */
 module top(
 	input wire			clk_25mhz,
 
-	input wire			uart_rxd,	//DCMI_D7
-	output wire			uart_txd,	//DCMI_D6
+	input wire			uart_rxd,
+	output wire			uart_txd,
 
 	output logic[3:0]	led	= 0
 	);
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// The UART to the STM32
+
 	wire[7:0]	rx_data;
 	wire		rx_en;
 
-	logic[7:0]	tx_data		= 0;
-	logic		tx_en		= 0;
+	wire[7:0]	tx_data;
+	wire		tx_en;
+	wire		tx_done;
 
 	UART uart(
 		.clk(clk_25mhz),
@@ -59,36 +63,56 @@ module top(
 		.tx(uart_txd),
 		.tx_data(tx_data),
 		.tx_en(tx_en),
-		.txactive()
+		.txactive(),
+		.tx_done(tx_done)
 	);
 
-	//blinky
-	logic[98:0] count = 0;
-	always_ff @(posedge clk_25mhz) begin
-		count <= count + 1;
-		if(count == 0)
-			led[3] <= !led[3];
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// On-die sensor packages
 
-		led[2]	<= 0;
-		led[1]	<= 0;
-	end
+	wire[15:0] die_temp;
+	wire[15:0] volt_core;
+	wire[15:0] volt_ram;
+	wire[15:0] volt_aux;
 
-	//If we get 0xAA, send 0x69
-	//If we get anything else, send 0x41
-	always_ff @(posedge clk_25mhz) begin
-		tx_data	<= 0;
-		tx_en	<= 0;
+	OnDieSensors_7series sensors(
+		.clk(clk_25mhz),
+		.die_temp(die_temp),
+		.volt_core(volt_core),
+		.volt_ram(volt_ram),
+		.volt_aux(volt_aux)
+	);
 
-		if(rx_en) begin
-			led[0]	<= 1;
+	wire[63:0]	die_serial;
+	wire[31:0]	idcode;
 
-			if(rx_data == 8'haa)
-				tx_data	<= 8'h69;
-			else
-				tx_data	<= 8'h41;
+	DeviceInfo_7series info(
+		.clk(clk_25mhz),
+		.die_serial(die_serial),
+		.idcode(idcode)
+		);
 
-			tx_en	<= 1;
-		end
-	end
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// TODO: MDIO/reset/sensor logic
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Control stuff for the management engine
+
+	ManagementController ctrl(
+		.clk(clk_25mhz),
+
+		.uart_rx_data(rx_data),
+		.uart_rx_en(rx_en),
+		.uart_tx_data(tx_data),
+		.uart_tx_en(tx_en),
+		.uart_tx_done(tx_done),
+
+		.die_temp(die_temp),
+		.volt_core(volt_core),
+		.volt_ram(volt_ram),
+		.volt_aux(volt_aux),
+		.die_serial(die_serial),
+		.idcode(idcode)
+	);
 
 endmodule

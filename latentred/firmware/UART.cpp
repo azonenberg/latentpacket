@@ -88,7 +88,7 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 	m_txlane->CR1 |= 0x9;
 	m_rxlane->CR1 |= 0x25;
 
-	//Enable interrupt vector
+	//Enable RXNE interrupt vector
 	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
 	if(txlane == &UART4)
 	{
@@ -124,6 +124,18 @@ char UART::BlockingRead()
 	{}
 
 	return m_rxFifo.Pop();
+}
+
+void UART::BlockingRead(char* data, uint32_t len)
+{
+	for(uint32_t i=0; i<len; i++)
+		data[i] = BlockingRead();
+}
+
+void UART::Write(const char* data, uint32_t len)
+{
+	for(uint32_t i=0; i<len; i++)
+		PrintBinary(data[i]);
 }
 
 void UART::PrintString(const char* str)
