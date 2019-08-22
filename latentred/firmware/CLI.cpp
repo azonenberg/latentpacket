@@ -168,7 +168,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 		}
 
 		//Debug print
-		m_uart->Printf("    %d: %s ", i, m_command[i].m_text);
+		//m_uart->Printf("    %d: %s ", i, m_command[i].m_text);
 
 		m_command[i].m_commandID = CMD_NULL;
 
@@ -194,7 +194,7 @@ bool CLI::ParseCommand(const clikeyword_t* root)
 			}
 
 			//Debug print
-			m_uart->Printf("(matched \"%s\")\n", row->keyword);
+			//m_uart->Printf("(matched \"%s\")\n", row->keyword);
 
 			//Match!
 			m_command[i].m_commandID = row->id;
@@ -533,6 +533,10 @@ void CLI::OnShowCommand()
 {
 	switch(m_command[1].m_commandID)
 	{
+		case CMD_HARDWARE:
+			OnShowHardware();
+			break;
+		
 		case CMD_INTERFACE:
 			OnShowInterfaceCommand();
 			break;
