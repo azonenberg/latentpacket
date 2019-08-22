@@ -127,8 +127,13 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 		uart->Printf("            Xilinx XC7A50T stepping\n", idcode >> 28);
 	else
 		uart->Printf("            Xilinx [unknown, idcode = 0x%08x]\n", idcode);
+		
+	m_uart.Write16(OP_FPGA_SERIAL);
+	uint32_t serial_hi = m_uart.BlockingRead32();
+	uint32_t serial_lo = m_uart.BlockingRead32();
 
-	uart->Printf("            Serial number 0x[details unimplemented]\n");
+	uart->Printf("            Serial number 0x%08x%08x\n", serial_hi, serial_lo);
+	
 	uart->Printf("            Bitstream version [details unimplemented]\n");
 }
 
