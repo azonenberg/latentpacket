@@ -1,3 +1,5 @@
 *.h linguist-language=c++
-latentred/firmware/*.h linguist-language=c++
+*.xdc linguist-lanugage=tcl
 antikernel-ipcores linguist-vendored
+latentred/vivado-projects/management/management.hw linguist-generated=true
+latentred/vivado-projects/management/management.xpr linguist-detectable=false
