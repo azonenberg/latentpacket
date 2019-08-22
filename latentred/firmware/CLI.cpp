@@ -591,3 +591,18 @@ void CLI::OnShowInterfaceCommand()
 void CLI::OnShowInterfaceStatus()
 {
 }
+
+/**
+	@brief Processes a "show hardware" command
+ */
+void CLI::OnShowHardware()
+{
+	for(size_t i=0; i<m_switch->GetBoardCount(); i++)
+	{
+		auto board = m_switch->GetBoard(i);
+		m_uart->Printf("    Board %d: %s\n", i, board->GetDescription());
+		board->PrintCPUInfo(m_uart);
+		board->PrintFPGAInfo(m_uart);
+		board->PrintSensorInfo(m_uart);
+	}
+}

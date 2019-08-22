@@ -44,6 +44,7 @@ public:
 	//empty stubs provided since some boards may not have a cpu or fpga
 	virtual void PrintCPUInfo(UART* uart);
 	virtual void PrintFPGAInfo(UART* uart);
+	virtual void PrintSensorInfo(UART* uart) =0;
 
 	//accessors for actual interfaces
 	virtual uint32_t GetPortCount() =0;

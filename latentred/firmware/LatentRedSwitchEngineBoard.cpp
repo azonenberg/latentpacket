@@ -61,7 +61,11 @@ void LatentRedSwitchEngineBoard::PrintFPGAInfo(UART* uart)
 
 	uart->Printf("            Xilinx [details unimplemented]\n");
 	uart->Printf("            Serial number 0x[details unimplemented]\n");
-	uart->Printf("            Bitstream version [details unimplemented]\n");\
+	uart->Printf("            Bitstream version [details unimplemented]\n");
+}
+
+void LatentRedSwitchEngineBoard::PrintSensorInfo(UART* uart)
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

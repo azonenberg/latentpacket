@@ -43,6 +43,7 @@ public:
 
 	virtual void PrintCPUInfo(UART* uart);
 	virtual void PrintFPGAInfo(UART* uart);
+	virtual void PrintSensorInfo(UART* uart);
 
 	virtual uint32_t GetPortCount();
 	virtual Port* GetPort(uint32_t i);

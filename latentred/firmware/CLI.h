@@ -118,6 +118,7 @@ protected:
 	void OnShowCommand();
 	void OnShowInterfaceCommand();
 	void OnShowInterfaceStatus();
+	void OnShowHardware();
 	void OnShowVersion();
 
 protected:

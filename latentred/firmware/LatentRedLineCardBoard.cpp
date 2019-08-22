@@ -59,6 +59,10 @@ const char* LatentRedLineCardBoard::GetDescription()
 	return "LATENTRED BaseT Line Card v0.1";
 }
 
+void LatentRedLineCardBoard::PrintSensorInfo(UART* uart)
+{
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Port access
 

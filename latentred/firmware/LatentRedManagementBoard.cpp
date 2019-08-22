@@ -137,6 +137,18 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 	uart->Printf("            Bitstream version [details unimplemented]\n");
 }
 
+void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
+{
+	uart->Printf("        Sensors:\n");
+	
+	m_uart.Write16(OP_DIE_TEMP);
+	uint16_t temp = m_uart.BlockingRead16();
+	uart->Printf("            FPGA temp: %d.%d C\n",
+		(temp >> 8),
+		((temp & 0xff) * 100) / 256
+		);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Port access
 

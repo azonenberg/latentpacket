@@ -71,6 +71,13 @@ public:
 		BlockingRead((char*)&tmp, 4);
 		return tmp;
 	}
+	
+	uint16_t BlockingRead16()
+	{
+		uint16_t tmp;
+		BlockingRead((char*)&tmp, 2);
+		return tmp;
+	}
 
 	bool HasInput()
 	{ return !m_rxFifo.IsEmpty(); }
