@@ -117,7 +117,7 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 	idcode = 0x0362c093;	//temporary workaround
 
 	if( (idcode & 0x0fffffff) == 0x0362c093)
-		uart->Printf("            Xilinx XC7A50T stepping\n", idcode >> 28);
+		uart->Printf("            Xilinx XC7A50T stepping %d\n", idcode >> 28);
 	else
 		uart->Printf("            Xilinx [unknown, idcode = 0x%08x]\n", idcode);
 		
