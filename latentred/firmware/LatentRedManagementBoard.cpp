@@ -120,7 +120,8 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 		uart->Printf("    got %02x\n", tmp);
 	}
 
-	uint32_t idcode = 0;//m_uart.BlockingRead32();
+	m_uart.Write16(OP_DEVICE_ID);
+	uint32_t idcode = m_uart.BlockingRead32();
 
 	if( (idcode & 0x0fffffff) == 0x0362c093)
 		uart->Printf("            Xilinx XC7A50T stepping\n", idcode >> 28);
