@@ -35,7 +35,7 @@
 	@author Andrew D. Zonenberg
 	@brief SPI driver
  */
-class SPI
+class SPI : public CharacterDevice
 {
 public:
 	SPI();

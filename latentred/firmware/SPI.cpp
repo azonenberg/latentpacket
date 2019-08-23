@@ -27,56 +27,8 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef latentred_h
-#define latentred_h
+#include "latentred.h"
 
-#define NULL nullptr
-typedef unsigned int	uint32_t;
-typedef unsigned short	uint16_t;
-typedef unsigned char	uint8_t;
-typedef uint32_t		size_t;
-
-typedef void(*fnptr)();
-
-#include "stm32f777.h"
-
-//ctype functions
-bool isprint(char ch);
-bool isdigit(char ch);
-
-//stdio functions
-void puts(const char* str);
-
-//stdlib functions
-char* itoa(int n, char* s);
-
-//memory functions
-void* memset(void* s, int c, size_t n);
-void* memcpy(void* dest, const void* src, size_t n);
-
-//string functions
-char* reverse(char* s);
-int strlen(const char* str);
-char* strncpy(char* dst, const char* src, size_t n);
-int strcmp(const char* a, const char* b);
-
-#include "FIFO.h"
-#include "CharacterDevice.h"
-#include "UART.h"
-#include "SPI.h"
-#include "Token.h"
-#include "Command.h"
-#include "Port.h"
-#include "LatentRedManagementPort.h"
-#include "LatentRedSwitchEnginePort.h"
-#include "LatentRedLineCardPort.h"
-#include "Board.h"
-#include "LatentRedManagementBoard.h"
-#include "LatentRedSwitchEngineBoard.h"
-#include "LatentRedLineCardBoard.h"
-#include "Switch.h"
-#include "LatentRedSwitch.h"
-#include "CLI.h"
-#include "Platform.h"
-
-#endif
+SPI::SPI()
+{
+}

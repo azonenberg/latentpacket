@@ -67,6 +67,34 @@ public:
 	bool HasInput()
 	{ return !m_rxFifo.IsEmpty(); }
 
+
+	char BlockingRead()
+	{
+		//block until at least one byte is ready
+		while(m_rxFifo.IsEmpty())
+		{}
+
+		return m_rxFifo.Pop();
+	}
+
+	void BlockingRead(char* data, uint32_t len)
+	{
+		for(uint32_t i=0; i<len; i++)
+			data[i] = BlockingRead();
+	}
+
+	void Write(const char* data, uint32_t len)
+	{
+		for(uint32_t i=0; i<len; i++)
+			PrintBinary(data[i]);
+	}
+
+	void PrintString(const char* str)
+	{
+		while(*str)
+			PrintText(*(str++));
+	}
+
 	//Interrupt handlers
 	void OnIRQRxData(char ch)
 	{ m_rxFifo.Push(ch); }

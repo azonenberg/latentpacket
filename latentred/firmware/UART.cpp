@@ -109,33 +109,6 @@ void UART::PrintBinary(char ch)
 	{}
 }
 
-char UART::BlockingRead()
-{
-	//block until at least one byte is ready
-	while(m_rxFifo.IsEmpty())
-	{}
-
-	return m_rxFifo.Pop();
-}
-
-void UART::BlockingRead(char* data, uint32_t len)
-{
-	for(uint32_t i=0; i<len; i++)
-		data[i] = BlockingRead();
-}
-
-void UART::Write(const char* data, uint32_t len)
-{
-	for(uint32_t i=0; i<len; i++)
-		PrintBinary(data[i]);
-}
-
-void UART::PrintString(const char* str)
-{
-	while(*str)
-		PrintText(*(str++));
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Output formatting
 
