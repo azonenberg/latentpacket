@@ -38,6 +38,8 @@ module top(
 	input wire			uart_rxd,
 	output wire			uart_txd,
 
+	input wire			ltc_vtemp,
+
 	output logic[3:0]	led	= 0
 	);
 
@@ -80,11 +82,13 @@ module top(
 		.EXT_IN_ENABLE(16'h0001)
 	) sensors(
 		.clk(clk_25mhz),
+		.vin_p({15'hz, ltc_vtemp}),
+		.vin_n(16'hz),
 		.die_temp(die_temp),
 		.volt_core(volt_core),
 		.volt_ram(volt_ram),
 		.volt_aux(volt_aux),
-		.ext_in(ext_in),
+		.ext_in(ext_in)
 	);
 
 	wire[63:0]	die_serial;

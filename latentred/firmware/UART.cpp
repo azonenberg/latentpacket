@@ -37,7 +37,7 @@
 
 	TODO: nicer constants here
  */
-UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
+UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div)
 	: m_txlane(txlane)
 	, m_rxlane(rxlane)
 {
@@ -68,10 +68,9 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane)
 	}
 
 	//Set baud rates
-	m_txlane->BRR = 181;	//we calculate 217 for 115.2 Kbps but experimentally we need this, why??
-							//This is suggestive of APB1 being 20.85 MHz instead of 25.
+	m_txlane->BRR = baud_div;
 	if(m_txlane != m_rxlane)
-		m_rxlane->BRR = 181;
+		m_rxlane->BRR = baud_div;
 
 	//Wipe config register to default states
 	m_txlane->CR3 = 0x0;

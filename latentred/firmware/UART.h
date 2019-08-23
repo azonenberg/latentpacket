@@ -45,11 +45,13 @@ class UART
 {
 public:
 
-	UART(volatile usart_t* lane)
-	 : UART(lane, lane)
+	UART(volatile usart_t* lane, uint32_t baud_div = 181)
+	 : UART(lane, lane, baud_div)
 	{}
 
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane);
+	//we calculate 217 for 115.2 Kbps but experimentally we need 181, why??
+	//This is suggestive of APB1 being 20.8 MHz instead of 25.
+	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div = 181);
 
 	//TX side
 	void PrintBinary(char ch);
@@ -71,7 +73,7 @@ public:
 		BlockingRead((char*)&tmp, 4);
 		return tmp;
 	}
-	
+
 	uint16_t BlockingRead16()
 	{
 		uint16_t tmp;
