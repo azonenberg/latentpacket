@@ -74,13 +74,17 @@ module top(
 	wire[15:0] volt_core;
 	wire[15:0] volt_ram;
 	wire[15:0] volt_aux;
+	wire[191:0]	ext_in;
 
-	OnDieSensors_7series sensors(
+	OnDieSensors_7series #(
+		.EXT_IN_ENABLE(16'h0001)
+	) sensors(
 		.clk(clk_25mhz),
 		.die_temp(die_temp),
 		.volt_core(volt_core),
 		.volt_ram(volt_ram),
-		.volt_aux(volt_aux)
+		.volt_aux(volt_aux),
+		.ext_in(ext_in),
 	);
 
 	wire[63:0]	die_serial;
@@ -112,7 +116,8 @@ module top(
 		.volt_ram(volt_ram),
 		.volt_aux(volt_aux),
 		.die_serial(die_serial),
-		.idcode(idcode)
+		.idcode(idcode),
+		.psu_temp(ext_in[11:0])
 	);
 
 endmodule

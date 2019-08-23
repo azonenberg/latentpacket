@@ -137,37 +137,27 @@ void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 	m_uart.Write16(OP_DIE_TEMP);
 	uint16_t temp = m_uart.BlockingRead16();
 	uart->Printf("            FPGA temp: %d.%d C\n",
-		(temp >> 8),
-		((temp & 0xff) * 100) / 256
-		);
+		(temp >> 8), ((temp & 0xff) * 100) / 256 );
 		
 	m_uart.Write16(OP_PSU_TEMP);
 	temp = m_uart.BlockingRead16();
 	uart->Printf("            PSU temp : %d.%d C\n",
-		(temp >> 8),
-		((temp & 0xff) * 100) / 256
-		);
+		(temp >> 8), ((temp & 0xff) * 100) / 256);
 		
 	m_uart.Write16(OP_VOLT_CORE);
 	uint16_t volt = m_uart.BlockingRead16();
-	uart->Printf("            VCCINT   : %d.%d V\n",
-		(volt >> 8),
-		((volt & 0xff) * 100) / 256
-		);
+	uart->Printf("            VCCINT   :  %d.%d V\n",
+		(volt >> 8), ((volt & 0xff) * 100) / 256 );
 		
 	m_uart.Write16(OP_VOLT_RAM);
 	volt = m_uart.BlockingRead16();
-	uart->Printf("            VCCBRAM  : %d.%d V\n",
-		(volt >> 8),
-		((volt & 0xff) * 100) / 256
-		);
+	uart->Printf("            VCCBRAM  :  %d.%d V\n",
+		(volt >> 8), ((volt & 0xff) * 100) / 256 );
 		
 	m_uart.Write16(OP_VOLT_AUX);
 	volt = m_uart.BlockingRead16();
-	uart->Printf("            VCCAUX   : %d.%d V\n",
-		(volt >> 8),
-		((volt & 0xff) * 100) / 256
-		);
+	uart->Printf("            VCCAUX   :  %d.%d V\n",
+		(volt >> 8), ((volt & 0xff) * 100) / 256 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

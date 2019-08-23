@@ -66,8 +66,8 @@ protected:
 		OP_VOLT_CORE	= 0x0005,	//no arguments, FPGA responds with VCCINT value in 8.8 fixed point volts
 		OP_VOLT_RAM		= 0x0006,	//no arguments, FPGA responds with VCCBRAM value in 8.8 fixed point volts
 		OP_VOLT_AUX		= 0x0007,	//no arguments, FPGA responds with VCCAUX value in 8.8 fixed point volts
-		OP_PSU_TEMP		= 0x0008,	//no arugments, FPGA responds with LTC3374 temperature in 8.8 fixed point degC
-									//(TODO: needs improved XADC support)
+		OP_PSU_TEMP		= 0x0008,	//no arguments, FPGA responds with LTC3374 temperature as raw ADC voltage
+									//(FFF = 1V)
 
 		OP_COUNT					//number of legal opcodes, must be last
 

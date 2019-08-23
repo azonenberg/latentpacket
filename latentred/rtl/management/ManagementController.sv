@@ -55,7 +55,8 @@ module ManagementController(
 	input wire[15:0]	die_temp,
 	input wire[15:0]	volt_core,
 	input wire[15:0]	volt_ram,
-	input wire[15:0]	volt_aux
+	input wire[15:0]	volt_aux,
+	input wire[11:0]	psu_temp
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,8 +74,8 @@ module ManagementController(
 		OP_VOLT_CORE	= 16'h0005,	//no arguments, we respond with VCCINT value in 8.8 fixed point volts
 		OP_VOLT_RAM		= 16'h0006,	//no arguments, we respond with VCCBRAM value in 8.8 fixed point volts
 		OP_VOLT_AUX		= 16'h0007,	//no arguments, we respond with VCCAUX value in 8.8 fixed point volts
-		OP_PSU_TEMP		= 16'h0008,	//no arugments, we respond with LTC3374 temperature in 8.8 fixed point degC
-									//(TODO: needs improved XADC support)
+		OP_PSU_TEMP		= 16'h0008,	//no arguments, we respond with LTC3374 temperature as raw voltage reading
+									//(FFF = 1V)
 
 		OP_COUNT					//number of legal opcodes, must be last
 
@@ -226,13 +227,12 @@ module ManagementController(
 						endcase
 					end	//end OP_VOLT_AUX
 
-					//TODO implement this
 					OP_PSU_TEMP: begin
 						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= 8'h00;
+							0:	uart_tx_data	<= psu_temp[7:0];
 							1: begin
-								uart_tx_data	<= 8'h00;
+								uart_tx_data	<= {4'h0, psu_temp[11:8]};
 								state			<= STATE_IDLE;
 							end
 						endcase
