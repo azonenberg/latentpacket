@@ -27,44 +27,18 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
+#ifndef spi_h
+#define spi_h
 
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief UART driver
+	@brief SPI driver
  */
-
-/**
-	@brief Driver for a UART
- */
-class UART : public CharacterDevice
+class SPI
 {
 public:
-
-	UART(volatile usart_t* lane, uint32_t baud_div = 181)
-	 : UART(lane, lane, baud_div)
-	{}
-
-	//we calculate 217 for 115.2 Kbps but experimentally we need 181, why??
-	//This is suggestive of APB1 being 20.8 MHz instead of 25.
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div = 181);
-
-	//TX side
-	void PrintBinary(char ch);
-	void PrintString(const char* str);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-	void Write(const char* data, uint32_t len);
-
-	//RX side
-	char BlockingRead();
-	void BlockingRead(char* data, uint32_t len);
-
-protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
+	SPI();
 };
 
 #endif

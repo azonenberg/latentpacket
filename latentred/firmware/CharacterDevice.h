@@ -27,44 +27,52 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
+#ifndef characterdevice_h
+#define characterdevice_h
 
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief UART driver
+	@brief Abstract character device base class
  */
-
-/**
-	@brief Driver for a UART
- */
-class UART : public CharacterDevice
+class CharacterDevice
 {
 public:
+	CharacterDevice();
 
-	UART(volatile usart_t* lane, uint32_t baud_div = 181)
-	 : UART(lane, lane, baud_div)
-	{}
+	void PrintText(char ch)
+	{
+		if(ch == '\n')
+			PrintBinary('\r');
+		PrintBinary(ch);
+	}
 
-	//we calculate 217 for 115.2 Kbps but experimentally we need 181, why??
-	//This is suggestive of APB1 being 20.8 MHz instead of 25.
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div = 181);
+	void Write16(uint16_t n)
+	{ Write((const char*)&n, 2); }
 
-	//TX side
-	void PrintBinary(char ch);
-	void PrintString(const char* str);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-	void Write(const char* data, uint32_t len);
+	uint32_t BlockingRead32()
+	{
+		uint32_t tmp;
+		BlockingRead((char*)&tmp, 4);
+		return tmp;
+	}
 
-	//RX side
-	char BlockingRead();
-	void BlockingRead(char* data, uint32_t len);
+	uint16_t BlockingRead16()
+	{
+		uint16_t tmp;
+		BlockingRead((char*)&tmp, 2);
+		return tmp;
+	}
+
+	bool HasInput()
+	{ return !m_rxFifo.IsEmpty(); }
+
+	//Interrupt handlers
+	void OnIRQRxData(char ch)
+	{ m_rxFifo.Push(ch); }
 
 protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
+	FIFO<char, 32> m_rxFifo;
 };
 
 #endif

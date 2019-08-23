@@ -109,13 +109,6 @@ void UART::PrintBinary(char ch)
 	{}
 }
 
-void UART::PrintText(char ch)
-{
-	if(ch == '\n')
-		PrintBinary('\r');
-	PrintBinary(ch);
-}
-
 char UART::BlockingRead()
 {
 	//block until at least one byte is ready
