@@ -280,13 +280,3 @@ void __attribute__((isr)) USART2_Handler()
 	g_platform.m_cliUart.OnIRQRxData(USART2.RDR);
 }
 
-void __attribute__((isr)) UART5_Handler()
-{
-	//Check why we got the IRQ.
-	//For now, ignore anything other than "data ready"
-	if(0 == (UART5.ISR & USART_ISR_RXNE))
-		return;
-
-	//shove it in the FIFO
-	static_cast<LatentRedManagementBoard*>(g_platform.m_switch.GetBoard(4))->GetUART()->OnIRQRxData(UART5.RDR);
-}

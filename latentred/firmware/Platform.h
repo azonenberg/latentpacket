@@ -61,7 +61,7 @@ public:
 			Configure main system clocks
 			APB2 must be <= 90 MHz, /4 = 50 MHz
 			APB1 must be <= 45 MHz, /8 = 25 MHz
-			AHB must be >25 MHz, no division needed
+			AHB must be >25 MHz, no division needed (200 MHz)
 			Use PLL
 		 */
 		RCC.CFGR = RCC_APB2_DIV4 | RCC_APB1_DIV8 | RCC_AHB_DIV1 | RCC_SYSCLK_PLL;

@@ -52,15 +52,9 @@ public:
 	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div = 181);
 
 	//TX side
-	void PrintBinary(char ch);
-	void PrintString(const char* str);
+	virtual void PrintBinary(char ch);
 	void Printf(const char* format, ...);
 	void WritePadded(const char* str, int minlen, char padding, int prepad);
-	void Write(const char* data, uint32_t len);
-
-	//RX side
-	char BlockingRead();
-	void BlockingRead(char* data, uint32_t len);
 
 protected:
 	volatile usart_t* m_txlane;

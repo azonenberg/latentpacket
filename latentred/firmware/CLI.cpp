@@ -79,15 +79,6 @@ void CLI::Iteration()
 			m_state = STATE_SHOW_PROMPT;
 			break;
 	}
-
-	//DEBUG: Echo output from the management UART
-	auto mgmt = (LatentRedManagementBoard*)m_switch->GetBoard(4);
-	auto uart = mgmt->GetUART();
-	while(uart->HasInput())
-	{
-		auto c = uart->BlockingRead();
-		m_uart->Printf("FPGA says: %02x\n", c);
-	}
 }
 
 void CLI::OnLineReady()
@@ -536,7 +527,7 @@ void CLI::OnShowCommand()
 		case CMD_HARDWARE:
 			OnShowHardware();
 			break;
-		
+
 		case CMD_INTERFACE:
 			OnShowInterfaceCommand();
 			break;

@@ -29,6 +29,62 @@
 
 #include "latentred.h"
 
-SPI::SPI()
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+SPI::SPI(volatile spi_t* spi)
+	: m_spi(spi)
 {
+	//TODO: make this cleaner, allow multiple AFs
+	if(spi == &SPI5)
+	{
+		//Enable the SPI peripheral, plus GPIO F and H
+		RCC.APB2ENR |= RCC_APB2_SPI5;
+		RCC.AHB1ENR |= RCC_AHB1_GPIOF | RCC_AHB1_GPIOH;
+
+		//Configure SPI5_MOSI as AF5 on PF11
+		GPIOF.MODER = (GPIOF.MODER & 0xFF3FFFFF) | 0x800000;
+		GPIOF.AFRH = (GPIOF.AFRH & 0xffff0fff) | 0x5000;
+
+		//Configure SPI5_CS_N as AF5 on PH5
+		//Configure SPI5_SCK as AF5 on PH6
+		//Configure SPI5_MISO as AF5 on PH7
+		GPIOH.MODER = (GPIOF.MODER & 0xFFFF03FF) | 0xA800;
+		GPIOH.AFRL = (GPIOF.AFRL & 0x000fffff) | 0x55500000;
+	}
+
+	//8 bit mode, no interrupts enabled, single master mode, SS# output driven, no DMA
+	m_spi->CR2 = 0x1704;
+
+	//Default configuration: full duplex, master, enabled, MSB first, mode (0,0)
+	//Clock = APB/2 (12.5 MHz nominal)
+	//Software SS# management, SS# high
+	m_spi->CR1 = 0x344;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Transmission
+
+/**
+	@brief Write to the CS# pin
+ */
+void SPI::SetCS(bool cs)
+{
+	if(cs)
+		m_spi->CR1 |= 0x100;
+	else
+		m_spi->CR1 &= ~0x100;
+}
+
+/**
+	@brief Writes a byte of data to the SPI interface and reads one back
+ */
+void SPI::PrintBinary(char ch)
+{
+	m_spi->DR = ch;
+
+	while( (m_spi->SR & 0x600) == 0)
+	{}
+
+	OnIRQRxData(m_spi->DR);
 }

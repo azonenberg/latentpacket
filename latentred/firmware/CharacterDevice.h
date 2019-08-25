@@ -38,8 +38,14 @@
 class CharacterDevice
 {
 public:
-	CharacterDevice();
+	CharacterDevice()
+	{}
 
+	//Overrides
+	virtual void PrintBinary(char ch) =0;
+
+	//Convenience wrappers
+public:
 	void PrintText(char ch)
 	{
 		if(ch == '\n')

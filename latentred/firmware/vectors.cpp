@@ -118,7 +118,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 	defaultISR,				//irq50 TIM5
 	defaultISR,				//irq51 SPI3
 	defaultISR,				//irq52 UART4
-	UART5_Handler,			//irq53 UART5
+	defaultISR,				//irq53 UART5
 	defaultISR,				//irq54 TIM6_DAC
 	defaultISR,				//irq55 TIM7
 	defaultISR,				//irq56 DMA2_Stream0

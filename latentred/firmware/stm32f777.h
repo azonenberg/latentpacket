@@ -99,6 +99,14 @@ enum rcc_apb1
 	RCC_APB1_USART2 = 0x020000
 };
 
+enum rcc_apb2
+{
+	RCC_APB2_SPI1 = 0x1000,
+	RCC_APB2_SPI4 = 0x2000,
+	RCC_APB2_SPI5 = 0x100000,
+	RCC_APB2_SPI6 = 0x200000
+};
+
 typedef struct
 {
 	uint32_t CR;
@@ -176,10 +184,30 @@ enum usart_bits
 	USART_ISR_RXNE = 0x20
 };
 
+extern volatile usart_t USART1;
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
 extern volatile usart_t UART5;
+extern volatile usart_t USART6;
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t SR;
+	uint32_t DR;
+	uint32_t CRCPR;
+	uint32_t RXCRCR;
+	uint32_t TXCRCR;
+	uint32_t I2SCFGR;
+	uint32_t I2SPR;
+} spi_t;
+
+extern volatile spi_t SPI1;
+extern volatile spi_t SPI4;
+extern volatile spi_t SPI5;
+extern volatile spi_t SPI6;
 
 typedef struct
 {

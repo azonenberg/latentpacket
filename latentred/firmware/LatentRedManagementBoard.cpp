@@ -34,7 +34,7 @@
 
 LatentRedManagementBoard::LatentRedManagementBoard()
 	: m_mgmtPort(this)
-	, m_uart(&UART5, 181)	//management UART runs faster: 20.8
+	, m_spi(&SPI5)
 {
 
 }
@@ -110,7 +110,7 @@ void LatentRedManagementBoard::PrintCPUInfo(UART* uart)
 void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 {
 	uart->Printf("        FPGA:\n");
-
+	/*
 	//Look up the IDCODE
 	m_uart.Write16(OP_DEVICE_ID);
 	uint32_t idcode = m_uart.BlockingRead32();
@@ -127,17 +127,20 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 	uart->Printf("            Serial number 0x%08x%08x\n", serial_hi, serial_lo);
 
 	uart->Printf("            Bitstream version [details unimplemented]\n");
+	*/
 }
 
 void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 {
 	uart->Printf("        Sensors:\n");
 
-	m_uart.Write16(OP_DIE_TEMP);
-	uint16_t temp = m_uart.BlockingRead16();
+	m_spi.Write16(OP_DIE_TEMP);
+	uint16_t temp = m_spi.BlockingRead16();
+	uart->Printf("raw temp: %04x\n", temp);
 	uart->Printf("            FPGA temp: %d.%02d C\n",
 		(temp >> 8), ((temp & 0xff) * 100) / 256 );
 
+	/*
 	m_uart.Write16(OP_PSU_TEMP);
 	uint32_t ptemp = m_uart.BlockingRead16();	//see LTC3374 datasheet equation 1
 												//output is in raw ADC codes w/ fff = 1V
@@ -160,6 +163,7 @@ void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 	volt = m_uart.BlockingRead16();
 	uart->Printf("            VCCAUX   :  %d.%02d V\n",
 		(volt >> 8), ((volt & 0xff) * 100) / 256 );
+	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

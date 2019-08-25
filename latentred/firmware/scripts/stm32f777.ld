@@ -9,6 +9,7 @@ MEMORY
 
 	/* SFRs */
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
+	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
 }
 
@@ -129,4 +130,41 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.uart5)
 	} > APB1
+
+	.sfr_apb2 :
+	{
+		. += 1024;		/* TIM1 not yet implemented */
+		. += 1024;		/* TIM8 not yet implemented */
+		. += 2048;		/* reserved unimplemented */
+		. = ALIGN(1024);
+		*(.usart1)
+		. = ALIGN(1024);
+		*(.usart6)
+		. += 1024;		/* reserved unimplemented */
+		. += 1024;		/* SDMMC2 not yet implemented */
+		. += 1024;		/* ADC not yet implemented */
+		. += 2048;		/* reserved unimplemented */
+		. += 1024;		/* SDMMC1 not yet implemented */
+		. = ALIGN(1024);
+		*(.spi1)
+		. = ALIGN(1024);
+		*(.spi4)
+		. += 1024;		/* SYSCFG not yet implemented */
+		. += 1024;		/* EXTI not yet implemented */
+		. += 1024;		/* TIM9 not yet implemented */
+		. += 1024;		/* TIM10 not yet implemented */
+		. += 1024;		/* TIM11 not yet implemented */
+		. += 1024;		/* reserved unimplemented */
+		. = ALIGN(1024);
+		*(.spi5)
+		. = ALIGN(1024);
+		*(.spi6)
+		. += 1024;		/* SAI1 not yet implemented */
+		. += 1024;		/* SAI2 not yet implemented */
+		. += 2048;		/* reserved unimplemented */
+		. += 1024;		/* LCD-TFT not yet implemented */
+		. += 1024;		/* DSI-host not yet implemented */
+		. += 1024;		/* DFSDM1 not yet implemented */
+		. += 1024;		/* MDIOS not yet implemented */
+	} > APB2
 }

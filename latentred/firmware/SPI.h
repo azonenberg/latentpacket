@@ -38,7 +38,13 @@
 class SPI : public CharacterDevice
 {
 public:
-	SPI();
+	SPI(volatile spi_t* spi);
+
+	virtual void PrintBinary(char ch);
+	virtual void SetCS(bool cs);
+
+protected:
+	volatile spi_t* m_spi;
 };
 
 #endif

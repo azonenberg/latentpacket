@@ -48,9 +48,8 @@ public:
 	virtual uint32_t GetPortCount();
 	virtual Port* GetPort(uint32_t i);
 
-	//DEBUG
-	UART* GetUART()
-	{ return &m_uart; }
+	volatile SPI* GetSPI()
+	{ return &m_spi; }
 
 protected:
 
@@ -74,7 +73,7 @@ protected:
 	} opcode_t;
 
 	LatentRedManagementPort m_mgmtPort;
-	UART m_uart;
+	SPI m_spi;
 };
 
 #endif
