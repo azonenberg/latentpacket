@@ -193,15 +193,24 @@ extern volatile usart_t USART6;
 
 typedef struct
 {
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t SR;
-	uint32_t DR;
-	uint32_t CRCPR;
-	uint32_t RXCRCR;
-	uint32_t TXCRCR;
-	uint32_t I2SCFGR;
-	uint32_t I2SPR;
+	uint16_t CR1;
+	uint16_t field_02;
+	uint16_t CR2;
+	uint16_t field_06;
+	uint16_t SR;
+	uint16_t field_0a;
+	uint16_t DR;
+	uint16_t field_0e;
+	uint16_t CRCPR;
+	uint16_t field_12;
+	uint16_t RXCRCR;
+	uint16_t field_16;
+	uint16_t TXCRCR;
+	uint16_t field_1a;
+	uint16_t I2SCFGR;
+	uint16_t field_1e;
+	uint16_t I2SPR;
+	uint16_t field_22;
 } spi_t;
 
 extern volatile spi_t SPI1;

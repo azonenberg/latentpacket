@@ -134,11 +134,16 @@ void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 {
 	uart->Printf("        Sensors:\n");
 
-	m_spi.Write16(OP_DIE_TEMP);
-	uint16_t temp = m_spi.BlockingRead16();
+	//Debug print: verify we're empty
+	uart->Printf("SPI5.SR = %08x\n", SPI5.SR);
+
+	uint16_t temp = ReadReg16(OP_DIE_TEMP, uart);	//uart only for debug
+
 	uart->Printf("raw temp: %04x\n", temp);
 	uart->Printf("            FPGA temp: %d.%02d C\n",
 		(temp >> 8), ((temp & 0xff) * 100) / 256 );
+
+	uart->Printf("SPI5.SR = %08x\n", SPI5.SR);
 
 	/*
 	m_uart.Write16(OP_PSU_TEMP);
@@ -164,6 +169,24 @@ void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 	uart->Printf("            VCCAUX   :  %d.%02d V\n",
 		(volt >> 8), ((volt & 0xff) * 100) / 256 );
 	*/
+}
+
+uint16_t LatentRedManagementBoard::ReadReg16(uint16_t op, UART* uart)
+{
+	m_spi.SetCS(0);
+	m_spi.Write16(op);				//opcode
+
+	uart->Printf("write opcode: SR = %08x\n", SPI5.SR);
+
+	m_spi.BlockingRead16();			//discard garbage sent during sending of the opcode
+	m_spi.Write16(0x00);			//filler words to clock the reply
+
+	uart->Printf("write filler: SR = %08x\n", SPI5.SR);
+
+	uint16_t temp = m_spi.BlockingRead16();
+	m_spi.SetCS(1);
+
+	return temp;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -30,12 +30,12 @@
 ***********************************************************************************************************************/
 
 /**
-	@brief Control logic for running the UART interface
+	@brief Control logic for running the SPI interface
 
 	The protocol is master-slave command based. All commands begin with an 16-bit opcode but have arbitrary content
 	past the opcode.
 
-	All multi-byte fields, including the opcode, are little endian on the wire.
+	All multi-byte fields, including the opcode, are little endian on the wire for easy handling by the STM32.
  */
 module ManagementController(
 
@@ -43,11 +43,12 @@ module ManagementController(
 	input wire			clk,
 
 	//Link to the STM32
-	input wire[7:0]		uart_rx_data,
-	input wire			uart_rx_en,
-	output logic[7:0]	uart_tx_data	= 0,
-	output logic		uart_tx_en		= 0,
-	input wire			uart_tx_done,
+	output logic		spi_tx_data_valid	= 0,
+	output logic[7:0]	spi_tx_data 		= 8'h0,
+	input wire			spi_rx_data_valid,
+	input wire[7:0]		spi_rx_data,
+	input wire			spi_cs_falling,
+	input wire			spi_cs_n,	//debug only
 
 	//Sensor info
 	input wire[63:0]	die_serial,
@@ -96,16 +97,12 @@ module ManagementController(
 
 	logic[7:0] count = 0;
 
-	logic[15:0] wdtcount = 0;
-
 	always_ff @(posedge clk) begin
 
-		uart_tx_en	<= 0;
+		spi_tx_data_valid	<= 0;
 
-		//Prevent hangs if something on the other end gets stuck and never sends us data we expect
-		if(wdtcount != 0)
-			wdtcount	<= wdtcount + 1;
-		if(wdtcount == 16'hffff)
+		//Reset state machine when CS# toggles
+		if(spi_cs_falling)
 			state		<= STATE_IDLE;
 
 		case(state)
@@ -114,11 +111,10 @@ module ManagementController(
 			// Wait for stuff to happen, then read headers
 
 			STATE_IDLE: begin
-				wdtcount			<= 0;
+				spi_tx_data			<= 0;
 
-				if(uart_rx_en) begin
-					opcode[7:0]		<= uart_rx_data;
-					wdtcount		<= 1;
+				if(spi_rx_data_valid) begin
+					opcode[7:0]		<= spi_rx_data;
 					state			<= STATE_OPCODE;
 				end
 
@@ -126,10 +122,8 @@ module ManagementController(
 
 			STATE_OPCODE: begin
 
-				if(uart_rx_en) begin
-					opcode[15:8]	<= uart_rx_data;
-					count			<= 0;
-					wdtcount		<= 1;
+				if(spi_rx_data_valid) begin
+					opcode[15:8]	<= spi_rx_data;
 					state			<= STATE_DISPATCH;
 				end
 
@@ -141,98 +135,91 @@ module ManagementController(
 			STATE_DISPATCH: begin
 
 				state				<= STATE_TX;
+				spi_tx_data_valid	<= 1;
 
 				case(opcode)
 
 					OP_NOP:
-						state			<= STATE_IDLE;
+						state				<= STATE_IDLE;
 
 					OP_ECHO: begin
-						uart_tx_en		<= 1;
-						uart_tx_data	<= 8'h55;
-						state			<= STATE_IDLE;
+						spi_tx_data			<= 8'h55;
+						state				<= STATE_IDLE;
 					end
 
 					OP_DEVICE_ID: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= idcode[7:0];
-							1:	uart_tx_data	<= idcode[15:8];
-							2:	uart_tx_data	<= idcode[23:16];
+							0:	spi_tx_data		<= idcode[7:0];
+							1:	spi_tx_data		<= idcode[15:8];
+							2:	spi_tx_data		<= idcode[23:16];
 							3: begin
-								uart_tx_data	<= idcode[31:24];
+								spi_tx_data		<= idcode[31:24];
 								state			<= STATE_IDLE;
 							end
 						endcase
 					end	//end OP_DEVICE_ID
 
 					OP_FPGA_SERIAL: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= die_serial[7:0];
-							1:	uart_tx_data	<= die_serial[15:8];
-							2:	uart_tx_data	<= die_serial[23:16];
-							3:	uart_tx_data	<= die_serial[31:24];
-							4:	uart_tx_data	<= die_serial[39:32];
-							5:	uart_tx_data	<= die_serial[47:40];
-							6:	uart_tx_data	<= die_serial[55:48];
+							0:	spi_tx_data		<= die_serial[7:0];
+							1:	spi_tx_data		<= die_serial[15:8];
+							2:	spi_tx_data		<= die_serial[23:16];
+							3:	spi_tx_data		<= die_serial[31:24];
+							4:	spi_tx_data		<= die_serial[39:32];
+							5:	spi_tx_data		<= die_serial[47:40];
+							6:	spi_tx_data		<= die_serial[55:48];
 							7: begin
-								uart_tx_data	<= die_serial[63:56];
+								spi_tx_data		<= die_serial[63:56];
 								state			<= STATE_IDLE;
 							end
 						endcase
 					end	//end OP_FPGA_SERIAL
 
 					OP_DIE_TEMP: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= die_temp[7:0];
+							0:	spi_tx_data		<= die_temp[7:0];
 							1: begin
-								uart_tx_data	<= die_temp[15:8];
+								spi_tx_data		<= die_temp[15:8];
 								state			<= STATE_IDLE;
 							end
 						endcase
 					end	//end OP_DIE_TEMP
 
 					OP_VOLT_CORE: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= volt_core[7:0];
+							0:	spi_tx_data		<= volt_core[7:0];
 							1: begin
-								uart_tx_data	<= volt_core[15:8];
+								spi_tx_data		<= volt_core[15:8];
 								state			<= STATE_IDLE;
 							end
 						endcase
 					end	//end OP_VOLT_CORE
 
 					OP_VOLT_RAM: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= volt_ram[7:0];
+							0:	spi_tx_data		<= volt_ram[7:0];
 							1: begin
-								uart_tx_data	<= volt_ram[15:8];
+								spi_tx_data		<= volt_ram[15:8];
 								state			<= STATE_IDLE;
 							end
 						endcase
 					end	//end OP_VOLT_RAM
 
 					OP_VOLT_AUX: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= volt_aux[7:0];
+							0:	spi_tx_data		<= volt_aux[7:0];
 							1: begin
-								uart_tx_data	<= volt_aux[15:8];
+								spi_tx_data		<= volt_aux[15:8];
 								state			<= STATE_IDLE;
 							end
 						endcase
 					end	//end OP_VOLT_AUX
 
 					OP_PSU_TEMP: begin
-						uart_tx_en				<= 1;
 						case(count)
-							0:	uart_tx_data	<= psu_temp[7:0];
+							0:	spi_tx_data		<= psu_temp[7:0];
 							1: begin
-								uart_tx_data	<= {4'h0, psu_temp[11:8]};
+								spi_tx_data		<= {4'h0, psu_temp[11:8]};
 								state			<= STATE_IDLE;
 							end
 						endcase
@@ -245,7 +232,7 @@ module ManagementController(
 			end	//end STATE_DISPATCH
 
 			STATE_TX: begin
-				if(uart_tx_done) begin
+				if(spi_rx_data_valid) begin
 					state	<= STATE_DISPATCH;
 					count	<= count + 1'h1;
 				end
@@ -261,14 +248,16 @@ module ManagementController(
 	ila_0 ila(
 		.clk(clk),
 		.probe0(state),
-		.probe1(uart_rx_en),
-		.probe2(uart_rx_data),
+		.probe1(spi_rx_data_valid),
+		.probe2(spi_rx_data),
 		.probe3(opcode),
 		.probe4(count),
-		.probe5(uart_tx_en),
-		.probe6(uart_tx_data),
+		.probe5(spi_tx_data_valid),
+		.probe6(spi_tx_data),
 		.probe7(idcode),
-		.probe8(volt_ram)
+		.probe8(die_temp),
+		.probe9(spi_cs_falling),
+		.probe10(spi_cs_n)
 	);
 
 endmodule

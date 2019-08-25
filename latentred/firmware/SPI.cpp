@@ -46,20 +46,22 @@ SPI::SPI(volatile spi_t* spi)
 		GPIOF.MODER = (GPIOF.MODER & 0xFF3FFFFF) | 0x800000;
 		GPIOF.AFRH = (GPIOF.AFRH & 0xffff0fff) | 0x5000;
 
-		//Configure SPI5_CS_N as AF5 on PH5
+		//Configure SPI5_CS_N as GPIO on PH5
 		//Configure SPI5_SCK as AF5 on PH6
 		//Configure SPI5_MISO as AF5 on PH7
-		GPIOH.MODER = (GPIOF.MODER & 0xFFFF03FF) | 0xA800;
+		GPIOH.MODER = (GPIOF.MODER & 0xFFFF03FF) | 0xA400;
 		GPIOH.AFRL = (GPIOF.AFRL & 0x000fffff) | 0x55500000;
 	}
 
-	//8 bit mode, no interrupts enabled, single master mode, SS# output driven, no DMA
-	m_spi->CR2 = 0x1704;
+	//8 bit mode, no interrupts enabled, single master mode, SS# output not used, no DMA
+	m_spi->CR2 = 0x1700;
 
 	//Default configuration: full duplex, master, enabled, MSB first, mode (0,0)
-	//Clock = APB/2 (12.5 MHz nominal)
+	//Clock = APB/4
 	//Software SS# management, SS# high
-	m_spi->CR1 = 0x344;
+	m_spi->CR1 = 0x34c;
+
+	SetCS(true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,10 +72,11 @@ SPI::SPI(volatile spi_t* spi)
  */
 void SPI::SetCS(bool cs)
 {
+	//TODO: work for other channels besides SPI5
 	if(cs)
-		m_spi->CR1 |= 0x100;
+		GPIOH.BSRR = 0x00000020;
 	else
-		m_spi->CR1 &= ~0x100;
+		GPIOH.BSRR = 0x00200000;
 }
 
 /**
@@ -83,7 +86,8 @@ void SPI::PrintBinary(char ch)
 {
 	m_spi->DR = ch;
 
-	while( (m_spi->SR & 0x600) == 0)
+	//wait for RX to have data
+	while( (m_spi->SR & 0x1) == 0)
 	{}
 
 	OnIRQRxData(m_spi->DR);

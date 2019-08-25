@@ -35,6 +35,11 @@
 module top(
 	input wire			clk_25mhz,
 
+	input wire			spi_mosi,
+	input wire			spi_sck,
+	input wire			spi_cs_n,
+	output wire			spi_miso,
+
 	input wire			uart_rxd,
 	output wire			uart_txd,
 
@@ -44,29 +49,83 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The UART to the STM32
+	// PLL to give us a higher clock for running internal stuff
 
-	wire[7:0]	rx_data;
-	wire		rx_en;
+	wire[4:0]	clk_unused;
 
-	wire[7:0]	tx_data;
-	wire		tx_en;
-	wire		tx_done;
+	wire		clk_100mhz;
+
+	wire		pll_locked;
+
+	ReconfigurablePLL #(
+		.IN0_PERIOD(40),		//25 MHz
+		.IN1_PERIOD(40),
+		.OUT0_MIN_PERIOD(10),	//100 MHz
+		.ACTIVE_ON_START(1),	//start PLL on boot
+		.PRINT_CONFIG(0)
+	) pll (
+		.clkin({clk_25mhz, clk_25mhz}),
+		.clksel(0),
+		.reset(1'b0),
+		.locked(pll_locked),
+
+		.clkout({clk_unused, clk_100mhz}),
+
+		.busy(),
+		.reconfig_clk(clk_25mhz),
+		.reconfig_start(1'b0),
+		.reconfig_finish(1'b0),
+		.reconfig_cmd_done(),
+		.reconfig_vco_en(1'b0),
+		.reconfig_vco_mult(7'h0),
+		.reconfig_vco_indiv(7'h0),
+		.reconfig_vco_bandwidth(1'b0),
+		.reconfig_output_en(1'b0),
+		.reconfig_output_idx(3'h0),
+		.reconfig_output_div(8'h0),
+		.reconfig_output_phase(9'h0)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// UART link to the STM32 (reserved for future use)
 
 	UART uart(
-		.clk(clk_25mhz),
-		.clkdiv(16'd217),
-
+		.clk(clk_100mhz),
+		.clkdiv(16'd868),	//115200 @ 100 MHz
 		.rx(uart_rxd),
 		.rxactive(),
-		.rx_data(rx_data),
-		.rx_en(rx_en),
-
+		.rx_data(),
+		.rx_en(),
 		.tx(uart_txd),
-		.tx_data(tx_data),
-		.tx_en(tx_en),
+		.tx_data(8'h0),
+		.tx_en(1'h0),
 		.txactive(),
-		.tx_done(tx_done)
+		.tx_done()
+	);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SPI link to the STM32
+
+	wire		spi_tx_data_valid;
+	wire[7:0]	spi_tx_data;
+	wire		spi_rx_data_valid;
+	wire[7:0]	spi_rx_data;
+	wire		spi_cs_falling;
+
+	SPISlave spi(
+		.clk(clk_100mhz),
+
+		.spi_mosi(spi_mosi),
+		.spi_sck(spi_sck),
+		.spi_cs_n(spi_cs_n),
+		.spi_miso(spi_miso),
+
+		.tx_data_valid(spi_tx_data_valid),
+		.tx_data(spi_tx_data),
+		.rx_data_valid(spi_rx_data_valid),
+		.rx_data(spi_rx_data),
+		.cs_falling(spi_cs_falling)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +140,7 @@ module top(
 	OnDieSensors_7series #(
 		.EXT_IN_ENABLE(16'h0001)
 	) sensors(
-		.clk(clk_25mhz),
+		.clk(clk_100mhz),
 		.vin_p({15'hz, ltc_vtemp}),
 		.vin_n(16'hz),
 		.die_temp(die_temp),
@@ -95,7 +154,7 @@ module top(
 	wire[31:0]	idcode;
 
 	DeviceInfo_7series info(
-		.clk(clk_25mhz),
+		.clk(clk_100mhz),
 		.die_serial(die_serial),
 		.idcode(idcode)
 		);
@@ -107,13 +166,15 @@ module top(
 	// Control stuff for the management engine
 
 	ManagementController ctrl(
-		.clk(clk_25mhz),
+		.clk(clk_100mhz),
 
-		.uart_rx_data(rx_data),
-		.uart_rx_en(rx_en),
-		.uart_tx_data(tx_data),
-		.uart_tx_en(tx_en),
-		.uart_tx_done(tx_done),
+		.spi_tx_data_valid(spi_tx_data_valid),
+		.spi_tx_data(spi_tx_data),
+		.spi_rx_data_valid(spi_rx_data_valid),
+		.spi_rx_data(spi_rx_data),
+		.spi_cs_falling(spi_cs_falling),
+
+		.spi_cs_n(spi_cs_n),	//debug
 
 		.die_temp(die_temp),
 		.volt_core(volt_core),
@@ -123,5 +184,12 @@ module top(
 		.idcode(idcode),
 		.psu_temp(ext_in[11:0])
 	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug indicator LEDs
+
+	always_comb begin
+		led	<= {3'h0, pll_locked};
+	end
 
 endmodule

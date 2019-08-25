@@ -24,3 +24,12 @@ connect_debug_port dbg_hub/clk [get_nets clk_25mhz_IBUF_BUFG]
 
 set_property PACKAGE_PIN C8 [get_ports ltc_vtemp]
 set_property IOSTANDARD LVCMOS33 [get_ports ltc_vtemp]
+
+set_property IOSTANDARD LVCMOS33 [get_ports spi_miso]
+set_property PACKAGE_PIN P10 [get_ports spi_miso]
+set_property IOSTANDARD LVCMOS33 [get_ports spi_cs_n]
+set_property IOSTANDARD LVCMOS33 [get_ports spi_mosi]
+set_property IOSTANDARD LVCMOS33 [get_ports spi_sck]
+set_property PACKAGE_PIN N16 [get_ports spi_cs_n]
+set_property PACKAGE_PIN M12 [get_ports spi_mosi]
+set_property PACKAGE_PIN M16 [get_ports spi_sck]
