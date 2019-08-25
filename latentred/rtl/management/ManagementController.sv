@@ -124,6 +124,7 @@ module ManagementController(
 
 				if(spi_rx_data_valid) begin
 					opcode[15:8]	<= spi_rx_data;
+					count			<= 0;
 					state			<= STATE_DISPATCH;
 				end
 
