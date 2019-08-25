@@ -199,7 +199,8 @@ typedef struct
 	uint16_t field_06;
 	uint16_t SR;
 	uint16_t field_0a;
-	uint16_t DR;
+	uint8_t  DR;
+	uint8_t  field_0d;
 	uint16_t field_0e;
 	uint16_t CRCPR;
 	uint16_t field_12;
