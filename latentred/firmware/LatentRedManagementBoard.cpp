@@ -110,65 +110,50 @@ void LatentRedManagementBoard::PrintCPUInfo(UART* uart)
 void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 {
 	uart->Printf("        FPGA:\n");
-	/*
-	//Look up the IDCODE
-	m_uart.Write16(OP_DEVICE_ID);
-	uint32_t idcode = m_uart.BlockingRead32();
 
+	//Look up the IDCODE
+	uint32_t idcode = ReadReg32(OP_DEVICE_ID);
 	if( (idcode & 0x0fffffff) == 0x0362c093)
 		uart->Printf("            Xilinx XC7A50T stepping %d\n", idcode >> 28);
 	else
 		uart->Printf("            Xilinx [unknown, idcode = 0x%08x]\n", idcode);
 
-	m_uart.Write16(OP_FPGA_SERIAL);
-	uint32_t serial_hi = m_uart.BlockingRead32();
-	uint32_t serial_lo = m_uart.BlockingRead32();
-
-	uart->Printf("            Serial number 0x%08x%08x\n", serial_hi, serial_lo);
-
+	//Read the DNA value
+	uint32_t serial[2];
+	ReadReg64(OP_FPGA_SERIAL, serial);
+	uart->Printf("            Serial number 0x%08x%08x\n", serial[0], serial[1]);
 	uart->Printf("            Bitstream version [details unimplemented]\n");
-	*/
 }
 
 void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
 {
 	uart->Printf("        Sensors:\n");
 
-	uint16_t temp = ReadReg16(OP_DIE_TEMP, uart);	//uart only for debug
-
-	uart->Printf("raw temp: %04x\n", temp);
+	uint16_t temp = ReadReg16(OP_DIE_TEMP);
 	uart->Printf("            FPGA temp: %d.%02d C\n",
 		(temp >> 8), ((temp & 0xff) * 100) / 256 );
 
-	uart->Printf("SPI5.SR = %08x\n", SPI5.SR);
-
-	/*
-	m_uart.Write16(OP_PSU_TEMP);
-	uint32_t ptemp = m_uart.BlockingRead16();	//see LTC3374 datasheet equation 1
+	uint32_t ptemp = ReadReg16(OP_PSU_TEMP);	//see LTC3374 datasheet equation 1
 												//output is in raw ADC codes w/ fff = 1V
 	ptemp = (ptemp * 1000) / 4096;				//convert to mV
 	temp = (ptemp*1024) / 27 + 718;				//convert to 255'ths of a degC
 	uart->Printf("            PSU temp : %d.%02d C\n",
 		(temp >> 8), ((temp & 0xff) * 100) / 256);
 
-	m_uart.Write16(OP_VOLT_CORE);
-	uint16_t volt = m_uart.BlockingRead16();
+	uint16_t volt = ReadReg16(OP_VOLT_CORE);
 	uart->Printf("            VCCINT   :  %d.%02d V\n",
 		(volt >> 8), ((volt & 0xff) * 100) / 256 );
 
-	m_uart.Write16(OP_VOLT_RAM);
-	volt = m_uart.BlockingRead16();
+	volt = ReadReg16(OP_VOLT_RAM);
 	uart->Printf("            VCCBRAM  :  %d.%02d V\n",
 		(volt >> 8), ((volt & 0xff) * 100) / 256 );
 
-	m_uart.Write16(OP_VOLT_AUX);
-	volt = m_uart.BlockingRead16();
+	volt = ReadReg16(OP_VOLT_AUX);
 	uart->Printf("            VCCAUX   :  %d.%02d V\n",
 		(volt >> 8), ((volt & 0xff) * 100) / 256 );
-	*/
 }
 
-uint16_t LatentRedManagementBoard::ReadReg16(uint16_t op, UART* uart)
+uint16_t LatentRedManagementBoard::ReadReg16(uint16_t op)
 {
 	m_spi.SetCS(0);
 	m_spi.Write16(op);				//opcode
@@ -177,6 +162,29 @@ uint16_t LatentRedManagementBoard::ReadReg16(uint16_t op, UART* uart)
 	uint16_t temp = m_spi.BlockingRead16();
 	m_spi.SetCS(1);
 	return temp;
+}
+
+uint32_t LatentRedManagementBoard::ReadReg32(uint16_t op)
+{
+	m_spi.SetCS(0);
+	m_spi.Write16(op);				//opcode
+	m_spi.BlockingRead16();			//discard garbage sent during sending of the opcode
+	m_spi.Write32(0x00);			//filler words to clock the reply
+	uint32_t temp = m_spi.BlockingRead32();
+	m_spi.SetCS(1);
+	return temp;
+}
+
+void LatentRedManagementBoard::ReadReg64(uint16_t op, uint32_t* dout)
+{
+	m_spi.SetCS(0);
+	m_spi.Write16(op);				//opcode
+	m_spi.BlockingRead16();			//discard garbage sent during sending of the opcode
+	m_spi.Write32(0x00);			//filler words to clock the reply
+	m_spi.Write32(0x00);			//filler words to clock the reply
+	dout[0] = m_spi.BlockingRead32();
+	dout[1] = m_spi.BlockingRead32();
+	m_spi.SetCS(1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

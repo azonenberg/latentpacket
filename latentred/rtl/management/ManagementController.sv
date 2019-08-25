@@ -245,7 +245,7 @@ module ManagementController(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug ILA
-
+	/*
 	ila_0 ila(
 		.clk(clk),
 		.probe0(state),
@@ -260,5 +260,6 @@ module ManagementController(
 		.probe9(spi_cs_falling),
 		.probe10(spi_cs_n)
 	);
+	*/
 
 endmodule

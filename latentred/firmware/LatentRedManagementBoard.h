@@ -75,7 +75,9 @@ protected:
 	LatentRedManagementPort m_mgmtPort;
 	SPI m_spi;
 
-	uint16_t ReadReg16(uint16_t op, UART* uart);
+	uint16_t ReadReg16(uint16_t op);
+	uint32_t ReadReg32(uint16_t op);
+	void ReadReg64(uint16_t op, uint32_t* dout);
 };
 
 #endif

@@ -60,6 +60,8 @@ module top(
 	ReconfigurablePLL #(
 		.IN0_PERIOD(40),		//25 MHz
 		.IN1_PERIOD(40),
+		.OUTPUT_GATE(6'b000001),
+		.OUTPUT_BUF_GLOBAL(6'b000001),
 		.OUT0_MIN_PERIOD(10),	//100 MHz
 		.ACTIVE_ON_START(1),	//start PLL on boot
 		.PRINT_CONFIG(0)
@@ -153,8 +155,9 @@ module top(
 	wire[63:0]	die_serial;
 	wire[31:0]	idcode;
 
+	//run this slow
 	DeviceInfo_7series info(
-		.clk(clk_100mhz),
+		.clk(clk_25mhz),
 		.die_serial(die_serial),
 		.idcode(idcode)
 		);

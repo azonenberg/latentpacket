@@ -56,6 +56,9 @@ public:
 	void Write16(uint16_t n)
 	{ Write((const char*)&n, 2); }
 
+	void Write32(uint32_t n)
+	{ Write((const char*)&n, 4); }
+
 	uint32_t BlockingRead32()
 	{
 		uint32_t tmp;
