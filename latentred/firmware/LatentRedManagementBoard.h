@@ -71,6 +71,7 @@ protected:
 		OP_MGMT0_STAT	= 0x0009,	//Get management interface link state
 									//Bit 3 = link state
 									//Bits 1:0 = link speed (0 = 10M, 1 = 100M, 2 = gig)
+		OP_FLASH_SIZE	= 0x000a,	//Returns the SPI flash size, in Mbits
 
 		OP_COUNT					//number of legal opcodes, must be last
 

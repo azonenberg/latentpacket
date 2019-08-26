@@ -64,6 +64,10 @@ module top(
 	//ADC input
 	input wire			ltc_vtemp,
 
+	//SPI flash
+	inout wire[3:0]		flash_dq,
+	output wire			flash_cs_n,
+
 	//Indicator LEDs
 	output logic[3:0]	led	= 0
 	);
@@ -225,6 +229,64 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SPI flash interface to the boot flash for storing config data
+
+	// XC7A50T bitstream is ~18 Mbits, we have a 64 or 128 Mbit flash so PLENTY of space
+
+	wire		flash_sck;
+
+	`include "QuadSPIFlashController_opcodes.svh"
+
+	qspi_opcode_t op = FLASH_OP_READ;
+
+	wire[15:0]	flash_mbits;
+
+	QuadSPIFlashController flash(
+		.clk(clk_100mhz),
+		.spi_sck(flash_sck),
+		.spi_dq(flash_dq),
+		.spi_cs_n(flash_cs_n),
+		.clkdiv(16'd4),
+
+		.cmd_en(0),
+		.cmd_id(op),
+		.cmd_len(16'h0),
+		.cmd_addr(32'h0),
+		.read_data(),
+		.read_valid(),
+		.write_data(),
+		.write_valid(),
+		.write_ready(),
+		.busy(),
+		.capacity_mbits(flash_mbits),
+		.sfdp_bad()
+	);
+
+	//Need the STARTUP block to drive CCLK
+	STARTUPE2 #(
+		.PROG_USR("FALSE"),		//Don't lock resets (requires encrypted bitstream)
+		.SIM_CCLK_FREQ(10.0)
+	)
+	startup (
+		.CFGCLK(),				//Configuration clock not used
+		.CFGMCLK(),				//Internal configuration oscillator
+		.EOS(),					//End-of-startup ignored
+		.CLK(),					//Configuration clock not used
+		.GSR(1'b0),				//Not using GSR
+		.GTS(1'b0),				//Not using GTS
+		.KEYCLEARB(1'b1),		//Not zeroizing BBRAM
+		.PREQ(),				//PROG_B request not used
+		.PACK(1'b0),			//PROG_B ack not used
+
+		.USRCCLKO(flash_sck),	//CCLK pin
+		.USRCCLKTS(1'b0),		//Assert to tristate CCLK
+
+		.USRDONEO(1'b1),		//Hold DONE pin high
+		.USRDONETS(1'b1)		//Do not tristate DONE pin
+								//This is weird - seems like opposite polarity from every other TS pin!
+		);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO: MDIO/reset/sensor logic
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,13 +306,15 @@ module top(
 		.mgmt_up(mgmt_up),
 		.mgmt_speed(mgmt_speed),
 
+		//Various system sensor/configuration values
 		.die_temp(die_temp),
 		.volt_core(volt_core),
 		.volt_ram(volt_ram),
 		.volt_aux(volt_aux),
 		.die_serial(die_serial),
 		.idcode(idcode),
-		.psu_temp(ext_in[11:0])
+		.psu_temp(ext_in[11:0]),
+		.flash_mbits(flash_mbits)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

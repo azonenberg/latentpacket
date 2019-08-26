@@ -622,11 +622,11 @@ void CLI::OnShowInterfaceStatus()
 					break;
 
 				case Port::MODE_NATIVE:
-					m_uart->Printf("Native/%4d ", port->GetVlan());
+					m_uart->Printf("native/%4d ", port->GetVlan());
 					break;
 
 				case Port::MODE_TRUNK:
-					m_uart->Printf("%-11s ", "Trunk");
+					m_uart->Printf("%-11s ", "trunk");
 					break;
 
 				case Port::MODE_ISOLATED:
@@ -635,7 +635,7 @@ void CLI::OnShowInterfaceStatus()
 			}
 
 			//All interfaces are forced to full duplex, half is not supported
-			m_uart->Printf("%-6s", "Full");
+			m_uart->Printf("%-6s", "full");
 
 			//Link speed
 			switch(port->GetCurrentLinkSpeed())

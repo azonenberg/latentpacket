@@ -63,7 +63,8 @@ module ManagementController(
 	input wire[15:0]	volt_core,
 	input wire[15:0]	volt_ram,
 	input wire[15:0]	volt_aux,
-	input wire[11:0]	psu_temp
+	input wire[11:0]	psu_temp,
+	input wire[15:0]	flash_mbits
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,6 +87,7 @@ module ManagementController(
 		OP_MGMT0_STAT	= 16'h0009,	//Get management interface link state
 									//Bit 3 = link state
 									//Bits 1:0 = link speed (0 = 10M, 1 = 100M, 2 = gig)
+		OP_FLASH_SIZE	= 16'h000a,	//Return size of the SPI flash, in Mbits
 
 		OP_COUNT					//number of legal opcodes, must be last
 
@@ -244,6 +246,16 @@ module ManagementController(
 							end
 						endcase
 					end	//end OP_MGMT0_STAT
+
+					OP_FLASH_SIZE: begin
+						case(count)
+							0:	spi_tx_data		<= flash_mbits[7:0];
+							1: begin
+								spi_tx_data		<= flash_mbits[15:8];
+								state			<= STATE_IDLE;
+							end
+						endcase
+					end
 
 					default:
 						state			<= STATE_IDLE;

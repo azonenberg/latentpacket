@@ -123,7 +123,11 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 	uint32_t serial[2];
 	ReadReg64(OP_FPGA_SERIAL, serial);
 	uart->Printf("            Serial number 0x%08x%08x\n", serial[0], serial[1]);
+
 	uart->Printf("            Bitstream version [details unimplemented]\n");
+
+	uint16_t flash_mb = ReadReg16(OP_FLASH_SIZE);
+	uart->Printf("            %d MB Flash memory\n", flash_mb / 8);
 }
 
 void LatentRedManagementBoard::PrintSensorInfo(UART* uart)
