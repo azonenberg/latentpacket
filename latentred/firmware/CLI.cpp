@@ -555,16 +555,6 @@ void CLI::OnShowVersion()
 	m_uart->Printf("Firmware:\n");
 	m_uart->Printf("    LATENTRED CLI v0.1 (armv7-m)\n");
 	m_uart->Printf("    Compiled on: %s %s\n", __DATE__, __TIME__);
-
-	m_uart->Printf("Hardware:\n");
-
-	for(size_t i=0; i<m_switch->GetBoardCount(); i++)
-	{
-		auto board = m_switch->GetBoard(i);
-		m_uart->Printf("    Board %d: %s\n", i, board->GetDescription());
-		board->PrintCPUInfo(m_uart);
-		board->PrintFPGAInfo(m_uart);
-	}
 }
 
 /**
@@ -585,6 +575,130 @@ void CLI::OnShowInterfaceCommand()
  */
 void CLI::OnShowInterfaceStatus()
 {
+	m_uart->Printf("%-5s %-25s %-10s %-11s %-6s %-8s %-25s\n",
+		"Port", "Name", "Status", "Vlan", "Duplex", "Speed", "Type");
+	for(size_t i=0; i<m_switch->GetBoardCount(); i++)
+	{
+		auto board = m_switch->GetBoard(i);
+		for(size_t j=0; j<board->GetPortCount(); j++)
+		{
+			auto port = board->GetPort(j);
+
+			m_uart->Printf("%-5s ", port->GetName());
+			m_uart->Printf("%-25s ", port->GetDescription());
+
+			switch(port->GetLinkState())
+			{
+				case Port::LINK_UP:
+					m_uart->Printf("%-10s ", "connected");
+					break;
+
+				case Port::LINK_NOTCONNECT:
+					m_uart->Printf("%-10s ", "notconnect");
+					break;
+
+				case Port::LINK_NOSFP:
+					m_uart->Printf("%-10s ", "no module");
+					break;
+
+				case Port::LINK_ERRDOWN:
+					m_uart->Printf("%-10s ", "error");
+					break;
+
+				case Port::LINK_ADMDOWN:
+					m_uart->Printf("%-10s ", "disabled");
+					break;
+
+				default:
+					m_uart->Printf("%-10s ", "unknown");
+					break;
+			}
+
+			//Vlan status is a bit more complex
+			switch(port->GetMode())
+			{
+				case Port::MODE_ACCESS:
+					m_uart->Printf("%-11d ", port->GetVlan());
+					break;
+
+				case Port::MODE_NATIVE:
+					m_uart->Printf("Native/%4d ", port->GetVlan());
+					break;
+
+				case Port::MODE_TRUNK:
+					m_uart->Printf("%-11s ", "Trunk");
+					break;
+
+				case Port::MODE_ISOLATED:
+					m_uart->Printf("%-11s ", "N/A");
+					break;
+			}
+
+			//All interfaces are forced to full duplex, half is not supported
+			m_uart->Printf("%-6s", "Full");
+
+			//Link speed
+			switch(port->GetCurrentLinkSpeed())
+			{
+				case Port::SPEED_10M:
+					m_uart->Printf("%-8s", "10M");
+					break;
+
+				case Port::SPEED_100M:
+					m_uart->Printf("%-8s", "100M");
+					break;
+
+				case Port::SPEED_1G:
+					m_uart->Printf("%-8s", "1G");
+					break;
+
+				case Port::SPEED_5G:
+					m_uart->Printf("%-8s", "5G");
+					break;
+
+				case Port::SPEED_10G:
+					m_uart->Printf("%-8s", "10G");
+					break;
+
+				case Port::SPEED_40G:
+					m_uart->Printf("%-8s", "40G");
+					break;
+
+				case Port::SPEED_DOWN:
+				default:
+					m_uart->Printf("%-8s", "down");
+					break;
+			}
+
+			//Interface type
+			switch(port->GetPortType())
+			{
+				case Port::TYPE_COPPER_RGMII:
+					m_uart->Printf("%-25s", "10/100/1000BaseTX (RGMII)");
+					break;
+
+				case Port::TYPE_COPPER_SGMII:
+					m_uart->Printf("%-25s", "10/100/1000BaseTX (SGMII)");
+					break;
+
+				//TODO: for optics, query the EEPROM and print the actual PHY standard
+				case Port::TYPE_SFP:
+					m_uart->Printf("%-25s", "SFP+");
+					break;
+
+				case Port::TYPE_QSFP:
+					m_uart->Printf("%-25s", "QSFP+");
+					break;
+
+				default:
+					m_uart->Printf("%-25s", "Unknown");
+					break;
+
+			}
+
+			m_uart->Printf("\n");
+		}
+	}
 }
 
 /**

@@ -39,8 +39,12 @@ public:
 	LatentRedLineCardPort(Board* board, uint32_t portNumber);
 	virtual ~LatentRedLineCardPort();
 
-	virtual bool IsLinkUp();
-	virtual speed_t GetCurrentLinkSpeed();
+	virtual LinkState GetLinkState();
+	virtual LinkSpeed GetCurrentLinkSpeed();
+
+	virtual PortMode GetMode();
+	virtual uint16_t GetVlan();
+	virtual PortType GetPortType();
 
 	virtual const char* GetName();
 

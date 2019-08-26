@@ -32,8 +32,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-LatentRedSwitchEngineBoard::LatentRedSwitchEngineBoard()
-	: m_ports
+LatentRedSwitchEngineBoard::LatentRedSwitchEngineBoard(size_t boardnum)
+	: Board(boardnum)
+	, m_ports
 	{
 		{ this, 0 },
 		{ this, 1 },

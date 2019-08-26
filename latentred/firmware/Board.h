@@ -36,7 +36,7 @@
 class Board
 {
 public:
-	Board();
+	Board(size_t boardnum);
 	virtual ~Board();
 
 	virtual const char* GetDescription() =0;
@@ -49,6 +49,12 @@ public:
 	//accessors for actual interfaces
 	virtual uint32_t GetPortCount() =0;
 	virtual Port* GetPort(uint32_t i) =0;
+
+	size_t GetBoardNumber()
+	{ return m_boardnum; }
+
+protected:
+	size_t m_boardnum;
 };
 
 #endif

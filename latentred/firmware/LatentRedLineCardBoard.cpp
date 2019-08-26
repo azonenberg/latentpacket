@@ -32,8 +32,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-LatentRedLineCardBoard::LatentRedLineCardBoard()
-	: m_ports
+LatentRedLineCardBoard::LatentRedLineCardBoard(size_t boardnum)
+	: Board(boardnum)
+	, m_ports
 	{
 		{ this, 0 },
 		{ this, 1 },

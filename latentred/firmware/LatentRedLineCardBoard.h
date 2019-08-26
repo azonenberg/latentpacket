@@ -36,7 +36,7 @@
 class LatentRedLineCardBoard : public Board
 {
 public:
-	LatentRedLineCardBoard();
+	LatentRedLineCardBoard(size_t boardnum);
 	virtual ~LatentRedLineCardBoard();
 
 	virtual const char* GetDescription();

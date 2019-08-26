@@ -36,7 +36,7 @@
 class LatentRedManagementBoard : public Board
 {
 public:
-	LatentRedManagementBoard();
+	LatentRedManagementBoard(size_t boardnum);
 	virtual ~LatentRedManagementBoard();
 
 	virtual const char* GetDescription();
@@ -52,6 +52,7 @@ public:
 	{ return &m_spi; }
 
 protected:
+	friend class LatentRedManagementPort;
 
 	enum
 	{
@@ -67,6 +68,9 @@ protected:
 		OP_VOLT_AUX		= 0x0007,	//no arguments, FPGA responds with VCCAUX value in 8.8 fixed point volts
 		OP_PSU_TEMP		= 0x0008,	//no arguments, FPGA responds with LTC3374 temperature as raw ADC voltage
 									//(FFF = 1V)
+		OP_MGMT0_STAT	= 0x0009,	//Get management interface link state
+									//Bit 3 = link state
+									//Bits 1:0 = link speed (0 = 10M, 1 = 100M, 2 = gig)
 
 		OP_COUNT					//number of legal opcodes, must be last
 

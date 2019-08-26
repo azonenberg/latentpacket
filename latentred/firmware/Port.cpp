@@ -32,7 +32,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-Port::Port(Board* /* board */)
+Port::Port(Board* board )
+	: m_board(board)
 {
 	memset(m_description, 0, sizeof(m_description));
 }

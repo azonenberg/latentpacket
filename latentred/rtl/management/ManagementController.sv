@@ -29,6 +29,8 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "GmiiBus.svh"
+
 /**
 	@brief Control logic for running the SPI interface
 
@@ -49,6 +51,10 @@ module ManagementController(
 	input wire[7:0]		spi_rx_data,
 	input wire			spi_cs_falling,
 	input wire			spi_cs_n,	//debug only
+
+	//Status from management Ethernet PHY
+	input wire			mgmt_up,
+	input wire lspeed_t	mgmt_speed,
 
 	//Sensor info
 	input wire[63:0]	die_serial,
@@ -77,6 +83,9 @@ module ManagementController(
 		OP_VOLT_AUX		= 16'h0007,	//no arguments, we respond with VCCAUX value in 8.8 fixed point volts
 		OP_PSU_TEMP		= 16'h0008,	//no arguments, we respond with LTC3374 temperature as raw voltage reading
 									//(FFF = 1V)
+		OP_MGMT0_STAT	= 16'h0009,	//Get management interface link state
+									//Bit 3 = link state
+									//Bits 1:0 = link speed (0 = 10M, 1 = 100M, 2 = gig)
 
 		OP_COUNT					//number of legal opcodes, must be last
 
@@ -225,6 +234,16 @@ module ManagementController(
 							end
 						endcase
 					end	//end OP_PSU_TEMP
+
+					OP_MGMT0_STAT: begin
+						case(count)
+							0:	spi_tx_data		<= { 12'h0, mgmt_up, 1'h0, mgmt_speed };
+							1: begin
+								spi_tx_data		<= 8'h0;
+								state			<= STATE_IDLE;
+							end
+						endcase
+					end	//end OP_MGMT0_STAT
 
 					default:
 						state			<= STATE_IDLE;

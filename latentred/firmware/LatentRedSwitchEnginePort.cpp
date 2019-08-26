@@ -37,6 +37,7 @@ LatentRedSwitchEnginePort::LatentRedSwitchEnginePort(Board* board, uint32_t port
 	, m_portNumber(portNumber)
 {
 	strncpy(m_name, "x0/0", sizeof(m_name));
+	m_name[1] += board->GetBoardNumber();
 	m_name[3] += m_portNumber;
 }
 
@@ -52,14 +53,33 @@ const char* LatentRedSwitchEnginePort::GetName()
 	return m_name;
 }
 
-bool LatentRedSwitchEnginePort::IsLinkUp()
+uint16_t LatentRedSwitchEnginePort::GetVlan()
 {
 	//TODO: query switch FPGA
-	return false;
+	return 1;
 }
 
-Port::speed_t LatentRedSwitchEnginePort::GetCurrentLinkSpeed()
+Port::PortMode LatentRedSwitchEnginePort::GetMode()
+{
+	//TODO: query switch FPGA
+	return Port::MODE_ACCESS;
+}
+
+Port::LinkState LatentRedSwitchEnginePort::GetLinkState()
+{
+	//TODO: query switch FPGA
+	return LINK_NOSFP;
+}
+
+Port::LinkSpeed LatentRedSwitchEnginePort::GetCurrentLinkSpeed()
 {
 	//TODO: query switch FPGA
 	return SPEED_DOWN;
+}
+
+
+Port::PortType LatentRedSwitchEnginePort::GetPortType()
+{
+	//All switch engine ports are 10G SFP+
+	return TYPE_SFP;
 }

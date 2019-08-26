@@ -33,71 +33,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Convenient helpers for port types
-
-typedef struct
-{
-	///Slot number within the switch chassis
-	unsigned int slot;
-
-	///Port number within the slot
-	unsigned int port;
-
-	///Lane number within the port (only valid for QSFP+ and similar, always zero at other speeds)
-	unsigned int lane;
-
-} port_t;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// System level configuration
-
-/**
-	@brief Gets the hostname of the switch
-	
-	@return Pointer to a global buffer storing the hostname
- */
-const char* GetHostname();
-
-/**
-	@brief Sets the hostname of the switch
- */
-void SetHostname(const char* hostname);
-
-//TODO: RTC access?
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Slot configuration
-
-/**
-	@brief Get the number of slots on the switch chassis.
-
-	A slot is a group of one or more ports, all of the same physical type, but potentially running at different speeds.
-
-	@return			Number of slots, always nonzero.
-					Slot number 0 is the switch engine board and line card numbering starts at 1.
- */
-unsigned int GetNumSwitchSlots();
-
-/**
-	@brief Gets the number of ports in a given switch slot.
-
-	@param	slot	Slot index
-
-	@return 		Number of ports in slot
- */
-unsigned int GetNumPortsInSlot(unsigned int slot);
-
-/**
-	@brief Type of a physical interface
- */
-enum PortType
-{
-	PORT_TYPE_COPPER,	//Copper interface, typically SGMII or RGMII
-	PORT_TYPE_SFP,		//SFP/SFP+ optical interface
-	PORT_TYPE_QSFP		//QSFP+ optical interface, may be divided into subinterfaces in the future
-};
-
 /**
 	@brief Gets the type of port in a given switch slot
 
@@ -111,29 +46,8 @@ PortType GetSlotPortType(unsigned int slot);
 // Generic port configuration
 
 /**
-	@brief States a port can be in
- */
-enum LinkState
-{
-	///Link is up
-	LINK_UP,
-
-	///Working normally, but no link
-	LINK_DOWN,
-
-	///Transceiver is physically absent
-	LINK_NOSFP,
-
-	///Err-disabled
-	LINK_ERRDOWN,
-
-	///Administratively disabled
-	LINK_ADMDOWN
-};
-
-/**
 	@brief Enable or disable a port.
-	
+
 	@param port		Port ID
 	@param enable	Enables port if true, forces to LINK_ADMDOWN if false
  */
@@ -141,7 +55,7 @@ void EnablePort(port_t port, bool enable);
 
 /**
 	@brief Forces a port to operate at a certain speed and disables negotiation
-	
+
 	@param port		Port ID
 	@param speed	Link speed
  */
@@ -149,7 +63,7 @@ void ForceLinkSpeed(port_t port, LinkSpeed speed);
 
 /**
 	@brief Gets a bitmask of speeds this port is physically capable of operating at.
-	
+
 	@param port		Port ID
 
 	@return			Speed mask
@@ -157,54 +71,18 @@ void ForceLinkSpeed(port_t port, LinkSpeed speed);
 uint32_t GetPossibleSpeeds(port_t port);
 
 /**
-	@brief Port modes
- */
-enum PortMode
-{
-	/**
-		@brief Native VLAN mode, roughly analogous to Cisco "trunk" mode
-
-		802.1q frames are treated as the respective vlan, untagged traffic is treated as the native vlan.
-	 */
-	MODE_NATIVE,
-
-	/**
-		@brief Forced trunk mode.
-
-		Only 802.1q traffic is passed, untagged traffic is dropped.
-	 */
-	MODE_TRUNK,
-
-	/**
-		@brief Forced access mode, roughly analogous to Cisco "access" mode
-
-		Untagged frames only. All ethertypes are passed except 802.1q which is dropped.
-	 */
-	MODE_ACCESS
-};
-
-/**
-	@brief Gets the trunking mode of a port
-	
-	@param port		Port ID
-
-	@return			Trunk mode
- */
-PortMode GetPortMode(port_t port);
-
-/**
 	@brief Sets the trunking mode of a port
-	
-	@param port		Port ID
+
 	@param mode		Trunking mode
  */
-void SetPortMode(port_t port, PortMode mode);
+void SetPortMode(PortMode mode);
+
 
 /**
 	@brief Gets the autonegotiation enable status of a port.
-	
+
 	Autonegotiation is only supported for copper ports. Returns false for all optic ports.
-	
+
 	@param port		Port ID
 
 	@return			Autonegotiation status
@@ -213,9 +91,9 @@ bool IsAutonegotiationEnabled(port_t port);
 
 /**
 	@brief Enable or disable autonegotiation on a port.
-	
+
 	Autonegotiation is only supported for copper ports. Ignored for all optic ports.
-	
+
 	@param port		Port ID
 	@param state	True to enable autonegotiation, false to disable
  */
@@ -223,7 +101,7 @@ void EnableAutonegotiation(port_t port port, bool state);
 
 /**
 	@brief Gets a bitmask of speeds this port is willing to negotiate.
-	
+
 	@param port		Port ID
 
 	@return			Speed mask
@@ -233,29 +111,18 @@ uint32_t GetNegotiationSpeeds(port_t port);
 
 /**
 	@brief Sets the allowed speeds for a port.
-	
+
 	If speeds are requested that the port is incapable of operating at, they are ignored. If no legal speeds are
 	selected, the link will fail to come up.
-	
+
 	@param port			Port ID
 	@param speedmask	Bitmask of LinkSpeed values.
  */
 void SetNegotiationSpeeds(port_t port, uint32_t speedmask);
 
 /**
-	@brief Gets the VLAN for a port.
-	
-	This is the native vlan for MODE_NATIVE, the access vlan for MODE_ACTIVE, and has no meaning in MODE_TRUNK.
-	
-	@param port		Port ID
-	
-	@return			Vlan ID
- */
-uint16_t GetPortVlan(port_t port);
-
-/**
 	@brief Sets the VLAN for a port
-	
+
 	@param port		Port ID
 	@param vlan		VLAN ID
  */
@@ -263,13 +130,13 @@ void SetPortVlan(port_t port, uint16_t vlan);
 
 /**
 	@brief Gets the allowed-VLAN bitmask for a port.
-	
+
 	A VLAN bitmask consists of 4096 bits organized as 128 32-bit values with VLAN ID increasing from LSB to MSB.
 	For example:
 	* VLAN 0 is the LSB of vlanmask[0]
 	* VLAN 31 is the MSB of vlanmask[0]
 	* VLAN 32 is the LSB of vlanmask[1].
-	
+
 	@param port			Port ID
 	@param vlanmask		Array of 128 values to store the vlan mask in
  */
@@ -277,7 +144,7 @@ void GetTrunkVlanMask(port_t port, uint32_t* vlanmask);
 
 /**
 	@brief Sets the allowed-VLAN bitmask for a port.
-	
+
 	@param port			Port ID
 	@param vlanmask		Array of 128 values to load the vlan mask from
  */
@@ -288,11 +155,11 @@ void SetTrunkVlanMask(port_t port, uint32_t* vlanmask);
 
 /**
 	@brief Gets a description of the hardware attached to the specified port.
-	
+
 	Example return values are "DP83867 (SGMII)" or "SFP+"
-	
+
 	@param port			Port ID
-	
+
 	@return				Constant string identifiying the port
  */
 const char* GetPortHwDescription(port_t port);
@@ -310,9 +177,9 @@ enum ConnectorType
 
 /**
 	@brief Gets the type of connector attached to a given port
-	
+
 	@param port			Port ID
-	
+
 	@return				Type of connector
  */
 ConnectorType GetPortConnectorType(port_t port);
@@ -333,9 +200,9 @@ enum MediaType
 
 /**
 	@brief Gets the physical media a port is connected to
-	
+
 	@param port			Port ID
-	
+
 	@return				Type of media
  */
 MediaType GetPortMediaType(port_t port);
@@ -351,23 +218,23 @@ struct perfcount_t
 	//Total data seen, whether good or not
 	uint64_t bytes_in;
 	uint64_t frames_in;
-	
+
 	//Errors on the inbound interface
 	uint64_t runts_in;
 	uint64_t jumbos_in;
 	uint64_t crc_in;
 	uint64_t overflow_in:
-	
+
 	//Types of frame
 	uint64_t unicasts_in;
 	uint64_t broadcasts_in;
 	uint64_t unicasts_out;
 	uint64_t broadcasts_out;
-	
+
 	//Total data forwarded
 	uint64_t bytes_out;
 	uint64_t frames_out;
-	
+
 	//Link load (0-255)
 	uint8_t tx_load;
 	uint8_t rx_load;
@@ -375,7 +242,7 @@ struct perfcount_t
 
 /**
 	@brief Gets stats for a switch port
-	
+
 	@param port				Port ID
 	@return					Performance counters
  */
@@ -386,30 +253,30 @@ perfcount_t GetPortPerformanceCounters(port_t port);
 
 /**
 	@brief Checks if a port is capable of doing TDR diagnostics
-	
+
 	@param port		Port ID
-	
+
 	@return True if TDR capable
  */
 bool IsTdrCapable(port_t port);
 
 /**
 	@brief Starts a TDR test on a port
-	
+
 	@param port		Port ID
  */
 void StartTDRTest(port_t port);
 
 /**
 	@brief Checks if the TDR test is done
-	
+
 	@return			True if done, false if in progress or not started
  */
 bool IsTDRResultReady(port_t port);
 
 /**
 	@brief A single TDR peak
-	
+
 	DP83867 notes: http://www.ti.com/lit/an/snla253/snla253.pdf
  */
 typedef struct
@@ -425,18 +292,18 @@ typedef struct
 {
 	//The peaks
 	tdrpeak_t	peaks[5];
-	
+
 	//If set, too many peaks were found to display
 	bool		peak_overflow;
-	
+
 	//If set, crosstalk from another channel was detected
 	bool		crosstalk;
-	
+
 } tdrpair_t;
 
 /**
 	@brief TDR test results
-	
+
 	This struct is based around the DP83867 test capability. Other PHYs may have less fancy features.
  */
 typedef struct
@@ -447,9 +314,9 @@ typedef struct
 
 /**
 	@brief View TDR test result for a port
-	
+
 	@param port		Port ID
-	
+
 	@return	TDR test results
  */
 tdrresult_t GetTDRResult(port_t port);
@@ -471,7 +338,7 @@ enum PhyTestMode
 
 /**
 	@brief Configures test pattern mode on a port
-	
+
 	@param port		Port ID
 	@param mode		Test mode
  */
@@ -482,9 +349,9 @@ void SetPortTestMode(port_t port, PhyTestMode mode);
 
 /**
 	@brief Checks if a port's transceiver is present.
-	
+
 	@param port		Port ID
-	
+
 	@return True if copper port or optical port with a transceiver present, false for optical port with no transceiver
  */
 bool IsTransceiverPresent(port_t port);
@@ -505,7 +372,7 @@ typedef struct
 
 /**
 	@brief Gets the number of entries in the MAC address table
-	
+
 	@return Size of the MAC table
  */
 uint32_t GetMacTableSize();

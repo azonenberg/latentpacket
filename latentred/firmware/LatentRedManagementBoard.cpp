@@ -32,8 +32,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Construction / destruction
 
-LatentRedManagementBoard::LatentRedManagementBoard()
-	: m_mgmtPort(this)
+LatentRedManagementBoard::LatentRedManagementBoard(size_t boardnum)
+	: Board(boardnum)
+	, m_mgmtPort(this)
 	, m_spi(&SPI5)
 {
 

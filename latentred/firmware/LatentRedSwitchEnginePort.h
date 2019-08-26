@@ -38,12 +38,16 @@ class LatentRedSwitchEnginePort : public Port
 public:
 	LatentRedSwitchEnginePort(Board* board, uint32_t portNumber);
 	virtual ~LatentRedSwitchEnginePort();
-	
-	virtual bool IsLinkUp();
-	virtual speed_t GetCurrentLinkSpeed();
-	
+
+	virtual LinkState GetLinkState();
+	virtual LinkSpeed GetCurrentLinkSpeed();
+
+	virtual PortMode GetMode();
+	virtual uint16_t GetVlan();
+	virtual PortType GetPortType();
+
 	virtual const char* GetName();
-	
+
 protected:
 	uint32_t m_portNumber;
 	char m_name[5];

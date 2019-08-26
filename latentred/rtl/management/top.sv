@@ -29,40 +29,66 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "GmiiBus.svh"
+
 /**
 	@brief Top level module for the INTEGRALSTICK FPGA on the LATENTRED management board.
  */
 module top(
 	input wire			clk_25mhz,
 
+	//SPI to STM32
 	input wire			spi_mosi,
 	input wire			spi_sck,
 	input wire			spi_cs_n,
 	output wire			spi_miso,
 
+	//UART to STM32
 	input wire			uart_rxd,
 	output wire			uart_txd,
 
+	//Ethernet to PHY
+	input wire			rgmii_rxc,
+	input wire[3:0]		rgmii_rxd,
+	input wire			rgmii_rx_ctl,
+
+	output wire			rgmii_txc,
+	output wire[3:0]	rgmii_txd,
+	output wire			rgmii_tx_ctl,
+
+	output wire			rgmii_rst_n,
+
+	//LED inputs from the PHY (not used for now)
+	input wire[1:0]		eth_led_n_in,
+
+	//ADC input
 	input wire			ltc_vtemp,
 
+	//Indicator LEDs
 	output logic[3:0]	led	= 0
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// PLL to give us a higher clock for running internal stuff
 
-	wire[4:0]	clk_unused;
+	wire[1:0]	clk_unused;
 
 	wire		clk_100mhz;
+	wire		clk_125mhz;
+	wire		clk_250mhz;
+	wire		clk_200mhz;
 
 	wire		pll_locked;
 
 	ReconfigurablePLL #(
 		.IN0_PERIOD(40),		//25 MHz
 		.IN1_PERIOD(40),
-		.OUTPUT_GATE(6'b000001),
-		.OUTPUT_BUF_GLOBAL(6'b000001),
+		.OUTPUT_GATE(6'b001111),
+		.OUTPUT_BUF_GLOBAL(6'b001111),
 		.OUT0_MIN_PERIOD(10),	//100 MHz
+		.OUT1_MIN_PERIOD(8),	//125 MHz
+		.OUT2_MIN_PERIOD(4),	//250 MHz
+		.OUT3_MIN_PERIOD(5),	//200 MHz
 		.ACTIVE_ON_START(1),	//start PLL on boot
 		.PRINT_CONFIG(0)
 	) pll (
@@ -71,7 +97,7 @@ module top(
 		.reset(1'b0),
 		.locked(pll_locked),
 
-		.clkout({clk_unused, clk_100mhz}),
+		.clkout({clk_unused, clk_200mhz, clk_250mhz, clk_125mhz, clk_100mhz}),
 
 		.busy(),
 		.reconfig_clk(clk_25mhz),
@@ -89,6 +115,11 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Calibrate any I/O delays we might use
+
+	IODelayCalibration cal(.refclk(clk_200mhz));
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// UART link to the STM32 (reserved for future use)
 
 	UART uart(
@@ -104,7 +135,6 @@ module top(
 		.txactive(),
 		.tx_done()
 	);
-
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SPI link to the STM32
@@ -163,6 +193,38 @@ module top(
 		);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Ethernet interface for the front-panel management port
+
+	wire		gmii_rxc;
+	GmiiBus		gmii_rx_bus;
+	GmiiBus		gmii_tx_bus = {$bits(GmiiBus){1'b0}};
+
+	//Tie reset to "inactive" state
+	assign		rgmii_rst_n = 1;
+
+	wire		mgmt_up;
+	lspeed_t	mgmt_speed;
+
+	RGMIIToGMIIBridge gmii_bridge(
+		.rgmii_rxc(rgmii_rxc),
+		.rgmii_rxd(rgmii_rxd),
+		.rgmii_rx_ctl(rgmii_rx_ctl),
+		.rgmii_txc(rgmii_txc),
+		.rgmii_txd(rgmii_txd),
+		.rgmii_tx_ctl(rgmii_tx_ctl),
+
+		.gmii_rxc(gmii_rxc),
+		.gmii_rx_bus(gmii_rx_bus),
+
+		.gmii_txc(clk_125mhz),
+		.clk_250mhz(clk_250mhz),
+		.gmii_tx_bus(gmii_tx_bus),
+
+		.link_up(mgmt_up),
+		.link_speed(mgmt_speed)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO: MDIO/reset/sensor logic
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +240,9 @@ module top(
 		.spi_cs_falling(spi_cs_falling),
 
 		.spi_cs_n(spi_cs_n),	//debug
+
+		.mgmt_up(mgmt_up),
+		.mgmt_speed(mgmt_speed),
 
 		.die_temp(die_temp),
 		.volt_core(volt_core),

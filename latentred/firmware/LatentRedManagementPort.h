@@ -38,10 +38,14 @@ class LatentRedManagementPort : public Port
 public:
 	LatentRedManagementPort(Board* board);
 	virtual ~LatentRedManagementPort();
-	
-	virtual bool IsLinkUp();
-	virtual speed_t GetCurrentLinkSpeed();
-	
+
+	virtual LinkState GetLinkState();
+	virtual LinkSpeed GetCurrentLinkSpeed();
+
+	virtual PortMode GetMode();
+	virtual uint16_t GetVlan();
+	virtual PortType GetPortType();
+
 	virtual const char* GetName();
 };
 

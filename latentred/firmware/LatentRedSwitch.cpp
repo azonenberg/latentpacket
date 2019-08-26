@@ -33,6 +33,14 @@
 	@brief Link to the UART on the management FPGA
  */
 LatentRedSwitch::LatentRedSwitch()
+	: m_switchEngineBoard(0)
+	, m_lineCards
+	{
+		1,
+		2,
+		3
+	}
+	, m_managementBoard(4)
 {
 }
 

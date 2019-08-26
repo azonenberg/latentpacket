@@ -36,7 +36,7 @@
 class LatentRedSwitchEngineBoard : public Board
 {
 public:
-	LatentRedSwitchEngineBoard();
+	LatentRedSwitchEngineBoard(size_t boardnum);
 	virtual ~LatentRedSwitchEngineBoard();
 
 	virtual const char* GetDescription();
