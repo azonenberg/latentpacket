@@ -120,9 +120,12 @@ void LatentRedManagementBoard::PrintFPGAInfo(UART* uart)
 		uart->Printf("            Xilinx [unknown, idcode = 0x%08x]\n", idcode);
 
 	//Read the DNA value
-	uint32_t serial[2];
-	ReadReg64(OP_FPGA_SERIAL, serial);
-	uart->Printf("            Serial number 0x%08x%08x\n", serial[0], serial[1]);
+	uint8_t serial[8];
+	ReadReg64(OP_FPGA_SERIAL, (uint32_t*)serial);
+	uart->Printf("            Serial number 0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
+		serial[7], serial[6], serial[5], serial[4],
+		serial[3], serial[2], serial[1], serial[0]
+		);
 
 	uart->Printf("            Bitstream version [details unimplemented]\n");
 

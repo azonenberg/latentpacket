@@ -277,8 +277,12 @@ module ManagementController(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug ILA
 	/*
+	wire	trig_out;
+
 	ila_0 ila(
 		.clk(clk),
+		.trig_out(trig_out),
+		.trig_out_ack(trig_out),
 		.probe0(state),
 		.probe1(spi_rx_data_valid),
 		.probe2(spi_rx_data),
@@ -289,7 +293,8 @@ module ManagementController(
 		.probe7(idcode),
 		.probe8(die_temp),
 		.probe9(spi_cs_falling),
-		.probe10(spi_cs_n)
+		.probe10(spi_cs_n),
+		.probe11(die_serial)
 	);
 	*/
 

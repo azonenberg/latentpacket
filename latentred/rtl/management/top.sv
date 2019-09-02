@@ -73,10 +73,11 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// PLL to give us a higher clock for running internal stuff
+	// PLL to give us higher clocks for running internal stuff
 
-	wire[1:0]	clk_unused;
+	wire		clk_unused;
 
+	wire		clk_25mhz_pll;
 	wire		clk_100mhz;
 	wire		clk_125mhz;
 	wire		clk_250mhz;
@@ -87,12 +88,13 @@ module top(
 	ReconfigurablePLL #(
 		.IN0_PERIOD(40),		//25 MHz
 		.IN1_PERIOD(40),
-		.OUTPUT_GATE(6'b001111),
-		.OUTPUT_BUF_GLOBAL(6'b001111),
+		.OUTPUT_GATE(6'b011111),
+		.OUTPUT_BUF_GLOBAL(6'b011111),
 		.OUT0_MIN_PERIOD(10),	//100 MHz
 		.OUT1_MIN_PERIOD(8),	//125 MHz
 		.OUT2_MIN_PERIOD(4),	//250 MHz
 		.OUT3_MIN_PERIOD(5),	//200 MHz
+		.OUT4_MIN_PERIOD(40),	//25 MHz
 		.ACTIVE_ON_START(1),	//start PLL on boot
 		.PRINT_CONFIG(0)
 	) pll (
@@ -101,7 +103,7 @@ module top(
 		.reset(1'b0),
 		.locked(pll_locked),
 
-		.clkout({clk_unused, clk_200mhz, clk_250mhz, clk_125mhz, clk_100mhz}),
+		.clkout({clk_unused, clk_25mhz_pll, clk_200mhz, clk_250mhz, clk_125mhz, clk_100mhz}),
 
 		.busy(),
 		.reconfig_clk(clk_25mhz),
@@ -189,9 +191,8 @@ module top(
 	wire[63:0]	die_serial;
 	wire[31:0]	idcode;
 
-	//run this slow
 	DeviceInfo_7series info(
-		.clk(clk_25mhz),
+		.clk(clk_100mhz),
 		.die_serial(die_serial),
 		.idcode(idcode)
 		);
@@ -241,12 +242,14 @@ module top(
 
 	wire[15:0]	flash_mbits;
 
-	QuadSPIFlashController flash(
+	QuadSPIFlashController #(
+		.SFDP_ADDRESS_32B(1)
+	) flash(
 		.clk(clk_100mhz),
 		.spi_sck(flash_sck),
 		.spi_dq(flash_dq),
 		.spi_cs_n(flash_cs_n),
-		.clkdiv(16'd4),
+		.clkdiv(16'd2),
 
 		.cmd_en(0),
 		.cmd_id(op),

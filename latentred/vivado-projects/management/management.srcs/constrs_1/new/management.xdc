@@ -81,6 +81,10 @@ create_generated_clock -name clk_200mhz -source [get_pins pll/mmcm/CLKIN1] -mast
 set_clock_groups -asynchronous -group [get_clocks rgmii_rxc] -group [get_clocks clk_100mhz]
 set_clock_groups -asynchronous -group [get_clocks rgmii_rxc] -group [get_clocks clk_125mhz]
 set_clock_groups -asynchronous -group [get_clocks clk_125mhz] -group [get_clocks rgmii_rxc]
+
+create_clock -period 10.000 -name VIRTUAL_clk_100mhz -waveform {0.000 5.000}
+
+create_generated_clock -name flash_sck -source [get_pins {pll/clkbufs[0].output_buf/clkout[0]}] -divide_by 4 [get_nets flash/flash_sck]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
