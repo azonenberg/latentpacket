@@ -4,7 +4,7 @@
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2018 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2018-2019 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -81,8 +81,8 @@ module MACAddressTable #(
 	input wire[4:0]		lookup_src_port,		//port ID of the packet (0...31)
 	input wire[47:0]	lookup_dst_mac,			//dest address of the packet (to be looked up)
 
-	output reg			lookup_hit		= 0,	//indicates the lookup has completed
-	output reg[4:0]		lookup_dst_port = 0,	//port ID of the destination (only valid if lookup_hit is true)
+	output logic		lookup_hit		= 0,	//indicates the lookup has completed
+	output logic[4:0]	lookup_dst_port = 0,	//port ID of the destination (only valid if lookup_hit is true)
 
 	input wire			gc_en,					//assert for one clock to start garbage collection
 	output reg			gc_done			= 0		//goes high at end of garbage collection
@@ -91,10 +91,8 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Useful constants
 
-	`include "../../../antikernel-ipcores/synth_helpers/clog2.vh"
-
-	localparam			ROW_BITS	= clog2(TABLE_ROWS);
-	localparam			ASSOC_BITS	= clog2(ASSOC_WAYS);
+	localparam			ROW_BITS	= $clog2(TABLE_ROWS);
+	localparam			ASSOC_BITS	= $clog2(ASSOC_WAYS);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Cache indexing
@@ -113,18 +111,16 @@ module MACAddressTable #(
 	// PRNG for cache replacement
 
 	//for now, sequential replacement policy
-	reg[ASSOC_BITS-1:0] cache_set 	= 0;
-	reg					bump_set	= 0;
+	logic[ASSOC_BITS-1:0] 	cache_set 	= 0;
+	logic					bump_set	= 0;
 
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 		if(bump_set)
 			cache_set <= cache_set + 1'h1;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The table
-
-	genvar g;
 
 	/*
 		Memory structure:
@@ -134,67 +130,63 @@ module MACAddressTable #(
 		52:48	Port number
 		47:0	MAC address
 	*/
-	localparam			INDEX_GC	= 66;
-	localparam			INDEX_VALID	= 65;
-	localparam			INDEX_VLAN	= 53;
-	localparam			INDEX_PORT	= 48;
-	localparam			INDEX_MAC	= 0;
+	localparam				INDEX_GC	= 66;
+	localparam				INDEX_VALID	= 65;
+	localparam				INDEX_VLAN	= 53;
+	localparam				INDEX_PORT	= 48;
+	localparam				INDEX_MAC	= 0;
 
-	wire[66:0]			lookup_rdata[ASSOC_WAYS-1:0];
-	wire[66:0]			learn_rdata[ASSOC_WAYS-1:0];
+	wire[66:0]				lookup_rdata[ASSOC_WAYS-1:0];
+	wire[66:0]				learn_rdata[ASSOC_WAYS-1:0];
 
-	reg					learn_en		= 0;
-	reg[ASSOC_WAYS-1:0]	learn_wr		= 0;
-	reg[ROW_BITS-1:0]	learn_addr		= 0;
-	reg[66:0]			learn_wdata		= 0;
+	logic					learn_en		= 0;
+	logic[ASSOC_WAYS-1:0]	learn_wr		= 0;
+	logic[ROW_BITS-1:0]		learn_addr		= 0;
+	logic[66:0]				learn_wdata		= 0;
 
-	generate
+	for(genvar g=0; g<ASSOC_WAYS; g++) begin : sets
+		MemoryMacro #(
+			.WIDTH(67),
+			.DEPTH(TABLE_ROWS),
+			.DUAL_PORT(1),
+			.USE_BLOCK(1),
+			.OUT_REG(2),
+			.TRUE_DUAL(1),
+			.INIT_VALUE(0)
+		) mem (
+			.porta_clk(clk),
+			.porta_en(lookup_en),
+			.porta_addr(lookup_dst_index),
+			.porta_we(1'b0),
+			.porta_din(67'h0),
+			.porta_dout(lookup_rdata[g]),
 
-		for(g=0; g<ASSOC_WAYS; g=g+1) begin : sets
-			MemoryMacro #(
-				.WIDTH(67),
-				.DEPTH(TABLE_ROWS),
-				.DUAL_PORT(1),
-				.USE_BLOCK(1),
-				.OUT_REG(2),
-				.TRUE_DUAL(1),
-				.INIT_VALUE(0)
-			) mem (
-				.porta_clk(clk),
-				.porta_en(lookup_en),
-				.porta_addr(lookup_dst_index),
-				.porta_we(1'b0),
-				.porta_din(67'h0),
-				.porta_dout(lookup_rdata[g]),
-
-				.portb_clk(clk),
-				.portb_en(learn_en),
-				.portb_addr(learn_addr),
-				.portb_we(learn_wr[g]),
-				.portb_din(learn_wdata),
-				.portb_dout(learn_rdata[g])
-			);
-		end
-
-	endgenerate
+			.portb_clk(clk),
+			.portb_en(learn_en),
+			.portb_addr(learn_addr),
+			.portb_we(learn_wr[g]),
+			.portb_din(learn_wdata),
+			.portb_dout(learn_rdata[g])
+		);
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pipeline delay for read requests
 
-	reg					lookup_en_ff			= 0;
-	reg					lookup_en_ff2			= 0;
-	reg[ROW_BITS-1:0]	lookup_src_index_ff		= 0;
-	reg[ROW_BITS-1:0]	lookup_src_index_ff2	= 0;
-	reg[47:0]			lookup_src_mac_ff		= 0;
-	reg[47:0]			lookup_src_mac_ff2		= 0;
-	reg[4:0]			lookup_src_port_ff		= 0;
-	reg[4:0]			lookup_src_port_ff2		= 0;
-	reg[47:0]			lookup_dst_mac_ff		= 0;
-	reg[47:0]			lookup_dst_mac_ff2		= 0;
-	reg[11:0]			lookup_src_vlan_ff		= 0;
-	reg[11:0]			lookup_src_vlan_ff2		= 0;
+	logic				lookup_en_ff			= 0;
+	logic				lookup_en_ff2			= 0;
+	logic[ROW_BITS-1:0]	lookup_src_index_ff		= 0;
+	logic[ROW_BITS-1:0]	lookup_src_index_ff2	= 0;
+	logic[47:0]			lookup_src_mac_ff		= 0;
+	logic[47:0]			lookup_src_mac_ff2		= 0;
+	logic[4:0]			lookup_src_port_ff		= 0;
+	logic[4:0]			lookup_src_port_ff2		= 0;
+	logic[47:0]			lookup_dst_mac_ff		= 0;
+	logic[47:0]			lookup_dst_mac_ff2		= 0;
+	logic[11:0]			lookup_src_vlan_ff		= 0;
+	logic[11:0]			lookup_src_vlan_ff2		= 0;
 
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 		lookup_en_ff			<= lookup_en;
 		lookup_en_ff2			<= lookup_en_ff;
 		lookup_src_index_ff		<= lookup_src_index;
@@ -212,11 +204,9 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Readout logic
 
-	integer i;
+	logic	hit_comb	= 0;
 
-	reg		hit_comb	= 0;
-
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 
 		lookup_hit		<= 0;
 		lookup_dst_port	<= 0;
@@ -239,7 +229,7 @@ module MACAddressTable #(
 		//We should never have >1 hit but if we do, use the highest numbered set.
 		if(lookup_en_ff2) begin
 
-			for(i=0; i<ASSOC_WAYS; i=i+1) begin
+			for(integer i=0; i<ASSOC_WAYS; i=i+1) begin
 
 				//Row valid plus vlan/mac match?
 				if( lookup_rdata[i][INDEX_VALID] &&
@@ -305,14 +295,14 @@ module MACAddressTable #(
 			4) Interactive UI
 	 */
 
-	reg					pend_wr_en		= 0;
-	reg[66:0]			pend_wr_data	= 0;
-	reg[ROW_BITS-1:0]	pend_wr_addr	= 0;
-	reg					pend_wr_done	= 0;
+	logic				pend_wr_en		= 0;
+	logic[66:0]			pend_wr_data	= 0;
+	logic[ROW_BITS-1:0]	pend_wr_addr	= 0;
+	logic				pend_wr_done	= 0;
 
-	reg					pend_wr_done_fwd	= 0;
+	logic				pend_wr_done_fwd	= 0;
 
-	always @(*) begin
+	always_comb begin
 
 		//Default to not doing anything
 		learn_en			<= 0;
@@ -339,7 +329,7 @@ module MACAddressTable #(
 
 	end
 
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 		pend_wr_done			<= pend_wr_done_fwd;
 	end
 
@@ -347,27 +337,27 @@ module MACAddressTable #(
 	// Set of addresses that need to be learned but haven't yet been pushed to the table
 
 	//The pending queue
-	reg[PENDING_SIZE-1:0]	pending_valid	= 0;
-	reg[47:0]				pending_addr[PENDING_SIZE-1:0];
-	reg[11:0]				pending_vlan[PENDING_SIZE-1:0];
-	reg[4:0]				pending_port[PENDING_SIZE-1:0];
-	reg[ASSOC_BITS-1:0]		pending_col[PENDING_SIZE-1:0];
+	logic[PENDING_SIZE-1:0]	pending_valid	= 0;
+	logic[47:0]				pending_addr[PENDING_SIZE-1:0];
+	logic[11:0]				pending_vlan[PENDING_SIZE-1:0];
+	logic[4:0]				pending_port[PENDING_SIZE-1:0];
+	logic[ASSOC_BITS-1:0]	pending_col[PENDING_SIZE-1:0];
 
 	//New data being added to the pending queue
-	reg					need_to_learn	= 0;
-	reg[47:0]			pend_addr		= 0;
-	reg[11:0]			pend_vlan		= 0;
-	reg[4:0]			pend_port		= 0;
-	reg[ASSOC_BITS-1:0]	pend_col		= 0;
+	logic					need_to_learn	= 0;
+	logic[47:0]				pend_addr		= 0;
+	logic[11:0]				pend_vlan		= 0;
+	logic[4:0]				pend_port		= 0;
+	logic[ASSOC_BITS-1:0]	pend_col		= 0;
 
 	//Clear completed entries once written to memory
-	reg					pend_clear		= 0;
-	localparam			PEND_BITS		= clog2(PENDING_SIZE);
-	reg[PEND_BITS-1:0]	pend_clear_slot	= 0;
+	logic					pend_clear		= 0;
+	localparam				PEND_BITS		= $clog2(PENDING_SIZE);
+	logic[PEND_BITS-1:0]	pend_clear_slot	= 0;
 
 	//Wipe the table
 	initial begin
-		for(i=0; i<PENDING_SIZE; i=i+1) begin
+		for(integer i=0; i<PENDING_SIZE; i++) begin
 			pending_addr[i]	<= 0;
 			pending_vlan[i]	<= 0;
 			pending_port[i]	<= 0;
@@ -377,9 +367,9 @@ module MACAddressTable #(
 
 	//Add new entries to the table, avoiding duplication
 	//TODO: this should probably be refactored into a standalone module?
-	reg					already_pending	= 0;
-	reg					found_opening	= 0;
-	always @(posedge clk) begin
+	logic					already_pending	= 0;
+	logic					found_opening	= 0;
+	always_ff @(posedge clk) begin
 
 		already_pending	= 0;
 		found_opening	= 0;
@@ -394,7 +384,7 @@ module MACAddressTable #(
 				);
 
 			//Iterate over table entries and see if it's already in the learn queue
-			for(i=0; i<PENDING_SIZE; i=i+1) begin
+			for(integer i=0; i<PENDING_SIZE; i++) begin
 
 				//Already pending, no action required
 				if(pending_valid[i] &&
@@ -410,7 +400,7 @@ module MACAddressTable #(
 
 			//Not in the learn queue. Find the first free spot in the set and insert it
 			if(!already_pending) begin
-				for(i=0; i<PENDING_SIZE; i=i+1) begin
+				for(integer i=0; i<PENDING_SIZE; i=i+1) begin
 
 					//Stop if we already did the insert
 					if(found_opening) begin
@@ -444,9 +434,9 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Check if the source address is already learned. If not, add to the learning queue
 
-	reg					learned_comb 	= 0;
+	logic				learned_comb 	= 0;
 
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 
 		need_to_learn	<= 0;
 		bump_set		<= 0;
@@ -455,7 +445,7 @@ module MACAddressTable #(
 
 			learned_comb	= 0;
 
-			for(i=0; i<ASSOC_WAYS; i=i+1) begin
+			for(integer i=0; i<ASSOC_WAYS; i=i+1) begin
 
 				//Row valid plus vlan/mac match? All good
 				if( learn_rdata[i][INDEX_VALID] &&
@@ -499,14 +489,14 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop data from the pending set and push it into the table proper
 
-	reg	found_slot		= 0;
+	logic	found_slot		= 0;
 
 	//Clear slots out combinatorially
-	always @(*) begin
+	always_comb begin
 		pend_clear	<= pend_wr_done;
 	end
 
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 
 		pend_wr_data	<= 0;
 		pend_wr_addr	<= 0;
@@ -519,7 +509,7 @@ module MACAddressTable #(
 		//If we don't have another write in progress, go look for a free table slot and write it
 		if(!pend_wr_en || pend_wr_done) begin
 
-			for(i=0; i<PENDING_SIZE; i=i+1) begin
+			for(integer i=0; i<PENDING_SIZE; i++) begin
 
 				//If we're in the process of clearing this slot, don't look at it
 				if(pend_clear && (pend_clear_slot == i)) begin
