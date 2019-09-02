@@ -85,7 +85,7 @@ module MACAddressTable #(
 	output logic[4:0]	lookup_dst_port = 0,	//port ID of the destination (only valid if lookup_hit is true)
 
 	input wire			gc_en,					//assert for one clock to start garbage collection
-	output reg			gc_done			= 0		//goes high at end of garbage collection
+	output logic		gc_done			= 0		//goes high at end of garbage collection
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,9 +108,9 @@ module MACAddressTable #(
 	wire[ROW_BITS-1:0]	lookup_dst_index = lookup_dst_index_raw[ROW_BITS-1:0];
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// PRNG for cache replacement
+	// "PRNG" for cache replacement
 
-	//for now, sequential replacement policy
+	//for now, sequential replacement policy. Try a LFSR in the future and see if that improves things?
 	logic[ASSOC_BITS-1:0] 	cache_set 	= 0;
 	logic					bump_set	= 0;
 
@@ -120,45 +120,40 @@ module MACAddressTable #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The table
+	// The table memory
 
-	/*
-		Memory structure:
-		66		GC mark bit
-		65		Valid bit
-		64:53	VLAN number
-		52:48	Port number
-		47:0	MAC address
-	*/
-	localparam				INDEX_GC	= 66;
-	localparam				INDEX_VALID	= 65;
-	localparam				INDEX_VLAN	= 53;
-	localparam				INDEX_PORT	= 48;
-	localparam				INDEX_MAC	= 0;
+	typedef struct packed
+	{
+		logic		gc_mark;
+		logic		valid;
+		logic[11:0]	vlan;
+		logic[4:0]	port;
+		logic[47:0]	mac;
+	} entry_t;
 
-	wire[66:0]				lookup_rdata[ASSOC_WAYS-1:0];
-	wire[66:0]				learn_rdata[ASSOC_WAYS-1:0];
+	entry_t					lookup_rdata[ASSOC_WAYS-1:0];
+	entry_t					learn_rdata[ASSOC_WAYS-1:0];
 
 	logic					learn_en		= 0;
 	logic[ASSOC_WAYS-1:0]	learn_wr		= 0;
 	logic[ROW_BITS-1:0]		learn_addr		= 0;
-	logic[66:0]				learn_wdata		= 0;
+	entry_t					learn_wdata;
 
 	for(genvar g=0; g<ASSOC_WAYS; g++) begin : sets
 		MemoryMacro #(
-			.WIDTH(67),
+			.WIDTH($bits(entry_t)),
 			.DEPTH(TABLE_ROWS),
 			.DUAL_PORT(1),
 			.USE_BLOCK(1),
 			.OUT_REG(2),
 			.TRUE_DUAL(1),
-			.INIT_VALUE(0)
+			.INIT_VALUE({$bits(entry_t){1'h0}})
 		) mem (
 			.porta_clk(clk),
 			.porta_en(lookup_en),
 			.porta_addr(lookup_dst_index),
 			.porta_we(1'b0),
-			.porta_din(67'h0),
+			.porta_din({$bits(entry_t){1'h0}}),
 			.porta_dout(lookup_rdata[g]),
 
 			.portb_clk(clk),
@@ -177,28 +172,26 @@ module MACAddressTable #(
 	logic				lookup_en_ff2			= 0;
 	logic[ROW_BITS-1:0]	lookup_src_index_ff		= 0;
 	logic[ROW_BITS-1:0]	lookup_src_index_ff2	= 0;
-	logic[47:0]			lookup_src_mac_ff		= 0;
-	logic[47:0]			lookup_src_mac_ff2		= 0;
-	logic[4:0]			lookup_src_port_ff		= 0;
-	logic[4:0]			lookup_src_port_ff2		= 0;
+
+	entry_t				lookup_src_ff;
+	entry_t				lookup_src_ff2;
 	logic[47:0]			lookup_dst_mac_ff		= 0;
 	logic[47:0]			lookup_dst_mac_ff2		= 0;
-	logic[11:0]			lookup_src_vlan_ff		= 0;
-	logic[11:0]			lookup_src_vlan_ff2		= 0;
 
 	always_ff @(posedge clk) begin
 		lookup_en_ff			<= lookup_en;
 		lookup_en_ff2			<= lookup_en_ff;
 		lookup_src_index_ff		<= lookup_src_index;
 		lookup_src_index_ff2	<= lookup_src_index_ff;
-		lookup_src_mac_ff		<= lookup_src_mac;
-		lookup_src_mac_ff2		<= lookup_src_mac_ff;
-		lookup_src_port_ff		<= lookup_src_port;
-		lookup_src_port_ff2		<= lookup_src_port_ff;
+
+		lookup_src_ff.mac		<= lookup_src_mac;
+		lookup_src_ff.port		<= lookup_src_port;
+		lookup_src_ff.vlan		<= lookup_src_vlan;
+
+		lookup_src_ff2			<= lookup_src_ff;
+
 		lookup_dst_mac_ff		<= lookup_dst_mac;
 		lookup_dst_mac_ff2		<= lookup_dst_mac_ff;
-		lookup_src_vlan_ff		<= lookup_src_vlan;
-		lookup_src_vlan_ff2		<= lookup_src_vlan_ff;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,23 +225,24 @@ module MACAddressTable #(
 			for(integer i=0; i<ASSOC_WAYS; i=i+1) begin
 
 				//Row valid plus vlan/mac match?
-				if( lookup_rdata[i][INDEX_VALID] &&
-					(lookup_rdata[i][INDEX_VLAN +: 12] == lookup_src_vlan_ff2) &&
-					(lookup_rdata[i][INDEX_MAC +: 48] == lookup_dst_mac_ff2) ) begin
+				if( lookup_rdata[i].valid &&
+					(lookup_rdata[i].vlan == lookup_src_ff2.vlan) &&
+					(lookup_rdata[i].mac == lookup_dst_mac_ff2) ) begin
 
 					//It's a hit! Report the target
 					hit_comb			= 1;
 					lookup_hit			<= 1;
-					lookup_dst_port		<= lookup_rdata[i][INDEX_PORT +: 5];
+					lookup_dst_port		<= lookup_rdata[i].port;
 					$display("[%t] Hit - Destination %x:%x:%x:%x:%x:%x in vlan %d is on port %d",
 						$time(),
-						lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24], lookup_dst_mac_ff2[23:16], lookup_dst_mac_ff2[15:8], lookup_dst_mac_ff2[7:0],
-						lookup_src_vlan_ff2,
-						lookup_rdata[i][INDEX_PORT +: 5]
+						lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24],
+						lookup_dst_mac_ff2[23:16], lookup_dst_mac_ff2[15:8], lookup_dst_mac_ff2[7:0],
+						lookup_src_ff2.vlan,
+						lookup_rdata[i].port
 					);
 
 					//TODO: If this address needs to have the GC mark bit set, do that
-					if(!lookup_rdata[i][INDEX_GC]) begin
+					if(!lookup_rdata[i].gc_mark) begin
 						$display("             Need to set GC mark");
 					end
 
@@ -258,14 +252,14 @@ module MACAddressTable #(
 				else begin
 					$display("             Lookup slot %d doesn't match: valid=%d, vlan=%d, mac=%x:%x:%x:%x:%x:%x",
 						i,
-						lookup_rdata[i][INDEX_VALID],
-						lookup_rdata[i][INDEX_VLAN +: 12],
-						lookup_rdata[i][INDEX_MAC + 40 +: 8],
-						lookup_rdata[i][INDEX_MAC + 32 +: 8],
-						lookup_rdata[i][INDEX_MAC + 24 +: 8],
-						lookup_rdata[i][INDEX_MAC + 16 +: 8],
-						lookup_rdata[i][INDEX_MAC + 8 +: 8],
-						lookup_rdata[i][INDEX_MAC + 0 +: 8]);
+						lookup_rdata[i].valid
+						lookup_rdata[i].vlan
+						lookup_rdata[i].mac[40 +: 8],
+						lookup_rdata[i].mac[32 +: 8],
+						lookup_rdata[i].mac[24 +: 8],
+						lookup_rdata[i].mac[16 +: 8],
+						lookup_rdata[i].mac[8 +: 8],
+						lookup_rdata[i].mac[0 +: 8]);
 				end
 				*/
 
@@ -275,8 +269,9 @@ module MACAddressTable #(
 			if(!hit_comb) begin
 				$display("[%t] Miss - Destination %x:%x:%x:%x:%x:%x in vlan %d is not in table",
 					$time(),
-					lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24], lookup_dst_mac_ff2[23:16], lookup_dst_mac_ff2[15:8], lookup_dst_mac_ff2[7:0],
-					lookup_src_vlan_ff2
+					lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24],
+					lookup_dst_mac_ff2[23:16], lookup_dst_mac_ff2[15:8], lookup_dst_mac_ff2[7:0],
+					lookup_src_ff2.vlan
 				);
 			end
 
@@ -296,11 +291,18 @@ module MACAddressTable #(
 	 */
 
 	logic				pend_wr_en		= 0;
-	logic[66:0]			pend_wr_data	= 0;
+	entry_t				pend_wr_data;
 	logic[ROW_BITS-1:0]	pend_wr_addr	= 0;
 	logic				pend_wr_done	= 0;
 
 	logic				pend_wr_done_fwd	= 0;
+
+	//New data being added to the pending queue
+	logic					need_to_learn	= 0;
+	logic[47:0]				pend_addr		= 0;
+	logic[11:0]				pend_vlan		= 0;
+	logic[4:0]				pend_port		= 0;
+	logic[ASSOC_BITS-1:0]	pend_col		= 0;
 
 	always_comb begin
 
@@ -308,7 +310,6 @@ module MACAddressTable #(
 		learn_en			<= 0;
 		learn_wr			<= 0;
 		learn_addr			<= 0;
-		learn_wdata			<= 0;
 		pend_wr_done_fwd	<= 0;
 
 		//If an incoming packet is arriving, look up the source
@@ -337,18 +338,8 @@ module MACAddressTable #(
 	// Set of addresses that need to be learned but haven't yet been pushed to the table
 
 	//The pending queue
-	logic[PENDING_SIZE-1:0]	pending_valid	= 0;
-	logic[47:0]				pending_addr[PENDING_SIZE-1:0];
-	logic[11:0]				pending_vlan[PENDING_SIZE-1:0];
-	logic[4:0]				pending_port[PENDING_SIZE-1:0];
+	entry_t					pending[PENDING_SIZE-1:0];
 	logic[ASSOC_BITS-1:0]	pending_col[PENDING_SIZE-1:0];
-
-	//New data being added to the pending queue
-	logic					need_to_learn	= 0;
-	logic[47:0]				pend_addr		= 0;
-	logic[11:0]				pend_vlan		= 0;
-	logic[4:0]				pend_port		= 0;
-	logic[ASSOC_BITS-1:0]	pend_col		= 0;
 
 	//Clear completed entries once written to memory
 	logic					pend_clear		= 0;
@@ -358,10 +349,11 @@ module MACAddressTable #(
 	//Wipe the table
 	initial begin
 		for(integer i=0; i<PENDING_SIZE; i++) begin
-			pending_addr[i]	<= 0;
-			pending_vlan[i]	<= 0;
-			pending_port[i]	<= 0;
-			pending_col[i] <= 0;
+			pending[i].mac		<= 0;
+			pending[i].vlan		<= 0;
+			pending[i].port		<= 0;
+			pending[i].valid	<= 0;
+			pending_col[i]		<= 0;
 		end
 	end
 
@@ -377,7 +369,8 @@ module MACAddressTable #(
 		if(need_to_learn) begin
 			$display("[%t] Need to learn -  Source %x:%x:%x:%x:%x:%x in vlan %d (from port %d) is not in table, adding at column %d",
 					$time(),
-					pend_addr[47:40], pend_addr[39:32], pend_addr[31:24], pend_addr[23:16], pend_addr[15:8], pend_addr[7:0],
+					pend_addr[47:40], pend_addr[39:32], pend_addr[31:24],
+					pend_addr[23:16], pend_addr[15:8], pend_addr[7:0],
 					pend_vlan,
 					pend_port,
 					pend_col
@@ -387,10 +380,10 @@ module MACAddressTable #(
 			for(integer i=0; i<PENDING_SIZE; i++) begin
 
 				//Already pending, no action required
-				if(pending_valid[i] &&
-					(pending_addr[i] == pend_addr) &&
-					(pending_vlan[i] == pend_vlan) &&
-					(pending_port[i] == pend_port)
+				if(pending[i].valid &&
+					(pending[i].mac == pend_addr) &&
+					(pending[i].vlan == pend_vlan) &&
+					(pending[i].port == pend_port)
 				) begin
 					$display("             Already in pending set");
 					already_pending	= 1;
@@ -407,11 +400,11 @@ module MACAddressTable #(
 					end
 
 					//Insert when we find a free spot
-					else if(!pending_valid[i]) begin
-						pending_valid[i]	<= 1;
-						pending_vlan[i]		<= pend_vlan;
-						pending_port[i]		<= pend_port;
-						pending_addr[i]		<= pend_addr;
+					else if(!pending[i].valid) begin
+						pending[i].valid	<= 1;
+						pending[i].vlan		<= pend_vlan;
+						pending[i].port		<= pend_port;
+						pending[i].mac		<= pend_addr;
 						pending_col[i]		<= pend_col;
 						found_opening		= 1;
 						$display("             Added to pending set (slot %d)", i[7:0]);
@@ -424,7 +417,7 @@ module MACAddressTable #(
 
 		//Once we've written a pending item to the table, remove it from the queue
 		if(pend_clear) begin
-			pending_valid[pend_clear_slot]	<= 0;
+			pending[pend_clear_slot].valid	<= 0;
 
 			$display("             Clearing slot %d of pending set", pend_clear_slot);
 		end
@@ -448,22 +441,23 @@ module MACAddressTable #(
 			for(integer i=0; i<ASSOC_WAYS; i=i+1) begin
 
 				//Row valid plus vlan/mac match? All good
-				if( learn_rdata[i][INDEX_VALID] &&
-					(learn_rdata[i][INDEX_VLAN +: 12] == lookup_src_vlan_ff2) &&
-					(learn_rdata[i][INDEX_MAC +: 48] == lookup_src_mac_ff2) ) begin
+				if( learn_rdata[i].valid &&
+					(learn_rdata[i].vlan == lookup_src_ff2.vlan) &&
+					(learn_rdata[i].mac == lookup_src_ff2.mac) ) begin
 
 					//It's a hit! Report the target
 					learned_comb		= 1;
 					$display("[%t] OK - Source %x:%x:%x:%x:%x:%x in vlan %d is on port %d",
 						$time(),
-						lookup_src_mac_ff2[47:40], lookup_src_mac_ff2[39:32], lookup_src_mac_ff2[31:24], lookup_src_mac_ff2[23:16], lookup_src_mac_ff2[15:8], lookup_src_mac_ff2[7:0],
-						lookup_src_vlan_ff2,
-						learn_rdata[i][INDEX_PORT +: 5]
+						lookup_src_ff2.mac[47:40], lookup_src_ff2.mac[39:32], lookup_src_ff2.mac[31:24],
+						lookup_src_ff2.mac[23:16], lookup_src_ff2.mac[15:8], lookup_src_ff2.mac[7:0],
+						lookup_src_ff2.vlan,
+						learn_rdata[i].port
 					);
 
 
 					//TODO: handle this situation
-					if(learn_rdata[i][INDEX_PORT +: 5] != lookup_src_port_ff2) begin
+					if(learn_rdata[i].port != lookup_src_ff2.port) begin
 						$display("FIXME: Host appears to have jumped to another port, this isn't implemented yet");
 					end
 
@@ -474,9 +468,9 @@ module MACAddressTable #(
 			//No hit in any cache set
 			if(!learned_comb) begin
 				need_to_learn	<= 1;
-				pend_addr		<= lookup_src_mac_ff2;
-				pend_vlan		<= lookup_src_vlan_ff2;
-				pend_port		<= lookup_src_port_ff2;
+				pend_addr		<= lookup_src_ff2.mac;
+				pend_vlan		<= lookup_src_ff2.vlan;
+				pend_port		<= lookup_src_ff2.port;
 
 				pend_col		<= cache_set;
 				bump_set		<= 1;
@@ -498,7 +492,6 @@ module MACAddressTable #(
 
 	always_ff @(posedge clk) begin
 
-		pend_wr_data	<= 0;
 		pend_wr_addr	<= 0;
 
 		found_slot		= 0;
@@ -516,21 +509,26 @@ module MACAddressTable #(
 				end
 
 				//This slot is eligible to be looked at
-				else if(pending_valid[i] && !found_slot) begin
+				else if(pending[i].valid && !found_slot) begin
 					found_slot		= 1;
 
 					pend_clear_slot	<= i;
 
 					pend_wr_en		<= 1;
-					pend_wr_data	<= {1'b1, 1'b1, pending_vlan[i], pending_port[i], pending_addr[i]};
+					pend_wr_data.gc_mark	<= 1;
+					pend_wr_data.valid		<= 1;
+					pend_wr_data.vlan		<= pending[i].vlan;
+					pend_wr_data.port		<= pending[i].port;
+					pend_wr_data.mac		<= pending[i].mac;
 					pend_wr_addr	<=
-						pending_addr[i][47:32] ^ pending_addr[i][31:16] ^ pending_addr[i][15:0] ^ pending_vlan[i];
+						pending[i].mac[47:32] ^ pending[i].mac[31:16] ^ pending[i].mac[15:0] ^ pending[i].vlan;
 
 					$display("[%t] Learning address %x:%x:%x:%x:%x:%x in vlan %d (from port %d) at column %d",
 						$time(),
-						pending_addr[i][47:40], pending_addr[i][39:32], pending_addr[i][31:24], pending_addr[i][23:16], pending_addr[i][15:8], pending_addr[i][7:0],
-						pending_vlan[i],
-						pending_port[i],
+						pending[i].mac[47:40], pending[i].mac[39:32], pending[i].mac[31:24],
+						pending[i].mac[23:16], pending[i].mac[15:8], pending[i].mac[7:0],
+						pending[i].vlan,
+						pending[i].port,
 						pending_col[i]
 					);
 				end
