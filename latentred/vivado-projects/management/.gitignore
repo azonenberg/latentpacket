@@ -1,3 +1,4 @@
 *.cache
 *.runs
 *.hw
+*.ip_user_files
