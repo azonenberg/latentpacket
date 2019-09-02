@@ -145,6 +145,43 @@ module MACAddressTable_sim();
 				state			<= 4;
 			end
 
+			//Run the garbage collector to mark both addresses as stale
+			4: begin
+				gc_en			<= 1;
+				state			<= 5;
+			end
+
+			//Wait for GC to complete
+			//TODO: do some reads during the GC
+			5: begin
+				if(gc_done)
+					state		<= 6;
+			end
+
+			//Look up one of the two addresses to refresh its table entry
+			6: begin
+				lookup_en		<= 1;
+				lookup_src_vlan	<= 2;
+				lookup_src_mac	<= 48'h02deadbeef0c;
+				lookup_src_port	<= 5'h0c;
+				lookup_dst_mac	<= 48'h02deadbeef0a;
+
+				state			<= 7;
+			end
+
+			//Re-run the garbage collector. This should remove :0a because nothing has come from it in a while.
+			7: begin
+				gc_en			<= 1;
+				state			<= 8;
+			end
+
+			//Wait for GC to complete
+			//TODO: do some reads during the GC
+			8: begin
+				if(gc_done)
+					state		<= 9;
+			end
+
 		endcase
 	end
 

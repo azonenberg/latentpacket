@@ -56,7 +56,7 @@ module top(
 	output wire[3:0]	rgmii_txd,
 	output wire			rgmii_tx_ctl,
 
-	output wire			rgmii_rst_n,
+	output logic		rgmii_rst_n	= 0,
 
 	//LED inputs from the PHY (not used for now)
 	input wire[1:0]		eth_led_n_in,
@@ -204,8 +204,14 @@ module top(
 	GmiiBus		gmii_rx_bus;
 	GmiiBus		gmii_tx_bus = {$bits(GmiiBus){1'b0}};
 
-	//Tie reset to "inactive" state
-	assign		rgmii_rst_n = 1;
+	//Reset the PHY for a short time during boot
+	logic[15:0] phy_rst_count = 1;
+	always_ff @(posedge clk_125mhz) begin
+		if(phy_rst_count == 0)
+			rgmii_rst_n		<= 1;
+		else
+			phy_rst_count	<= phy_rst_count + 1;
+	end
 
 	wire		mgmt_up;
 	lspeed_t	mgmt_speed;

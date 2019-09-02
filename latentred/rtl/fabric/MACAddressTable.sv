@@ -97,15 +97,27 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Cache indexing
 
+	//Helper function for calculating the cache line for a row
 	//Create a 16-bit index (enough for 64K table rows) by XOR reduction, then truncate to ROW_BITS
-	wire[15:0]			lookup_src_index_raw =
-		lookup_src_mac[47:32] ^ lookup_src_mac[31:16] ^ lookup_src_mac[15:0] ^ lookup_src_vlan;
-	wire[ROW_BITS-1:0]	lookup_src_index = lookup_src_index_raw[ROW_BITS-1:0];
+	function[ROW_BITS-1:0] CacheHash;
+		input[47:0] mac;
+		input[11:0] vlan;
 
-	wire[15:0]			lookup_dst_index_raw =
-		lookup_dst_mac[47:32] ^ lookup_dst_mac[31:16] ^ lookup_dst_mac[15:0] ^ lookup_src_vlan;	//src/dest vlan are same
+		logic[15:0] hash;
+		begin
+			hash = mac[47:32] ^ mac[31:16] ^ mac[15:0] ^ vlan;
+			CacheHash = hash[ROW_BITS-1:0];
+		end
 
-	wire[ROW_BITS-1:0]	lookup_dst_index = lookup_dst_index_raw[ROW_BITS-1:0];
+	endfunction
+
+	logic[ROW_BITS-1:0]	lookup_src_index;
+	logic[ROW_BITS-1:0]	lookup_dst_index;
+
+	always_comb begin
+		lookup_src_index	= CacheHash(lookup_src_mac, lookup_src_vlan);
+		lookup_dst_index	= CacheHash(lookup_dst_mac, lookup_src_vlan);	//src/dest vlan are same
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// "PRNG" for cache replacement
@@ -173,8 +185,8 @@ module MACAddressTable #(
 	logic[ROW_BITS-1:0]	lookup_src_index_ff		= 0;
 	logic[ROW_BITS-1:0]	lookup_src_index_ff2	= 0;
 
-	entry_t				lookup_src_ff;
-	entry_t				lookup_src_ff2;
+	entry_t				lookup_src_ff			= 0;
+	entry_t				lookup_src_ff2			= 0;
 	logic[47:0]			lookup_dst_mac_ff		= 0;
 	logic[47:0]			lookup_dst_mac_ff2		= 0;
 
@@ -197,14 +209,49 @@ module MACAddressTable #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Readout logic
 
-	logic	hit_comb	= 0;
+	logic					hit_comb;
+	logic					lookup_hit_comb;
+	logic[4:0]				lookup_dst_port_comb;
+	logic[ASSOC_BITS-1:0]	lookup_way_comb;
+
+	logic					need_to_refresh_comb;
+
+	always_comb begin
+		hit_comb				= 0;
+		lookup_hit_comb			= 0;
+		lookup_dst_port_comb	= 0;
+		need_to_refresh_comb	= 0;
+		lookup_way_comb			= 0;
+
+		//When a lookup completes, check if any set has a hit.
+		//We should never have >1 hit but if we do, use the highest numbered set.
+		if(lookup_en_ff2) begin
+			for(integer i=0; i<ASSOC_WAYS; i=i+1) begin
+
+				//Row valid plus vlan/mac match?
+				if( lookup_rdata[i].valid &&
+					(lookup_rdata[i].vlan == lookup_src_ff2.vlan) &&
+					(lookup_rdata[i].mac == lookup_dst_mac_ff2) ) begin
+
+					//It's a hit! Report the target
+					hit_comb				= 1;
+					lookup_hit_comb			= 1;
+					lookup_dst_port_comb	= lookup_rdata[i].port;
+					lookup_way_comb			= i;
+
+					//Need to write back the GC mark bit if not set
+					need_to_refresh_comb	= !lookup_rdata[i].gc_mark;
+				end
+
+			end
+
+		end
+	end
 
 	always_ff @(posedge clk) begin
 
-		lookup_hit		<= 0;
-		lookup_dst_port	<= 0;
-
-		hit_comb		= 0;
+		lookup_hit		<= lookup_hit_comb;
+		lookup_dst_port	<= lookup_dst_port_comb;
 
 		//Print status when a new packet arrives.
 		//Nothing else to do at this point, we have to wait 2 clocks for the RAM to give us data
@@ -218,55 +265,26 @@ module MACAddressTable #(
 			);
 		end
 
-		//When a lookup completes, check if any set has a hit.
-		//We should never have >1 hit but if we do, use the highest numbered set.
+		//Process completed lookups
 		if(lookup_en_ff2) begin
 
-			for(integer i=0; i<ASSOC_WAYS; i=i+1) begin
+			//If this address needs to have the GC mark bit set, do that
+			if(hit_comb) begin
+				$display("[%t] Hit - Destination %x:%x:%x:%x:%x:%x in vlan %d is on port %d",
+					$time(),
+					lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24],
+					lookup_dst_mac_ff2[23:16], lookup_dst_mac_ff2[15:8], lookup_dst_mac_ff2[7:0],
+					lookup_src_ff2.vlan,
+					lookup_dst_port_comb
+				);
 
-				//Row valid plus vlan/mac match?
-				if( lookup_rdata[i].valid &&
-					(lookup_rdata[i].vlan == lookup_src_ff2.vlan) &&
-					(lookup_rdata[i].mac == lookup_dst_mac_ff2) ) begin
-
-					//It's a hit! Report the target
-					hit_comb			= 1;
-					lookup_hit			<= 1;
-					lookup_dst_port		<= lookup_rdata[i].port;
-					$display("[%t] Hit - Destination %x:%x:%x:%x:%x:%x in vlan %d is on port %d",
-						$time(),
-						lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24],
-						lookup_dst_mac_ff2[23:16], lookup_dst_mac_ff2[15:8], lookup_dst_mac_ff2[7:0],
-						lookup_src_ff2.vlan,
-						lookup_rdata[i].port
-					);
-
-					//TODO: If this address needs to have the GC mark bit set, do that
-					if(!lookup_rdata[i].gc_mark) begin
-						$display("             Need to set GC mark");
-					end
-
+				if(need_to_refresh_comb) begin
+					$display("             Need to set GC mark");
 				end
-
-				/*
-				else begin
-					$display("             Lookup slot %d doesn't match: valid=%d, vlan=%d, mac=%x:%x:%x:%x:%x:%x",
-						i,
-						lookup_rdata[i].valid
-						lookup_rdata[i].vlan
-						lookup_rdata[i].mac[40 +: 8],
-						lookup_rdata[i].mac[32 +: 8],
-						lookup_rdata[i].mac[24 +: 8],
-						lookup_rdata[i].mac[16 +: 8],
-						lookup_rdata[i].mac[8 +: 8],
-						lookup_rdata[i].mac[0 +: 8]);
-				end
-				*/
-
 			end
 
 			//No hit in any cache set
-			if(!hit_comb) begin
+			else begin
 				$display("[%t] Miss - Destination %x:%x:%x:%x:%x:%x in vlan %d is not in table",
 					$time(),
 					lookup_dst_mac_ff2[47:40], lookup_dst_mac_ff2[39:32], lookup_dst_mac_ff2[31:24],
@@ -280,22 +298,50 @@ module MACAddressTable #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Table refreshing
+
+	logic					refresh_wr_en	= 0;
+	entry_t					refresh_wr_data	= 0;
+	logic[ROW_BITS-1:0]		refresh_wr_addr	= 0;
+	logic[ASSOC_BITS-1:0]	refresh_wr_way	= 0;
+
+	logic					refresh_wr_ack	= 0;
+
+	always_ff @(posedge clk) begin
+
+		refresh_wr_en	<= 0;
+
+		if(need_to_refresh_comb) begin
+			refresh_wr_en			<= 1;
+			refresh_wr_data			<= lookup_rdata[lookup_way_comb];
+			refresh_wr_data.gc_mark	<= 1;
+			refresh_wr_addr			<= CacheHash(lookup_rdata[lookup_way_comb].mac, lookup_rdata[lookup_way_comb].vlan);
+			refresh_wr_way			<= lookup_way_comb;
+		end
+
+		if(refresh_wr_ack)
+			refresh_wr_en	<= 0;
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Arbitration for address learning and management traffic
 
 	/*
 		Prioritization (highest to lowest precedence):
 			1) Looking up addresses to be learned
 			2) Writing learned addresses to the table
-			3) Garbage collection
-			4) Interactive UI
+			3) Refreshing the GC mark on existing table entries
+			4) Garbage collection
+			5) Interactive UI
 	 */
 
-	logic				pend_wr_en		= 0;
-	entry_t				pend_wr_data;
-	logic[ROW_BITS-1:0]	pend_wr_addr	= 0;
-	logic				pend_wr_done	= 0;
+	logic					pend_wr_en		= 0;
+	entry_t					pend_wr_data;
+	logic[ROW_BITS-1:0]		pend_wr_addr	= 0;
+	logic					pend_wr_ack		= 0;
 
-	logic				pend_wr_done_fwd	= 0;
+	logic					pend_wr_ack_fwd	= 0;
 
 	//New data being added to the pending queue
 	logic					need_to_learn	= 0;
@@ -304,34 +350,80 @@ module MACAddressTable #(
 	logic[4:0]				pend_port		= 0;
 	logic[ASSOC_BITS-1:0]	pend_col		= 0;
 
+	//Memory requests from the garbage collector
+	logic[ROW_BITS-1:0]		gc_row			= 0;
+	logic[ASSOC_BITS-1:0]	gc_way			= 0;
+	logic					gc_rd_en		= 0;
+	logic					gc_rd_ack		= 0;
+	logic					gc_rd_ack_fwd;
+	entry_t					gc_wdata = 0;
+	logic					gc_wr_en		= 0;
+	logic					gc_wr_ack		= 0;
+	logic					gc_wr_ack_fwd;
+
+	//Memory requests from the refreshing logic
+	logic					refresh_wr_ack_fwd;
+
 	always_comb begin
 
 		//Default to not doing anything
-		learn_en			<= 0;
-		learn_wr			<= 0;
-		learn_addr			<= 0;
-		pend_wr_done_fwd	<= 0;
+		learn_en			= 0;
+		learn_wr			= 0;
+		learn_addr			= 0;
+		learn_wdata			= 0;
+
+		pend_wr_ack_fwd		= 0;
+		gc_rd_ack_fwd		= 0;
+		gc_wr_ack_fwd		= 0;
+		refresh_wr_ack_fwd	= 0;
 
 		//If an incoming packet is arriving, look up the source
 		if(lookup_en) begin
-			learn_en		<= 1;
-			learn_wr		<= 0;
-			learn_addr		<= lookup_src_index;
+			learn_en			= 1;
+			learn_addr			= lookup_src_index;
 		end
 
 		//Write pending data to the table
-		else if(pend_wr_en && !pend_wr_done) begin
-			learn_en			<= 1;
-			learn_wr[pend_col]	<= 1;
-			learn_addr			<= pend_wr_addr;
-			learn_wdata			<= pend_wr_data;
-			pend_wr_done_fwd	<= 1;
+		else if(pend_wr_en && !pend_wr_ack) begin
+			learn_en			= 1;
+			learn_wr[pend_col]	= 1;
+			learn_addr			= pend_wr_addr;
+			learn_wdata			= pend_wr_data;
+			pend_wr_ack_fwd	= 1;
+		end
+
+		//Write refresh data to the table
+		else if(refresh_wr_en) begin
+			learn_en					= 1;
+			learn_addr					= refresh_wr_addr;
+			learn_wr[refresh_wr_way]	= 1;
+			learn_wdata					= refresh_wr_data;
+			refresh_wr_ack_fwd			= 1;
+		end
+
+		//Garbage collector reads
+		else if(gc_rd_en && !gc_rd_ack) begin
+			learn_en		= 1;
+			learn_addr		= gc_row;
+			gc_rd_ack_fwd	= 1;
+		end
+
+		//Garbage collector writes
+		else if(gc_wr_en && !gc_wr_ack) begin
+			learn_en			= 1;
+			learn_addr			= gc_row;
+			learn_wr[gc_way]	= 1;
+			learn_wdata			= gc_wdata;
+			gc_wr_ack_fwd		= 1;
 		end
 
 	end
 
 	always_ff @(posedge clk) begin
-		pend_wr_done			<= pend_wr_done_fwd;
+		pend_wr_ack		<= pend_wr_ack_fwd;
+		gc_rd_ack		<= gc_rd_ack_fwd;
+		gc_wr_ack		<= gc_wr_ack_fwd;
+		refresh_wr_ack	<= refresh_wr_ack_fwd;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,7 +579,7 @@ module MACAddressTable #(
 
 	//Clear slots out combinatorially
 	always_comb begin
-		pend_clear	<= pend_wr_done;
+		pend_clear	<= pend_wr_ack;
 	end
 
 	always_ff @(posedge clk) begin
@@ -496,11 +588,11 @@ module MACAddressTable #(
 
 		found_slot		= 0;
 
-		if(pend_wr_done)
+		if(pend_wr_ack)
 			pend_wr_en	<= 0;
 
 		//If we don't have another write in progress, go look for a free table slot and write it
-		if(!pend_wr_en || pend_wr_done) begin
+		if(!pend_wr_en || pend_wr_ack) begin
 
 			for(integer i=0; i<PENDING_SIZE; i++) begin
 
@@ -512,16 +604,15 @@ module MACAddressTable #(
 				else if(pending[i].valid && !found_slot) begin
 					found_slot		= 1;
 
-					pend_clear_slot	<= i;
+					pend_clear_slot			<= i;
 
-					pend_wr_en		<= 1;
+					pend_wr_en				<= 1;
 					pend_wr_data.gc_mark	<= 1;
 					pend_wr_data.valid		<= 1;
 					pend_wr_data.vlan		<= pending[i].vlan;
 					pend_wr_data.port		<= pending[i].port;
 					pend_wr_data.mac		<= pending[i].mac;
-					pend_wr_addr	<=
-						pending[i].mac[47:32] ^ pending[i].mac[31:16] ^ pending[i].mac[15:0] ^ pending[i].vlan;
+					pend_wr_addr			<= CacheHash(pending[i].mac, pending[i].vlan);
 
 					$display("[%t] Learning address %x:%x:%x:%x:%x:%x in vlan %d (from port %d) at column %d",
 						$time(),
@@ -535,6 +626,135 @@ module MACAddressTable #(
 			end
 
 		end
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Garbage collection. Simple and unoptimized, but doesn't have to be fast!
+
+	enum logic[2:0]
+	{
+		GC_STATE_IDLE 		= 0,
+		GC_STATE_READ_WAIT	= 1,
+		GC_STATE_READ_VALID	= 2,
+		GC_STATE_WRITE_WAIT	= 3,
+		GC_STATE_NEXT		= 4
+	} gc_state = GC_STATE_IDLE;
+
+	wire entry_t gc_rdata = learn_rdata[gc_way];
+
+	always_ff @(posedge clk) begin
+
+		gc_done		<= 0;
+
+		case(gc_state)
+
+			GC_STATE_IDLE: begin
+
+				if(gc_en) begin
+					$display("[%t] Starting garbage collector", $time());
+					gc_state	<= GC_STATE_READ_WAIT;
+					gc_row		<= 0;
+					gc_way		<= 0;
+					gc_rd_en	<= 1;
+				end
+
+			end	//end GC_STATE_IDLE
+
+			//Wait for ACK to come back, then pipeline delay
+			GC_STATE_READ_WAIT: begin
+				if(gc_rd_ack) begin
+					gc_rd_en	<= 0;
+					gc_state	<= GC_STATE_READ_VALID;
+				end
+			end	//end GC_STATE_READ_WAIT
+
+			GC_STATE_READ_VALID: begin
+
+				//If entry is not valid, no action required. Continue on to the next entry of the table.
+				if(!gc_rdata.valid)
+					gc_state		<= GC_STATE_NEXT;
+
+				//Entry is valid. If it has the GC mark bit set, clear it but don't change anything else.
+				else if(gc_rdata.gc_mark) begin
+					gc_wdata			<= gc_rdata;
+					gc_wdata.gc_mark	<= 0;
+					gc_wr_en			<= 1;
+					gc_state			<= GC_STATE_WRITE_WAIT;
+
+					$display("[%t] GC: Clearing mark bit on %x:%x:%x:%x:%x:%x in vlan %d (from port %d) in way %d",
+						$time(),
+						gc_rdata.mac[47:40], gc_rdata.mac[39:32], gc_rdata.mac[31:24],
+						gc_rdata.mac[23:16], gc_rdata.mac[15:8], gc_rdata.mac[7:0],
+						gc_rdata.vlan,
+						gc_rdata.port,
+						gc_way
+					);
+				end
+
+				//If GC mark bit is not set, wipe the entry since it hasn't been used in a while.
+				else begin
+					gc_wdata			<= 0;
+					gc_wr_en			<= 1;
+
+					$display("[%t] GC: Garbage collecting address %x:%x:%x:%x:%x:%x in vlan %d (from port %d) in way %d",
+						$time(),
+						gc_rdata.mac[47:40], gc_rdata.mac[39:32], gc_rdata.mac[31:24],
+						gc_rdata.mac[23:16], gc_rdata.mac[15:8], gc_rdata.mac[7:0],
+						gc_rdata.vlan,
+						gc_rdata.port,
+						gc_way
+					);
+
+					gc_state			<= GC_STATE_WRITE_WAIT;
+				end
+
+			end	//end GC_STATE_READ_VALID
+
+			//Wait for write to complete, then move on
+			GC_STATE_WRITE_WAIT: begin
+				if(gc_wr_ack) begin
+					gc_wr_en		<= 0;
+					gc_state		<= GC_STATE_NEXT;
+				end
+			end	//end GC_STATE_WRITE_WAIT
+
+			//Go on to next state
+			GC_STATE_NEXT: begin
+
+				//Not necessary, just makes sim traces cleaner. OK to remove for timing reasons if needed.
+				gc_wdata			<= 0;
+
+				//End of the current way?
+				if(gc_row == TABLE_ROWS - 1) begin
+
+					//Last way? We're done
+					if(gc_way == ASSOC_WAYS-1) begin
+						gc_done		<= 1;
+						$display("[%t] Garbage collection complete", $time());
+						gc_state	<= GC_STATE_IDLE;
+					end
+
+					//Nope, go to next way
+					else begin
+						gc_way		<= gc_way + 1;
+						gc_row		<= gc_row + 1;
+						gc_rd_en	<= 1;
+						gc_state	<= GC_STATE_READ_WAIT;
+					end
+
+				end
+
+				//Nope, read the next row
+				else begin
+					gc_row		<= gc_row + 1;
+					gc_rd_en	<= 1;
+					gc_state	<= GC_STATE_READ_WAIT;
+				end
+
+			end	//end GC_STATE_NEXT
+
+		endcase
 
 	end
 
