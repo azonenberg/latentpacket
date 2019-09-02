@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="MACAddressTable_sim_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="MACAddressTable_sim" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="999993575fs"></ZoomStartTime>
+      <ZoomEndTime time="1000003836fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="177"></NameColumnWidth>
+      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="13" />
+   <wvobject type="logic" fp_name="/MACAddressTable_sim/ready">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/MACAddressTable_sim/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/MACAddressTable_sim/lookup_en">
+      <obj_property name="ElementShortName">lookup_en</obj_property>
+      <obj_property name="ObjectShortName">lookup_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/lookup_src_vlan">
+      <obj_property name="ElementShortName">lookup_src_vlan[11:0]</obj_property>
+      <obj_property name="ObjectShortName">lookup_src_vlan[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/lookup_src_mac">
+      <obj_property name="ElementShortName">lookup_src_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">lookup_src_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/lookup_src_port">
+      <obj_property name="ElementShortName">lookup_src_port[4:0]</obj_property>
+      <obj_property name="ObjectShortName">lookup_src_port[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/lookup_dst_mac">
+      <obj_property name="ElementShortName">lookup_dst_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">lookup_dst_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/MACAddressTable_sim/lookup_hit">
+      <obj_property name="ElementShortName">lookup_hit</obj_property>
+      <obj_property name="ObjectShortName">lookup_hit</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/lookup_dst_port">
+      <obj_property name="ElementShortName">lookup_dst_port[4:0]</obj_property>
+      <obj_property name="ObjectShortName">lookup_dst_port[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/MACAddressTable_sim/gc_en">
+      <obj_property name="ElementShortName">gc_en</obj_property>
+      <obj_property name="ObjectShortName">gc_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/MACAddressTable_sim/gc_done">
+      <obj_property name="ElementShortName">gc_done</obj_property>
+      <obj_property name="ObjectShortName">gc_done</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/state">
+      <obj_property name="ElementShortName">state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">state[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/count">
+      <obj_property name="ElementShortName">count[3:0]</obj_property>
+      <obj_property name="ObjectShortName">count[3:0]</obj_property>
+   </wvobject>
+</wave_config>
