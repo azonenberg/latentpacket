@@ -359,6 +359,7 @@ module MACAddressTable #(
 	entry_t					pend_wr_data	= 0;
 	logic[ROW_BITS-1:0]		pend_wr_addr	= 0;
 	logic					pend_wr_ack		= 0;
+	logic[ASSOC_BITS-1:0]	pend_wr_way		= 0;
 
 	logic					pend_wr_ack_fwd	= 0;
 
@@ -379,6 +380,7 @@ module MACAddressTable #(
 	logic					gc_wr_en		= 0;
 	logic					gc_wr_ack		= 0;
 	logic					gc_wr_ack_fwd;
+	logic					mgmt_ack_fwd;
 
 	//Memory requests from the refreshing logic
 	logic					refresh_wr_ack_fwd;
@@ -395,6 +397,7 @@ module MACAddressTable #(
 		gc_rd_ack_fwd		= 0;
 		gc_wr_ack_fwd		= 0;
 		refresh_wr_ack_fwd	= 0;
+		mgmt_ack_fwd		= 0;
 
 		//If an incoming packet is arriving, look up the source
 		if(lookup_en) begin
@@ -404,11 +407,11 @@ module MACAddressTable #(
 
 		//Write pending data to the table
 		else if(pend_wr_en && !pend_wr_ack) begin
-			learn_en			= 1;
-			learn_wr[pend_way]	= 1;
-			learn_addr			= pend_wr_addr;
-			learn_wdata			= pend_wr_data;
-			pend_wr_ack_fwd		= 1;
+			learn_en				= 1;
+			learn_wr[pend_wr_way]	= 1;
+			learn_addr				= pend_wr_addr;
+			learn_wdata				= pend_wr_data;
+			pend_wr_ack_fwd			= 1;
 		end
 
 		//Write refresh data to the table
@@ -436,6 +439,13 @@ module MACAddressTable #(
 			gc_wr_ack_fwd		= 1;
 		end
 
+		//Management engine reads
+		else if(mgmt_rd_en && !mgmt_ack_fwd) begin
+			learn_en			= 1;
+			learn_addr			= mgmt_addr;
+			mgmt_ack_fwd		= 1;
+		end
+
 	end
 
 	always_ff @(posedge clk) begin
@@ -443,6 +453,14 @@ module MACAddressTable #(
 		gc_rd_ack		<= gc_rd_ack_fwd;
 		gc_wr_ack		<= gc_wr_ack_fwd;
 		refresh_wr_ack	<= refresh_wr_ack_fwd;
+		mgmt_ack		<= mgmt_ack_fwd;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Handle output for the management engine
+
+	always_ff @(posedge clk) begin
+		mgmt_rd_valid	<= 0;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -634,6 +652,7 @@ module MACAddressTable #(
 					pend_wr_data.port		<= pending[i].port;
 					pend_wr_data.mac		<= pending[i].mac;
 					pend_wr_addr			<= CacheHash(pending[i].mac, pending[i].vlan);
+					pend_wr_way				<= pending_way[i];
 
 					$display("[%t] Learning address %x:%x:%x:%x:%x:%x in vlan %d (from port %d) to way %d",
 						$realtime(),

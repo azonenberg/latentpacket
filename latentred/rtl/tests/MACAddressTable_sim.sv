@@ -204,7 +204,7 @@ module MACAddressTable_sim();
 
 			//Delete the other entry for :0c manually
 			8: begin
-				if(mgmt_ack) begin
+				if(mgmt_rd_valid) begin
 					mgmt_del_en		<= 1;
 					mgmt_addr		<= 11'h06e;
 					mgmt_way		<= 0;
