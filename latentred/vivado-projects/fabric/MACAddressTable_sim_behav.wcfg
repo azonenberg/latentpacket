@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="65516667fs"></ZoomStartTime>
-      <ZoomEndTime time="498016668fs"></ZoomEndTime>
-      <Cursor1Time time="137600000fs"></Cursor1Time>
+      <ZoomStartTime time="848666666fs"></ZoomStartTime>
+      <ZoomEndTime time="1030266667fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="259"></NameColumnWidth>
-      <ValueColumnWidth column_width="144"></ValueColumnWidth>
+      <NameColumnWidth column_width="221"></NameColumnWidth>
+      <ValueColumnWidth column_width="140"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="15" />
    <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/clk">
@@ -44,40 +44,9 @@
       <obj_property name="ElementShortName">found_slot</obj_property>
       <obj_property name="ObjectShortName">found_slot</obj_property>
    </wvobject>
-   <wvobject type="group" fp_name="group500">
-      <obj_property name="label">Memory writes</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/need_to_learn">
-         <obj_property name="ElementShortName">need_to_learn</obj_property>
-         <obj_property name="ObjectShortName">need_to_learn</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_rdata">
-         <obj_property name="ElementShortName">learn_rdata[7:0]</obj_property>
-         <obj_property name="ObjectShortName">learn_rdata[7:0]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/learn_en">
-         <obj_property name="ElementShortName">learn_en</obj_property>
-         <obj_property name="ObjectShortName">learn_en</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_wr">
-         <obj_property name="ElementShortName">learn_wr[7:0]</obj_property>
-         <obj_property name="ObjectShortName">learn_wr[7:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_addr">
-         <obj_property name="ElementShortName">learn_addr[10:0]</obj_property>
-         <obj_property name="ObjectShortName">learn_addr[10:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_wdata">
-         <obj_property name="ElementShortName">learn_wdata</obj_property>
-         <obj_property name="ObjectShortName">learn_wdata</obj_property>
-      </wvobject>
-   </wvobject>
    <wvobject type="group" fp_name="group136">
       <obj_property name="label">Lookups</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/lookup_en">
          <obj_property name="ElementShortName">lookup_en</obj_property>
          <obj_property name="ObjectShortName">lookup_en</obj_property>
@@ -170,7 +139,6 @@
    <wvobject type="group" fp_name="group138">
       <obj_property name="label">Pending writes</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/cache_set_fwd">
          <obj_property name="ElementShortName">cache_set_fwd[2:0]</obj_property>
          <obj_property name="ObjectShortName">cache_set_fwd[2:0]</obj_property>
@@ -313,11 +281,91 @@
          <obj_property name="ObjectShortName">refresh_wr_ack_fwd</obj_property>
       </wvobject>
    </wvobject>
+   <wvobject type="group" fp_name="group500">
+      <obj_property name="label">Memory writes</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/need_to_learn">
+         <obj_property name="ElementShortName">need_to_learn</obj_property>
+         <obj_property name="ObjectShortName">need_to_learn</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/learn_en">
+         <obj_property name="ElementShortName">learn_en</obj_property>
+         <obj_property name="ObjectShortName">learn_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_wr">
+         <obj_property name="ElementShortName">learn_wr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">learn_wr[7:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_addr">
+         <obj_property name="ElementShortName">learn_addr[10:0]</obj_property>
+         <obj_property name="ObjectShortName">learn_addr[10:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_wdata">
+         <obj_property name="ElementShortName">learn_wdata</obj_property>
+         <obj_property name="ObjectShortName">learn_wdata</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/learn_rdata">
+      <obj_property name="ElementShortName">learn_rdata[7:0]</obj_property>
+      <obj_property name="ObjectShortName">learn_rdata[7:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
    <wvobject type="group" fp_name="group499">
       <obj_property name="label">Management</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-   </wvobject>
-   <wvobject fp_name="divider207" type="divider">
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_en">
+         <obj_property name="ElementShortName">mgmt_rd_en</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_en</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_ack_fwd">
+         <obj_property name="ElementShortName">mgmt_ack_fwd</obj_property>
+         <obj_property name="ObjectShortName">mgmt_ack_fwd</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_del_en">
+         <obj_property name="ElementShortName">mgmt_del_en</obj_property>
+         <obj_property name="ObjectShortName">mgmt_del_en</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_ack">
+         <obj_property name="ElementShortName">mgmt_ack</obj_property>
+         <obj_property name="ObjectShortName">mgmt_ack</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/mgmt_addr">
+         <obj_property name="ElementShortName">mgmt_addr[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mgmt_addr[10:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/mgmt_way">
+         <obj_property name="ElementShortName">mgmt_way[2:0]</obj_property>
+         <obj_property name="ObjectShortName">mgmt_way[2:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_valid">
+         <obj_property name="ElementShortName">mgmt_rd_valid</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_valid</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_gc_mark">
+         <obj_property name="ElementShortName">mgmt_rd_gc_mark</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_gc_mark</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_mac">
+         <obj_property name="ElementShortName">mgmt_rd_mac[47:0]</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_mac[47:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_vlan">
+         <obj_property name="ElementShortName">mgmt_rd_vlan[11:0]</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_vlan[11:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_port">
+         <obj_property name="ElementShortName">mgmt_rd_port[4:0]</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_port[4:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_ack">
+         <obj_property name="ElementShortName">mgmt_rd_ack</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_ack</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/MACAddressTable_sim/mactbl/mgmt_rd_ack_ff">
+         <obj_property name="ElementShortName">mgmt_rd_ack_ff</obj_property>
+         <obj_property name="ObjectShortName">mgmt_rd_ack_ff</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

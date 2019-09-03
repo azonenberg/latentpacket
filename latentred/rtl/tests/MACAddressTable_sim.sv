@@ -196,35 +196,40 @@ module MACAddressTable_sim();
 			//Read one of the entries for :0c via the management interface. This won't set the mark bit,
 			//so it will still get GC'd.
 			7: begin
-				mgmt_rd_en		<= 1;
-				mgmt_way		<= 0;
-				mgmt_addr		<= 11'h068;
-				state			<= 8;
+				if(lookup_hit) begin
+					mgmt_rd_en		<= 1;
+					mgmt_way		<= 2;
+					mgmt_addr		<= 11'h069;
+					state			<= 8;
+				end
 			end
 
 			//Delete the other entry for :0c manually
 			8: begin
-				if(mgmt_rd_valid) begin
+				if(mgmt_ack) begin
 					mgmt_del_en		<= 1;
 					mgmt_addr		<= 11'h06e;
 					mgmt_way		<= 0;
+					state			<= 9;
 				end
 			end
 
-			/*
-			//Re-run the garbage collector. This should remove :0c because nothing has been sent to it in a while.
-			8: begin
-				gc_en			<= 1;
-				state			<= 9;
+			//Re-run the garbage collector. This should remove one :0c entry
+			//because nothing has been sent to it in a while. The other :0c entry should be gone already.
+			//The :0a entry should be unaffected.
+			9: begin
+				if(mgmt_ack) begin
+					gc_en			<= 1;
+					state			<= 10;
+				end
 			end
 
 			//Wait for GC to complete
 			//TODO: do some reads during the GC
-			9: begin
+			10: begin
 				if(gc_done)
-					state		<= 10;
+					state		<= 11;
 			end
-			*/
 
 		endcase
 	end

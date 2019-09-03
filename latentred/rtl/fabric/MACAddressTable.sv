@@ -38,8 +38,6 @@
 
 		Fully pipelined MAC table with VLAN support, address learning, and garbage collection.
 
-		TODO: management interface to query table status
-
 	THEORY OF OPERATION
 
 		A single Ethernet frame can be a minimum size of 8 bytes preamble/SFD, 64 bytes frame, plus 12 of IFG which
@@ -69,7 +67,6 @@
 		address is forwarded. When a GC is requested by the host system, all un-marked addresses are erased and all
 		marked addresses are un-marked.
 
-		TODO: allow management interface to write table entries
 		TODO: allow management interface to "pin" table entries so they can't be GC'd
  */
 module MACAddressTable #(
@@ -446,6 +443,15 @@ module MACAddressTable #(
 			mgmt_ack_fwd		= 1;
 		end
 
+		//Management engine writes
+		else if(mgmt_del_en) begin
+			learn_en			= 1;
+			learn_addr			= mgmt_addr;
+			learn_wr[mgmt_way]	= 1;
+			learn_wdata			= 0;
+			mgmt_ack_fwd		= 1;
+		end
+
 	end
 
 	always_ff @(posedge clk) begin
@@ -453,14 +459,33 @@ module MACAddressTable #(
 		gc_rd_ack		<= gc_rd_ack_fwd;
 		gc_wr_ack		<= gc_wr_ack_fwd;
 		refresh_wr_ack	<= refresh_wr_ack_fwd;
-		mgmt_ack		<= mgmt_ack_fwd;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Handle output for the management engine
 
+	logic	mgmt_rd_ack		= 0;
+	logic	mgmt_rd_ack_ff	= 0;
+
 	always_ff @(posedge clk) begin
-		mgmt_rd_valid	<= 0;
+		mgmt_rd_ack		<= mgmt_ack_fwd && mgmt_rd_en;
+		mgmt_rd_ack_ff	<= mgmt_rd_ack;
+
+		mgmt_ack		<= 0;
+
+		//Readback
+		if(mgmt_rd_ack_ff) begin
+			mgmt_ack		<= 1;
+			mgmt_rd_valid	<= learn_rdata[mgmt_way].valid;
+			mgmt_rd_gc_mark	<= learn_rdata[mgmt_way].gc_mark;
+			mgmt_rd_mac		<= learn_rdata[mgmt_way].mac;
+			mgmt_rd_port	<= learn_rdata[mgmt_way].port;
+			mgmt_rd_vlan	<= learn_rdata[mgmt_way].vlan;
+		end
+
+		//ack writes immediately
+		if(mgmt_ack_fwd && mgmt_del_en)
+			mgmt_ack	<= 1;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
