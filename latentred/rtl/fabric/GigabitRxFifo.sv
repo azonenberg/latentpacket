@@ -44,13 +44,18 @@ module GigabitRxFifo #(
 	//Incoming frame bus
 	input wire					mac_clk,			//Incoming frame clock
 	input wire EthernetRxL2Bus	mac_rx_bus,			//Incoming frame data
-	input wire					mac_port_vlan_en,	//True if the port is configured in "port vlan" mode
-	input wire[11:0]			mac_port_vlan_id,	//VLAN ID for port based VLANs
 
-	//Performance counters
-	output logic				mac_drop	= 0,	//Goes high for one cycle if an incoming frame is lost
-													//due to insufficient buffer space
-	output logic				mac_queued	= 0,	//Goes high for one cycle when an incoming frame is accepted
+	//VLAN configuration (mac_clk domain)
+	input wire					has_port_vlan,			//True if the port is configured in "port vlan" mode
+	input wire[11:0]			port_vlan_id,			//VLAN ID for port based VLANs
+	input wire					native_vlan_allowed,	//True if we can mix port VLAN and tagged traffic
+														//(requires has_port_vlan be set too)
+
+	//Performance counters (mac_clk domain). Go high for one cycle to indicate an event has happened.
+	output logic				mac_drop		= 0,	//Frame was lost due to insufficient buffer space
+	output logic				mac_queued		= 0,	//Frame was accepted
+	output logic				mac_drop_vlan	= 0,	//Frame was lost due to having/not having a vlan tag when port
+														//was configured in the opposite mode
 
 	//Outbound bus to fabric
 	input wire					fabric_clk,						//Main switch clock
@@ -87,14 +92,16 @@ module GigabitRxFifo #(
 	typedef struct packed
 	{
 		logic[10:0]		len;
+		ethertype_t		ethertype;
 		logic[47:0]		src_mac;
 		logic[47:0]		dst_mac;
+		logic[11:0]		vlan;
 	} header_t;
 
 	header_t			push_header	= 0;
 
 	always_ff @(posedge mac_clk) begin
-		/*
+
 		push_en			<= 0;
 		push_commit		<= 0;
 		push_commit_adv	<= 0;
@@ -106,6 +113,44 @@ module GigabitRxFifo #(
 			push_valid	<= 0;
 			push_header	<= 0;
 			dropping	<= 0;
+		end
+
+		//Save headers when they come in
+		if(mac_rx_bus.headers_valid) begin
+			push_header.ethertype	<= mac_rx_bus.ethertype;
+			push_header.src_mac		<= mac_rx_bus.src_mac;
+			push_header.dst_mac		<= mac_rx_bus.dst_mac;
+
+			//If we have a VLAN tag, use that VLAN.
+			//BUT if we also have a port based vlan configured, we shouldn't see tagged traffic at all
+			//Drop the frame to prevent vlan hopping, unless we're in native-vlan mode
+			if(push_header.has_vlan_tag) begin
+
+				if(has_port_vlan && !native_vlan_allowed) begin
+					push_rollback	<= 1;
+					dropping		<= 1;
+				end
+
+				else
+					push_header.vlan	<= vlan;
+
+			else
+
+			//No VLAN tag on the frame
+			else begin
+
+				//Use the port VLAN ID instead.
+				if(has_port_vlan)
+					push_header.vlan	<= port_vlan_id;
+
+				//If there's no port VLAN we're in trunk-only mode, drop untagged traffic.
+				else begin
+					push_rollback	<= 1;
+					dropping		<= 1;
+				end
+
+			end
+
 		end
 
 		//Handle incoming frame data
@@ -125,7 +170,7 @@ module GigabitRxFifo #(
 				push_valid	<= 1;
 
 		end
-
+		/*
 		//Bail when a frame is dropped by the MAC
 		if(mac_rx_bus.drop) begin
 			push_data		<= 0;
