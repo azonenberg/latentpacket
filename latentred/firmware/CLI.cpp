@@ -674,11 +674,11 @@ void CLI::OnShowInterfaceStatus()
 			switch(port->GetPortType())
 			{
 				case Port::TYPE_COPPER_RGMII:
-					m_uart->Printf("%-25s", "10/100/1000BaseTX (RGMII)");
+					m_uart->Printf("%-25s", "10/100/1000BaseT (RGMII)");
 					break;
 
 				case Port::TYPE_COPPER_SGMII:
-					m_uart->Printf("%-25s", "10/100/1000BaseTX (SGMII)");
+					m_uart->Printf("%-25s", "10/100/1000BaseT (SGMII)");
 					break;
 
 				//TODO: for optics, query the EEPROM and print the actual PHY standard
