@@ -32,18 +32,24 @@
 `include "EthernetBus.svh"
 
 /**
-	@brief RX FIFO for 1000base-T ports
+	@brief RX FIFO for traffic heading into the switch fabric
 
 	Needs to be multiple of 2x 18Kb BRAMs since 64+ bits wide
  */
-module GigabitRxFifo #(
+module RxFifo #(
+	
+	//Default config here is for a 1000baseT port, probably want larger for 10G
 	parameter FIFO_LINES		= 2048,				//need 375 lines for a 1500 byte frame
 													//2K lines = 5.46 max sized frames or 32 min sized frames
 	parameter META_FIFO_LINES	= 32				//enough to hold metadata for FIFO_LINES worth of min sized frames
+	
 ) (
 	//Incoming frame bus
 	input wire					mac_clk,			//Incoming frame clock
 	input wire EthernetRxL2Bus	mac_rx_bus,			//Incoming frame data
+	
+	//Link state (when link goes down, all traffic in the buffer is wiped)
+	input wire					link_state,
 
 	//VLAN configuration (mac_clk domain)
 	input wire					has_port_vlan,			//True if the port is configured in "port vlan" mode
@@ -52,10 +58,12 @@ module GigabitRxFifo #(
 														//(requires has_port_vlan be set too)
 
 	//Performance counters (mac_clk domain). Go high for one cycle to indicate an event has happened.
-	output logic				mac_drop		= 0,	//Frame was lost due to insufficient buffer space
 	output logic				mac_queued		= 0,	//Frame was accepted
+	output logic				mac_drop_fifo	= 0,	//Frame was lost due to insufficient buffer space
 	output logic				mac_drop_vlan	= 0,	//Frame was lost due to having/not having a vlan tag when port
 														//was configured in the opposite mode
+	output logic				mac_drop_runt	= 0,	//Frame was dropped because too small
+	output logic				mac_drop_jumbo	= 0,	//Frame was dropped because too large
 
 	//Outbound bus to fabric
 	input wire					fabric_clk,						//Main switch clock
@@ -70,6 +78,8 @@ module GigabitRxFifo #(
 	output logic[63:0]			fabric_fwd_data			= 0,	//The actual data being forwarded through the fabric
 	input wire					fabric_pop						//Bring high for one cycle to pop this frame
 );
+
+	//TODO: delete all in-flight traffic when the link drops
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Input data processing / width shifting
@@ -88,7 +98,7 @@ module GigabitRxFifo #(
 
 	logic				dropping		= 0;
 
-	//TODO: header info
+	//Headers parallel with port data
 	typedef struct packed
 	{
 		logic[10:0]		len;
@@ -106,6 +116,12 @@ module GigabitRxFifo #(
 		push_commit		<= 0;
 		push_commit_adv	<= 0;
 		push_rollback	<= 0;
+		
+		mac_queued		<= 0;
+		mac_drop_fifo	<= 0;
+		mac_drop_vlan	<= 0;
+		mac_drop_runt	<= 0;
+		mac_drop_jumbo	<= 0;
 
 		//Reset when a new frame starts
 		if(mac_rx_bus.start) begin
@@ -129,6 +145,7 @@ module GigabitRxFifo #(
 				if(has_port_vlan && !native_vlan_allowed) begin
 					push_rollback	<= 1;
 					dropping		<= 1;
+					mac_drop_vlan	<= 1;
 				end
 
 				else
@@ -147,6 +164,7 @@ module GigabitRxFifo #(
 				else begin
 					push_rollback	<= 1;
 					dropping		<= 1;
+					mac_drop_vlan	<= 1;
 				end
 
 			end
@@ -170,7 +188,7 @@ module GigabitRxFifo #(
 				push_valid	<= 1;
 
 		end
-		/*
+		
 		//Bail when a frame is dropped by the MAC
 		if(mac_rx_bus.drop) begin
 			push_data		<= 0;
@@ -180,15 +198,27 @@ module GigabitRxFifo #(
 			dropping		<= 0;
 		end
 
-		//Push any remaining half-finished data when the frame ends
+		//Frame ended
 		if(mac_rx_bus.commit) begin
 			dropping		<= 0;
 
-			if(push_valid) begin
+			//If the frame is too small, drop it
+			if( (push_header.len < 60) ||
+				(push_header.len == 60 && mac_rx_bus.data_valid && mac_rx_bus.bytes_valid != 4) ) begin
+				dropping			<= 1;
+				push_rollback		<= 1;
+				push_en				<= 0;
+				mac_drop_runt		<= 1;
+			end
+
+			//Push any remaining half-finished data
+			else if(push_valid) begin
 				push_en			<= 1;
 				push_valid		<= 0;
 				push_commit_adv	<= 1;
 			end
+			
+			//Nope, all good
 			else
 				push_commit		<= 1;
 		end
@@ -196,14 +226,26 @@ module GigabitRxFifo #(
 		//Handle delayed commit after pushing partial packet
 		if(push_commit_adv)
 			push_commit			<= 1;
+			
+		if(push_commit)
+			mac_queued			<= 1;
 
 		//Handle fifo running out of space midway through a packet
 		if( (wr_size <= 2) && !mac_rx_bus.commit && !push_commit_adv) begin
 			dropping			<= 1;
 			push_rollback		<= 1;
 			push_en				<= 0;
+			mac_drop_fifo		<= 1;
 		end
-		*/
+		
+		//Handle excessively large packets
+		if(push_header.len > 1500) begin
+			dropping			<= 1;
+			push_rollback		<= 1;
+			push_en				<= 0;
+			mac_drop_jumbo		<= 1;
+		end
+
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +254,7 @@ module GigabitRxFifo #(
 	CrossClockPacketFifo #(
 		.WIDTH(64),
 		.DEPTH(FIFO_LINES)
-	) fifo (
+	) data_fifo (
 		.wr_clk(mac_clk),
 		.wr_en(push_en),
 		.wr_data(push_data),
@@ -221,10 +263,41 @@ module GigabitRxFifo #(
 		.wr_commit(push_commit),
 		.wr_rollback(push_rollback)
 
-		//TODO: Read ports
+		.rd_clk(fabric_clk),
+		.rd_en(),
+		.rd_offset(),
+		.rd_pop_single(),
+		.rd_pop_packet(),
+		.rd_packet_size(),
+		.rd_data(),
+		.rd_size(),
+		.rd_reset(1'b0)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Parallel header FIFO for packet metadata
+	
+	CrossClockFifo #(
+		.WIDTH($bits(header_t)),
+		.DEPTH(META_FIFO_LINES),
+		.USE_BLOCK(0),
+		.OUT_REG(1)
+	) header_fifo (
+		.wr_clk(mac_clk),
+		.wr_en(push_commit),
+		.wr_data(push_header),
+		.wr_size(),					//Don't bother checking for FIFO space. We have enough header memory for
+									//a full buffer of minimum sized frames, and discard runt frames that would waste
+									//too much header space.
+		.wr_full(),
+		.wr_overflow(),
+		
+		.rd_clk(fabric_clk),
+		.rd_en(),
+		.rd_data(),
+		.rd_size(),
+		.rd_empty(),
+		.rd_underflow()
+	);
 
 endmodule
