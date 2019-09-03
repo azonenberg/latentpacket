@@ -53,17 +53,28 @@ module MACAddressTable_sim();
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The DUT
 
-	reg			lookup_en		= 0;
-	reg[11:0]	lookup_src_vlan	= 0;
-	reg[47:0]	lookup_src_mac	= 0;
-	reg[4:0]	lookup_src_port	= 0;
-	reg[47:0]	lookup_dst_mac	= 0;
+	logic		lookup_en		= 0;
+	logic[11:0]	lookup_src_vlan	= 0;
+	logic[47:0]	lookup_src_mac	= 0;
+	logic[4:0]	lookup_src_port	= 0;
+	logic[47:0]	lookup_dst_mac	= 0;
 
 	wire		lookup_hit;
 	wire[4:0]	lookup_dst_port;
 
-	reg			gc_en			= 0;
+	logic		gc_en			= 0;
 	wire		gc_done;
+
+	logic		mgmt_rd_en		= 0;
+	logic		mgmt_del_en		= 0;
+	wire		mgmt_ack;
+	logic[10:0]	mgmt_addr		= 0;
+	logic[2:0]	mgmt_way		= 0;
+	wire		mgmt_rd_valid;
+	wire		mgmt_rd_gc_mark;
+	wire[47:0]	mgmt_rd_mac;
+	wire[11:0]	mgmt_rd_vlan;
+	wire[4:0]	mgmt_rd_port;
 
 	MACAddressTable mactbl(
 		.clk(clk),
@@ -78,19 +89,32 @@ module MACAddressTable_sim();
 		.lookup_dst_port(lookup_dst_port),
 
 		.gc_en(gc_en),
-		.gc_done(gc_done)
+		.gc_done(gc_done),
+
+		.mgmt_rd_en(mgmt_rd_en),
+		.mgmt_del_en(mgmt_del_en),
+		.mgmt_ack(mgmt_ack),
+		.mgmt_addr(mgmt_addr),
+		.mgmt_way(mgmt_way),
+		.mgmt_rd_valid(mgmt_rd_valid),
+		.mgmt_rd_gc_mark(mgmt_rd_gc_mark),
+		.mgmt_rd_mac(mgmt_rd_mac),
+		.mgmt_rd_vlan(mgmt_rd_vlan),
+		.mgmt_rd_port(mgmt_rd_port)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test state machine
 
-	reg[7:0] state = 0;
-	reg[3:0] count = 0;
+	logic[7:0] state = 0;
+	logic[3:0] count = 0;
 
-	always @(posedge clk) begin
+	always_ff @(posedge clk) begin
 
 		lookup_en	<= 0;
 		gc_en		<= 0;
+		mgmt_rd_en	<= 0;
+		mgmt_del_en	<= 0;
 
 		case(state)
 
@@ -169,18 +193,38 @@ module MACAddressTable_sim();
 				state			<= 7;
 			end
 
-			//Re-run the garbage collector. This should remove :0a because nothing has come from it in a while.
+			//Read one of the entries for :0c via the management interface. This won't set the mark bit,
+			//so it will still get GC'd.
 			7: begin
-				gc_en			<= 1;
+				mgmt_rd_en		<= 1;
+				mgmt_way		<= 0;
+				mgmt_addr		<= 11'h068;
 				state			<= 8;
+			end
+
+			//Delete the other entry for :0c manually
+			8: begin
+				if(mgmt_ack) begin
+					mgmt_del_en		<= 1;
+					mgmt_addr		<= 11'h06e;
+					mgmt_way		<= 0;
+				end
+			end
+
+			/*
+			//Re-run the garbage collector. This should remove :0c because nothing has been sent to it in a while.
+			8: begin
+				gc_en			<= 1;
+				state			<= 9;
 			end
 
 			//Wait for GC to complete
 			//TODO: do some reads during the GC
-			8: begin
+			9: begin
 				if(gc_done)
-					state		<= 9;
+					state		<= 10;
 			end
+			*/
 
 		endcase
 	end
