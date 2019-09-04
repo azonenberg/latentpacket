@@ -35,6 +35,8 @@
 	@brief RX FIFO for traffic heading into the switch fabric
 
 	Needs to be multiple of 2x 18Kb BRAMs since 64+ bits wide
+	
+	The push side interface comes off an Ethernet2TypeDecoder.
  */
 module RxFifo #(
 	
@@ -48,7 +50,8 @@ module RxFifo #(
 	input wire					mac_clk,			//Incoming frame clock
 	input wire EthernetRxL2Bus	mac_rx_bus,			//Incoming frame data
 	
-	//Link state (when link goes down, all traffic in the buffer is wiped)
+	//Link state (mac_clk domain).
+	//When link goes down, all traffic in the buffer is wiped
 	input wire					link_state,
 
 	//VLAN configuration (mac_clk domain)
@@ -250,6 +253,14 @@ module RxFifo #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The actual packet data FIFO
+	
+	logic					data_rd_en			= 0;
+	logic[ADDR_BITS-1:0]	data_rd_offset		= 0;
+	logic					data_pop_single		= 0;
+	logic					data_rd_pop_packet	= 0;
+	logic[ADDR_BITS:0]		data_rd_packet_size	= 0;
+	wire[63:0]				data_rd_data;
+	wire[ADDR_BITS:0]		data_rd_size;
 
 	CrossClockPacketFifo #(
 		.WIDTH(64),
@@ -264,19 +275,27 @@ module RxFifo #(
 		.wr_rollback(push_rollback)
 
 		.rd_clk(fabric_clk),
-		.rd_en(),
-		.rd_offset(),
-		.rd_pop_single(),
-		.rd_pop_packet(),
-		.rd_packet_size(),
-		.rd_data(),
-		.rd_size(),
+		.rd_en(data_rd_en),
+		.rd_offset(data_rd_offset),
+		.rd_pop_single(data_pop_single),
+		.rd_pop_packet(data_rd_pop_packet),
+		.rd_packet_size(data_rd_packet_size),
+		.rd_data(data_rd_data),
+		.rd_size(data_rd_size),
 		.rd_reset(1'b0)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Parallel header FIFO for packet metadata
 	
+	localparam HEADER_ADDR_BITS = $clog2(META_FIFO_LINES);
+	
+	logic						header_rd_en		= 0;
+	header_t					header_rd_data;
+		
+	wire[HEADER_ADDR_BITS:0]	header_rd_size;
+	wire						header_rd_empty;
+
 	CrossClockFifo #(
 		.WIDTH($bits(header_t)),
 		.DEPTH(META_FIFO_LINES),
@@ -293,11 +312,27 @@ module RxFifo #(
 		.wr_overflow(),
 		
 		.rd_clk(fabric_clk),
-		.rd_en(),
-		.rd_data(),
-		.rd_size(),
-		.rd_empty(),
+		.rd_en(header_rd_en),
+		.rd_data(header_rd_data),
+		.rd_size(header_rd_size),
+		.rd_empty(header_rd_empty),
 		.rd_underflow()
 	);
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// FIFO pop logic
+	
+	always_ff @(posedge fabric_clk) begin
+		
+		header_rd_en	<= 0;
+		data_rd_en		<= 0;
+		data_pop_single	<= 0;
+		data_pop_packet	<= 0;
+		
+		//If we don't have a packet in the outbox, and there's headers ready to read, go grab them
+		if(!header_rd_en && !header_rd_empty && !fabric_frame_valid)
+			header_rd_en	<= 1;
+		
+	end
 
 endmodule
