@@ -29,12 +29,14 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-module MACAddressTable_sim();
+`include "EthernetBus.svh"
+
+module RxFifo_sim();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Clocking
 
-	reg ready = 0;
+	logic ready = 0;
 	initial begin
 		$timeformat(-9, 3, " ns", 6);
 		#100;
@@ -42,196 +44,174 @@ module MACAddressTable_sim();
 	end
 
 	//156.25 MHz
-	reg clk = 0;
+	logic clk_fabric = 0;
 	always begin
 		#3.2;
-		clk = ready;
+		clk_fabric = ready;
 		#3.2;
-		clk = 0;
+		clk_fabric = 0;
+	end
+
+	//125 MHz
+	logic clk_mac = 0;
+	always begin
+		#4;
+		clk_mac = ready;
+		#4;
+		clk_mac = 0;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Ethernet MAC etc
+
+	GmiiBus			gmii_rx_bus;
+	EthernetRxBus	rx_bus;
+
+	TriSpeedEthernetMAC #(
+		.RX_CRC_DISABLE(1)		//wireshark captured packets lack crc
+	) mac (
+		.gmii_rx_clk(clk_mac),
+		.gmii_rx_bus(gmii_rx_bus),
+		.gmii_tx_clk(clk_mac),
+		.gmii_tx_bus(),
+
+		.link_up(1),
+		.link_speed(LINK_SPEED_1000M),
+
+		.rx_bus(rx_bus),
+		.tx_bus({$bits(EthernetTxBus){1'b0}}),
+
+		.tx_ready(),
+		.perf()
+	);
+
+	EthernetRxL2Bus rx_l2_bus;
+
+	Ethernet2TypeDecoder decoder(
+		.rx_clk(clk_mac),
+		.mac_rx_bus(rx_bus),
+		.our_mac_address(48'h0),
+		.promisc_mode(1),
+		.rx_l2_bus(rx_l2_bus),
+		.perf()
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Traffic generator
+
+	logic[7:0]		packet1[109:0];
+	initial begin
+		$readmemh("packet1.hex", packet1);
+	end
+
+	logic			packet_gen_en_fabric	= 0;
+	wire			packet_gen_en;
+
+	PulseSynchronizer sync_packet_gen(
+		.clk_a(clk_fabric),
+		.pulse_a(packet_gen_en_fabric),
+
+		.clk_b(clk_mac),
+		.pulse_b(packet_gen_en)
+	);
+
+	logic[6:0]	packet_addr	= 0;
+
+	enum logic[2:0]
+	{
+		GEN_STATE_IDLE		= 0,
+		GEN_STATE_PREAMBLE	= 1,
+		GEN_STATE_FRAME		= 2,
+		GEN_STATE_CRC		= 3
+	} gen_state = GEN_STATE_IDLE;
+
+	logic[3:0] gen_count = 0;
+
+	always_ff @(posedge clk_mac) begin
+
+		//Default state for a gigabit link between packets
+		gmii_rx_bus.dvalid	<= 1;
+		gmii_rx_bus.er		<= 0;
+		gmii_rx_bus.en		<= 0;
+		gmii_rx_bus.data	<= 0;
+
+		case(gen_state)
+
+			//Start sending a packet
+			GEN_STATE_IDLE: begin
+
+				if(packet_gen_en) begin
+					packet_addr			<= 1;
+					gmii_rx_bus.en		<= 1;
+					gmii_rx_bus.data	<= 8'h55;
+					gen_count			<= 0;
+					gen_state			<= GEN_STATE_PREAMBLE;
+				end
+
+			end	//end GEN_STATE_IDLE
+
+			//Send the preamble
+			GEN_STATE_PREAMBLE: begin
+				gmii_rx_bus.en			<= 1;
+				gmii_rx_bus.data		<= 8'h55;
+				gen_count				<= gen_count + 1;
+
+				if(gen_count == 7) begin
+					gmii_rx_bus.data	<= 8'hd5;
+					packet_addr			<= 0;
+					gen_state			<= GEN_STATE_FRAME;
+				end
+			end	//end GEN_STATE_PREAMBLE
+
+			//Continue sending the packet
+			GEN_STATE_FRAME: begin
+				packet_addr			<= packet_addr + 1'h1;
+				gmii_rx_bus.en		<= 1;
+				gmii_rx_bus.data	<= packet1[packet_addr];
+
+				if(packet_addr >= 7'd109) begin
+					gen_count		<= 0;
+					gen_state		<= GEN_STATE_CRC;
+				end
+			end	//end GEN_STATE_FRAME
+
+			//Send a dummy CRC (mac doesn't actually verify it)
+			GEN_STATE_CRC: begin
+				gmii_rx_bus.en			<= 1;
+				gmii_rx_bus.data		<= 8'h00;
+				gen_count				<= gen_count + 1;
+
+				if(gen_count == 3) begin
+					packet_addr			<= 0;
+					gen_state			<= GEN_STATE_IDLE;
+				end
+			end	//end GEN_STATE_CRC
+
+		endcase
+
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The DUT
 
-	logic		lookup_en		= 0;
-	logic[11:0]	lookup_src_vlan	= 0;
-	logic[47:0]	lookup_src_mac	= 0;
-	logic[4:0]	lookup_src_port	= 0;
-	logic[47:0]	lookup_dst_mac	= 0;
-
-	wire		lookup_hit;
-	wire[4:0]	lookup_dst_port;
-
-	logic		gc_en			= 0;
-	wire		gc_done;
-
-	logic		mgmt_rd_en		= 0;
-	logic		mgmt_del_en		= 0;
-	wire		mgmt_ack;
-	logic[10:0]	mgmt_addr		= 0;
-	logic[2:0]	mgmt_way		= 0;
-	wire		mgmt_rd_valid;
-	wire		mgmt_rd_gc_mark;
-	wire[47:0]	mgmt_rd_mac;
-	wire[11:0]	mgmt_rd_vlan;
-	wire[4:0]	mgmt_rd_port;
-
-	MACAddressTable mactbl(
-		.clk(clk),
-
-		.lookup_en(lookup_en),
-		.lookup_src_vlan(lookup_src_vlan),
-		.lookup_src_mac(lookup_src_mac),
-		.lookup_src_port(lookup_src_port),
-		.lookup_dst_mac(lookup_dst_mac),
-
-		.lookup_hit(lookup_hit),
-		.lookup_dst_port(lookup_dst_port),
-
-		.gc_en(gc_en),
-		.gc_done(gc_done),
-
-		.mgmt_rd_en(mgmt_rd_en),
-		.mgmt_del_en(mgmt_del_en),
-		.mgmt_ack(mgmt_ack),
-		.mgmt_addr(mgmt_addr),
-		.mgmt_way(mgmt_way),
-		.mgmt_rd_valid(mgmt_rd_valid),
-		.mgmt_rd_gc_mark(mgmt_rd_gc_mark),
-		.mgmt_rd_mac(mgmt_rd_mac),
-		.mgmt_rd_vlan(mgmt_rd_vlan),
-		.mgmt_rd_port(mgmt_rd_port)
-	);
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test state machine
 
 	logic[7:0] state = 0;
-	logic[3:0] count = 0;
 
-	always_ff @(posedge clk) begin
-
-		lookup_en	<= 0;
-		gc_en		<= 0;
-		mgmt_rd_en	<= 0;
-		mgmt_del_en	<= 0;
+	always_ff @(posedge clk_fabric) begin
+		packet_gen_en_fabric	<= 0;
 
 		case(state)
 
-			//Look up an address that isn't yet in the table
+			//Trigger the traffic generator
 			0: begin
-
-				lookup_en		<= 1;
-				lookup_src_vlan	<= 2;
-				lookup_src_mac	<= 48'h02deadbeef0c;
-				lookup_src_port	<= 5'h0c;
-				lookup_dst_mac	<= 48'h02deadbeef0a;
-
-				state			<= 1;
-			end
-
-			//Send a packet to the previous packet's source. This should fail because we're still waiting for pipeline delays
-			1: begin
-
-				lookup_en		<= 1;
-				lookup_src_vlan	<= 2;
-				lookup_src_mac	<= 48'h02deadbeef0a;
-				lookup_src_port	<= 5'h0a;
-				lookup_dst_mac	<= 48'h02deadbeef0c;
-
-				state			<= 2;
-				count			<= 0;
-
-			end
-
-			//Look up the original address again
-			2: begin
-				count				<= count + 1'h1;
-				if(count == 6) begin
-					lookup_en		<= 1;
-					lookup_src_vlan	<= 2;
-					lookup_src_mac	<= 48'h02deadbeef0c;
-					lookup_src_port	<= 5'h0c;
-					lookup_dst_mac	<= 48'h02deadbeef0a;
-
-					state			<= 3;
-				end
-			end
-
-			//Look it up again but in a different vlan. Should be a miss.
-			3: begin
-				lookup_en		<= 1;
-				lookup_src_vlan	<= 5;
-				lookup_src_mac	<= 48'h02deadbeef0c;
-				lookup_src_port	<= 5'h0c;
-				lookup_dst_mac	<= 48'h02deadbeef0a;
-
-				state			<= 4;
-			end
-
-			//Run the garbage collector to mark both addresses as stale
-			4: begin
-				gc_en			<= 1;
-				state			<= 5;
-			end
-
-			//Wait for GC to complete
-			//TODO: do some reads during the GC
-			5: begin
-				if(gc_done)
-					state		<= 6;
-			end
-
-			//Look up one of the two addresses to refresh its table entry
-			6: begin
-				lookup_en		<= 1;
-				lookup_src_vlan	<= 2;
-				lookup_src_mac	<= 48'h02deadbeef0c;
-				lookup_src_port	<= 5'h0c;
-				lookup_dst_mac	<= 48'h02deadbeef0a;
-
-				state			<= 7;
-			end
-
-			//Read one of the entries for :0c via the management interface. This won't set the mark bit,
-			//so it will still get GC'd.
-			7: begin
-				if(lookup_hit) begin
-					mgmt_rd_en		<= 1;
-					mgmt_way		<= 2;
-					mgmt_addr		<= 11'h069;
-					state			<= 8;
-				end
-			end
-
-			//Delete the other entry for :0c manually
-			8: begin
-				if(mgmt_ack) begin
-					mgmt_del_en		<= 1;
-					mgmt_addr		<= 11'h06e;
-					mgmt_way		<= 0;
-					state			<= 9;
-				end
-			end
-
-			//Re-run the garbage collector. This should remove one :0c entry
-			//because nothing has been sent to it in a while. The other :0c entry should be gone already.
-			//The :0a entry should be unaffected.
-			9: begin
-				if(mgmt_ack) begin
-					gc_en			<= 1;
-					state			<= 10;
-				end
-			end
-
-			//Wait for GC to complete
-			//TODO: do some reads during the GC
-			10: begin
-				if(gc_done)
-					state		<= 11;
+				packet_gen_en_fabric	<= 1;
+				state					<= 1;
 			end
 
 		endcase
+
 	end
 
 endmodule

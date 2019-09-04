@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="RxFifo_sim_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="RxFifo_sim" />
+            <top_module name="\$unit_MemoryMacro_sv " />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="848666666666fs"></ZoomStartTime>
+      <ZoomEndTime time="1030266666667fs"></ZoomEndTime>
+      <Cursor1Time time="1000000000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="221"></NameColumnWidth>
+      <ValueColumnWidth column_width="140"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="8" />
+   <wvobject type="logic" fp_name="/RxFifo_sim/ready">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/RxFifo_sim/clk_fabric">
+      <obj_property name="ElementShortName">clk_fabric</obj_property>
+      <obj_property name="ObjectShortName">clk_fabric</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/RxFifo_sim/clk_mac">
+      <obj_property name="ElementShortName">clk_mac</obj_property>
+      <obj_property name="ObjectShortName">clk_mac</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/RxFifo_sim/state">
+      <obj_property name="ElementShortName">state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">state[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider385" type="divider">
+   </wvobject>
+   <wvobject type="group" fp_name="group386">
+      <obj_property name="label">Traffic generator</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject type="array" fp_name="/RxFifo_sim/gen_state">
+         <obj_property name="ElementShortName">gen_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">gen_state[2:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/RxFifo_sim/gen_count">
+         <obj_property name="ElementShortName">gen_count[3:0]</obj_property>
+         <obj_property name="ObjectShortName">gen_count[3:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/RxFifo_sim/packet_gen_en_fabric">
+         <obj_property name="ElementShortName">packet_gen_en_fabric</obj_property>
+         <obj_property name="ObjectShortName">packet_gen_en_fabric</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/RxFifo_sim/packet_gen_en">
+         <obj_property name="ElementShortName">packet_gen_en</obj_property>
+         <obj_property name="ObjectShortName">packet_gen_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/RxFifo_sim/packet_addr">
+         <obj_property name="ElementShortName">packet_addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">packet_addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/RxFifo_sim/packet1">
+         <obj_property name="ElementShortName">packet1[109:0][7:0]</obj_property>
+         <obj_property name="ObjectShortName">packet1[109:0][7:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/RxFifo_sim/gmii_rx_bus">
+         <obj_property name="ElementShortName">gmii_rx_bus</obj_property>
+         <obj_property name="ObjectShortName">gmii_rx_bus</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/RxFifo_sim/rx_bus">
+         <obj_property name="ElementShortName">rx_bus</obj_property>
+         <obj_property name="ObjectShortName">rx_bus</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/RxFifo_sim/rx_l2_bus">
+      <obj_property name="ElementShortName">rx_l2_bus</obj_property>
+      <obj_property name="ObjectShortName">rx_l2_bus</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="divider391" type="divider">
+   </wvobject>
+</wave_config>

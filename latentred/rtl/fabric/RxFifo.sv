@@ -35,21 +35,21 @@
 	@brief RX FIFO for traffic heading into the switch fabric
 
 	Needs to be multiple of 2x 18Kb BRAMs since 64+ bits wide
-	
+
 	The push side interface comes off an Ethernet2TypeDecoder.
  */
 module RxFifo #(
-	
+
 	//Default config here is for a 1000baseT port, probably want larger for 10G
 	parameter FIFO_LINES		= 2048,				//need 375 lines for a 1500 byte frame
 													//2K lines = 5.46 max sized frames or 32 min sized frames
 	parameter META_FIFO_LINES	= 32				//enough to hold metadata for FIFO_LINES worth of min sized frames
-	
+
 ) (
 	//Incoming frame bus
 	input wire					mac_clk,			//Incoming frame clock
 	input wire EthernetRxL2Bus	mac_rx_bus,			//Incoming frame data
-	
+
 	//Link state (mac_clk domain).
 	//When link goes down, all traffic in the buffer is wiped
 	input wire					link_state,
@@ -119,7 +119,7 @@ module RxFifo #(
 		push_commit		<= 0;
 		push_commit_adv	<= 0;
 		push_rollback	<= 0;
-		
+
 		mac_queued		<= 0;
 		mac_drop_fifo	<= 0;
 		mac_drop_vlan	<= 0;
@@ -152,9 +152,9 @@ module RxFifo #(
 				end
 
 				else
-					push_header.vlan	<= vlan;
+					push_header.vlan	<= mac_rx_bus.vlan_id;
 
-			else
+			end
 
 			//No VLAN tag on the frame
 			else begin
@@ -191,12 +191,12 @@ module RxFifo #(
 				push_valid	<= 1;
 
 		end
-		
+
 		//Bail when a frame is dropped by the MAC
 		if(mac_rx_bus.drop) begin
 			push_data		<= 0;
 			push_valid		<= 0;
-			push_len		<= 0;
+			push_header.len	<= 0;
 			push_rollback	<= 1;
 			dropping		<= 0;
 		end
@@ -220,7 +220,7 @@ module RxFifo #(
 				push_valid		<= 0;
 				push_commit_adv	<= 1;
 			end
-			
+
 			//Nope, all good
 			else
 				push_commit		<= 1;
@@ -229,18 +229,18 @@ module RxFifo #(
 		//Handle delayed commit after pushing partial packet
 		if(push_commit_adv)
 			push_commit			<= 1;
-			
+
 		if(push_commit)
 			mac_queued			<= 1;
 
 		//Handle fifo running out of space midway through a packet
-		if( (wr_size <= 2) && !mac_rx_bus.commit && !push_commit_adv) begin
+		if( (mac_rx_bus.bytes_valid <= 2) && !mac_rx_bus.commit && !push_commit_adv) begin
 			dropping			<= 1;
 			push_rollback		<= 1;
 			push_en				<= 0;
 			mac_drop_fifo		<= 1;
 		end
-		
+
 		//Handle excessively large packets
 		if(push_header.len > 1500) begin
 			dropping			<= 1;
@@ -253,7 +253,7 @@ module RxFifo #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The actual packet data FIFO
-	
+
 	logic					data_rd_en			= 0;
 	logic[ADDR_BITS-1:0]	data_rd_offset		= 0;
 	logic					data_pop_single		= 0;
@@ -272,7 +272,7 @@ module RxFifo #(
 		.wr_reset(1'b0),
 		.wr_size(push_size),
 		.wr_commit(push_commit),
-		.wr_rollback(push_rollback)
+		.wr_rollback(push_rollback),
 
 		.rd_clk(fabric_clk),
 		.rd_en(data_rd_en),
@@ -287,12 +287,12 @@ module RxFifo #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Parallel header FIFO for packet metadata
-	
+
 	localparam HEADER_ADDR_BITS = $clog2(META_FIFO_LINES);
-	
+
 	logic						header_rd_en		= 0;
 	header_t					header_rd_data;
-		
+
 	wire[HEADER_ADDR_BITS:0]	header_rd_size;
 	wire						header_rd_empty;
 
@@ -310,7 +310,7 @@ module RxFifo #(
 									//too much header space.
 		.wr_full(),
 		.wr_overflow(),
-		
+
 		.rd_clk(fabric_clk),
 		.rd_en(header_rd_en),
 		.rd_data(header_rd_data),
@@ -318,21 +318,21 @@ module RxFifo #(
 		.rd_empty(header_rd_empty),
 		.rd_underflow()
 	);
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FIFO pop logic
-	
+
 	always_ff @(posedge fabric_clk) begin
-		
+
 		header_rd_en	<= 0;
 		data_rd_en		<= 0;
 		data_pop_single	<= 0;
 		data_pop_packet	<= 0;
-		
+
 		//If we don't have a packet in the outbox, and there's headers ready to read, go grab them
 		if(!header_rd_en && !header_rd_empty && !fabric_frame_valid)
 			header_rd_en	<= 1;
-		
+
 	end
 
 endmodule
