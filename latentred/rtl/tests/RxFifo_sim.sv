@@ -192,7 +192,40 @@ module RxFifo_sim();
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The DUT
+	// The actual DUT
+
+	logic	fabric_fwd_en	= 0;
+	logic	fabric_pop		= 0;
+
+	wire	fabric_frame_valid;
+
+	RxFifo dut(
+		.mac_clk(clk_mac),
+		.mac_rx_bus(rx_l2_bus),
+
+		.link_state(1'b1),
+
+		.has_port_vlan(1'b1),
+		.port_vlan_id(12'd5),
+		.native_vlan_allowed(1'b0),
+
+		.mac_queued(),
+		.mac_drop_fifo(),
+		.mac_drop_vlan(),
+		.mac_drop_runt(),
+		.mac_drop_jumbo(),
+
+		.fabric_clk(clk_fabric),
+		.fabric_frame_valid(fabric_frame_valid),
+		.fabric_frame_dst_mac(),
+		.fabric_frame_src_mac(),
+		.fabric_frame_vlan(),
+		.fabric_fwd_en(fabric_fwd_en),
+		.fabric_fwd_valid(),
+		.fabric_fwd_bytes_valid(),
+		.fabric_fwd_data(),
+		.fabric_pop(fabric_pop)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test state machine
@@ -202,12 +235,29 @@ module RxFifo_sim();
 	always_ff @(posedge clk_fabric) begin
 		packet_gen_en_fabric	<= 0;
 
+		fabric_fwd_en			<= 0;
+		fabric_pop				<= 0;
+
 		case(state)
 
 			//Trigger the traffic generator
 			0: begin
 				packet_gen_en_fabric	<= 1;
 				state					<= 1;
+			end
+
+			//Wait for the frame to be fully buffered, then push it out to fabric
+			1: begin
+				if(fabric_frame_valid) begin
+					fabric_fwd_en	<= 1;
+					state			<= 2;
+				end
+			end
+
+			//Frame is done, delete it
+			2: begin
+				fabric_pop			<= 1;
+				state				<= 3;
 			end
 
 		endcase

@@ -113,6 +113,8 @@ module RxFifo #(
 
 	header_t			push_header	= 0;
 
+	logic				headers_valid_ff	= 0;
+
 	always_ff @(posedge mac_clk) begin
 
 		push_en			<= 0;
@@ -126,6 +128,8 @@ module RxFifo #(
 		mac_drop_runt	<= 0;
 		mac_drop_jumbo	<= 0;
 
+		headers_valid_ff	<= mac_rx_bus.headers_valid;
+
 		//Reset when a new frame starts
 		if(mac_rx_bus.start) begin
 			push_data	<= 0;
@@ -135,7 +139,7 @@ module RxFifo #(
 		end
 
 		//Save headers when they come in
-		if(mac_rx_bus.headers_valid) begin
+		if(mac_rx_bus.headers_valid && !headers_valid_ff) begin
 			push_header.ethertype	<= mac_rx_bus.ethertype;
 			push_header.src_mac		<= mac_rx_bus.src_mac;
 			push_header.dst_mac		<= mac_rx_bus.dst_mac;
@@ -143,7 +147,7 @@ module RxFifo #(
 			//If we have a VLAN tag, use that VLAN.
 			//BUT if we also have a port based vlan configured, we shouldn't see tagged traffic at all
 			//Drop the frame to prevent vlan hopping, unless we're in native-vlan mode
-			if(push_header.has_vlan_tag) begin
+			if(mac_rx_bus.has_vlan_tag) begin
 
 				if(has_port_vlan && !native_vlan_allowed) begin
 					push_rollback	<= 1;
@@ -202,8 +206,7 @@ module RxFifo #(
 		end
 
 		//Frame ended
-		if(mac_rx_bus.commit) begin
-			dropping		<= 0;
+		if(mac_rx_bus.commit && !dropping) begin
 
 			//If the frame is too small, drop it
 			if( (push_header.len < 60) ||
@@ -234,7 +237,7 @@ module RxFifo #(
 			mac_queued			<= 1;
 
 		//Handle fifo running out of space midway through a packet
-		if( (mac_rx_bus.bytes_valid <= 2) && !mac_rx_bus.commit && !push_commit_adv) begin
+		if( (push_size <= 2) && !mac_rx_bus.commit && !push_commit_adv && !dropping) begin
 			dropping			<= 1;
 			push_rollback		<= 1;
 			push_en				<= 0;
@@ -242,7 +245,7 @@ module RxFifo #(
 		end
 
 		//Handle excessively large packets
-		if(push_header.len > 1500) begin
+		if(push_header.len > 1600 && !dropping) begin
 			dropping			<= 1;
 			push_rollback		<= 1;
 			push_en				<= 0;
@@ -257,7 +260,7 @@ module RxFifo #(
 	logic					data_rd_en			= 0;
 	logic[ADDR_BITS-1:0]	data_rd_offset		= 0;
 	logic					data_pop_single		= 0;
-	logic					data_rd_pop_packet	= 0;
+	logic					data_pop_packet	= 0;
 	logic[ADDR_BITS:0]		data_rd_packet_size	= 0;
 	wire[63:0]				data_rd_data;
 	wire[ADDR_BITS:0]		data_rd_size;
@@ -278,7 +281,7 @@ module RxFifo #(
 		.rd_en(data_rd_en),
 		.rd_offset(data_rd_offset),
 		.rd_pop_single(data_pop_single),
-		.rd_pop_packet(data_rd_pop_packet),
+		.rd_pop_packet(data_pop_packet),
 		.rd_packet_size(data_rd_packet_size),
 		.rd_data(data_rd_data),
 		.rd_size(data_rd_size),
@@ -322,6 +325,21 @@ module RxFifo #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FIFO pop logic
 
+	logic		header_rd_en_ff	= 0;
+	logic[63:0]	data_rd_data_ff	= 0;
+
+	logic[ADDR_BITS-1:0]	data_rd_offset_ff	= 0;
+	logic[ADDR_BITS-1:0]	data_rd_offset_ff2	= 0;
+
+	enum logic[2:0]
+	{
+		FWD_STATE_IDLE		= 0,
+		FWD_STATE_HEADER	= 1,
+		FWD_STATE_FIRST		= 2,
+		FWD_STATE_DATA		= 3,
+		FWD_STATE_LAST		= 4
+	} fwd_state = FWD_STATE_IDLE;
+
 	always_ff @(posedge fabric_clk) begin
 
 		header_rd_en	<= 0;
@@ -329,9 +347,191 @@ module RxFifo #(
 		data_pop_single	<= 0;
 		data_pop_packet	<= 0;
 
+		header_rd_en_ff		<= header_rd_en;
+		data_rd_data_ff		<= data_rd_data;
+
+		data_rd_offset_ff	<= data_rd_offset;
+		data_rd_offset_ff2	<= data_rd_offset_ff;
+
+		fabric_fwd_valid	<= 0;
+
 		//If we don't have a packet in the outbox, and there's headers ready to read, go grab them
 		if(!header_rd_en && !header_rd_empty && !fabric_frame_valid)
-			header_rd_en	<= 1;
+			header_rd_en		<= 1;
+
+		//If we just read headers, put them in the output so the fabric can decide what to do
+		if(header_rd_en_ff) begin
+			fabric_frame_valid		<= 1;
+			fabric_frame_dst_mac	<= header_rd_data.dst_mac;
+			fabric_frame_src_mac	<= header_rd_data.src_mac;
+			fabric_frame_vlan		<= header_rd_data.vlan;
+		end
+
+		//Pop a packet when we're done working on it
+		if(fabric_pop) begin
+			data_pop_packet			<= 1;
+			fabric_frame_valid		<= 0;
+
+			if(header_rd_data.len[2:0])
+				data_rd_packet_size	<= header_rd_data.len[10:3] + 1'h1;
+			else
+				data_rd_packet_size	<= header_rd_data.len[10:3];
+		end
+
+		case(fwd_state)
+
+			//Start forwarding when the fabric requests it
+			FWD_STATE_IDLE: begin
+
+				if(fabric_fwd_en) begin
+					data_rd_en		<= 1;
+					data_rd_offset	<= 0;
+					fwd_state		<= FWD_STATE_HEADER;
+				end
+
+			end	//end FWD_STATE_IDLE
+
+			//Synthesize a new Ethernet frame header, without a VLAN tag if there was one
+			FWD_STATE_HEADER: begin
+				data_rd_en				<= 1;
+				data_rd_offset			<= 1;
+
+				fabric_fwd_valid		<= 1;
+				fabric_fwd_bytes_valid	<= 8;
+				fabric_fwd_data			<= { header_rd_data.dst_mac, header_rd_data.src_mac[47:32] };
+
+				fwd_state				<= FWD_STATE_FIRST;
+
+			end	//end FWD_STATE_HEADER
+
+			//Send the rest of the frame header, plus the beginning of the frame data
+			FWD_STATE_FIRST: begin
+				data_rd_en				<= 1;
+				data_rd_offset			<= 2;
+
+				fabric_fwd_valid		<= 1;
+				fabric_fwd_bytes_valid	<= 8;
+				fabric_fwd_data			<=
+				{
+					header_rd_data.src_mac[31:0],
+					header_rd_data.ethertype,
+					data_rd_data[63:48]
+				};
+
+				fwd_state				<= FWD_STATE_DATA;
+			end	//end FWD_STATE_FIRST
+
+			//Send frame data
+			FWD_STATE_DATA: begin
+
+				//Keep reading. Reading is a nondestructive operation that wraps,
+				//so it's totally fine to read off the end of the packet if it ends prematurely.
+				data_rd_en				<= 1;
+				data_rd_offset			<= data_rd_offset + 1;
+
+				fabric_fwd_valid		<= 1;
+				fabric_fwd_bytes_valid	<= 8;
+				fabric_fwd_data			<=
+				{
+					data_rd_data_ff[47:0],
+					data_rd_data[63:48]
+				};
+
+				//End of frame? Stop (and truncate any partial data)
+				if(header_rd_data.len[10:3] == data_rd_offset_ff2) begin
+
+					case(header_rd_data.len[2:0])
+
+						//Use 6 saved bytes, 2 padding at the end
+						0: begin
+							fabric_fwd_data[15:0]	<= 0;
+							fabric_fwd_bytes_valid	<= 6;
+							fwd_state				<= FWD_STATE_IDLE;
+						end
+
+						//6 saved bytes, 1 new byte, 1 padding at the end
+						1: begin
+							fabric_fwd_data[7:0]	<= 0;
+							fabric_fwd_bytes_valid	<= 7;
+							fwd_state				<= FWD_STATE_IDLE;
+						end
+
+						//6 saved bytes, 2 new bytes, no padding
+						2: begin
+							fabric_fwd_bytes_valid	<= 2;
+							fwd_state				<= FWD_STATE_IDLE;
+						end
+
+						default:
+							fwd_state				<= FWD_STATE_LAST;
+
+					endcase
+
+				end
+
+			end	//end FWD_STATE_DATA
+
+			//Empty out the last few bytes at the end of the packet
+			FWD_STATE_LAST: begin
+
+				fabric_fwd_valid		<= 1;
+				fabric_fwd_data			<=
+				{
+					data_rd_data_ff[47:0],
+					data_rd_data[63:48]
+				};
+
+				case(header_rd_data.len[2:0])
+
+					//Use 1 saved byte, 7 padding
+					3: begin
+						fabric_fwd_data[55:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 1;
+					end
+
+					//Use 2 saved bytes, 6 padding
+					4: begin
+						fabric_fwd_data[48:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 2;
+					end
+
+					//Use 3 saved bytes, 5 padding
+					3: begin
+						fabric_fwd_data[40:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 3;
+					end
+
+					//Use 4 saved bytes, 4 padding
+					4: begin
+						fabric_fwd_data[32:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 4;
+					end
+
+					//Use 5 saved bytes, 3 padding
+					5: begin
+						fabric_fwd_data[24:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 5;
+					end
+
+					//Use 6 saved bytes, 2 padding
+					6: begin
+						fabric_fwd_data[16:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 6;
+					end
+
+					//Use 6 saved bytes, 1 new, 1 padding
+					7: begin
+						fabric_fwd_data[7:0]	<= 0;
+						fabric_fwd_bytes_valid	<= 7;
+					end
+
+				endcase
+
+				fwd_state				<= FWD_STATE_IDLE;
+
+			end	//end FWD_STATE_LAST
+
+		endcase
 
 	end
 
