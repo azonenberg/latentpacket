@@ -35,12 +35,21 @@
 	@brief The actual switch fabric for LATENTRED
 
 	The switch fabric internally runs at 64 bit width and is clocked at 156.25 MHz.
+	This provides full 10 Gbps throughput per lane.
 
 	Resource estimate for the core crossbar:
-		64 bits wide, 8 input ports, 8 output ports
-		One 4:1 mux fits in a single LUT6, an 8:1 mux fits in two LUT6s and a F7MUX.
-		Each output port thus needs 128 LUT6s and 64 F7MUX's.
-		The entire fabric will use 1024 LUT6s and 512 F7MUX's for the core crossbar.
+		28 input ports, 8 output ports
+		(six 1G ports share one crossbar output, only one can forward at a time)
+
+		A 28:1 mux needs:
+			First level: 7x 4:1 = 7 LUTs
+			Second level: 1x 7:1 = 2 LUTs
+			Third level: 1x F7MUX
+			Total = 9 LUTs
+
+		Each channel is 81 bits wide (64x data + 12x VLAN tag + 5x dest port number)
+
+		Each output port thus needs 729 LUT6s, for total fabric mux usage of 5832.
  */
 module SwitchFabric #(
 	parameter NUM_1G_PORTS	= 24,
@@ -48,7 +57,8 @@ module SwitchFabric #(
 
 	//Total number of 10G (64 bit * 156.25 MHz) ports on the internal fabric crossbar.
 	//Up to six 1G, or one 10G, interfaces attach to each fabric port.
-	localparam CROSSBAR_PORTS = (NUM_1G_PORTS/6) + NUM_10G_PORTS,
+	localparam CROSSBAR_1G_PORTS = NUM_1G_PORTS / 6,
+	localparam CROSSBAR_PORTS = CROSSBAR_1G_PORTS + NUM_10G_PORTS,
 
 	localparam TOTAL_PORTS = NUM_1G_PORTS + NUM_10G_PORTS
 )(
@@ -134,6 +144,81 @@ module SwitchFabric #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Forwarding logic
+	// Link selection
+
+	//Bitmap of which source wants to send to which destination
+	logic[TOTAL_PORTS-1:0]	src_to_dest[TOTAL_PORTS-1:0];
+
+	always_comb begin
+		for(integer src = 0; src < TOTAL_PORTS; src ++) begin
+			for(integer dst = 0; dst < TOTAL_PORTS; dst ++)
+				src_to_dst[src][dst] = (port_state[src].dst_port == dst) || port_state[src].broadcast;
+		end
+	end
+
+	//Channels within the crossbar switch
+	typedef struct packed
+	{
+		logic					busy;				//true if we're in the middle of a forward operation
+		logic					valid;				//true if data should be processed by the output port
+		logic[4:0]				dest_port;			//ID of the output port
+		logic[11:0]				vlan;				//dest vlan ID
+		logic[3:0]				bytes_valid;		//number of valid bytes in data (only used in last word of packet)
+		logic[63:0]				data;				//data being forwarded
+		logic[2:0]				rr_source_lane;		//round robin offset for the source port (0-5? FIXME)
+		logic[TOTAL_PORTS_1:0]	broadcast_pending;	//indicates which ports still need to receive the current broadcast
+	} CrossbarChannel;
+
+	CrossbarChannel[CROSSBAR_PORTS-1:0] channels = 0;
+
+	localparam INVALID_PORT = 5'd31;
+
+	//Pick who gets to send to each destination
+	always_ff @(posedge clk) begin
+
+		for(integer dport = 0; dport < CROSSBAR_PORTS; dport ++) begin
+
+			//Early out if nobody wants to send to use
+			if(src_to_dest[dport] == 0) begin
+				channels[dport].busy		<= 0;
+				channels[dport].dest_port	<= INVALID_PORT;
+			end
+
+			//1G ports
+			else if(dport < CROSSBAR_1G_PORTS) begin
+
+				//This channel
+
+			end
+
+			//10G ports
+			else begin
+
+			end
+
+		end
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// The actual forwarding crossbar
+
+	always_ff @(posedge clk) begin
+
+		for(integer dport = 0; dport < CROSSBAR_PORTS; dport ++) begin
+
+			//1G ports
+			if(dport < CROSSBAR_1G_PORTS) begin
+				//
+			end
+
+			//10G ports
+			else begin
+
+			end
+
+		end
+
+	end
 
 endmodule
