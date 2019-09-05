@@ -40,11 +40,11 @@
  */
 module RxFifo #(
 
-	//Default config here is for a 1000baseT port, probably want larger for 10G
+	//Default config here is for a 1000baseT port
+	//For 10G ports, use FIFO_LINES = 8192, META_FIFO_LINES=1024 (21.84 max sized frames or 1024 min sized frames)
 	parameter FIFO_LINES		= 2048,				//need 375 lines for a 1500 byte frame
-													//2K lines = 5.46 max sized frames or 32 min sized frames
-	parameter META_FIFO_LINES	= 32				//enough to hold metadata for FIFO_LINES worth of min sized frames
-
+													//2K lines = 5.46 max sized frames or 256 min sized frames
+	parameter META_FIFO_LINES	= 256				//enough to hold metadata for FIFO_LINES worth of min sized frames
 ) (
 	//Incoming frame bus
 	input wire					mac_clk,			//Incoming frame clock
@@ -302,7 +302,7 @@ module RxFifo #(
 	CrossClockFifo #(
 		.WIDTH($bits(header_t)),
 		.DEPTH(META_FIFO_LINES),
-		.USE_BLOCK(0),
+		.USE_BLOCK(1),
 		.OUT_REG(1)
 	) header_fifo (
 		.wr_clk(mac_clk),
