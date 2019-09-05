@@ -48,34 +48,92 @@ module SwitchFabric #(
 
 	//Total number of 10G (64 bit * 156.25 MHz) ports on the internal fabric crossbar.
 	//Up to six 1G, or one 10G, interfaces attach to each fabric port.
-	localparam FABRIC_PORTS = (NUM_1G_PORTS/6) + NUM_10G_PORTS
+	localparam CROSSBAR_PORTS = (NUM_1G_PORTS/6) + NUM_10G_PORTS,
+
+	localparam TOTAL_PORTS = NUM_1G_PORTS + NUM_10G_PORTS
 )(
 	//Main fabric clock (156.25 MHz)
 	input wire			clk,
 
 	//Interface to the MAC address table
-	output logic		mac_lookup_en,
-	output logic[11:0]	mac_lookup_src_vlan,
-	output logic[47:0]	mac_lookup_src_mac,
-	output logic[4:0]	mac_lookup_src_port,
-	input wire[47:0]	mac_lookup_dst_mac,
+	output logic		mac_lookup_en		= 0,
+	output logic[11:0]	mac_lookup_src_vlan	= 0,
+	output logic[47:0]	mac_lookup_src_mac	= 0,
+	output logic[4:0]	mac_lookup_src_port	= 0,
+	output logic[47:0]	mac_lookup_dst_mac	= 0,
 	input wire			mac_lookup_hit,
 	input wire[4:0]		mac_lookup_dst_port,
 
-	/*
-	//1G ports: 32 bits @ 125 MHz with gaps
-	input wire[NUM_1G_PORTS-1:0]					rx_1g_clk,
-	input wire EthernetRxL2Bus[NUM_1G_PORTS-1:0]	rx_1g_bus,
-
-	//10G ports: 32 bits @ 312.5 MHz
-	input wire[NUM_10G_PORTS-1:0]					rx_10g_clk,
-	input wire EthernetRxL2Bus[NUM_10G_PORTS-1:0]	rx_10g_bus
-	*/
+	//Interface to the FIFOs.
+	//First NUM_1G_PORTS are 1G, rest are 10G
+	//All FIFOs have fabric_clk = clk so no need to hook that up here.
+	output logic[TOTAL_PORTS-1:0]			fifo_pop	= 0,
+	output logic[TOTAL_PORTS-1:0]			fifo_fwd_en	= 0,
+	input wire RxFifoBus[TOTAL_PORTS-1:0]	fifo_bus
 
 	//TODO: transmit side ports
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// 1G RX buffers
+	// Keep track of destinations for each port
+
+	logic[4:0]	mac_port_id;
+
+	typedef struct packed
+	{
+		logic		dst_valid;
+		logic		broadcast;
+		logic[4:0]	dst_port;
+	} portstate_t;
+
+	portstate_t[TOTAL_PORTS-1:0] port_state	= 0;
+
+	//Round robin address lookup for each port
+	logic		mac_lookup_en_ff		= 0;
+	logic		mac_lookup_en_ff2		= 0;
+	logic[4:0]	mac_lookup_src_port_ff	= 0;
+	logic[4:0]	mac_lookup_src_port_ff2	= 0;
+	always_ff @(posedge clk) begin
+
+		//Clear flags
+		mac_lookup_en		<= 0;
+
+		//Keep track of where we looked up recently, so we know what results are for
+		mac_lookup_en_ff		<= mac_lookup_en;
+		mac_lookup_en_ff2		<= mac_lookup_en_ff;
+		mac_lookup_src_port_ff	<= mac_lookup_src_port;
+		mac_lookup_src_port_ff2	<= mac_lookup_src_port_ff;
+
+		//Round robin every cycle
+		mac_port_id			<= mac_port_id + 1;
+		if(mac_port_id == TOTAL_PORTS - 1)
+			mac_port_id		<= 0;
+
+		//If there is a packet waiting to be forwarded, and we don't know where it goes, start the lookup.
+		if(fifo_bus[mac_port_id].frame_valid && !fifo_pop[mac_port_id] && !port_state[mac_port_id].dst_valid) begin
+			mac_lookup_en		<= 1;
+			mac_lookup_src_port	<= mac_port_id;
+			mac_lookup_src_vlan	<= fifo_bus[mac_port_id].frame_vlan;
+			mac_lookup_src_mac	<= fifo_bus[mac_port_id].frame_src_mac;
+			mac_lookup_dst_mac	<= fifo_bus[mac_port_id].frame_dst_mac;
+		end
+
+		//When a lookup completes, save the reply
+		if(mac_lookup_en_ff2) begin
+			port_state[mac_lookup_src_port_ff2].dst_valid	<= 1;
+			port_state[mac_lookup_src_port_ff2].broadcast	<= !mac_lookup_hit;	//anything not in table is broadcast
+			port_state[mac_lookup_src_port_ff2].dst_port	<= mac_lookup_dst_port;
+		end
+
+		//When we finish forwarding a packet, clear the state
+		for(integer i=0; i<TOTAL_PORTS; i++) begin
+			if(fifo_pop[i])
+				port_state[i].dst_valid	<= 0;
+		end
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Forwarding logic
 
 endmodule
