@@ -30,6 +30,7 @@
 ***********************************************************************************************************************/
 
 `include "EthernetBus.svh"
+`include "RxFifoBus.svh"
 
 /**
 	@brief RX FIFO for traffic heading into the switch fabric
@@ -44,7 +45,8 @@ module RxFifo #(
 	//For 10G ports, use FIFO_LINES = 8192, META_FIFO_LINES=1024 (21.84 max sized frames or 1024 min sized frames)
 	parameter FIFO_LINES		= 2048,				//need 375 lines for a 1500 byte frame
 													//2K lines = 5.46 max sized frames or 256 min sized frames
-	parameter META_FIFO_LINES	= 256				//enough to hold metadata for FIFO_LINES worth of min sized frames
+	parameter META_FIFO_LINES	= 256,				//enough to hold metadata for FIFO_LINES worth of min sized frames
+	parameter META_USE_BLOCK	= 1
 ) (
 	//Incoming frame bus
 	input wire					mac_clk,			//Incoming frame clock
@@ -69,17 +71,10 @@ module RxFifo #(
 	output logic				mac_drop_jumbo	= 0,	//Frame was dropped because too large
 
 	//Outbound bus to fabric
-	input wire					fabric_clk,						//Main switch clock
-	output logic				fabric_frame_valid		= 0,	//When high, there is a frame ready to forward
-	output logic[47:0]			fabric_frame_dst_mac	= 0,	//Destination of the frame
-	output logic[47:0]			fabric_frame_src_mac	= 0,	//Source of the frame
-	output logic[11:0]			fabric_frame_vlan		= 0,	//VLAN ID of the frame
-	input wire					fabric_fwd_en,					//Bring high for one cycle to forward this frame
-	output logic				fabric_fwd_valid		= 0,	//High if data being forwarded is valid
-	output logic[3:0]			fabric_fwd_bytes_valid	= 0,	//Number of valid bytes in this 64-bit block
-																//(always 8 except in last one)
-	output logic[63:0]			fabric_fwd_data			= 0,	//The actual data being forwarded through the fabric
-	input wire					fabric_pop						//Bring high for one cycle to pop this frame
+	input wire					fabric_clk,				//Main switch clock
+	input wire					fabric_pop,				//Bring high for one cycle to pop this frame
+	input wire					fabric_fwd_en,			//Bring high for one cycle to forward this frame
+	output RxFifoBus			fabric_bus		= 0
 );
 
 	//TODO: delete all in-flight traffic when the link drops
@@ -302,7 +297,7 @@ module RxFifo #(
 	CrossClockFifo #(
 		.WIDTH($bits(header_t)),
 		.DEPTH(META_FIFO_LINES),
-		.USE_BLOCK(1),
+		.USE_BLOCK(META_USE_BLOCK),
 		.OUT_REG(1)
 	) header_fifo (
 		.wr_clk(mac_clk),
@@ -353,24 +348,24 @@ module RxFifo #(
 		data_rd_offset_ff	<= data_rd_offset;
 		data_rd_offset_ff2	<= data_rd_offset_ff;
 
-		fabric_fwd_valid	<= 0;
+		fabric_bus.fwd_valid	<= 0;
 
 		//If we don't have a packet in the outbox, and there's headers ready to read, go grab them
-		if(!header_rd_en && !header_rd_empty && !fabric_frame_valid)
+		if(!header_rd_en && !header_rd_empty && !fabric_bus.frame_valid)
 			header_rd_en		<= 1;
 
 		//If we just read headers, put them in the output so the fabric can decide what to do
 		if(header_rd_en_ff) begin
-			fabric_frame_valid		<= 1;
-			fabric_frame_dst_mac	<= header_rd_data.dst_mac;
-			fabric_frame_src_mac	<= header_rd_data.src_mac;
-			fabric_frame_vlan		<= header_rd_data.vlan;
+			fabric_bus.frame_valid		<= 1;
+			fabric_bus.frame_dst_mac	<= header_rd_data.dst_mac;
+			fabric_bus.frame_src_mac	<= header_rd_data.src_mac;
+			fabric_bus.frame_vlan		<= header_rd_data.vlan;
 		end
 
 		//Pop a packet when we're done working on it
 		if(fabric_pop) begin
 			data_pop_packet			<= 1;
-			fabric_frame_valid		<= 0;
+			fabric_bus.frame_valid		<= 0;
 
 			if(header_rd_data.len[2:0])
 				data_rd_packet_size	<= header_rd_data.len[10:3] + 1'h1;
@@ -396,9 +391,9 @@ module RxFifo #(
 				data_rd_en				<= 1;
 				data_rd_offset			<= 1;
 
-				fabric_fwd_valid		<= 1;
-				fabric_fwd_bytes_valid	<= 8;
-				fabric_fwd_data			<= { header_rd_data.dst_mac, header_rd_data.src_mac[47:32] };
+				fabric_bus.fwd_valid		<= 1;
+				fabric_bus.fwd_bytes_valid	<= 8;
+				fabric_bus.fwd_data			<= { header_rd_data.dst_mac, header_rd_data.src_mac[47:32] };
 
 				fwd_state				<= FWD_STATE_FIRST;
 
@@ -409,9 +404,9 @@ module RxFifo #(
 				data_rd_en				<= 1;
 				data_rd_offset			<= 2;
 
-				fabric_fwd_valid		<= 1;
-				fabric_fwd_bytes_valid	<= 8;
-				fabric_fwd_data			<=
+				fabric_bus.fwd_valid		<= 1;
+				fabric_bus.fwd_bytes_valid	<= 8;
+				fabric_bus.fwd_data			<=
 				{
 					header_rd_data.src_mac[31:0],
 					header_rd_data.ethertype,
@@ -429,9 +424,9 @@ module RxFifo #(
 				data_rd_en				<= 1;
 				data_rd_offset			<= data_rd_offset + 1;
 
-				fabric_fwd_valid		<= 1;
-				fabric_fwd_bytes_valid	<= 8;
-				fabric_fwd_data			<=
+				fabric_bus.fwd_valid		<= 1;
+				fabric_bus.fwd_bytes_valid	<= 8;
+				fabric_bus.fwd_data			<=
 				{
 					data_rd_data_ff[47:0],
 					data_rd_data[63:48]
@@ -444,21 +439,21 @@ module RxFifo #(
 
 						//Use 6 saved bytes, 2 padding at the end
 						0: begin
-							fabric_fwd_data[15:0]	<= 0;
-							fabric_fwd_bytes_valid	<= 6;
+							fabric_bus.fwd_data[15:0]	<= 0;
+							fabric_bus.fwd_bytes_valid	<= 6;
 							fwd_state				<= FWD_STATE_IDLE;
 						end
 
 						//6 saved bytes, 1 new byte, 1 padding at the end
 						1: begin
-							fabric_fwd_data[7:0]	<= 0;
-							fabric_fwd_bytes_valid	<= 7;
+							fabric_bus.fwd_data[7:0]	<= 0;
+							fabric_bus.fwd_bytes_valid	<= 7;
 							fwd_state				<= FWD_STATE_IDLE;
 						end
 
 						//6 saved bytes, 2 new bytes, no padding
 						2: begin
-							fabric_fwd_bytes_valid	<= 2;
+							fabric_bus.fwd_bytes_valid	<= 2;
 							fwd_state				<= FWD_STATE_IDLE;
 						end
 
@@ -474,8 +469,8 @@ module RxFifo #(
 			//Empty out the last few bytes at the end of the packet
 			FWD_STATE_LAST: begin
 
-				fabric_fwd_valid		<= 1;
-				fabric_fwd_data			<=
+				fabric_bus.fwd_valid		<= 1;
+				fabric_bus.fwd_data			<=
 				{
 					data_rd_data_ff[47:0],
 					data_rd_data[63:48]
@@ -485,44 +480,44 @@ module RxFifo #(
 
 					//Use 1 saved byte, 7 padding
 					3: begin
-						fabric_fwd_data[55:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 1;
+						fabric_bus.fwd_data[55:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 1;
 					end
 
 					//Use 2 saved bytes, 6 padding
 					4: begin
-						fabric_fwd_data[48:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 2;
+						fabric_bus.fwd_data[48:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 2;
 					end
 
 					//Use 3 saved bytes, 5 padding
 					3: begin
-						fabric_fwd_data[40:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 3;
+						fabric_bus.fwd_data[40:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 3;
 					end
 
 					//Use 4 saved bytes, 4 padding
 					4: begin
-						fabric_fwd_data[32:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 4;
+						fabric_bus.fwd_data[32:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 4;
 					end
 
 					//Use 5 saved bytes, 3 padding
 					5: begin
-						fabric_fwd_data[24:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 5;
+						fabric_bus.fwd_data[24:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 5;
 					end
 
 					//Use 6 saved bytes, 2 padding
 					6: begin
-						fabric_fwd_data[16:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 6;
+						fabric_bus.fwd_data[16:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 6;
 					end
 
 					//Use 6 saved bytes, 1 new, 1 padding
 					7: begin
-						fabric_fwd_data[7:0]	<= 0;
-						fabric_fwd_bytes_valid	<= 7;
+						fabric_bus.fwd_data[7:0]	<= 0;
+						fabric_bus.fwd_bytes_valid	<= 7;
 					end
 
 				endcase

@@ -199,6 +199,9 @@ module RxFifo_sim();
 
 	wire	fabric_frame_valid;
 
+	`include "RxFifoBus.svh"
+	RxFifoBus fabric_bus;
+
 	RxFifo dut(
 		.mac_clk(clk_mac),
 		.mac_rx_bus(rx_l2_bus),
@@ -216,15 +219,9 @@ module RxFifo_sim();
 		.mac_drop_jumbo(),
 
 		.fabric_clk(clk_fabric),
-		.fabric_frame_valid(fabric_frame_valid),
-		.fabric_frame_dst_mac(),
-		.fabric_frame_src_mac(),
-		.fabric_frame_vlan(),
 		.fabric_fwd_en(fabric_fwd_en),
-		.fabric_fwd_valid(),
-		.fabric_fwd_bytes_valid(),
-		.fabric_fwd_data(),
-		.fabric_pop(fabric_pop)
+		.fabric_pop(fabric_pop),
+		.fabric_bus(fabric_bus)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +245,7 @@ module RxFifo_sim();
 
 			//Wait for the frame to be fully buffered, then push it out to fabric
 			1: begin
-				if(fabric_frame_valid) begin
+				if(fabric_bus.frame_valid) begin
 					fabric_fwd_en	<= 1;
 					state			<= 2;
 				end

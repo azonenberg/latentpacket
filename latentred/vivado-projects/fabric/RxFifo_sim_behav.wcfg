@@ -6,21 +6,21 @@
       <db_ref path="RxFifo_sim_behav.wdb" id="1">
          <top_modules>
             <top_module name="RxFifo_sim" />
-            <top_module name="\$unit_MemoryMacro_sv " />
+            <top_module name="\$unit_CrossClockFifo_sv " />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1291508334fs"></ZoomStartTime>
-      <ZoomEndTime time="1335258335fs"></ZoomEndTime>
-      <Cursor1Time time="1302400000fs"></Cursor1Time>
+      <ZoomStartTime time="1145950000fs"></ZoomStartTime>
+      <ZoomEndTime time="1585450001fs"></ZoomEndTime>
+      <Cursor1Time time="1219200000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="252"></NameColumnWidth>
-      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+      <ValueColumnWidth column_width="138"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="11" />
+   <WVObjectSize size="10" />
    <wvobject type="logic" fp_name="/RxFifo_sim/ready">
       <obj_property name="ElementShortName">ready</obj_property>
       <obj_property name="ObjectShortName">ready</obj_property>
@@ -227,22 +227,6 @@
             <obj_property name="ElementShortName">fabric_clk</obj_property>
             <obj_property name="ObjectShortName">fabric_clk</obj_property>
          </wvobject>
-         <wvobject type="logic" fp_name="/RxFifo_sim/dut/fabric_frame_valid">
-            <obj_property name="ElementShortName">fabric_frame_valid</obj_property>
-            <obj_property name="ObjectShortName">fabric_frame_valid</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/RxFifo_sim/dut/fabric_frame_dst_mac">
-            <obj_property name="ElementShortName">fabric_frame_dst_mac[47:0]</obj_property>
-            <obj_property name="ObjectShortName">fabric_frame_dst_mac[47:0]</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/RxFifo_sim/dut/fabric_frame_src_mac">
-            <obj_property name="ElementShortName">fabric_frame_src_mac[47:0]</obj_property>
-            <obj_property name="ObjectShortName">fabric_frame_src_mac[47:0]</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/RxFifo_sim/dut/fabric_frame_vlan">
-            <obj_property name="ElementShortName">fabric_frame_vlan[11:0]</obj_property>
-            <obj_property name="ObjectShortName">fabric_frame_vlan[11:0]</obj_property>
-         </wvobject>
          <wvobject type="logic" fp_name="/RxFifo_sim/dut/fabric_fwd_en">
             <obj_property name="ElementShortName">fabric_fwd_en</obj_property>
             <obj_property name="ObjectShortName">fabric_fwd_en</obj_property>
@@ -258,27 +242,6 @@
          <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_data">
             <obj_property name="ElementShortName">header_rd_data</obj_property>
             <obj_property name="ObjectShortName">header_rd_data</obj_property>
-            <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_data.len">
-               <obj_property name="ElementShortName">.len[10:0]</obj_property>
-               <obj_property name="ObjectShortName">.len[10:0]</obj_property>
-               <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_data.ethertype">
-               <obj_property name="ElementShortName">.ethertype[15:0]</obj_property>
-               <obj_property name="ObjectShortName">.ethertype[15:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_data.src_mac">
-               <obj_property name="ElementShortName">.src_mac[47:0]</obj_property>
-               <obj_property name="ObjectShortName">.src_mac[47:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_data.dst_mac">
-               <obj_property name="ElementShortName">.dst_mac[47:0]</obj_property>
-               <obj_property name="ObjectShortName">.dst_mac[47:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_data.vlan">
-               <obj_property name="ElementShortName">.vlan[11:0]</obj_property>
-               <obj_property name="ObjectShortName">.vlan[11:0]</obj_property>
-            </wvobject>
          </wvobject>
          <wvobject type="vbus" fp_name="vbus770">
             <obj_property name="label">header_rd_data.len[2:0]</obj_property>
@@ -297,8 +260,8 @@
             </wvobject>
          </wvobject>
          <wvobject type="array" fp_name="/RxFifo_sim/dut/header_rd_size">
-            <obj_property name="ElementShortName">header_rd_size[5:0]</obj_property>
-            <obj_property name="ObjectShortName">header_rd_size[5:0]</obj_property>
+            <obj_property name="ElementShortName">header_rd_size[8:0]</obj_property>
+            <obj_property name="ObjectShortName">header_rd_size[8:0]</obj_property>
          </wvobject>
          <wvobject type="logic" fp_name="/RxFifo_sim/dut/header_rd_empty">
             <obj_property name="ElementShortName">header_rd_empty</obj_property>
@@ -386,26 +349,17 @@
             <obj_property name="ElementShortName">data_rd_size[11:0]</obj_property>
             <obj_property name="ObjectShortName">data_rd_size[11:0]</obj_property>
          </wvobject>
+         <wvobject type="array" fp_name="/RxFifo_sim/dut/fabric_bus">
+            <obj_property name="ElementShortName">fabric_bus</obj_property>
+            <obj_property name="ObjectShortName">fabric_bus</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+         </wvobject>
          <wvobject fp_name="divider609" type="divider">
          </wvobject>
          <wvobject type="array" fp_name="/RxFifo_sim/dut/fwd_state">
             <obj_property name="ElementShortName">fwd_state[2:0]</obj_property>
             <obj_property name="ObjectShortName">fwd_state[2:0]</obj_property>
          </wvobject>
-         <wvobject type="logic" fp_name="/RxFifo_sim/dut/fabric_fwd_valid">
-            <obj_property name="ElementShortName">fabric_fwd_valid</obj_property>
-            <obj_property name="ObjectShortName">fabric_fwd_valid</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/RxFifo_sim/dut/fabric_fwd_bytes_valid">
-            <obj_property name="ElementShortName">fabric_fwd_bytes_valid[3:0]</obj_property>
-            <obj_property name="ObjectShortName">fabric_fwd_bytes_valid[3:0]</obj_property>
-         </wvobject>
-         <wvobject type="array" fp_name="/RxFifo_sim/dut/fabric_fwd_data">
-            <obj_property name="ElementShortName">fabric_fwd_data[63:0]</obj_property>
-            <obj_property name="ObjectShortName">fabric_fwd_data[63:0]</obj_property>
-         </wvobject>
       </wvobject>
-   </wvobject>
-   <wvobject fp_name="divider610" type="divider">
    </wvobject>
 </wave_config>

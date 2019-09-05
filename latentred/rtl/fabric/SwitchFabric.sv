@@ -29,6 +29,8 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "RxFifoBus.svh"
+
 /**
 	@brief The actual switch fabric for LATENTRED
 
@@ -39,8 +41,6 @@
 		One 4:1 mux fits in a single LUT6, an 8:1 mux fits in two LUT6s and a F7MUX.
 		Each output port thus needs 128 LUT6s and 64 F7MUX's.
 		The entire fabric will use 1024 LUT6s and 512 F7MUX's for the core crossbar.
-
-		Actual fabric will be much bigger due to FIFOs and muxing for the 1G ports, plus MAC lookup logic etc.
  */
 module SwitchFabric #(
 	parameter NUM_1G_PORTS	= 24,
@@ -62,6 +62,7 @@ module SwitchFabric #(
 	input wire			mac_lookup_hit,
 	input wire[4:0]		mac_lookup_dst_port,
 
+	/*
 	//1G ports: 32 bits @ 125 MHz with gaps
 	input wire[NUM_1G_PORTS-1:0]					rx_1g_clk,
 	input wire EthernetRxL2Bus[NUM_1G_PORTS-1:0]	rx_1g_bus,
@@ -69,6 +70,7 @@ module SwitchFabric #(
 	//10G ports: 32 bits @ 312.5 MHz
 	input wire[NUM_10G_PORTS-1:0]					rx_10g_clk,
 	input wire EthernetRxL2Bus[NUM_10G_PORTS-1:0]	rx_10g_bus
+	*/
 
 	//TODO: transmit side ports
 	);
