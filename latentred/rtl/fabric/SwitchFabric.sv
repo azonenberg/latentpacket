@@ -151,8 +151,12 @@ module SwitchFabric #(
 
 	always_comb begin
 		for(integer src = 0; src < TOTAL_PORTS; src ++) begin
-			for(integer dst = 0; dst < TOTAL_PORTS; dst ++)
-				src_to_dst[src][dst] = (port_state[src].dst_port == dst) || port_state[src].broadcast;
+			for(integer dst = 0; dst < TOTAL_PORTS; dst ++) begin
+				//TODO: handle broadcasts
+				//Need to send to all ports in the current vlan, but not to the source port or other vlans
+				//Maybe we should just send to everyone but the source, and let the vlan decision be made at the output?
+				src_to_dst[src][dst] = (port_state[src].dst_port == dst);
+			end
 		end
 	end
 
