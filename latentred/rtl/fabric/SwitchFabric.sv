@@ -30,6 +30,7 @@
 ***********************************************************************************************************************/
 
 `include "RxFifoBus.svh"
+`include "SwitchFabric.svh"
 
 /**
 	@brief The actual switch fabric for LATENTRED
@@ -67,12 +68,12 @@ module SwitchFabric #(
 
 	//Interface to the MAC address table
 	output logic		mac_lookup_en		= 0,
-	output logic[11:0]	mac_lookup_src_vlan	= 0,
-	output logic[47:0]	mac_lookup_src_mac	= 0,
-	output logic[4:0]	mac_lookup_src_port	= 0,
-	output logic[47:0]	mac_lookup_dst_mac	= 0,
+	output vlan_t		mac_lookup_src_vlan	= 0,
+	output macaddr_t	mac_lookup_src_mac	= 0,
+	output port_t		mac_lookup_src_port	= 0,
+	output macaddr_t	mac_lookup_dst_mac	= 0,
 	input wire			mac_lookup_hit,
-	input wire[4:0]		mac_lookup_dst_port,
+	input wire port_t	mac_lookup_dst_port,
 
 	//Interface to the FIFOs.
 	//First NUM_1G_PORTS are 1G, rest are 10G
@@ -87,22 +88,23 @@ module SwitchFabric #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Keep track of destinations for each port
 
-	logic[4:0]	mac_port_id;
+	port_t			mac_port_id;
 
 	typedef struct packed
 	{
-		logic		dst_valid;
-		logic		broadcast;
-		logic[4:0]	dst_port;
+		logic	dst_valid;
+		logic	broadcast;
+		port_t	dst_port;
 	} portstate_t;
 
 	portstate_t[TOTAL_PORTS-1:0] port_state	= 0;
 
 	//Round robin address lookup for each port
-	logic		mac_lookup_en_ff		= 0;
-	logic		mac_lookup_en_ff2		= 0;
-	logic[4:0]	mac_lookup_src_port_ff	= 0;
-	logic[4:0]	mac_lookup_src_port_ff2	= 0;
+	logic	mac_lookup_en_ff		= 0;
+	logic	mac_lookup_en_ff2		= 0;
+	port_t	mac_lookup_src_port_ff	= 0;
+	port_t	mac_lookup_src_port_ff2	= 0;
+
 	always_ff @(posedge clk) begin
 
 		//Clear flags
@@ -155,22 +157,37 @@ module SwitchFabric #(
 				//TODO: handle broadcasts
 				//Need to send to all ports in the current vlan, but not to the source port or other vlans
 				//Maybe we should just send to everyone but the source, and let the vlan decision be made at the output?
-				src_to_dst[src][dst] = (port_state[src].dst_port == dst);
+				src_to_dest[src][dst] = (port_state[src].dst_port == dst);
 			end
 		end
 	end
+
+	//Sum a port plus an offset mod TOTAL_PORTS
+	function port_t ModularOffset;
+		input integer	port;
+		input integer	offset;
+
+		begin
+			if( (port + offset) >= TOTAL_PORTS)
+				ModularOffset = (port + offset) - TOTAL_PORTS;
+			else
+				ModularOffset = (port + offset);
+		end
+
+	endfunction
 
 	//Channels within the crossbar switch
 	typedef struct packed
 	{
 		logic					busy;				//true if we're in the middle of a forward operation
 		logic					valid;				//true if data should be processed by the output port
-		logic[4:0]				dest_port;			//ID of the output port
-		logic[11:0]				vlan;				//dest vlan ID
+		port_t					dest_port;			//ID of the output port
+		vlan_t					vlan;				//dest vlan ID
 		logic[3:0]				bytes_valid;		//number of valid bytes in data (only used in last word of packet)
 		logic[63:0]				data;				//data being forwarded
-		logic[2:0]				rr_source_lane;		//round robin offset for the source port (0-5? FIXME)
-		logic[TOTAL_PORTS_1:0]	broadcast_pending;	//indicates which ports still need to receive the current broadcast
+		logic[TOTAL_PORTS-1:0]	broadcast_pending;	//indicates which ports still need to receive the current broadcast
+
+		port_t					rr_offset;			//Offset of port for round robin purposes
 	} CrossbarChannel;
 
 	CrossbarChannel[CROSSBAR_PORTS-1:0] channels = 0;

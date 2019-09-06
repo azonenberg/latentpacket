@@ -29,6 +29,8 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "SwitchFabric.svh"
+
 /**
 	@file
 	@author Andrew D. Zonenberg
@@ -80,13 +82,13 @@ module MACAddressTable #(
 	input wire					clk,					//nominally 156.25 MHz
 
 	input wire					lookup_en,				//indicates a new packet has arrived
-	input wire[11:0]			lookup_src_vlan,		//VLAN ID of the packet
-	input wire[47:0]			lookup_src_mac,			//source address of the packet (inserted in table if needed)
-	input wire[4:0]				lookup_src_port,		//port ID of the packet (0...31)
-	input wire[47:0]			lookup_dst_mac,			//dest address of the packet (to be looked up)
+	input wire vlan_t			lookup_src_vlan,		//VLAN ID of the packet
+	input wire macaddr_t		lookup_src_mac,			//source address of the packet (inserted in table if needed)
+	input wire port_t			lookup_src_port,		//port ID of the packet (0...31)
+	input wire macaddr_t		lookup_dst_mac,			//dest address of the packet (to be looked up)
 
 	output logic				lookup_hit		= 0,	//indicates the lookup has completed
-	output logic[4:0]			lookup_dst_port = 0,	//port ID of the destination (only valid if lookup_hit is true)
+	output port_t				lookup_dst_port = 0,	//port ID of the destination (only valid if lookup_hit is true)
 
 	input wire					gc_en,					//assert for one clock to start garbage collection
 	output logic				gc_done			= 0,	//goes high at end of garbage collection
@@ -98,9 +100,9 @@ module MACAddressTable #(
 	input wire[ASSOC_BITS-1:0]	mgmt_way,
 	output logic				mgmt_rd_valid	= 0,
 	output logic				mgmt_rd_gc_mark	= 0,
-	output logic[47:0]			mgmt_rd_mac		= 0,
-	output logic[11:0]			mgmt_rd_vlan	= 0,
-	output logic[4:0]			mgmt_rd_port	= 0
+	output macaddr_t			mgmt_rd_mac		= 0,
+	output vlan_t				mgmt_rd_vlan	= 0,
+	output port_t				mgmt_rd_port	= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,9 +156,9 @@ module MACAddressTable #(
 	{
 		logic		gc_mark;
 		logic		valid;
-		logic[11:0]	vlan;
-		logic[4:0]	port;
-		logic[47:0]	mac;
+		vlan_t		vlan;
+		port_t		port;
+		macaddr_t	mac;
 	} entry_t;
 
 	entry_t					lookup_rdata[ASSOC_WAYS-1:0];
@@ -203,8 +205,8 @@ module MACAddressTable #(
 
 	entry_t				lookup_src_ff			= 0;
 	entry_t				lookup_src_ff2			= 0;
-	logic[47:0]			lookup_dst_mac_ff		= 0;
-	logic[47:0]			lookup_dst_mac_ff2		= 0;
+	macaddr_t			lookup_dst_mac_ff		= 0;
+	macaddr_t			lookup_dst_mac_ff2		= 0;
 
 	always_ff @(posedge clk) begin
 		lookup_en_ff			<= lookup_en;
@@ -227,7 +229,7 @@ module MACAddressTable #(
 
 	logic					hit_comb;
 	logic					lookup_hit_comb;
-	logic[4:0]				lookup_dst_port_comb;
+	port_t					lookup_dst_port_comb;
 	logic[ASSOC_BITS-1:0]	lookup_way_comb;
 
 	logic					need_to_refresh_comb;
@@ -364,7 +366,7 @@ module MACAddressTable #(
 	logic					need_to_learn	= 0;
 	logic[47:0]				pend_addr		= 0;
 	logic[11:0]				pend_vlan		= 0;
-	logic[4:0]				pend_port		= 0;
+	port_t					pend_port		= 0;
 	logic[ASSOC_BITS-1:0]	pend_way		= 0;
 
 	//Memory requests from the garbage collector
