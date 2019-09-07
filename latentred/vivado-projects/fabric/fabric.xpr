@@ -254,7 +254,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="top"/>
+        <Option Name="TopModule" Val="SwitchFabric"/>
         <Define Name="XILINX_7SERIES" Val="1"/>
         <Define Name="XILINX_KINTEX7" Val="1"/>
         <Define Name="XILINX_SPEEDGRADE" Val="2"/>

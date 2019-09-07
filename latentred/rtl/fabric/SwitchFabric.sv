@@ -178,8 +178,8 @@ module SwitchFabric #(
 					src_to_dest[dst][src] = 0;
 
 				//Source being popped? Ignore the stale frame
-				else if(fifo_pop[src]) begin
-				end
+				else if(fifo_pop[src])
+					src_to_dest[dst][src] = 0;
 
 				//Broadcast? Forward everywhere (except the port it came from)
 				else if(port_state[src].broadcast)
