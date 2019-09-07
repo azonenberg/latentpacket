@@ -227,8 +227,6 @@ module SwitchFabric #(
 
 	localparam INVALID_PORT = 5'd31;
 
-	integer hit;
-	integer src;
 	always_ff @(posedge clk) begin
 
 		fifo_fwd_en		<= 0;
@@ -273,7 +271,7 @@ module SwitchFabric #(
 			if(channels[chan].busy) begin
 
 				//Cache the source port to make everything less verbose
-				src = channels[chan].src_port;
+				automatic integer src = channels[chan].src_port;
 
 				//Forward traffic (this is the actual crossbar mux)
 				channels[chan].valid		<= fifo_bus[src].fwd_valid;
@@ -319,6 +317,7 @@ module SwitchFabric #(
 
 			//Not forwarding. Check if we should start forwarding something.
 			else begin
+				automatic integer hit = 0;
 
 				//1G port? This channel is being time-shared by multiple output ports.
 				//Figure out the actual output port ID.
@@ -330,7 +329,6 @@ module SwitchFabric #(
 					channels[chan].dest_port = NUM_1G_PORTS + chan - CROSSBAR_1G_PORTS;
 
 				//Check all input buffers and see if they want to send to us.
-				hit = 0;
 				for(integer i=0; i<TOTAL_PORTS; i=i+1) begin
 
 					automatic integer srcport = ModularOffset(i, channels[chan].rr_source);
