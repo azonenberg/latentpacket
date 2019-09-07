@@ -213,8 +213,8 @@ module SwitchFabric #(
 		vlan_t					vlan;				//vlan ID of the frame being forwarded
 		logic[3:0]				bytes_valid;		//number of valid bytes in data (only used in last word of packet)
 		logic[63:0]				data;				//data being forwarded
-		logic[2:0]				channel_offset;		//Offset of port within the 1G port group (ignored for 10G)
-		port_t					rr_offset;			//Round robin offset for arbitration
+		logic[2:0]				rr_1g_dest;		//Offset of port within the 1G port group (ignored for 10G)
+		port_t					rr_source;			//Round robin offset for arbitration
 	} CrossbarChannel;
 
 	CrossbarChannel[CROSSBAR_PORTS-1:0] channels = 0;
@@ -232,14 +232,17 @@ module SwitchFabric #(
 
 		fifo_fwd_en_ff	<= fifo_fwd_en;
 
-		//Clear broadcast state when we finish forwarding a frame
+		//Clear broadcast state when we finish forwarding a frame.
 		for(integer i=0; i < TOTAL_PORTS; i++) begin
 			if(fifo_pop[i])
-				port_state[i].broadcast_done <= 0;
+				port_state[i].broadcast_done 	<= 0;
 		end
 
 		//Pop FIFO when all broadcasts have completed
 		for(integer i=0; i < TOTAL_PORTS; i++) begin
+
+			//Always set the done bit for traffic from ourself (we never send to the source interface)
+			port_state[i].broadcast_done[i]		<= 1;
 
 			//Valid broadcast frame not already being popped?
 			if(port_state[i].broadcast && port_state[i].dst_valid && !fifo_pop[i]) begin
@@ -293,18 +296,18 @@ module SwitchFabric #(
 
 					//Bump the round-robin destination counter for 1G ports
 					//so that we can forward to the next destination
-					if(chan < CROSSBAR_1G_PORTS)
-						channels[chan].channel_offset	<= channels[chan].channel_offset + 1'h1;
+					if(chan < CROSSBAR_1G_PORTS) begin
+						channels[chan].rr_1g_dest	<= channels[chan].rr_1g_dest + 1'h1;
+
+						if( (channels[chan].rr_1g_dest + 1) >= PORT_GROUP_SIZE)
+							channels[chan].rr_1g_dest <= 0;
+					end
 
 					//Bump round-robin source channel counter for next frame
-					if( (channels[chan].rr_offset + 1) >= PORT_GROUP_SIZE)
-						channels[chan].rr_offset	<= 0;
+					if( (channels[chan].rr_source + 1) >= TOTAL_PORTS)
+						channels[chan].rr_source	<= 0;
 					else
-						channels[chan].rr_offset	<= channels[chan].rr_offset + 1'h1;
-
-					`ifdef SIMULATION
-						$display("[%t] Channel %0d finished forwarding", $realtime(), chan[3:0]);
-					`endif
+						channels[chan].rr_source	<= channels[chan].rr_source + 1'h1;
 
 				end
 
@@ -316,7 +319,7 @@ module SwitchFabric #(
 				//1G port? This channel is being time-shared by multiple output ports.
 				//Figure out the actual output port ID.
 				if(chan < CROSSBAR_1G_PORTS)
-					channels[chan].dest_port = chan * PORT_GROUP_SIZE + channels[chan].channel_offset;
+					channels[chan].dest_port = chan * PORT_GROUP_SIZE + channels[chan].rr_1g_dest;
 
 				//10G port, easy peasy. Just use the channel ID, offset as needed.
 				else
@@ -332,7 +335,7 @@ module SwitchFabric #(
 
 					//Check the next port
 					else begin
-						automatic integer srcport = ModularOffset(i, channels[chan].rr_offset);
+						automatic integer srcport = ModularOffset(i, channels[chan].rr_source);
 
 						//If the source port is already forwarding somewhere else, don't bother checking any further.
 						//We came too late. Need to wait until that forwarding operation completes, then we might get
@@ -346,7 +349,7 @@ module SwitchFabric #(
 						end
 
 						//Source is eligible to send to use. See if it wants to.
-						else if(src_to_dest[chan][srcport]) begin
+						else if(src_to_dest[channels[chan].dest_port][srcport]) begin
 
 							//We found something, don't look any further
 							hit = 1;
@@ -379,6 +382,15 @@ module SwitchFabric #(
 
 						end
 					end
+
+				end
+
+				//If we didn't hit anything, move on to the next port in the group
+				if(!hit && chan < CROSSBAR_1G_PORTS) begin
+					channels[chan].rr_1g_dest	<= channels[chan].rr_1g_dest + 1'h1;
+
+					if( (channels[chan].rr_1g_dest + 1) >= PORT_GROUP_SIZE)
+						channels[chan].rr_1g_dest <= 0;
 
 				end
 
