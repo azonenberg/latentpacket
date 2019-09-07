@@ -91,9 +91,11 @@ module SwitchFabric #(
 
 	typedef struct packed
 	{
-		logic	dst_valid;
-		logic	broadcast;
-		port_t	dst_port;
+		logic					dst_valid;
+		logic					broadcast;
+		logic[TOTAL_PORTS-1:0]	broadcast_done;		//indicates which ports still need to receive the current broadcast
+		port_t					dst_port;
+		logic					forwarding;
 	} portstate_t;
 
 	portstate_t[TOTAL_PORTS-1:0] port_state	= 0;
@@ -157,7 +159,7 @@ module SwitchFabric #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Link selection
+	// Link selection and forwarding
 
 	//Bitmap of which source wants to send to which destination
 	//src_to_dest[dst][src] means src is sending to dst
@@ -170,6 +172,10 @@ module SwitchFabric #(
 				//No frame to forward? Skip it
 				if(!port_state[src].dst_valid)
 					src_to_dest[dst][src] = 0;
+
+				//Source being popped? Ignore the stale frame
+				else if(fifo_pop[src]) begin
+				end
 
 				//Broadcast? Forward everywhere (except the port it came from)
 				else if(port_state[src].broadcast)
@@ -207,35 +213,101 @@ module SwitchFabric #(
 		vlan_t					vlan;				//vlan ID of the frame being forwarded
 		logic[3:0]				bytes_valid;		//number of valid bytes in data (only used in last word of packet)
 		logic[63:0]				data;				//data being forwarded
-		logic[TOTAL_PORTS-1:0]	broadcast_done;		//indicates which ports still need to receive the current broadcast
 		logic[2:0]				channel_offset;		//Offset of port within the 1G port group (ignored for 10G)
 		port_t					rr_offset;			//Round robin offset for arbitration
 	} CrossbarChannel;
 
 	CrossbarChannel[CROSSBAR_PORTS-1:0] channels = 0;
 
+	logic[TOTAL_PORTS-1:0]				fifo_fwd_en_ff	= 0;
+
 	localparam INVALID_PORT = 5'd31;
 
-	//Pick who gets to send to each destination
 	integer hit;
+	integer src;
 	always_ff @(posedge clk) begin
 
 		fifo_fwd_en		<= 0;
+		fifo_pop		<= 0;
+
+		fifo_fwd_en_ff	<= fifo_fwd_en;
+
+		//Clear broadcast state when we finish forwarding a frame
+		for(integer i=0; i < TOTAL_PORTS; i++) begin
+			if(fifo_pop[i])
+				port_state[i].broadcast_done <= 0;
+		end
+
+		//Pop FIFO when all broadcasts have completed
+		for(integer i=0; i < TOTAL_PORTS; i++) begin
+
+			//Valid broadcast frame not already being popped?
+			if(port_state[i].broadcast && port_state[i].dst_valid && !fifo_pop[i]) begin
+
+				//Pop if all broadcasting is done
+				if(port_state[i].broadcast_done == {TOTAL_PORTS{1'b1}}) begin
+					fifo_pop[i]	<= 1;
+
+					`ifdef SIMULATION
+						$display("[%t] Popping ingress FIFO on interface %s because broadcast forwarding is complete",
+							$realtime(),
+							InterfaceName(i)
+							);
+					`endif
+				end
+
+			end
+
+		end
 
 		for(integer chan = 0; chan < CROSSBAR_PORTS; chan ++) begin
 
-			//Early out if nobody wants to send to us
-			if(src_to_dest[chan] == 0) begin
-				channels[chan].busy	<= 0;
-			end
-
 			//If the channel is busy, forward traffic
-			else if(channels[chan].busy) begin
-				channels[chan].valid		<= fifo_bus[channels[chan].src_port].fwd_valid;
-				channels[chan].bytes_valid	<= fifo_bus[channels[chan].src_port].fwd_bytes_valid;
-				channels[chan].data			<= fifo_bus[channels[chan].src_port].fwd_data;
+			if(channels[chan].busy) begin
 
-				//If
+				//Cache the source port to make everything less verbose
+				src = channels[chan].src_port;
+
+				//Forward traffic (this is the actual crossbar mux)
+				channels[chan].valid		<= fifo_bus[src].fwd_valid;
+				channels[chan].bytes_valid	<= fifo_bus[src].fwd_bytes_valid;
+				channels[chan].data			<= fifo_bus[src].fwd_data;
+
+				//When the channel finishes forwarding, we have a bunch of stuff to do.
+				if(!fifo_bus[src].fwd_valid && !fifo_fwd_en[src] && !fifo_fwd_en_ff[src]) begin
+
+					//Mark the source port as no longer busy, so somebody else can forward from it if they want.
+					port_state[src].forwarding	<= 0;
+
+					//If the frame is a broadcast, mark our destination as having received it.
+					//TODO: optimization, allow sending to multiple 1G ports at once
+					//TODO: optimization, don't waste time sending to ports in other vlans who will just ignore it
+					port_state[src].broadcast_done[channels[chan].dest_port] <= 1;
+
+					//If the frame is a unicast, pop the FIFO. Broadcast/multicast popping is handled separately.
+					if(!port_state[src].broadcast)
+						fifo_pop[src]	<= 1;
+
+					//This crossbar channel is now free for further traffic
+					channels[chan].busy	<= 0;
+
+					//Bump the round-robin destination counter for 1G ports
+					//so that we can forward to the next destination
+					if(chan < CROSSBAR_1G_PORTS)
+						channels[chan].channel_offset	<= channels[chan].channel_offset + 1'h1;
+
+					//Bump round-robin source channel counter for next frame
+					if( (channels[chan].rr_offset + 1) >= PORT_GROUP_SIZE)
+						channels[chan].rr_offset	<= 0;
+					else
+						channels[chan].rr_offset	<= channels[chan].rr_offset + 1'h1;
+
+					`ifdef SIMULATION
+						$display("[%t] Channel %0d finished forwarding", $realtime(), chan[3:0]);
+					`endif
+
+				end
+
 			end
 
 			//Not forwarding. Check if we should start forwarding something.
@@ -248,7 +320,7 @@ module SwitchFabric #(
 
 				//10G port, easy peasy. Just use the channel ID, offset as needed.
 				else
-					channels[chan].dest_port = NUM_1G_PORTS + chan;
+					channels[chan].dest_port = NUM_1G_PORTS + chan - CROSSBAR_1G_PORTS;
 
 				//Check all input buffers and see if they want to send to us.
 				hit = 0;
@@ -260,8 +332,21 @@ module SwitchFabric #(
 
 					//Check the next port
 					else begin
-						integer srcport = ModularOffset(i, channels[chan].rr_offset);
-						if(src_to_dest[chan][srcport]) begin
+						automatic integer srcport = ModularOffset(i, channels[chan].rr_offset);
+
+						//If the source port is already forwarding somewhere else, don't bother checking any further.
+						//We came too late. Need to wait until that forwarding operation completes, then we might get
+						//a crack at the frame (which must be a broadcast/multicast if it's going to us too)
+						if(port_state[srcport].forwarding) begin
+						end
+
+						//If the source port broadcasted to us already, don't forward the same frame again
+						else if(port_state[srcport].broadcast &&
+							port_state[srcport].broadcast_done[channels[chan].dest_port]) begin
+						end
+
+						//Source is eligible to send to use. See if it wants to.
+						else if(src_to_dest[chan][srcport]) begin
 
 							//We found something, don't look any further
 							hit = 1;
@@ -271,18 +356,14 @@ module SwitchFabric #(
 							channels[chan].src_port		<= srcport;
 							channels[chan].vlan			<= fifo_bus[srcport].frame_vlan;
 
-							//Bump round robin counter for next frame
-							if( (channels[chan].rr_offset + 1) >= PORT_GROUP_SIZE)
-								channels[chan].rr_offset	<= 0;
-							else
-								channels[chan].rr_offset	<= channels[chan].rr_offset + 1'h1;
-
-							//Ask the source FIFO to forward the frame
-							//TODO: Need to make sure the FIFO isn't already doing anything!!!
+							//Ask the source FIFO to forward the frame.
+							//Mark the source port as busy so nobody else tries to use it next cycle.
+							//(multiple channels forwarding from the same source *on the same cycle* is totally fine)
 							fifo_fwd_en[srcport]			<= 1;
+							port_state[srcport].forwarding	<= 1;
 
 							`ifdef SIMULATION
-								$display("[%t] Forwarding frame from interface %s (addr %02x:%02x:%02x:%02x:%02x:%02x) to %s (addr %02x:%02x:%02x:%02x:%02x:%02x) (via crossbar channel %d)",
+								$display("[%t] Forwarding frame from interface %s (addr %02x:%02x:%02x:%02x:%02x:%02x) to %s (addr %02x:%02x:%02x:%02x:%02x:%02x) (via crossbar channel %0d)",
 									$realtime(),
 									InterfaceName(srcport),
 									fifo_bus[srcport].frame_src_mac[47:40], fifo_bus[srcport].frame_src_mac[39:32],
@@ -300,27 +381,6 @@ module SwitchFabric #(
 					end
 
 				end
-
-			end
-
-		end
-
-	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The actual forwarding crossbar
-
-	always_ff @(posedge clk) begin
-
-		for(integer dport = 0; dport < CROSSBAR_PORTS; dport ++) begin
-
-			//1G ports
-			if(dport < CROSSBAR_1G_PORTS) begin
-				//
-			end
-
-			//10G ports
-			else begin
 
 			end
 
