@@ -433,7 +433,7 @@ module RxFifo #(
 				};
 
 				//End of frame? Stop (and truncate any partial data)
-				if(header_rd_data.len[10:3] == data_rd_offset_ff2) begin
+				if(header_rd_data.len[10:3] == data_rd_offset_ff) begin
 
 					case(header_rd_data.len[2:0])
 
