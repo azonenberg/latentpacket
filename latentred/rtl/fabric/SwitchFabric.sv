@@ -30,6 +30,7 @@
 ***********************************************************************************************************************/
 
 `include "RxFifoBus.svh"
+`include "TxFifoBus.svh"
 `include "SwitchFabric.svh"
 
 /**
@@ -64,14 +65,17 @@ module SwitchFabric #(
 	input wire			mac_lookup_hit,
 	input wire port_t	mac_lookup_dst_port,
 
-	//Interface to the FIFOs.
+	//Interface to the input FIFOs.
 	//First NUM_1G_PORTS are 1G, rest are 10G
 	//All FIFOs have fabric_clk = clk so no need to hook that up here.
 	output logic[TOTAL_PORTS-1:0]			fifo_pop	= 0,
 	output logic[TOTAL_PORTS-1:0]			fifo_fwd_en	= 0,
-	input wire RxFifoBus[TOTAL_PORTS-1:0]	fifo_bus
+	input wire RxFifoBus[TOTAL_PORTS-1:0]	fifo_bus,
 
-	//TODO: transmit side ports
+	//Interface to the output FIFOs
+	//NOTE: no vlan filtering is applied here
+	input wire[TOTAL_PORTS-1:0]				tx_fifo_ready,
+	output TxFifoBus[TOTAL_PORTS-1:0]		tx_fifo_bus
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,10 +84,10 @@ module SwitchFabric #(
 	function string InterfaceName;
 		input[4:0] portnum;
 
-		if(portnum > NUM_1G_PORTS)
-			return $sformatf("x0/%0d", portnum - NUM_1G_PORTS[4:0]);
+		if(portnum >= NUM_1G_PORTS)
+			return $sformatf("x0/%0d", portnum - NUM_1G_PORTS[4:0] + 1'd1);
 		else
-			return $sformatf("g%0d/%0d", (portnum / 5'd8) + 1'h1, portnum % 5'd8);
+			return $sformatf("g%0d/%0d", (portnum / 5'd8) + 1'h1, portnum % 5'd8 + 1'd1);
 	endfunction
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,64 +333,65 @@ module SwitchFabric #(
 				hit = 0;
 				for(integer i=0; i<TOTAL_PORTS; i=i+1) begin
 
+					automatic integer srcport = ModularOffset(i, channels[chan].rr_source);
+
 					//If we already found something, stop
 					if(hit) begin
 					end
 
-					//Check the next port
-					else begin
-						automatic integer srcport = ModularOffset(i, channels[chan].rr_source);
+					//If the destination port doesn't have space in the exit queue, don't waste time looking
+					else if(!tx_fifo_ready[channels[chan].dest_port]) begin
+					end
 
-						//If the source port is already forwarding somewhere else, don't bother checking any further.
-						//We came too late. Need to wait until that forwarding operation completes, then we might get
-						//a crack at the frame (which must be a broadcast/multicast if it's going to us too)
-						if(port_state[srcport].forwarding) begin
-						end
+					//If the source port is already forwarding somewhere else, don't bother checking any further.
+					//We came too late. Need to wait until that forwarding operation completes, then we might get
+					//a crack at the frame (which must be a broadcast/multicast if it's going to us too)
+					else if(port_state[srcport].forwarding) begin
+					end
 
-						//If the source port broadcasted to us already, don't forward the same frame again
-						else if(port_state[srcport].broadcast &&
-							port_state[srcport].broadcast_done[channels[chan].dest_port]) begin
-						end
+					//If the source port broadcasted to us already, don't forward the same frame again
+					else if(port_state[srcport].broadcast &&
+						port_state[srcport].broadcast_done[channels[chan].dest_port]) begin
+					end
 
-						//Source is eligible to send to use. See if it wants to.
-						else if(src_to_dest[channels[chan].dest_port][srcport]) begin
+					//Source is eligible to send to use. See if it wants to.
+					else if(src_to_dest[channels[chan].dest_port][srcport]) begin
 
-							//We found something, don't look any further
-							hit = 1;
+						//We found something, don't look any further
+						hit = 1;
 
-							//Select the port
-							channels[chan].busy			<= 1;
-							channels[chan].src_port		<= srcport;
-							channels[chan].vlan			<= fifo_bus[srcport].frame_vlan;
+						//Select the port
+						channels[chan].busy			<= 1;
+						channels[chan].src_port		<= srcport;
+						channels[chan].vlan			<= fifo_bus[srcport].frame_vlan;
 
-							//Ask the source FIFO to forward the frame.
-							//Mark the source port as busy so nobody else tries to use it next cycle.
-							//(multiple channels forwarding from the same source *on the same cycle* is totally fine)
-							fifo_fwd_en[srcport]			<= 1;
-							port_state[srcport].forwarding	<= 1;
+						//Ask the source FIFO to forward the frame.
+						//Mark the source port as busy so nobody else tries to use it next cycle.
+						//(multiple channels forwarding from the same source *on the same cycle* is totally fine)
+						fifo_fwd_en[srcport]			<= 1;
+						port_state[srcport].forwarding	<= 1;
 
-							`ifdef SIMULATION
-								$display("[%t] Forwarding frame from interface %s (addr %02x:%02x:%02x:%02x:%02x:%02x) to %s (addr %02x:%02x:%02x:%02x:%02x:%02x) (via crossbar channel %0d)",
-									$realtime(),
-									InterfaceName(srcport),
-									fifo_bus[srcport].frame_src_mac[47:40], fifo_bus[srcport].frame_src_mac[39:32],
-									fifo_bus[srcport].frame_src_mac[31:24], fifo_bus[srcport].frame_src_mac[23:16],
-									fifo_bus[srcport].frame_src_mac[15:8], fifo_bus[srcport].frame_src_mac[7:0],
-									InterfaceName(channels[chan].dest_port),
-									fifo_bus[srcport].frame_dst_mac[47:40], fifo_bus[srcport].frame_dst_mac[39:32],
-									fifo_bus[srcport].frame_dst_mac[31:24], fifo_bus[srcport].frame_dst_mac[23:16],
-									fifo_bus[srcport].frame_dst_mac[15:8], fifo_bus[srcport].frame_dst_mac[7:0],
-									chan[4:0]
-								);
-							`endif
+						`ifdef SIMULATION
+							$display("[%t] Forwarding frame from interface %s (addr %02x:%02x:%02x:%02x:%02x:%02x) to %s (addr %02x:%02x:%02x:%02x:%02x:%02x) (via crossbar channel %0d)",
+								$realtime(),
+								InterfaceName(srcport),
+								fifo_bus[srcport].frame_src_mac[47:40], fifo_bus[srcport].frame_src_mac[39:32],
+								fifo_bus[srcport].frame_src_mac[31:24], fifo_bus[srcport].frame_src_mac[23:16],
+								fifo_bus[srcport].frame_src_mac[15:8], fifo_bus[srcport].frame_src_mac[7:0],
+								InterfaceName(channels[chan].dest_port),
+								fifo_bus[srcport].frame_dst_mac[47:40], fifo_bus[srcport].frame_dst_mac[39:32],
+								fifo_bus[srcport].frame_dst_mac[31:24], fifo_bus[srcport].frame_dst_mac[23:16],
+								fifo_bus[srcport].frame_dst_mac[15:8], fifo_bus[srcport].frame_dst_mac[7:0],
+								chan[4:0]
+							);
+						`endif
 
-						end
 					end
 
 				end
 
 				//If we didn't hit anything, move on to the next port in the group
-				if(!hit && chan < CROSSBAR_1G_PORTS) begin
+				if(!hit && chan < CROSSBAR_1G_PORTS && !port_state[channels[chan].src_port].forwarding) begin
 					channels[chan].rr_1g_dest	<= channels[chan].rr_1g_dest + 1'h1;
 
 					if( (channels[chan].rr_1g_dest + 1) >= PORT_GROUP_SIZE)
@@ -398,6 +403,24 @@ module SwitchFabric #(
 
 		end
 
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Outputs to TX FIFOs
+
+	always_ff @(posedge clk) begin
+		tx_fifo_bus	<= 0;
+
+		for(integer chan=0; chan<CROSSBAR_PORTS; chan++) begin
+
+			if(channels[chan].busy) begin
+				tx_fifo_bus[channels[chan].dest_port].valid			<= channels[chan].valid;
+				tx_fifo_bus[channels[chan].dest_port].bytes_valid	<= channels[chan].bytes_valid;
+				tx_fifo_bus[channels[chan].dest_port].data			<= channels[chan].data;
+				tx_fifo_bus[channels[chan].dest_port].vlan			<= channels[chan].vlan;
+			end
+
+		end
 	end
 
 endmodule

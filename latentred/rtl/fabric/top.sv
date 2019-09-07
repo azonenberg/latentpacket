@@ -265,6 +265,12 @@ module top(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// TODO: TX FIFOs
+
+	wire[27:0]			tx_fifo_ready = {28{1'b1}};
+	TxFifoBus			tx_fifo_bus;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The actual switch fabric
 
 	SwitchFabric fabric(
@@ -280,7 +286,10 @@ module top(
 
 		.fifo_pop(fifo_pop),
 		.fifo_fwd_en(fifo_fwd_en),
-		.fifo_bus(fifo_bus)
+		.fifo_bus(fifo_bus),
+
+		.tx_fifo_ready(tx_fifo_ready),
+		.tx_fifo_bus(tx_fifo_bus)
 	);
 
 endmodule
