@@ -31,103 +31,75 @@
 
 `include "EthernetBus.svh"
 
-module TrafficGenerator #(
-	parameter PACKET_FNAME = "packet1.hex"
-)(
-	input wire		packet_gen_en,
-	input wire		clk_fabric,
+module top_sim();
 
-	input wire		clk_mac,
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Clocking
 
-	output GmiiBus	gmii_rx_bus
-);
-
-	logic[7:0]		packet1[109:0];
+	logic ready = 0;
 	initial begin
-		$readmemh(PACKET_FNAME, packet1);
+		$timeformat(-9, 3, " ns", 6);
+		#100;
+		ready = 1;
 	end
 
-	logic			packet_gen_en_mac	= 0;
+	//156.25 MHz
+	logic clk_ref156 = 0;
+	always begin
+		#3.2;
+		clk_ref156 = ready;
+		#3.2;
+		clk_ref156 = 0;
+	end
 
-	PulseSynchronizer sync_packet_gen(
-		.clk_a(clk_fabric),
-		.pulse_a(packet_gen_en),
+	//125 MHz
+	logic clk_ref125 = 0;
+	always begin
+		#4;
+		clk_ref125 = ready;
+		#4;
+		clk_ref125 = 0;
+	end
 
-		.clk_b(clk_mac),
-		.pulse_b(packet_gen_en_mac)
-	);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// The DUT
 
-	logic[6:0]	packet_addr	= 0;
+	logic	packet_gen_en	= 0;
+	wire	sim_pll_lock;
 
-	enum logic[2:0]
-	{
-		GEN_STATE_IDLE		= 0,
-		GEN_STATE_PREAMBLE	= 1,
-		GEN_STATE_FRAME		= 2,
-		GEN_STATE_CRC		= 3
-	} gen_state = GEN_STATE_IDLE;
+	top dut(
+		.clk_ref156(clk_ref156),
+		.gtx_ref156_p(clk_ref156),
+		.gtx_ref156_n(!clk_ref156),
+		.gtx_ref125_p(clk_ref125),
+		.gtx_ref125_n(!clk_ref125),
 
-	logic[3:0] gen_count = 0;
+		//TODO: SGMII, SFI, QDR, etc
 
-	always_ff @(posedge clk_mac) begin
+		.packet_gen_en(packet_gen_en),
+		.sim_pll_lock(sim_pll_lock)
+		);
 
-		//Default state for a gigabit link between packets
-		gmii_rx_bus.dvalid	<= 1;
-		gmii_rx_bus.er		<= 0;
-		gmii_rx_bus.en		<= 0;
-		gmii_rx_bus.data	<= 0;
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Test code
 
-		case(gen_state)
+	logic[7:0] state = 0;
 
-			//Start sending a packet
-			GEN_STATE_IDLE: begin
+	always_ff @(posedge clk_ref156) begin
 
-				if(packet_gen_en_mac) begin
-					packet_addr			<= 1;
-					gmii_rx_bus.en		<= 1;
-					gmii_rx_bus.data	<= 8'h55;
-					gen_count			<= 0;
-					gen_state			<= GEN_STATE_PREAMBLE;
-				end
+		packet_gen_en	<= 0;
 
-			end	//end GEN_STATE_IDLE
+		case(state)
 
-			//Send the preamble
-			GEN_STATE_PREAMBLE: begin
-				gmii_rx_bus.en			<= 1;
-				gmii_rx_bus.data		<= 8'h55;
-				gen_count				<= gen_count + 1;
+			0: begin
+				if(sim_pll_lock)
+					state			<= 1;
+			end
 
-				if(gen_count == 7) begin
-					gmii_rx_bus.data	<= 8'hd5;
-					packet_addr			<= 0;
-					gen_state			<= GEN_STATE_FRAME;
-				end
-			end	//end GEN_STATE_PREAMBLE
-
-			//Continue sending the packet
-			GEN_STATE_FRAME: begin
-				packet_addr			<= packet_addr + 1'h1;
-				gmii_rx_bus.en		<= 1;
-				gmii_rx_bus.data	<= packet1[packet_addr];
-
-				if(packet_addr >= 7'd109) begin
-					gen_count		<= 0;
-					gen_state		<= GEN_STATE_CRC;
-				end
-			end	//end GEN_STATE_FRAME
-
-			//Send a dummy CRC (mac doesn't actually verify it)
-			GEN_STATE_CRC: begin
-				gmii_rx_bus.en			<= 1;
-				gmii_rx_bus.data		<= 8'h00;
-				gen_count				<= gen_count + 1;
-
-				if(gen_count == 3) begin
-					packet_addr			<= 0;
-					gen_state			<= GEN_STATE_IDLE;
-				end
-			end	//end GEN_STATE_CRC
+			1: begin
+				packet_gen_en	<= 1;
+				state			<= 2;
+			end
 
 		endcase
 

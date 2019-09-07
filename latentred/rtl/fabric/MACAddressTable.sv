@@ -564,7 +564,7 @@ module MACAddressTable #(
 						pending[i].mac		<= pend_addr;
 						pending_way[i]		<= pend_way;
 						found_opening		= 1;
-						$display("             Added to pending set (slot %d)", i[7:0]);
+						$display("              Added to pending set (slot %d)", i[7:0]);
 					end
 
 				end
@@ -576,7 +576,7 @@ module MACAddressTable #(
 		if(pend_clear) begin
 			pending[pend_clear_slot].valid	<= 0;
 
-			$display("             Clearing slot %d of pending set", pend_clear_slot);
+			$display("              Clearing slot %d of pending set", pend_clear_slot);
 		end
 
 	end
@@ -622,8 +622,16 @@ module MACAddressTable #(
 
 			end
 
+			//Don't learn broadcast/multicast addresses
+			if(lookup_src_ff2.mac[40]) begin
+				$display("[%t] Not learning address %x:%x:%x:%x:%x:%x because it is a broadcast or multicast group",
+					$realtime(),
+					lookup_src_ff2.mac[47:40], lookup_src_ff2.mac[39:32], lookup_src_ff2.mac[31:24],
+					lookup_src_ff2.mac[23:16], lookup_src_ff2.mac[15:8], lookup_src_ff2.mac[7:0]);
+			end
+
 			//No hit in any cache set
-			if(!learned_comb) begin
+			else if(!learned_comb) begin
 				need_to_learn	<= 1;
 				pend_addr		<= lookup_src_ff2.mac;
 				pend_vlan		<= lookup_src_ff2.vlan;
@@ -663,7 +671,7 @@ module MACAddressTable #(
 
 				//If we're in the process of clearing this slot, don't look at it
 				if(pend_clear && (pend_clear_slot == i)) begin
-					$display("[%t] Ignoring slot %d because we just finished adding it", $realtime(), i);
+					//$display("[%t] Ignoring slot %d because we just finished adding it", $realtime(), i);
 				end
 
 				//This slot is eligible to be looked at

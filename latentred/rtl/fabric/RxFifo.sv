@@ -441,24 +441,24 @@ module RxFifo #(
 						0: begin
 							fabric_bus.fwd_data[15:0]	<= 0;
 							fabric_bus.fwd_bytes_valid	<= 6;
-							fwd_state				<= FWD_STATE_IDLE;
+							fwd_state					<= FWD_STATE_IDLE;
 						end
 
 						//6 saved bytes, 1 new byte, 1 padding at the end
 						1: begin
 							fabric_bus.fwd_data[7:0]	<= 0;
 							fabric_bus.fwd_bytes_valid	<= 7;
-							fwd_state				<= FWD_STATE_IDLE;
+							fwd_state					<= FWD_STATE_IDLE;
 						end
 
 						//6 saved bytes, 2 new bytes, no padding
 						2: begin
 							fabric_bus.fwd_bytes_valid	<= 2;
-							fwd_state				<= FWD_STATE_IDLE;
+							fwd_state					<= FWD_STATE_IDLE;
 						end
 
 						default:
-							fwd_state				<= FWD_STATE_LAST;
+							fwd_state					<= FWD_STATE_LAST;
 
 					endcase
 

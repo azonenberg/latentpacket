@@ -44,12 +44,21 @@ module ClockGeneration(
 	wire[3:0] clk_unused;
 
 	ReconfigurablePLL #(
+		.ACTIVE_ON_START(1),		//don't wait for reconfiguration to do anything
+		.PRINT_CONFIG(0),			//don't print calculated PLL configuration in simulation
+
 		.OUTPUT_GATE(6'b000011),
 		.OUTPUT_BUF_GLOBAL(6'b000011),
 		.IN0_PERIOD(6.4),
 		.IN1_PERIOD(6.4),
 		.OUT0_MIN_PERIOD(6.4),		//clk_fabric = 156.25 MHz
-		.OUT1_MIN_PERIOD(8.0)		//clk_gmac = 125 MHz
+		.OUT1_MIN_PERIOD(8.0),		//clk_gmac = 125 MHz
+
+		//specify other outputs as equal to ref even though we're not using them
+		.OUT2_MIN_PERIOD(6.4),
+		.OUT3_MIN_PERIOD(6.4),
+		.OUT4_MIN_PERIOD(6.4),
+		.OUT5_MIN_PERIOD(6.4)
 	) main_pll (
 		.clkin({clk_ref156, clk_ref156}),
 		.clksel(1'b0),

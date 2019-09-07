@@ -75,6 +75,14 @@ module top(
 	//TODO: some kind of interface to INTEGRALSTICK FPGA for I/O expansion
 
 	//TODO: slave SPI to INTEGRALSTICK MCU
+
+	`ifdef SIMULATION
+	//Test inputs for simulation
+	,
+
+	input wire	packet_gen_en,
+	output wire	sim_pll_lock
+	`endif
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,12 +91,18 @@ module top(
 	wire	clk_fabric;
 	wire	clk_gmac;
 
+	wire	clk_ok;
+
 	ClockGeneration clkgen(
 		.clk_ref156(clk_ref156),
 		.clk_fabric(clk_fabric),
 		.clk_gmac(clk_gmac),
-		.clk_ok()
+		.clk_ok(clk_ok)
 	);
+
+	`ifdef SIMULATION
+		assign sim_pll_lock = clk_ok;
+	`endif
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MAC address table
@@ -149,15 +163,11 @@ module top(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 1G PCSes
 
-	//packet1 is router advertisement from scrypt
-
-	//The GMII buses, tie off all unused ports to zero for now
+	//The GMII buses
 	GmiiBus[23:0]	gmii_rx_bus;
-	assign gmii_rx_bus[23:1] = {23*$bits(GmiiBus){1'b0}};
 
 	//Dummy packet generators for testing until we write the SGMII decoder
-	logic			packet_gen_en	= 0;
-
+	//Packet1 is router advertisement from scrypt
 	`ifdef SIMULATION
 		TrafficGenerator #( .PACKET_FNAME("packet1.hex") ) gen (
 			.packet_gen_en(packet_gen_en),
@@ -165,6 +175,9 @@ module top(
 			.clk_mac(clk_gmac),
 			.gmii_rx_bus(gmii_rx_bus[0])
 		);
+
+		//tie off unused ports
+		assign gmii_rx_bus[23:1] = {23*$bits(GmiiBus){1'b0}};
 	`endif
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +195,7 @@ module top(
 			.gmii_tx_clk(clk_gmac),
 			.gmii_tx_bus(),
 
-			.link_up(1),
+			.link_up(1'b1),
 			.link_speed(LINK_SPEED_1000M),
 
 			.rx_bus(mac_rx_bus[g]),
@@ -204,7 +217,7 @@ module top(
 			.rx_clk(clk_gmac),
 			.mac_rx_bus(mac_rx_bus[g]),
 			.our_mac_address(48'h0),
-			.promisc_mode(1),
+			.promisc_mode(1'b1),
 			.rx_l2_bus(rx_l2_bus[g]),
 			.perf()
 		);
@@ -228,7 +241,7 @@ module top(
 	RxFifoBus[23:0] rx_fabric_bus;
 
 	for(genvar g=0; g<24; g=g+1) begin
-		RxFifo dut(
+		RxFifo fifo(
 			.mac_clk(clk_gmac),
 			.mac_rx_bus(rx_l2_bus[g]),
 
