@@ -58,7 +58,7 @@ module RxFifo #(
 
 	//VLAN configuration (mac_clk domain)
 	input wire					has_port_vlan,			//True if the port is configured in "port vlan" mode
-	input wire[11:0]			port_vlan_id,			//VLAN ID for port based VLANs
+	input wire vlan_t			port_vlan_id,			//VLAN ID for port based VLANs
 	input wire					native_vlan_allowed,	//True if we can mix port VLAN and tagged traffic
 														//(requires has_port_vlan be set too)
 
@@ -360,6 +360,7 @@ module RxFifo #(
 			fabric_bus.frame_dst_mac	<= header_rd_data.dst_mac;
 			fabric_bus.frame_src_mac	<= header_rd_data.src_mac;
 			fabric_bus.frame_vlan		<= header_rd_data.vlan;
+			fabric_bus.ethertype		<= header_rd_data.ethertype;
 		end
 
 		//Pop a packet when we're done working on it

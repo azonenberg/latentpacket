@@ -54,20 +54,29 @@
 		30800 ... 30fff Port 1 metadata
 		...
 		3b800 ... 3bfff	Port 23 metadata
-		3c000 ... 3ffff Available for future use (routing tables, ACLs, etc)
+		3c000 ... 3ffff Reserved, not used
  */
 module GigabitRxFifo #(
 	parameter NUM_PORTS			= 24,
 	parameter LINES_PER_PORT	= 8192,
 	parameter META_FIFO_LINES	= 2048
 ) (
+	//QDR RAM controller (fabric_clk domain)
+	output logic					rd_en		= 0,
+	output logic[ADDR_BITS-1:0]		rd_addr		= 0,
+	input wire						rd_valid,
+	input wire[CTRL_WIDTH-1:0]		rd_data,
+	output logic					wr_en		= 0,
+	output logic[ADDR_BITS-1:0]		wr_addr		= 0,
+	output logic[CTRL_WIDTH-1:0]	wr_data		= 0,
+
 	//Incoming frame bus
 	input wire[NUM_PORTS-1:0]					mac_clk,		//Incoming frame clock
 	input wire EthernetRxL2Bus[NUM_PORTS-1:0]	mac_rx_bus,		//Incoming frame data
 
 	//VLAN configuration (mac_clk domain)
 	input wire[NUM_PORTS-1:0]					has_port_vlan,			//True if the port is configured in "port vlan" mode
-	input wire[11*NUM_PORTS-1:0]				port_vlan_id,			//VLAN ID for port based VLANs
+	input wire vlan_t[NUM_PORTS-1:0]			port_vlan_id,			//VLAN ID for port based VLANs
 	input wire[NUM_PORTS-1:0]					native_vlan_allowed,	//True if we can mix port VLAN and tagged traffic
 																		//(requires has_port_vlan be set too)
 
@@ -94,9 +103,9 @@ module GigabitRxFifo #(
 	{
 		logic[10:0]		len;
 		ethertype_t		ethertype;
-		logic[47:0]		src_mac;
-		logic[47:0]		dst_mac;
-		logic[11:0]		vlan;
+		macaddr_t		src_mac;
+		macaddr_t		dst_mac;
+		vlan_t			vlan;
 	} header_t;
 
 	for(genvar g=0; g<NUM_PORTS; g=g+1) begin

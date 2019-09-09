@@ -215,9 +215,10 @@ module SwitchFabric #(
 		port_t					dest_port;			//ID of the output port
 		port_t					src_port;			//ID of the input port
 		vlan_t					vlan;				//vlan ID of the frame being forwarded
+		ethertype_t				ethertype;
 		logic[3:0]				bytes_valid;		//number of valid bytes in data (only used in last word of packet)
 		logic[63:0]				data;				//data being forwarded
-		logic[2:0]				rr_1g_dest;		//Offset of port within the 1G port group (ignored for 10G)
+		logic[2:0]				rr_1g_dest;			//Offset of port within the 1G port group (ignored for 10G)
 		port_t					rr_source;			//Round robin offset for arbitration
 	} CrossbarChannel;
 
@@ -362,6 +363,7 @@ module SwitchFabric #(
 						channels[chan].busy			<= 1;
 						channels[chan].src_port		<= srcport;
 						channels[chan].vlan			<= fifo_bus[srcport].frame_vlan;
+						channels[chan].ethertype	<= fifo_bus[srcport].ethertype;
 
 						//Ask the source FIFO to forward the frame.
 						//Mark the source port as busy so nobody else tries to use it next cycle.
@@ -415,6 +417,7 @@ module SwitchFabric #(
 				tx_fifo_bus[channels[chan].dest_port].valid			<= channels[chan].valid;
 				tx_fifo_bus[channels[chan].dest_port].bytes_valid	<= channels[chan].bytes_valid;
 				tx_fifo_bus[channels[chan].dest_port].data			<= channels[chan].data;
+				tx_fifo_bus[channels[chan].dest_port].ethertype		<= channels[chan].ethertype;
 				tx_fifo_bus[channels[chan].dest_port].vlan			<= channels[chan].vlan;
 			end
 

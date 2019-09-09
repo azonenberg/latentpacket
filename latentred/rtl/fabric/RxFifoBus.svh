@@ -33,9 +33,10 @@
 typedef struct packed
 {
 	logic				frame_valid;		//When high, there is a frame ready to forward
-	logic[47:0]			frame_dst_mac;		//Destination of the frame
-	logic[47:0]			frame_src_mac;		//Source of the frame
-	logic[11:0]			frame_vlan;			//VLAN ID of the frame
+	macaddr_t			frame_dst_mac;		//Destination of the frame
+	macaddr_t			frame_src_mac;		//Source of the frame
+	vlan_t				frame_vlan;			//VLAN ID of the frame
+	ethertype_t			frame_ethertype;	//Ethertype of the frame
 	logic				fwd_valid;			//High if data being forwarded is valid
 	logic[3:0]			fwd_bytes_valid;	//Number of valid bytes in this 64-bit block
 											//(always 8 except in last one)

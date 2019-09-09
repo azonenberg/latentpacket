@@ -34,7 +34,8 @@ typedef struct packed
 {
 	logic		valid;
 	logic[3:0]	bytes_valid;
-	logic[11:0]	vlan;
+	vlan_t		vlan;
+	ethertype_t	ethertype;
 	logic[63:0]	data;
 } TxFifoBus;
 
