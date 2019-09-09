@@ -30,128 +30,80 @@
 ***********************************************************************************************************************/
 
 `include "EthernetBus.svh"
+`include "RxFifoBus.svh"
 
-module top_sim();
+/**
+	@brief RX FIFO for traffic from 1G ports to the switch fabric using external QDR-II+ for storage
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Clocking
+	The logical QDR interface is 144 bits wide, but we only use the low 128 bits for packet data.
+	The rest is currently unused.
 
-	logic ready = 0;
-	initial begin
-		$timeformat(-9, 3, " ns", 6);
-		#100;
-		ready = 1;
-	end
+	Assuming a 36 Mbit QDR, we allocate 8K lines (1 Mbit) of FIFO space to each interface.
+	A minimum sized packet is 64 bytes (512 bits) or four FIFO lines, so we need metadata storage for
+	2K packets per port.
 
-	//156.25 MHz
-	logic clk_ref156 = 0;
-	always begin
-		#3.2;
-		clk_ref156 = ready;
-		#3.2;
-		clk_ref156 = 0;
-	end
+	The packet metadata is 135 bits long, so we can use the extra bits and fit one header into one line of QDR.
+	We thus need 2K lines per port for metadata storage.
 
-	//125 MHz
-	logic clk_ref125 = 0;
-	always begin
-		#4;
-		clk_ref125 = ready;
-		#4;
-		clk_ref125 = 0;
-	end
+	Memory map
+		00000 ... 01fff	Port 0 packet data
+		02000 ... 03fff	Port 1 packet data
+		...
+		2e000 ... 2ffff	Port 23 packet data
+		30000 ... 307ff	Port 0 metadata
+		30800 ... 30fff Port 1 metadata
+		...
+		3b800 ... 3bfff	Port 23 metadata
+		3c000 ... 3ffff Available for future use (routing tables, ACLs, etc)
+ */
+module GigabitRxFifo #(
+	parameter NUM_PORTS			= 24,
+	parameter LINES_PER_PORT	= 8192,
+	parameter META_FIFO_LINES	= 2048
+) (
+	//Incoming frame bus
+	input wire[NUM_PORTS-1:0]					mac_clk,		//Incoming frame clock
+	input wire EthernetRxL2Bus[NUM_PORTS-1:0]	mac_rx_bus,		//Incoming frame data
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The DUT
+	//VLAN configuration (mac_clk domain)
+	input wire[NUM_PORTS-1:0]					has_port_vlan,			//True if the port is configured in "port vlan" mode
+	input wire[11*NUM_PORTS-1:0]				port_vlan_id,			//VLAN ID for port based VLANs
+	input wire[NUM_PORTS-1:0]					native_vlan_allowed,	//True if we can mix port VLAN and tagged traffic
+																		//(requires has_port_vlan be set too)
 
-	logic	packet_gen_en	= 0;
-	wire	sim_pll_lock;
+	//Performance counters (mac_clk domain). Go high for one cycle to indicate an event has happened.
+	output logic[NUM_PORTS-1:0]					mac_queued		= 0,	//Frame was accepted
+	output logic[NUM_PORTS-1:0]					mac_drop_fifo	= 0,	//Frame was lost due to insufficient buffer space
+	output logic[NUM_PORTS-1:0]					mac_drop_vlan	= 0,	//Frame was lost due to having/not having a vlan tag when port
+																		//was configured in the opposite mode
+	output logic[NUM_PORTS-1:0]					mac_drop_runt	= 0,	//Frame was dropped because too small
+	output logic[NUM_PORTS-1:0]					mac_drop_jumbo	= 0,	//Frame was dropped because too large
 
-	wire[35:0]	qdr_q;
-	wire[35:0]	qdr_d;
-	wire[17:0]	qdr_a;
-	wire		qdr_wps_n;
-	wire		qdr_rps_n;
-	wire[3:0]	qdr_bws_n;
-	wire		qdr_qvld;
-	wire		qdr_dclk_p;
-	wire		qdr_dclk_n;
-	wire		qdr_qclk_p;
-	wire		qdr_qclk_n;
-
-	top dut(
-		.clk_ref156(clk_ref156),
-		.gtx_ref156_p(clk_ref156),
-		.gtx_ref156_n(!clk_ref156),
-		.gtx_ref125_p(clk_ref125),
-		.gtx_ref125_n(!clk_ref125),
-
-		//TODO: SGMII, SFI, etc
-
-		.qdr_d(qdr_d),
-		.qdr_q(qdr_q),
-		.qdr_a(qdr_a),
-		.qdr_wps_n(qdr_wps_n),
-		.qdr_rps_n(qdr_rps_n),
-		.qdr_bws_n(qdr_bws_n),
-		.qdr_qvld(qdr_qvld),
-		.qdr_dclk_p(qdr_dclk_p),
-		.qdr_dclk_n(qdr_dclk_n),
-		.qdr_qclk_p(qdr_qclk_p),
-		.qdr_qclk_n(qdr_qclk_n),
-
-		.packet_gen_en(packet_gen_en),
-		.sim_pll_lock(sim_pll_lock)
-		);
+	//Outbound bus to fabric
+	input wire									fabric_clk,				//Main switch clock
+	input wire[NUM_PORTS-1:0]					fabric_pop,				//Bring high for one cycle to pop this frame
+	input wire[NUM_PORTS-1:0]					fabric_fwd_en,			//Bring high for one cycle to forward this frame
+	output RxFifoBus[NUM_PORTS-1:0]				fabric_bus		= 0
+);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The QDR-II+ SRAM
+	// CDC for incoming traffic
 
-	cyqdr2_b4 qdr(
-		.TCK(1'b0),
-		.TMS(1'b1),
-		.TDI(1'b1),
-		.TDO(),
-		.D(qdr_d),
-		.Q(qdr_q),
-		.A(qdr_a),
-		.K(qdr_dclk_p),
-		.Kb(qdr_dclk_n),
-		.RPSb(qdr_rps_n),
-		.WPSb(qdr_wps_n),
-		.BWS0b(qdr_bws_n[0]),
-		.BWS1b(qdr_bws_n[1]),
-		.BWS2b(qdr_bws_n[2]),
-		.BWS3b(qdr_bws_n[3]),
-		.CQ(qdr_qclk_p),
-		.CQb(qdr_qclk_n),
-		.ZQ(),
-		.DOFF(1'b1),
-		.QVLD(qdr_qvld)
-		);
+	//Headers parallel with port data
+	typedef struct packed
+	{
+		logic[10:0]		len;
+		ethertype_t		ethertype;
+		logic[47:0]		src_mac;
+		logic[47:0]		dst_mac;
+		logic[11:0]		vlan;
+	} header_t;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Test code
+	for(genvar g=0; g<NUM_PORTS; g=g+1) begin
 
-	logic[7:0] state = 0;
+		//Small BRAM CDC FIFO for data (one packet and change)
 
-	always_ff @(posedge clk_ref156) begin
-
-		packet_gen_en	<= 0;
-
-		case(state)
-
-			0: begin
-				if(sim_pll_lock)
-					state			<= 1;
-			end
-
-			1: begin
-				packet_gen_en	<= 1;
-				state			<= 2;
-			end
-
-		endcase
+		//Small LUT based metadata fifo
 
 	end
 

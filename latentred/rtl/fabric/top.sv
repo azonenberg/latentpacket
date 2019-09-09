@@ -67,10 +67,10 @@ module top(
 	output wire[3:0]	qdr_bws_n,
 	output wire			qdr_rps_n,
 	input wire			qdr_qvld,
-	output wire			qdr_clk_p,
-	output wire			qdr_clk_n,
-	input wire			qdr_kclk_p,
-	input wire			qdr_kclk_n
+	output wire			qdr_dclk_p,
+	output wire			qdr_dclk_n,
+	input wire			qdr_qclk_p,
+	input wire			qdr_qclk_n
 
 	//TODO: some kind of interface to INTEGRALSTICK FPGA for I/O expansion
 
