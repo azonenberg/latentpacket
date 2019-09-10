@@ -1,12 +1,12 @@
 EESchema Schematic File Version 4
 LIBS:latentred-linecard-cache
-EELAYER 26 0
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
 Title "LATENTRED 8-port 10/100/1000 Base-T Line Card"
-Date "2018-06-05"
+Date "2019-09-09"
 Rev "0.1"
 Comp "Andrew D. Zonenberg"
 Comment1 "Top Level"
@@ -494,10 +494,6 @@ F 3 "~" H 10500 1300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 10300 1300
-Text Notes 9050 2200 0    50   ~ 0
-TODO: run 5V on the other blade of the QTH-DP
-Text Notes 9050 2350 0    50   ~ 0
-TODO: Add reserved GPIO signal to connector\nTODO: Add reserved LVDS signal to connector
 Text Notes 5750 5150 0    50   ~ 0
 Swap some P/N pairs for easier routing\nCan correct FPGA-side or on backplane
 $Comp
@@ -517,4 +513,6 @@ Text Label 1750 5800 0    50   ~ 0
 GND
 Wire Wire Line
 	1750 5800 1550 5800
+Text Notes 8650 2350 0    50   ~ 0
+TODO: Completely redo connector for new QTH-090 based pinout
 $EndSCHEMATC

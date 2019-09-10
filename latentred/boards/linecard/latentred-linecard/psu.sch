@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:latentred-linecard-cache
-EELAYER 26 0
+EELAYER 30 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
@@ -114,7 +114,7 @@ F 3 "" H 6850 2250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 11000 1400 0    50   ~ 0
-Required output power: \n* 1.0V @ 0.9A (3 channels)\n* 1.8V @ 0.7A (2 channels)\n* 2.5V @ 0.9A (3 channels)\n* 3.3V @ minimal (few mA) for INA226s\n\nExpect ~~90% SMPS efficiency
+Required output power: \n* 1.0V @ 0.9A (3 channels)\n* 1.8V @ 0.7A (2 channels)\n* 2.5V @ 0.9A (3 channels)\n* 3.3V @ minimal (few mA) for INA226s\n\nExpect ~~90% SMPS efficiency\nTypical input power 5V @ 1A
 Text HLabel 6550 1800 0    50   Input ~ 0
 5V0
 Text HLabel 6550 2200 0    50   Input ~ 0
