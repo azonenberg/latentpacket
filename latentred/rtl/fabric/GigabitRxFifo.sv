@@ -70,8 +70,8 @@ module GigabitRxFifo #(
 	output logic[ADDR_BITS-1:0]		wr_addr		= 0,
 	output logic[CTRL_WIDTH-1:0]	wr_data		= 0,
 
-	//Incoming frame bus
-	input wire[NUM_PORTS-1:0]					mac_clk,		//Incoming frame clock
+	//Incoming frame bus (using SGMII oversampling, so all ports are in one clock domain)
+	input wire									mac_clk,		//Incoming frame clock
 	input wire EthernetRxL2Bus[NUM_PORTS-1:0]	mac_rx_bus,		//Incoming frame data
 
 	//VLAN configuration (mac_clk domain)
