@@ -43,6 +43,8 @@ module top(
 
 	output wire[3:0]	qsfp1_tx_p,
 	output wire[3:0]	qsfp1_tx_n
+
+	//TODO: add SGMII 1G interface
 	);
 
 	wire	clk_125mhz;
@@ -78,19 +80,8 @@ module top(
 		end
 	end
 
-	/*
 	//Reset the quad
 	logic		gty_reset		= 0;
-	logic[7:0]	rst_count = 1;
-	always_ff @(posedge clk_125mhz) begin
-		rst_count <= rst_count + 1;
-		if(rst_count == 128)
-			gty_reset	<= 1;
-		if(rst_count == 0)
-			gty_reset	<= 0;
-	end*/
-
-	wire	gty_reset;
 
 	wire[31:0]	tx_data[3:0];
 	wire[31:0]	rx_data[3:0];
@@ -185,19 +176,6 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug VIO
-
-	vio_0 vio(
-		.clk(clk_125mhz),
-		.probe_in0(pwrgood),
-		.probe_in1(rx_pmaresetdone),
-		.probe_in2(rx_divresetdone),
-		.probe_in3(tx_pmaresetdone),
-		.probe_in4(tx_divresetdone),
-		.probe_out0(gty_reset)
-	);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The PCSes
 
 	wire[3:0]	link_up;
@@ -232,16 +210,9 @@ module top(
 			.remote_fault(remote_fault)
 		);
 
-		if(g == 0) begin
-			vio_1(
-				.clk(rx_usrclk[g]),
-				.probe_in0(block_sync_good),
-				.probe_in1(link_up[g]),
-				.probe_in2(remote_fault),
-				.probe_in3(rx_valid[g][0])
-			);
-		end
-
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// TODO
 
 endmodule
