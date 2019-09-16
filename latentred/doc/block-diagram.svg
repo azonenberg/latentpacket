@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="317.17111mm"
+   height="133.29166mm"
+   viewBox="0 0 317.17111 133.29166"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="block-diagram.svg"
+   inkscape:export-filename="/tmp/block-diagram.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker3535"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path3533"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker2749"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path2747"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker2661"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mstart">
+      <path
+         transform="scale(0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path2659"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker2559"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path2557"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker2337"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path2335"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker1611"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path1609"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker1535"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path1533"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker1385"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path1383"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path918"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Send"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Send"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path906"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="matrix(-0.2,0,0,-0.2,-1.2,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path900"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path891"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="991.79142"
+     inkscape:cy="140.04429"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="3840"
+     inkscape:window-height="2098"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:lockguides="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid834"
+       originx="0.5"
+       originy="-139.72918" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0.5,-23.979168)">
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect836"
+       width="55.5625"
+       height="50.27084"
+       x="127"
+       y="61.520828" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="129.64581"
+       y="66.8125"
+       id="text840"><tspan
+         sodipodi:role="line"
+         id="tspan838"
+         x="129.64581"
+         y="66.8125"
+         style="stroke-width:0.26458332">8x8 crossbar</tspan><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="72.104164"
+         style="stroke-width:0.26458332"
+         id="tspan842">64 bits @ 156.25 MHz</tspan><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="77.395836"
+         style="stroke-width:0.26458332"
+         id="tspan844">(10 Gbps per lane)</tspan><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="82.6875"
+         style="stroke-width:0.26458332"
+         id="tspan2627" /><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="87.979164"
+         style="stroke-width:0.26458332"
+         id="tspan2629">6x 1G ports per lane,</tspan><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="93.270828"
+         style="stroke-width:0.26458332"
+         id="tspan2631">round robin TDMA</tspan><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="98.5625"
+         style="stroke-width:0.26458332"
+         id="tspan2633" /><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="103.85416"
+         style="stroke-width:0.26458332"
+         id="tspan2635">Dedicated lane per</tspan><tspan
+         sodipodi:role="line"
+         x="129.64581"
+         y="109.14583"
+         style="stroke-width:0.26458332"
+         id="tspan2637">10G port</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="7.9375"
+       y="69.458336"
+       id="text851"><tspan
+         sodipodi:role="line"
+         id="tspan849"
+         x="7.9375"
+         y="69.458336"
+         style="stroke-width:0.26458332">24x DP83867</tspan><tspan
+         sodipodi:role="line"
+         x="7.9375"
+         y="74.75"
+         style="stroke-width:0.26458332"
+         id="tspan853">SGMII PHY</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect855"
+       width="39.6875"
+       height="15.874995"
+       x="0"
+       y="61.520832" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="75.973213"
+       y="68.324402"
+       id="text859"><tspan
+         sodipodi:role="line"
+         id="tspan857"
+         x="75.973213"
+         y="68.324402"
+         style="stroke-width:0.26458332">Input FIFO</tspan><tspan
+         sodipodi:role="line"
+         x="75.973213"
+         y="73.616066"
+         style="stroke-width:0.26458332"
+         id="tspan861">1 Mbit/port</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect863"
+       width="34.395832"
+       height="15.875"
+       x="71.4375"
+       y="61.520828" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="5.2916703"
+       y="101.20834"
+       id="text867"><tspan
+         sodipodi:role="line"
+         id="tspan865"
+         x="5.2916703"
+         y="101.20834"
+         style="stroke-width:0.26458332">4x 10G</tspan><tspan
+         sodipodi:role="line"
+         x="5.2916703"
+         y="106.50001"
+         style="stroke-width:0.26458332"
+         id="tspan869">SFP+ </tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect871"
+       width="34.395832"
+       height="15.875"
+       x="4.609426e-06"
+       y="95.916664" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="72.193459"
+       y="100.26339"
+       id="text875"><tspan
+         sodipodi:role="line"
+         id="tspan873"
+         x="72.193459"
+         y="100.26339"
+         style="stroke-width:0.26458332">Input FIFO</tspan><tspan
+         sodipodi:role="line"
+         x="72.193459"
+         y="105.55505"
+         style="stroke-width:0.26458332"
+         id="tspan877">512 Kbit/port</tspan><tspan
+         sodipodi:role="line"
+         x="72.193459"
+         y="110.84673"
+         style="stroke-width:0.26458332"
+         id="tspan879">Block RAM</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect881"
+       width="37.041668"
+       height="15.875"
+       x="68.791672"
+       y="95.916664" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="40.027683"
+       y="111.09241"
+       id="text885"><tspan
+         sodipodi:role="line"
+         id="tspan883"
+         x="40.027683"
+         y="111.09241"
+         style="stroke-width:0.26458332">64b/port</tspan><tspan
+         sodipodi:role="line"
+         x="40.027683"
+         y="116.38407"
+         style="stroke-width:0.26458332"
+         id="tspan887">156.25 MHz</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Mend)"
+       d="M 34.395838,103.85417 H 68.791671"
+       id="path889"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="45.430843"
+       y="59.721931"
+       id="text1345"><tspan
+         sodipodi:role="line"
+         id="tspan1343"
+         x="45.430843"
+         y="59.721931"
+         style="stroke-width:0.26458332">32b/port</tspan><tspan
+         sodipodi:role="line"
+         x="45.430843"
+         y="65.013596"
+         style="stroke-width:0.26458332"
+         id="tspan1347">125 MHz</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1385)"
+       d="M 39.6875,69.458334 H 71.437499"
+       id="path1375"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="76.729172"
+       y="29.770838"
+       id="text1519"><tspan
+         sodipodi:role="line"
+         id="tspan1517"
+         x="76.729172"
+         y="29.770838"
+         style="stroke-width:0.26458332">QDR-II+</tspan><tspan
+         sodipodi:role="line"
+         x="76.729172"
+         y="35.062504"
+         style="stroke-width:0.26458332"
+         id="tspan1521">36 Mbits</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect1523"
+       width="34.395832"
+       height="13.229166"
+       x="71.437508"
+       y="24.479168" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker1535);marker-end:url(#marker1611)"
+       d="m 87.312499,37.708334 v 23.8125"
+       id="path1525"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="90.572784"
+       y="47.169132"
+       id="text1687"><tspan
+         sodipodi:role="line"
+         id="tspan1685"
+         x="90.572784"
+         y="47.169132"
+         style="stroke-width:0.26458332">External: 36b @ 800 MT/s</tspan><tspan
+         sodipodi:role="line"
+         x="90.572784"
+         y="52.4608"
+         style="stroke-width:0.26458332"
+         id="tspan1689">Internal: 144b @ 200 MT/s</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2337)"
+       d="M 105.83333,69.458334 H 127"
+       id="path2327"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2559)"
+       d="M 105.83333,103.85417 H 127"
+       id="path2549"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect2639"
+       width="55.5625"
+       height="23.8125"
+       x="127"
+       y="132.95833" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="132.29167"
+       y="138.24998"
+       id="text2643"><tspan
+         sodipodi:role="line"
+         id="tspan2641"
+         x="132.29167"
+         y="138.24998"
+         style="stroke-width:0.26458332">MAC address table</tspan><tspan
+         sodipodi:role="line"
+         x="132.29167"
+         y="143.54166"
+         style="stroke-width:0.26458332"
+         id="tspan2645">16K entries total</tspan><tspan
+         sodipodi:role="line"
+         x="132.29167"
+         y="148.83331"
+         style="stroke-width:0.26458332"
+         id="tspan2647">8-way set associative</tspan><tspan
+         sodipodi:role="line"
+         x="132.29167"
+         y="154.12498"
+         style="stroke-width:0.26458332"
+         id="tspan2649">Block RAM</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker2661);marker-end:url(#marker2749)"
+       d="m 156.10417,111.79167 v 13.22916 7.9375"
+       id="path2651"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       id="rect3513"
+       width="50.27084"
+       height="26.458334"
+       x="222.24998"
+       y="69.458328" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="226.87308"
+       y="79.506989"
+       id="text3517"><tspan
+         sodipodi:role="line"
+         id="tspan3515"
+         x="226.87308"
+         y="79.506989"
+         style="stroke-width:0.26458332">Output CDC FIFOs</tspan><tspan
+         sodipodi:role="line"
+         x="226.87308"
+         y="84.798653"
+         style="stroke-width:0.26458332"
+         id="tspan3519">16 Kbit/port</tspan><tspan
+         sodipodi:role="line"
+         x="226.87308"
+         y="90.090324"
+         style="stroke-width:0.26458332"
+         id="tspan3521">Block RAM</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker3535)"
+       d="M 182.5625,82.6875 H 222.25"
+       id="path3525"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="280.45834"
+       y="82.687492"
+       id="text3623"><tspan
+         sodipodi:role="line"
+         id="tspan3621"
+         x="280.45834"
+         y="82.687492"
+         style="stroke-width:0.26458332">To SGMII/SFP+</tspan><tspan
+         sodipodi:role="line"
+         x="280.45834"
+         y="87.979156"
+         style="stroke-width:0.26458332"
+         id="tspan3625">output interfaces</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="192.45067"
+       y="71.5429"
+       id="text3791"><tspan
+         sodipodi:role="line"
+         id="tspan3789"
+         x="192.45067"
+         y="71.5429"
+         style="stroke-width:0.26458332">64b/port</tspan><tspan
+         sodipodi:role="line"
+         x="192.45067"
+         y="76.834564"
+         style="stroke-width:0.26458332"
+         id="tspan3793">156.25 MHz</tspan></text>
+  </g>
+</svg>
