@@ -176,16 +176,24 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// The PCSes
+	// 10G interfaces
+
+	`include "GmiiBus.svh"
 
 	wire[3:0]	link_up;
 
-	for(genvar g=0; g<4; g++) begin
+	for(genvar g=0; g<4; g++) begin : xgports
 		wire	block_sync_good;
 		wire	remote_fault;
 
 		assign tx_header[g][5:2] = 4'h0;
 
+		wire		rx_clk;
+		XgmiiBus	xgmii_rx_bus;
+		wire		tx_clk;
+		XgmiiBus	xgmii_tx_bus;
+
+		//PCSes
 		XGEthernetPCS pcs(
 			.rx_clk(rx_usrclk[g]),
 			.tx_clk(tx_usrclk[g]),
@@ -197,17 +205,49 @@ module top(
 			.tx_header(tx_header[g][1:0]),
 			.tx_data(tx_data[g]),
 
-			.xgmii_rx_clk(),
-			.xgmii_rxc(),
-			.xgmii_rxd(),
+			.xgmii_rx_clk(rx_clk),
+			.xgmii_rx_bus(xgmii_rx_bus),
 
-			.xgmii_tx_clk(),
-			.xgmii_txc(4'hf),
-			.xgmii_txd(32'h07070707),
+			.xgmii_tx_clk(tx_clk),
+			.xgmii_tx_bus(xgmii_tx_bus),
 
 			.block_sync_good(block_sync_good),
 			.link_up(link_up[g]),
 			.remote_fault(remote_fault)
+		);
+
+		//MACs
+		EthernetRxBus	rx_bus;
+		EthernetRxBus	tx_bus = {$bits(EthernetRxBus){1'b0}};
+
+		XGEthernetMAC mac(
+			.xgmii_rx_clk(rx_clk),
+			.xgmii_rx_bus(xgmii_rx_bus),
+			.xgmii_tx_clk(tx_clk),
+			.xgmii_tx_bus(xgmii_tx_bus),
+			.link_up(link_up[g]),
+			.rx_bus(rx_bus),
+			.tx_bus(tx_bus)
+		);
+
+		//Ethernet frame parsing
+		EthernetRxL2Bus rx_l2_bus;
+		Ethernet2TypeDecoder decoder(
+			.rx_clk(rx_clk),
+			.mac_rx_bus(rx_bus),
+			.our_mac_address(48'h0),
+			.promisc_mode(1),
+			.rx_l2_bus(rx_l2_bus),
+			.perf()					//TODO: performance counters
+		);
+
+		//LA for testing
+		ila_0 ila(
+			.clk(rx_clk),
+			.probe0(block_sync_good),
+			.probe1(link_up),
+			.probe2(rx_l2_bus),
+			.probe3(rx_bus)
 		);
 
 	end
