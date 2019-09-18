@@ -56,6 +56,13 @@ module top(
 		);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Generate 156.25 MHz fabric clock from external reference
+
+	wire		clk_fabric;
+
+	fabric_clkgen clkgen( .clk_in1(clk_125mhz), .clk_out1(clk_fabric));
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The GTY quad
 
 	//Power-good flag control
@@ -176,13 +183,70 @@ module top(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Buses to the fabric from all interfaces
+
+	`include "RxFifoBus.svh"
+
+	wire[27:0]		fabric_pop;
+	wire[27:0]		fabric_fwd_en;
+	RxFifoBus[27:0]	fabric_bus;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 1G SGMII interfaces (dummies for now)
+
+	`include "GmiiBus.svh"
+
+	for(genvar g=0; g<24; g++) begin : ports_1g
+
+		/*
+		EthernetRxL2Bus rx_l2_bus = {$bits(EthernetRxL2Bus){1'b0}};
+
+		Ethernet2TypeDecoder decoder(
+			.rx_clk(clk_125mhz),
+			.mac_rx_bus({$bits(GmiiBus){1'b0}}),
+			.our_mac_address(48'h0),
+			.promisc_mode(1),
+			.rx_l2_bus(rx_l2_bus),
+			.perf()					//TODO: performance counters
+		);
+
+
+		RxFifo #(
+			.FIFO_LINES(2048),
+			.META_FIFO_LINES(256),
+			.META_USE_BLOCK(1)
+		) fifo (
+			.mac_clk(clk_125mhz),
+			.mac_rx_bus(rx_l2_bus),
+			.link_state(1),
+
+			.has_port_vlan(1),
+			.port_vlan_id(g+1),			//port X (one based) is on vlan X
+			.native_vlan_allowed(0),
+
+			.mac_queued(),
+			.mac_drop_fifo(),
+			.mac_drop_vlan(),
+			.mac_drop_runt(),
+			.mac_drop_jumbo(),
+
+			.fabric_clk(clk_fabric),
+			.fabric_pop(fabric_pop[g]),
+			.fabric_fwd_en(fabric_fwd_en[g]),
+			.fabric_bus(fabric_bus[g])
+		);
+		*/
+		assign fabric_bus[g] = {$bits(RxFifoBus){1'b0}};
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 10G interfaces
 
 	`include "GmiiBus.svh"
 
 	wire[3:0]	link_up;
 
-	for(genvar g=0; g<4; g++) begin : xgports
+	for(genvar g=0; g<4; g++) begin : ports_10g
 		wire	block_sync_good;
 		wire	remote_fault;
 
@@ -241,18 +305,118 @@ module top(
 			.perf()					//TODO: performance counters
 		);
 
-		//LA for testing
-		ila_0 ila(
-			.clk(rx_clk),
-			.probe0(block_sync_good),
-			.probe1(link_up),
-			.probe2(rx_l2_bus),
-			.probe3(rx_bus)
+		RxFifo #(
+			.FIFO_LINES(8192),
+			.META_FIFO_LINES(1024),
+			.META_USE_BLOCK(1)
+		) fifo (
+			.mac_clk(rx_clk),
+			.mac_rx_bus(rx_l2_bus),
+			.link_state(link_up[g]),
+
+			.has_port_vlan(1),
+			.port_vlan_id(2),		//TODO: make at least one port be a trunk?
+			.native_vlan_allowed(0),
+
+			.mac_queued(),
+			.mac_drop_fifo(),
+			.mac_drop_vlan(),
+			.mac_drop_runt(),
+			.mac_drop_jumbo(),
+
+			.fabric_clk(clk_fabric),
+			.fabric_pop(fabric_pop[24+g]),
+			.fabric_fwd_en(fabric_fwd_en[24+g]),
+			.fabric_bus(fabric_bus[24+g])
 		);
 
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// The MAC address table
+
+	wire		mac_lookup_en;
+	vlan_t		mac_lookup_src_vlan;
+	macaddr_t	mac_lookup_src_mac;
+	port_t		mac_lookup_src_port;
+	macaddr_t	mac_lookup_dst_mac;
+
+	wire		mac_lookup_hit;
+	port_t		mac_lookup_dst_port;
+
+	MACAddressTable mactbl(
+		.clk(clk_fabric),
+
+		.lookup_en(mac_lookup_en),
+		.lookup_src_vlan(mac_lookup_src_vlan),
+		.lookup_src_mac(mac_lookup_src_mac),
+		.lookup_src_port(mac_lookup_src_port),
+		.lookup_dst_mac(mac_lookup_dst_mac),
+		.lookup_hit(mac_lookup_hit),
+		.lookup_dst_port(mac_lookup_dst_port),
+
+		.gc_en(0),	//never garbage collect for now
+		.gc_done(),
+
+		.mgmt_rd_en(1'b0),
+		.mgmt_del_en(1'b0),
+		.mgmt_ack(),
+		.mgmt_addr(0),
+		.mgmt_way(0),
+		.mgmt_rd_valid(),
+		.mgmt_rd_gc_mark(),
+		.mgmt_rd_mac(),
+		.mgmt_rd_vlan(),
+		.mgmt_rd_port()
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// The actual switch fabric
+
+	`include "TxFifoBus.svh"
+
+	wire[27:0]	tx_fifo_ready;
+	assign tx_fifo_ready = {28{1'b1}};
+
+	TxFifoBus[27:0]	tx_fifo_bus;
+
+	SwitchFabric fabric(
+		.clk(clk_fabric),
+		.mac_lookup_en(mac_lookup_en),
+		.mac_lookup_src_vlan(mac_lookup_src_vlan),
+		.mac_lookup_src_mac(mac_lookup_src_mac),
+		.mac_lookup_src_port(mac_lookup_src_port),
+		.mac_lookup_dst_mac(mac_lookup_dst_mac),
+		.mac_lookup_hit(mac_lookup_hit),
+		.mac_lookup_dst_port(mac_lookup_dst_port),
+
+		.fifo_pop(fabric_pop),
+		.fifo_fwd_en(fabric_fwd_en),
+		.fifo_bus(fabric_bus),
+
+		.tx_fifo_ready(tx_fifo_ready),
+		.tx_fifo_bus(tx_fifo_bus)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO
+
+	//LA for testing
+	ila_0 ila(
+		.clk(clk_fabric),
+		.probe0(fabric_pop[24]),
+		.probe1(fabric_fwd_en[24]),
+		.probe2(fabric_bus[24]),
+		.probe3(tx_fifo_bus[24]),
+		.probe4(tx_fifo_bus[1]),	//vlan 2 output
+		.probe5(tx_fifo_bus[2]),	//vlan 3 output
+		.probe6(mac_lookup_en),
+		.probe7(mac_lookup_src_vlan),
+		.probe8(mac_lookup_src_port),
+		.probe9(mac_lookup_dst_mac),
+		.probe10(mac_lookup_src_mac),
+		.probe11(mac_lookup_hit),
+		.probe12(mac_lookup_dst_port)
+	);
 
 endmodule

@@ -63,6 +63,7 @@ module RxFifo #(
 														//(requires has_port_vlan be set too)
 
 	//Performance counters (mac_clk domain). Go high for one cycle to indicate an event has happened.
+	//TODO: make a struct
 	output logic				mac_queued		= 0,	//Frame was accepted
 	output logic				mac_drop_fifo	= 0,	//Frame was lost due to insufficient buffer space
 	output logic				mac_drop_vlan	= 0,	//Frame was lost due to having/not having a vlan tag when port
@@ -360,7 +361,7 @@ module RxFifo #(
 			fabric_bus.frame_dst_mac	<= header_rd_data.dst_mac;
 			fabric_bus.frame_src_mac	<= header_rd_data.src_mac;
 			fabric_bus.frame_vlan		<= header_rd_data.vlan;
-			fabric_bus.ethertype		<= header_rd_data.ethertype;
+			fabric_bus.frame_ethertype	<= header_rd_data.ethertype;
 		end
 
 		//Pop a packet when we're done working on it

@@ -9,6 +9,15 @@ create_clock -period 8.000 -name clk125mhz_p -waveform {0.000 4.000} [get_ports 
 create_clock -period 6.400 -name qsfp1_refclk_p -waveform {0.000 3.200} [get_ports qsfp1_refclk_p]
 
 set_property IOSTANDARD LVDS [get_ports clk125mhz_p]
+
+set_clock_groups -asynchronous -group [get_clocks {rxoutclk_out[0]}] -group [get_clocks clk_out1_fabric_clkgen]
+set_clock_groups -asynchronous -group [get_clocks {rxoutclk_out[1]}] -group [get_clocks clk_out1_fabric_clkgen]
+set_clock_groups -asynchronous -group [get_clocks {rxoutclk_out[2]}] -group [get_clocks clk_out1_fabric_clkgen]
+set_clock_groups -asynchronous -group [get_clocks {rxoutclk_out[3]}] -group [get_clocks clk_out1_fabric_clkgen]
+set_clock_groups -asynchronous -group [get_clocks clk_out1_fabric_clkgen] -group [get_clocks {rxoutclk_out[0]}]
+set_clock_groups -asynchronous -group [get_clocks clk_out1_fabric_clkgen] -group [get_clocks {rxoutclk_out[1]}]
+set_clock_groups -asynchronous -group [get_clocks clk_out1_fabric_clkgen] -group [get_clocks {rxoutclk_out[2]}]
+set_clock_groups -asynchronous -group [get_clocks clk_out1_fabric_clkgen] -group [get_clocks {rxoutclk_out[3]}]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

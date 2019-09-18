@@ -211,6 +211,7 @@ module SwitchFabric #(
 	typedef struct packed
 	{
 		logic					busy;				//true if we're in the middle of a forward operation
+		logic					starting;			//true if we just started forwarding
 		logic					valid;				//true if data should be processed by the output port
 		port_t					dest_port;			//ID of the output port
 		port_t					src_port;			//ID of the input port
@@ -268,8 +269,40 @@ module SwitchFabric #(
 
 		for(integer chan = 0; chan < CROSSBAR_PORTS; chan ++) begin
 
+			//Handle starting a new crossbar operation
+			//(pipeline the actual mux operations one cycle)
+			if(channels[chan].starting) begin
+				automatic integer srcport = channels[chan].src_port;
+
+				channels[chan].starting		<= 0;
+
+				channels[chan].vlan			<= fifo_bus[srcport].frame_vlan;
+				channels[chan].ethertype	<= fifo_bus[srcport].frame_ethertype;
+
+				//Ask the source FIFO to forward the frame.
+				//Mark the source port as busy so nobody else tries to use it next cycle.
+				//(multiple channels forwarding from the same source *on the same cycle* is totally fine)
+				fifo_fwd_en[srcport]			<= 1;
+				port_state[srcport].forwarding	<= 1;
+
+				`ifdef SIMULATION
+					$display("[%t] Forwarding frame from interface %s (addr %02x:%02x:%02x:%02x:%02x:%02x) to %s (addr %02x:%02x:%02x:%02x:%02x:%02x) (via crossbar channel %0d)",
+						$realtime(),
+						InterfaceName(srcport),
+						fifo_bus[srcport].frame_src_mac[47:40], fifo_bus[srcport].frame_src_mac[39:32],
+						fifo_bus[srcport].frame_src_mac[31:24], fifo_bus[srcport].frame_src_mac[23:16],
+						fifo_bus[srcport].frame_src_mac[15:8], fifo_bus[srcport].frame_src_mac[7:0],
+						InterfaceName(channels[chan].dest_port),
+						fifo_bus[srcport].frame_dst_mac[47:40], fifo_bus[srcport].frame_dst_mac[39:32],
+						fifo_bus[srcport].frame_dst_mac[31:24], fifo_bus[srcport].frame_dst_mac[23:16],
+						fifo_bus[srcport].frame_dst_mac[15:8], fifo_bus[srcport].frame_dst_mac[7:0],
+						chan[4:0]
+					);
+				`endif
+			end
+
 			//If the channel is busy, forward traffic
-			if(channels[chan].busy) begin
+			else if(channels[chan].busy) begin
 
 				//Cache the source port to make everything less verbose
 				automatic integer src = channels[chan].src_port;
@@ -361,30 +394,8 @@ module SwitchFabric #(
 
 						//Select the port
 						channels[chan].busy			<= 1;
+						channels[chan].starting		<= 1;
 						channels[chan].src_port		<= srcport;
-						channels[chan].vlan			<= fifo_bus[srcport].frame_vlan;
-						channels[chan].ethertype	<= fifo_bus[srcport].ethertype;
-
-						//Ask the source FIFO to forward the frame.
-						//Mark the source port as busy so nobody else tries to use it next cycle.
-						//(multiple channels forwarding from the same source *on the same cycle* is totally fine)
-						fifo_fwd_en[srcport]			<= 1;
-						port_state[srcport].forwarding	<= 1;
-
-						`ifdef SIMULATION
-							$display("[%t] Forwarding frame from interface %s (addr %02x:%02x:%02x:%02x:%02x:%02x) to %s (addr %02x:%02x:%02x:%02x:%02x:%02x) (via crossbar channel %0d)",
-								$realtime(),
-								InterfaceName(srcport),
-								fifo_bus[srcport].frame_src_mac[47:40], fifo_bus[srcport].frame_src_mac[39:32],
-								fifo_bus[srcport].frame_src_mac[31:24], fifo_bus[srcport].frame_src_mac[23:16],
-								fifo_bus[srcport].frame_src_mac[15:8], fifo_bus[srcport].frame_src_mac[7:0],
-								InterfaceName(channels[chan].dest_port),
-								fifo_bus[srcport].frame_dst_mac[47:40], fifo_bus[srcport].frame_dst_mac[39:32],
-								fifo_bus[srcport].frame_dst_mac[31:24], fifo_bus[srcport].frame_dst_mac[23:16],
-								fifo_bus[srcport].frame_dst_mac[15:8], fifo_bus[srcport].frame_dst_mac[7:0],
-								chan[4:0]
-							);
-						`endif
 
 					end
 
