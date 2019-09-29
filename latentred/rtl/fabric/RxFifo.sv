@@ -100,16 +100,18 @@ module RxFifo #(
 	//Headers parallel with port data
 	typedef struct packed
 	{
-		logic[10:0]		len;
-		ethertype_t		ethertype;
-		logic[47:0]		src_mac;
-		logic[47:0]		dst_mac;
-		logic[11:0]		vlan;
+		logic[10:0]	len;
+		ethertype_t	ethertype;
+		macaddr_t	src_mac;
+		macaddr_t	dst_mac;
+		vlan_t		vlan;
 	} header_t;
 
 	header_t			push_header	= 0;
 
 	logic				headers_valid_ff	= 0;
+
+	wire				header_push_full;
 
 	always_ff @(posedge mac_clk) begin
 
@@ -140,10 +142,17 @@ module RxFifo #(
 			push_header.src_mac		<= mac_rx_bus.src_mac;
 			push_header.dst_mac		<= mac_rx_bus.dst_mac;
 
+			//If there's no room for the header or packet, drop the frame
+			if(header_push_full || (push_size < 6) ) begin
+				push_rollback	<= 1;
+				dropping		<= 1;
+				mac_drop_fifo	<= 1;
+			end
+
 			//If we have a VLAN tag, use that VLAN.
 			//BUT if we also have a port based vlan configured, we shouldn't see tagged traffic at all
 			//Drop the frame to prevent vlan hopping, unless we're in native-vlan mode
-			if(mac_rx_bus.has_vlan_tag) begin
+			else if(mac_rx_bus.has_vlan_tag) begin
 
 				if(has_port_vlan && !native_vlan_allowed) begin
 					push_rollback	<= 1;
@@ -174,24 +183,6 @@ module RxFifo #(
 
 		end
 
-		//Handle incoming frame data
-		if(mac_rx_bus.data_valid && !dropping) begin
-
-			push_data		<= { push_data[31:0], mac_rx_bus.data };
-			push_header.len	<= push_header.len + mac_rx_bus.bytes_valid;
-
-			//If buffer is half full, push it and clear
-			if(push_valid) begin
-				push_en		<= 1;
-				push_valid	<= 0;
-			end
-
-			//If buffer is empty, save this half
-			else
-				push_valid	<= 1;
-
-		end
-
 		//Bail when a frame is dropped by the MAC
 		if(mac_rx_bus.drop) begin
 			push_data		<= 0;
@@ -201,28 +192,59 @@ module RxFifo #(
 			dropping		<= 0;
 		end
 
-		//Frame ended
-		if(mac_rx_bus.commit && !dropping) begin
+		//Don't do anything if dropping the frame
+		else if(dropping) begin
+		end
 
-			//If the frame is too small, drop it
-			if( (push_header.len < 60) ||
-				(push_header.len == 60 && mac_rx_bus.data_valid && mac_rx_bus.bytes_valid != 4) ) begin
-				dropping			<= 1;
-				push_rollback		<= 1;
-				push_en				<= 0;
-				mac_drop_runt		<= 1;
+		else begin
+
+			//Handle incoming frame data
+			if(mac_rx_bus.data_valid) begin
+
+				push_data		<= { push_data[31:0], mac_rx_bus.data };
+				push_header.len	<= push_header.len + mac_rx_bus.bytes_valid;
+
+				//If buffer is half full, push it and clear
+				if(push_valid) begin
+					push_en		<= 1;
+					push_valid	<= 0;
+				end
+
+				//If buffer is empty, save this half
+				else
+					push_valid	<= 1;
+
 			end
 
-			//Push any remaining half-finished data
-			else if(push_valid) begin
-				push_en			<= 1;
-				push_valid		<= 0;
-				push_commit_adv	<= 1;
+			//Frame ended
+			if(mac_rx_bus.commit) begin
+
+				//If the frame is too small, drop it
+				//Minimum legal frame size is 64 octets including MACs+ethertype+FCS, so 46 of payload.
+				if( (push_header.len < 42) ||
+					(push_header.len == 42 && mac_rx_bus.data_valid && mac_rx_bus.bytes_valid != 4) ) begin
+					dropping			<= 1;
+					push_rollback		<= 1;
+					push_en				<= 0;
+					mac_drop_runt		<= 1;
+				end
+
+				//Handle incoming data arriving at the last second
+				else if(mac_rx_bus.data_valid)
+					push_commit_adv	<= 1;
+
+				//Push any remaining half-finished data
+				else if(push_valid) begin
+					push_en			<= 1;
+					push_valid		<= 0;
+					push_commit_adv	<= 1;
+				end
+
+				//Nope, all good
+				else
+					push_commit		<= 1;
 			end
 
-			//Nope, all good
-			else
-				push_commit		<= 1;
 		end
 
 		//Handle delayed commit after pushing partial packet
@@ -295,6 +317,8 @@ module RxFifo #(
 	wire[HEADER_ADDR_BITS:0]	header_rd_size;
 	wire						header_rd_empty;
 
+	wire[HEADER_ADDR_BITS:0]	header_push_size;
+
 	CrossClockFifo #(
 		.WIDTH($bits(header_t)),
 		.DEPTH(META_FIFO_LINES),
@@ -304,10 +328,8 @@ module RxFifo #(
 		.wr_clk(mac_clk),
 		.wr_en(push_commit),
 		.wr_data(push_header),
-		.wr_size(),					//Don't bother checking for FIFO space. We have enough header memory for
-									//a full buffer of minimum sized frames, and discard runt frames that would waste
-									//too much header space.
-		.wr_full(),
+		.wr_size(header_push_size),
+		.wr_full(header_push_full),
 		.wr_overflow(),
 
 		.rd_clk(fabric_clk),
@@ -493,33 +515,38 @@ module RxFifo #(
 					end
 
 					//Use 3 saved bytes, 5 padding
-					3: begin
+					5: begin
 						fabric_bus.fwd_data[40:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 3;
 					end
 
 					//Use 4 saved bytes, 4 padding
-					4: begin
+					6: begin
 						fabric_bus.fwd_data[32:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 4;
 					end
 
 					//Use 5 saved bytes, 3 padding
-					5: begin
+					7: begin
 						fabric_bus.fwd_data[24:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 5;
 					end
 
 					//Use 6 saved bytes, 2 padding
-					6: begin
+					0: begin
 						fabric_bus.fwd_data[16:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 6;
 					end
 
 					//Use 6 saved bytes, 1 new, 1 padding
-					7: begin
+					1: begin
 						fabric_bus.fwd_data[7:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 7;
+					end
+
+					//Use 6 saved bytes, 2 new, 0 padding
+					2: begin
+						fabric_bus.fwd_bytes_valid	<= 8;
 					end
 
 				endcase
