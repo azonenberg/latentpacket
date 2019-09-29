@@ -311,6 +311,7 @@ module SwitchFabric #(
 				channels[chan].valid		<= fifo_bus[src].fwd_valid;
 				channels[chan].bytes_valid	<= fifo_bus[src].fwd_bytes_valid;
 				channels[chan].data			<= fifo_bus[src].fwd_data;
+				channels[chan].ethertype	<= fifo_bus[src].frame_ethertype;
 
 				//When the channel finishes forwarding, we have a bunch of stuff to do.
 				if(!fifo_bus[src].fwd_valid && !fifo_fwd_en[src] && !fifo_fwd_en_ff[src]) begin
@@ -424,8 +425,8 @@ module SwitchFabric #(
 
 		for(integer chan=0; chan<CROSSBAR_PORTS; chan++) begin
 
-			if(channels[chan].busy) begin
-				tx_fifo_bus[channels[chan].dest_port].valid			<= channels[chan].valid;
+			if(channels[chan].busy && channels[chan].valid) begin
+				tx_fifo_bus[channels[chan].dest_port].valid			<= 1;
 				tx_fifo_bus[channels[chan].dest_port].bytes_valid	<= channels[chan].bytes_valid;
 				tx_fifo_bus[channels[chan].dest_port].data			<= channels[chan].data;
 				tx_fifo_bus[channels[chan].dest_port].ethertype		<= channels[chan].ethertype;
