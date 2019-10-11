@@ -309,16 +309,23 @@ module OutputFifo #(
 					mac_bus.data			<= pop_data.data[63:32];
 					mac_bus.data_valid		<= 1;
 
-					if(pop_data.bytes_valid > 4)
+					//More data left in packet
+					if(pop_data.bytes_valid > 4) begin
 						mac_bus.bytes_valid	<= 4;
-					else
+
+						//Pop more data if we have it
+						if(pop_size > 0)
+							pop_en		<= 1;
+
+						pop_state			<= POP_STATE_SECOND;
+					end
+
+					//End of packet
+					else begin
 						mac_bus.bytes_valid	<= pop_data.bytes_valid;
+						pop_state			<= POP_STATE_IDLE;
+					end
 
-					pop_state				<= POP_STATE_SECOND;
-
-					//Pop more data if we have it
-					if(pop_size > 0)
-						pop_en		<= 1;
 				end
 
 			end	//end POP_STATE_FIRST
