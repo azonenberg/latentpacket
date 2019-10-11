@@ -154,6 +154,11 @@ module OutputFifo #(
 						push_state	<= PUSH_DROPPING;
 					end
 
+					//TEMP: drop STP etc
+					else if(fabric_bus.ethertype == 0) begin
+						push_state	<= PUSH_DROPPING;
+					end
+
 					//Drop frames if we don't have enough FIFO space for them.
 					//This should never happen due to flow control
 					else if(!fabric_ready) begin
@@ -259,9 +264,15 @@ module OutputFifo #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop side logic
 
-	logic	popping		= 0;
-	logic	pop_phase	= 0;
-	logic	pop_first	= 0;
+	logic	start_ff	= 0;
+
+	enum logic[1:0]
+	{
+		POP_STATE_IDLE 		= 0,
+		POP_STATE_PIPE		= 1,
+		POP_STATE_FIRST 	= 2,
+		POP_STATE_SECOND	= 3
+	} pop_state = POP_STATE_IDLE;
 
 	always_ff @(posedge mac_clk) begin
 		mac_bus.start		<= 0;
@@ -270,26 +281,31 @@ module OutputFifo #(
 		mac_bus.bytes_valid	<= 0;
 
 		pop_en				<= 0;
-		pop_first			<= 0;
+		start_ff			<= pop_data.start;
 
-		if(popping) begin
-			pop_phase		<= !pop_phase;
+		case(pop_state)
 
-			if(pop_size > 0 && !pop_phase)
-				pop_en		<= 1;
+			POP_STATE_IDLE: begin
 
-			if(pop_size == 0)
-				popping		<= 0;
+				//Wait for a frame to start (leave some room to allow for CDC latency)
+				if(pop_size >= 8) begin
+					pop_en		<= 1;
+					pop_state	<= POP_STATE_PIPE;
+				end
 
-			if(!pop_first) begin
+			end	//end POP_STATE_IDLE
 
-				//Frame data, first half
-				if(!pop_phase) begin
+			POP_STATE_PIPE: begin
+				pop_state	<= POP_STATE_FIRST;
+			end	//end POP_STATE_PIPE
 
-					//Start a new frame
-					if(pop_data.start)
-						mac_bus.start		<= 1;
+			POP_STATE_FIRST: begin
 
+				//Start a new frame
+				if(pop_data.start && !start_ff)
+					mac_bus.start	<= 1;
+
+				else begin
 					mac_bus.data			<= pop_data.data[63:32];
 					mac_bus.data_valid		<= 1;
 
@@ -298,28 +314,28 @@ module OutputFifo #(
 					else
 						mac_bus.bytes_valid	<= pop_data.bytes_valid;
 
+					pop_state				<= POP_STATE_SECOND;
+
+					//Pop more data if we have it
+					if(pop_size > 0)
+						pop_en		<= 1;
 				end
 
-				//Frame data, second half
-				else if(pop_data.bytes_valid > 4) begin
-					mac_bus.data		<= pop_data.data[31:0];
-					mac_bus.data_valid	<= 1;
-					mac_bus.bytes_valid	<= pop_data.bytes_valid - 4;
+			end	//end POP_STATE_FIRST
 
-					if(pop_data.bytes_valid < 8)
-						popping			<= 0;
-				end
-			end
+			POP_STATE_SECOND: begin
+				mac_bus.data		<= pop_data.data[31:0];
+				mac_bus.data_valid	<= 1;
+				mac_bus.bytes_valid	<= pop_data.bytes_valid - 4;
 
-		end
+				pop_state			<= POP_STATE_FIRST;
 
-		//Wait for a frame to start (leave some room to allow for CDC latency)
-		else if(pop_size >= 8) begin
-			popping			<= 1;
-			pop_en			<= 1;
-			pop_phase		<= 1;
-			pop_first		<= 1;
-		end
+				if(!pop_en)
+					pop_state		<= POP_STATE_IDLE;
+			end	//end POP_STATE_SECOND
+
+		endcase
+
 	end
 
 endmodule

@@ -210,6 +210,12 @@ module RxFifo #(
 					push_valid	<= 0;
 				end
 
+				//If committing, push the half-finished data
+				else if(mac_rx_bus.commit) begin
+					push_en		<= 1;
+					push_valid	<= 0;
+				end
+
 				//If buffer is empty, save this half
 				else
 					push_valid	<= 1;
@@ -233,9 +239,11 @@ module RxFifo #(
 				else if(mac_rx_bus.data_valid)
 					push_commit_adv	<= 1;
 
-				//Push any remaining half-finished data
+				//Push any remaining half-finished data.
+				//Shift it left since we don't have any low-half data on the way
 				else if(push_valid) begin
 					push_en			<= 1;
+					push_data		<= { push_data[31:0], 32'h0 };
 					push_valid		<= 0;
 					push_commit_adv	<= 1;
 				end
@@ -305,6 +313,18 @@ module RxFifo #(
 		.rd_size(data_rd_size),
 		.rd_reset(1'b0)
 	);
+
+	//DEBUG: helper field
+	logic[ADDR_BITS:0] data_rd_size_ff = 0;
+	logic[ADDR_BITS:0] data_rd_size_ff1 = 0;
+	logic[ADDR_BITS:0] data_rd_size_ff2 = 0;
+	logic[ADDR_BITS:0] data_rd_size_ff3 = 0;
+	always_ff @(posedge fabric_clk) begin
+		data_rd_size_ff	<= data_rd_size;
+		data_rd_size_ff1 <= data_rd_size_ff;
+		data_rd_size_ff2 <= data_rd_size_ff1;
+		data_rd_size_ff3 <= data_rd_size_ff2;
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Parallel header FIFO for packet metadata
@@ -510,31 +530,31 @@ module RxFifo #(
 
 					//Use 2 saved bytes, 6 padding
 					4: begin
-						fabric_bus.fwd_data[48:0]	<= 0;
+						fabric_bus.fwd_data[47:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 2;
 					end
 
 					//Use 3 saved bytes, 5 padding
 					5: begin
-						fabric_bus.fwd_data[40:0]	<= 0;
+						fabric_bus.fwd_data[39:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 3;
 					end
 
 					//Use 4 saved bytes, 4 padding
 					6: begin
-						fabric_bus.fwd_data[32:0]	<= 0;
+						fabric_bus.fwd_data[31:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 4;
 					end
 
 					//Use 5 saved bytes, 3 padding
 					7: begin
-						fabric_bus.fwd_data[24:0]	<= 0;
+						fabric_bus.fwd_data[23:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 5;
 					end
 
 					//Use 6 saved bytes, 2 padding
 					0: begin
-						fabric_bus.fwd_data[16:0]	<= 0;
+						fabric_bus.fwd_data[15:0]	<= 0;
 						fabric_bus.fwd_bytes_valid	<= 6;
 					end
 

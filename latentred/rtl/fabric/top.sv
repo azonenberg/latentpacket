@@ -183,7 +183,8 @@ module top(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 1G MACs
 
-	EthernetRxBus[23:0] mac_rx_bus;
+	EthernetRxBus[27:0] mac_rx_bus;
+	EthernetRxBus[27:0] mac_tx_bus;
 
 	for(genvar g=0; g<24; g=g+1) begin
 
@@ -199,7 +200,7 @@ module top(
 			.link_speed(LINK_SPEED_1000M),
 
 			.rx_bus(mac_rx_bus[g]),
-			.tx_bus({$bits(EthernetTxBus){1'b0}}),
+			.tx_bus(mac_tx_bus[g]),
 
 			.tx_ready(),
 			.perf()
@@ -240,7 +241,7 @@ module top(
 
 	RxFifoBus[23:0] rx_fabric_bus;
 
-	for(genvar g=0; g<24; g=g+1) begin
+	for(genvar g=0; g<24; g=g+1) begin : ports_1g
 		RxFifo fifo(
 			.mac_clk(clk_gmac),
 			.mac_rx_bus(rx_l2_bus[g]),
@@ -265,10 +266,32 @@ module top(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// TODO: TX FIFOs
+	// TX FIFOs
 
-	wire[27:0]			tx_fifo_ready = {28{1'b1}};
-	TxFifoBus			tx_fifo_bus;
+	wire[27:0]			tx_fifo_ready;
+	TxFifoBus[27:0]		tx_fifo_bus;
+
+	for(genvar g=0; g<28; g++) begin
+
+		//Output FIFO. Doesn't need to be large, since we push frames to the wire as they come in.
+		//This is just for shifting between two 156.25 MHz domains and adding VLAN tags if needed.
+		OutputFifo #(
+			.DEPTH(256),
+			.USE_BLOCK(1)
+		) txfifo (
+			.fabric_clk(clk_fabric),
+			.fabric_bus(tx_fifo_bus[g]),
+			.fabric_ready(tx_fifo_ready[g]),
+			.fabric_link_speed((g >= 24) ? LINK_SPEED_10G : LINK_SPEED_1000M),	//TODO: configure this properly for 10/100/1000 ports
+
+			.mac_clk((g >= 24) ? clk_fabric : clk_gmac),	//156.25 for 10G ports
+			.mac_bus(mac_tx_bus[g]),
+			.port_vlan(2),
+			.add_vlan_tag((g == 1)),
+			.has_native_vlan(1'b0)
+		);
+
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The actual switch fabric

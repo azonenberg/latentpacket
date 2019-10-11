@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="996320833333fs"></ZoomStartTime>
-      <ZoomEndTime time="1000735833334fs"></ZoomEndTime>
-      <Cursor1Time time="1000000000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="4225000001fs"></ZoomEndTime>
+      <Cursor1Time time="2520000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="252"></NameColumnWidth>
-      <ValueColumnWidth column_width="134"></ValueColumnWidth>
+      <ValueColumnWidth column_width="172"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="13" />
+   <WVObjectSize size="12" />
    <wvobject type="logic" fp_name="/top_sim/ready">
       <obj_property name="ElementShortName">ready</obj_property>
       <obj_property name="ObjectShortName">ready</obj_property>
@@ -151,8 +151,8 @@
          <obj_property name="ObjectShortName">gmii_rx_bus[23:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/top_sim/dut/mac_rx_bus">
-         <obj_property name="ElementShortName">mac_rx_bus[23:0]</obj_property>
-         <obj_property name="ObjectShortName">mac_rx_bus[23:0]</obj_property>
+         <obj_property name="ElementShortName">mac_rx_bus[27:0]</obj_property>
+         <obj_property name="ObjectShortName">mac_rx_bus[27:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/top_sim/dut/rx_l2_bus">
          <obj_property name="ElementShortName">rx_l2_bus[23:0]</obj_property>
@@ -245,119 +245,6 @@
          <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus">
             <obj_property name="ElementShortName">fifo_bus[27:0]</obj_property>
             <obj_property name="ObjectShortName">fifo_bus[27:0]</obj_property>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[27]">
-               <obj_property name="ElementShortName">[27]</obj_property>
-               <obj_property name="ObjectShortName">[27]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[26]">
-               <obj_property name="ElementShortName">[26]</obj_property>
-               <obj_property name="ObjectShortName">[26]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[25]">
-               <obj_property name="ElementShortName">[25]</obj_property>
-               <obj_property name="ObjectShortName">[25]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[24]">
-               <obj_property name="ElementShortName">[24]</obj_property>
-               <obj_property name="ObjectShortName">[24]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[23]">
-               <obj_property name="ElementShortName">[23]</obj_property>
-               <obj_property name="ObjectShortName">[23]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[22]">
-               <obj_property name="ElementShortName">[22]</obj_property>
-               <obj_property name="ObjectShortName">[22]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[21]">
-               <obj_property name="ElementShortName">[21]</obj_property>
-               <obj_property name="ObjectShortName">[21]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[20]">
-               <obj_property name="ElementShortName">[20]</obj_property>
-               <obj_property name="ObjectShortName">[20]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[19]">
-               <obj_property name="ElementShortName">[19]</obj_property>
-               <obj_property name="ObjectShortName">[19]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[18]">
-               <obj_property name="ElementShortName">[18]</obj_property>
-               <obj_property name="ObjectShortName">[18]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[17]">
-               <obj_property name="ElementShortName">[17]</obj_property>
-               <obj_property name="ObjectShortName">[17]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[16]">
-               <obj_property name="ElementShortName">[16]</obj_property>
-               <obj_property name="ObjectShortName">[16]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[15]">
-               <obj_property name="ElementShortName">[15]</obj_property>
-               <obj_property name="ObjectShortName">[15]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[14]">
-               <obj_property name="ElementShortName">[14]</obj_property>
-               <obj_property name="ObjectShortName">[14]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[13]">
-               <obj_property name="ElementShortName">[13]</obj_property>
-               <obj_property name="ObjectShortName">[13]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[12]">
-               <obj_property name="ElementShortName">[12]</obj_property>
-               <obj_property name="ObjectShortName">[12]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[11]">
-               <obj_property name="ElementShortName">[11]</obj_property>
-               <obj_property name="ObjectShortName">[11]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[10]">
-               <obj_property name="ElementShortName">[10]</obj_property>
-               <obj_property name="ObjectShortName">[10]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[9]">
-               <obj_property name="ElementShortName">[9]</obj_property>
-               <obj_property name="ObjectShortName">[9]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[8]">
-               <obj_property name="ElementShortName">[8]</obj_property>
-               <obj_property name="ObjectShortName">[8]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[7]">
-               <obj_property name="ElementShortName">[7]</obj_property>
-               <obj_property name="ObjectShortName">[7]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[6]">
-               <obj_property name="ElementShortName">[6]</obj_property>
-               <obj_property name="ObjectShortName">[6]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[5]">
-               <obj_property name="ElementShortName">[5]</obj_property>
-               <obj_property name="ObjectShortName">[5]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[4]">
-               <obj_property name="ElementShortName">[4]</obj_property>
-               <obj_property name="ObjectShortName">[4]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[3]">
-               <obj_property name="ElementShortName">[3]</obj_property>
-               <obj_property name="ObjectShortName">[3]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[2]">
-               <obj_property name="ElementShortName">[2]</obj_property>
-               <obj_property name="ObjectShortName">[2]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[1]">
-               <obj_property name="ElementShortName">[1]</obj_property>
-               <obj_property name="ObjectShortName">[1]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/fifo_bus[0]">
-               <obj_property name="ElementShortName">[0]</obj_property>
-               <obj_property name="ObjectShortName">[0]</obj_property>
-               <obj_property name="isExpanded"></obj_property>
-            </wvobject>
          </wvobject>
       </wvobject>
       <wvobject type="group" fp_name="group716">
@@ -367,257 +254,10 @@
             <obj_property name="ElementShortName">port_state[27:0]</obj_property>
             <obj_property name="ObjectShortName">port_state[27:0]</obj_property>
             <obj_property name="isExpanded"></obj_property>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[27]">
-               <obj_property name="ElementShortName">[27]</obj_property>
-               <obj_property name="ObjectShortName">[27]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[26]">
-               <obj_property name="ElementShortName">[26]</obj_property>
-               <obj_property name="ObjectShortName">[26]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[25]">
-               <obj_property name="ElementShortName">[25]</obj_property>
-               <obj_property name="ObjectShortName">[25]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[24]">
-               <obj_property name="ElementShortName">[24]</obj_property>
-               <obj_property name="ObjectShortName">[24]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[23]">
-               <obj_property name="ElementShortName">[23]</obj_property>
-               <obj_property name="ObjectShortName">[23]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[22]">
-               <obj_property name="ElementShortName">[22]</obj_property>
-               <obj_property name="ObjectShortName">[22]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[21]">
-               <obj_property name="ElementShortName">[21]</obj_property>
-               <obj_property name="ObjectShortName">[21]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[20]">
-               <obj_property name="ElementShortName">[20]</obj_property>
-               <obj_property name="ObjectShortName">[20]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[19]">
-               <obj_property name="ElementShortName">[19]</obj_property>
-               <obj_property name="ObjectShortName">[19]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[18]">
-               <obj_property name="ElementShortName">[18]</obj_property>
-               <obj_property name="ObjectShortName">[18]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[17]">
-               <obj_property name="ElementShortName">[17]</obj_property>
-               <obj_property name="ObjectShortName">[17]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[16]">
-               <obj_property name="ElementShortName">[16]</obj_property>
-               <obj_property name="ObjectShortName">[16]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[15]">
-               <obj_property name="ElementShortName">[15]</obj_property>
-               <obj_property name="ObjectShortName">[15]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[14]">
-               <obj_property name="ElementShortName">[14]</obj_property>
-               <obj_property name="ObjectShortName">[14]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[13]">
-               <obj_property name="ElementShortName">[13]</obj_property>
-               <obj_property name="ObjectShortName">[13]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[12]">
-               <obj_property name="ElementShortName">[12]</obj_property>
-               <obj_property name="ObjectShortName">[12]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[11]">
-               <obj_property name="ElementShortName">[11]</obj_property>
-               <obj_property name="ObjectShortName">[11]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[10]">
-               <obj_property name="ElementShortName">[10]</obj_property>
-               <obj_property name="ObjectShortName">[10]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[9]">
-               <obj_property name="ElementShortName">[9]</obj_property>
-               <obj_property name="ObjectShortName">[9]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[8]">
-               <obj_property name="ElementShortName">[8]</obj_property>
-               <obj_property name="ObjectShortName">[8]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[7]">
-               <obj_property name="ElementShortName">[7]</obj_property>
-               <obj_property name="ObjectShortName">[7]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[6]">
-               <obj_property name="ElementShortName">[6]</obj_property>
-               <obj_property name="ObjectShortName">[6]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[5]">
-               <obj_property name="ElementShortName">[5]</obj_property>
-               <obj_property name="ObjectShortName">[5]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[4]">
-               <obj_property name="ElementShortName">[4]</obj_property>
-               <obj_property name="ObjectShortName">[4]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[3]">
-               <obj_property name="ElementShortName">[3]</obj_property>
-               <obj_property name="ObjectShortName">[3]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[2]">
-               <obj_property name="ElementShortName">[2]</obj_property>
-               <obj_property name="ObjectShortName">[2]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[1]">
-               <obj_property name="ElementShortName">[1]</obj_property>
-               <obj_property name="ObjectShortName">[1]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[0]">
-               <obj_property name="ElementShortName">[0]</obj_property>
-               <obj_property name="ObjectShortName">[0]</obj_property>
-               <obj_property name="isExpanded"></obj_property>
-               <wvobject type="logic" fp_name="/top_sim/dut/fabric/port_state[0].dst_valid">
-                  <obj_property name="ElementShortName">.dst_valid</obj_property>
-                  <obj_property name="ObjectShortName">.dst_valid</obj_property>
-               </wvobject>
-               <wvobject type="logic" fp_name="/top_sim/dut/fabric/port_state[0].broadcast">
-                  <obj_property name="ElementShortName">.broadcast</obj_property>
-                  <obj_property name="ObjectShortName">.broadcast</obj_property>
-               </wvobject>
-               <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[0].broadcast_done">
-                  <obj_property name="ElementShortName">.broadcast_done[27:0]</obj_property>
-                  <obj_property name="ObjectShortName">.broadcast_done[27:0]</obj_property>
-                  <obj_property name="isExpanded"></obj_property>
-               </wvobject>
-               <wvobject type="array" fp_name="/top_sim/dut/fabric/port_state[0].dst_port">
-                  <obj_property name="ElementShortName">.dst_port[4:0]</obj_property>
-                  <obj_property name="ObjectShortName">.dst_port[4:0]</obj_property>
-               </wvobject>
-               <wvobject type="logic" fp_name="/top_sim/dut/fabric/port_state[0].forwarding">
-                  <obj_property name="ElementShortName">.forwarding</obj_property>
-                  <obj_property name="ObjectShortName">.forwarding</obj_property>
-               </wvobject>
-            </wvobject>
          </wvobject>
          <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest">
             <obj_property name="ElementShortName">src_to_dest[27:0][27:0]</obj_property>
             <obj_property name="ObjectShortName">src_to_dest[27:0][27:0]</obj_property>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[27]">
-               <obj_property name="ElementShortName">[27][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[27][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[26]">
-               <obj_property name="ElementShortName">[26][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[26][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[25]">
-               <obj_property name="ElementShortName">[25][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[25][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[24]">
-               <obj_property name="ElementShortName">[24][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[24][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[23]">
-               <obj_property name="ElementShortName">[23][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[23][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[22]">
-               <obj_property name="ElementShortName">[22][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[22][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[21]">
-               <obj_property name="ElementShortName">[21][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[21][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[20]">
-               <obj_property name="ElementShortName">[20][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[20][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[19]">
-               <obj_property name="ElementShortName">[19][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[19][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[18]">
-               <obj_property name="ElementShortName">[18][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[18][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[17]">
-               <obj_property name="ElementShortName">[17][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[17][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[16]">
-               <obj_property name="ElementShortName">[16][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[16][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[15]">
-               <obj_property name="ElementShortName">[15][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[15][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[14]">
-               <obj_property name="ElementShortName">[14][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[14][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[13]">
-               <obj_property name="ElementShortName">[13][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[13][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[12]">
-               <obj_property name="ElementShortName">[12][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[12][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[11]">
-               <obj_property name="ElementShortName">[11][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[11][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[10]">
-               <obj_property name="ElementShortName">[10][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[10][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[9]">
-               <obj_property name="ElementShortName">[9][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[9][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[8]">
-               <obj_property name="ElementShortName">[8][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[8][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[7]">
-               <obj_property name="ElementShortName">[7][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[7][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[6]">
-               <obj_property name="ElementShortName">[6][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[6][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[5]">
-               <obj_property name="ElementShortName">[5][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[5][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[4]">
-               <obj_property name="ElementShortName">[4][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[4][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[3]">
-               <obj_property name="ElementShortName">[3][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[3][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[2]">
-               <obj_property name="ElementShortName">[2][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[2][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[1]">
-               <obj_property name="ElementShortName">[1][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[1][27:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/top_sim/dut/fabric/src_to_dest[0]">
-               <obj_property name="ElementShortName">[0][27:0]</obj_property>
-               <obj_property name="ObjectShortName">[0][27:0]</obj_property>
-               <obj_property name="isExpanded"></obj_property>
-            </wvobject>
          </wvobject>
       </wvobject>
    </wvobject>
@@ -627,13 +267,116 @@
    </wvobject>
    <wvobject fp_name="divider928" type="divider">
    </wvobject>
-   <wvobject type="array" fp_name="/top_sim/dut/fabric/tx_fifo_ready">
-      <obj_property name="ElementShortName">tx_fifo_ready[27:0]</obj_property>
-      <obj_property name="ObjectShortName">tx_fifo_ready[27:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/top_sim/dut/fabric/tx_fifo_bus">
-      <obj_property name="ElementShortName">tx_fifo_bus[27:0]</obj_property>
-      <obj_property name="ObjectShortName">tx_fifo_bus[27:0]</obj_property>
+   <wvobject type="group" fp_name="group625">
+      <obj_property name="label">txfifo</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /fabric_clk">
+         <obj_property name="ElementShortName">fabric_clk</obj_property>
+         <obj_property name="ObjectShortName">fabric_clk</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /fabric_bus">
+         <obj_property name="ElementShortName">fabric_bus</obj_property>
+         <obj_property name="ObjectShortName">fabric_bus</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /fabric_ready">
+         <obj_property name="ElementShortName">fabric_ready</obj_property>
+         <obj_property name="ObjectShortName">fabric_ready</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /fabric_link_speed">
+         <obj_property name="ElementShortName">fabric_link_speed[1:0]</obj_property>
+         <obj_property name="ObjectShortName">fabric_link_speed[1:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /popping">
+         <obj_property name="ElementShortName">popping</obj_property>
+         <obj_property name="ObjectShortName">popping</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /pop_en">
+         <obj_property name="ElementShortName">pop_en</obj_property>
+         <obj_property name="ObjectShortName">pop_en</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /pop_phase">
+         <obj_property name="ElementShortName">pop_phase</obj_property>
+         <obj_property name="ObjectShortName">pop_phase</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /pop_first">
+         <obj_property name="ElementShortName">pop_first</obj_property>
+         <obj_property name="ObjectShortName">pop_first</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /pop_size">
+         <obj_property name="ElementShortName">pop_size[8:0]</obj_property>
+         <obj_property name="ObjectShortName">pop_size[8:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /pop_data">
+         <obj_property name="ElementShortName">pop_data</obj_property>
+         <obj_property name="ObjectShortName">pop_data</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /mac_clk">
+         <obj_property name="ElementShortName">mac_clk</obj_property>
+         <obj_property name="ObjectShortName">mac_clk</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /mac_bus">
+         <obj_property name="ElementShortName">mac_bus</obj_property>
+         <obj_property name="ObjectShortName">mac_bus</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /port_vlan">
+         <obj_property name="ElementShortName">port_vlan[11:0]</obj_property>
+         <obj_property name="ObjectShortName">port_vlan[11:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /add_vlan_tag">
+         <obj_property name="ElementShortName">add_vlan_tag</obj_property>
+         <obj_property name="ObjectShortName">add_vlan_tag</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /has_native_vlan">
+         <obj_property name="ElementShortName">has_native_vlan</obj_property>
+         <obj_property name="ObjectShortName">has_native_vlan</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /push_en">
+         <obj_property name="ElementShortName">push_en</obj_property>
+         <obj_property name="ObjectShortName">push_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /push_data">
+         <obj_property name="ElementShortName">push_data</obj_property>
+         <obj_property name="ObjectShortName">push_data</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /push_size">
+         <obj_property name="ElementShortName">push_size[8:0]</obj_property>
+         <obj_property name="ObjectShortName">push_size[8:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /push_state">
+         <obj_property name="ElementShortName">push_state[1:0]</obj_property>
+         <obj_property name="ObjectShortName">push_state[1:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /min_size">
+         <obj_property name="ElementShortName">min_size[8:0]</obj_property>
+         <obj_property name="ObjectShortName">min_size[8:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/top_sim/dut/\genblk4[1].txfifo /push_first">
+         <obj_property name="ElementShortName">push_first</obj_property>
+         <obj_property name="ObjectShortName">push_first</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /fabric_data_ff">
+         <obj_property name="ElementShortName">fabric_data_ff[31:0]</obj_property>
+         <obj_property name="ObjectShortName">fabric_data_ff[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /fabric_valid_ff">
+         <obj_property name="ElementShortName">fabric_valid_ff[2:0]</obj_property>
+         <obj_property name="ObjectShortName">fabric_valid_ff[2:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /DEPTH">
+         <obj_property name="ElementShortName">DEPTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DEPTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /USE_BLOCK">
+         <obj_property name="ElementShortName">USE_BLOCK[31:0]</obj_property>
+         <obj_property name="ObjectShortName">USE_BLOCK[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/top_sim/dut/\genblk4[1].txfifo /SIZE_BITS">
+         <obj_property name="ElementShortName">SIZE_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">SIZE_BITS[31:0]</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

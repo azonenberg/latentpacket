@@ -191,6 +191,11 @@ module top(
 	wire[27:0]		fabric_fwd_en;
 	RxFifoBus[27:0]	fabric_bus;
 
+	`include "TxFifoBus.svh"
+	wire[27:0]	tx_fifo_ready;
+	assign tx_fifo_ready[23:0] = {24{1'b1}};
+	TxFifoBus[27:0]	tx_fifo_bus;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 1G SGMII interfaces (dummies for now)
 
@@ -240,6 +245,26 @@ module top(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Port VLAN configuration
+
+	wire[27:0]			port_vlan_en;
+	wire[27:0]			port_dot1q_en;
+	vlan_t[27:0]		port_vlan;
+
+	//For now, ports 24/25/26 are manually configured. Tie off the rest.
+	assign port_vlan[23:0] = 0;
+	assign port_vlan[27] = 0;
+
+	vio_0 vio_vlancfg(
+		.clk(clk_fabric),
+		.probe_out0(port_vlan_en),
+		.probe_out1(port_dot1q_en),
+		.probe_out2(port_vlan[24]),
+		.probe_out3(port_vlan[25]),
+		.probe_out4(port_vlan[26])
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 10G interfaces
 
 	`include "GmiiBus.svh"
@@ -282,7 +307,7 @@ module top(
 
 		//MACs
 		EthernetRxBus	rx_bus;
-		EthernetRxBus	tx_bus = {$bits(EthernetRxBus){1'b0}};
+		EthernetTxBus	tx_bus;
 
 		XGEthernetMAC mac(
 			.xgmii_rx_clk(rx_clk),
@@ -293,6 +318,44 @@ module top(
 			.rx_bus(rx_bus),
 			.tx_bus(tx_bus)
 		);
+
+		if( (g == 1) || (g == 2) ) begin
+			//LA for testing
+			ila_0 ila(
+				.clk(clk_fabric),
+				.probe0(fabric_pop[24+g]),
+				.probe1(fabric_fwd_en[24+g]),
+				.probe2(rxfifo.fwd_state),
+				.probe3(fabric_bus[g+24]),
+				.probe4(rxfifo.header_rd_en_ff),
+				.probe5(rxfifo.header_rd_en),
+				.probe6(rxfifo.push_en),		//
+				.probe7(rxfifo.data_rd_size),
+				.probe8(rxfifo.data_rd_data),
+				.probe9(rxfifo.data_rd_packet_size),
+				.probe10(rxfifo.data_rd_data_ff),
+				.probe11(rxfifo.data_pop_packet),
+				.probe12(rxfifo.data_pop_single),
+				.probe13(rxfifo.header_rd_size),
+				.probe14(rxfifo.header_rd_empty),
+				.probe15(rxfifo.header_rd_data),
+				.probe16(rxfifo.data_rd_en),
+				.probe17(rxfifo.data_rd_offset)
+			);
+
+			ila_1 ila2(
+				.clk(tx_clk),
+				.probe0(tx_bus),
+				.probe1(xgmii_tx_bus),
+				.probe2(tx_header[g][1:0]),
+				.probe3(tx_data[g]),
+				.probe4(txfifo.pop_en),
+				.probe5(txfifo.pop_size),
+				.probe6(txfifo.pop_data),
+				.probe7(txfifo.start_ff),
+				.probe8(txfifo.pop_state)
+				);
+		end
 
 		//Ethernet frame parsing
 		EthernetRxL2Bus rx_l2_bus;
@@ -305,17 +368,40 @@ module top(
 			.perf()					//TODO: performance counters
 		);
 
+		if( (g == 2) || (g == 1) ) begin
+			ila_2 ila3(
+				.clk(rx_clk),
+				.probe0(rxfifo.push_data),
+				.probe1(rxfifo.mac_drop_vlan),
+				.probe2(rx_l2_bus),
+				.probe3(rxfifo.mac_drop_runt),
+				.probe4(rxfifo.mac_queued),
+				.probe5(rxfifo.push_size),
+				.probe6(rxfifo.push_header),
+				.probe7(rxfifo.push_valid),
+				.probe8(rxfifo.push_en),
+				.probe9(rxfifo.header_push_size),
+				.probe10(rxfifo.push_commit),
+				.probe11(rxfifo.push_rollback),
+				.probe12(rxfifo.header_push_full),
+				.probe13(rxfifo.dropping),
+				.probe14(rxfifo.push_commit_adv),
+				.probe15(xgmii_rx_bus)
+				);
+		end
+
+		//Main input queue
 		RxFifo #(
 			.FIFO_LINES(8192),
 			.META_FIFO_LINES(1024),
 			.META_USE_BLOCK(1)
-		) fifo (
+		) rxfifo (
 			.mac_clk(rx_clk),
 			.mac_rx_bus(rx_l2_bus),
 			.link_state(link_up[g]),
 
-			.has_port_vlan(1),
-			.port_vlan_id(2),		//TODO: make at least one port be a trunk?
+			.has_port_vlan(port_vlan_en[g+24]),
+			.port_vlan_id(port_vlan[g+24]),		//TODO: make at least one port be a trunk?
 			.native_vlan_allowed(0),
 
 			.mac_queued(),
@@ -328,6 +414,24 @@ module top(
 			.fabric_pop(fabric_pop[24+g]),
 			.fabric_fwd_en(fabric_fwd_en[24+g]),
 			.fabric_bus(fabric_bus[24+g])
+		);
+
+		//Output FIFO. Doesn't need to be large, since we push frames to the wire as they come in.
+		//This is just for shifting between 156.25 MHz /64 and 312.5 MHz /32 and adding VLAN tags if needed.
+		OutputFifo #(
+			.DEPTH(256),
+			.USE_BLOCK(1)
+		) txfifo (
+			.fabric_clk(clk_fabric),
+			.fabric_bus(tx_fifo_bus[24+g]),
+			.fabric_ready(tx_fifo_ready[24+g]),
+			.fabric_link_speed(LINK_SPEED_10G),
+
+			.mac_clk(tx_clk),
+			.mac_bus(tx_bus),
+			.port_vlan(port_vlan[g+24]),
+			.add_vlan_tag(port_dot1q_en[g+24]),
+			.has_native_vlan(0)
 		);
 
 	end
@@ -373,12 +477,20 @@ module top(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The actual switch fabric
 
-	`include "TxFifoBus.svh"
-
-	wire[27:0]	tx_fifo_ready;
-	assign tx_fifo_ready = {28{1'b1}};
-
-	TxFifoBus[27:0]	tx_fifo_bus;
+	ila_3 switch_ila(
+		.clk(clk_fabric),
+		.probe0(fabric.port_state[25]),
+		.probe1(fabric.port_state[26]),
+		.probe2(fabric.mac_lookup_en_ff2),
+		.probe3(fabric.mac_lookup_en),
+		.probe4(fabric.mac_lookup_hit),
+		.probe5(fabric.channels[5]),
+		.probe6(fabric.channels[6]),
+		.probe7(tx_fifo_bus[25]),
+		.probe8(tx_fifo_bus[26]),
+		.probe9(fabric_bus[25]),
+		.probe10(fabric_bus[26])
+	);
 
 	SwitchFabric fabric(
 		.clk(clk_fabric),
@@ -400,23 +512,5 @@ module top(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO
-
-	//LA for testing
-	ila_0 ila(
-		.clk(clk_fabric),
-		.probe0(fabric_pop[24]),
-		.probe1(fabric_fwd_en[24]),
-		.probe2(fabric_bus[24]),
-		.probe3(tx_fifo_bus[24]),
-		.probe4(tx_fifo_bus[1]),	//vlan 2 output
-		.probe5(tx_fifo_bus[2]),	//vlan 3 output
-		.probe6(mac_lookup_en),
-		.probe7(mac_lookup_src_vlan),
-		.probe8(mac_lookup_src_port),
-		.probe9(mac_lookup_dst_mac),
-		.probe10(mac_lookup_src_mac),
-		.probe11(mac_lookup_hit),
-		.probe12(mac_lookup_dst_port)
-	);
 
 endmodule
