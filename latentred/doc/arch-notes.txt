@@ -1,51 +1,69 @@
-Total available capacity on a 7k70t (worst case) is 270 2KB blocks, 7k160t is 650 blocks
+Scale down slightly to fit in xc7k160t!
 
-Small input queues on 1G ports since they get emptied as fast as they fill
-	4x BRAM = 8 KB = 5.4 MTU-sized frames
+1x 10G uplink
+24x 1G SGMII (DP83867, three 8 port line cards)
 
-Large input queues on 10G ports
-	16x BRAM = 32 KB = 21.8 MTU-sized frames
+4x4 crossbar
 
-Total input queue size
-	24x small = 24*4 = 96
-	4x large = 4*16 = 64
-	Total brams = 160 blocks
+Consider potential of 2x VSC8512 based line cards in the future, ideally on the same FPGA board
 
-Small exit queues on 10G ports since they get emptied fast
-	2x BRAM = 4 KB
+Should we use the FFG676 package instead of FBG484?? What IO banks to use?
 
-Large exit queues on 1G ports since they fill fast
-	8x BRAM = 16 KB = 10.9 MTU-sized frames
+FBG484
+One part in inventory
+4x GTX
+185x HR
+100x HP
 
-Total exit queue size
-	4x small = 4*2 = 8 blocks
-	24x large = 24*8 = 192 blocks
-	Total brams = 200 blocks
+FFG676
+Two parts in inventory
+8x GTX
+250x HR
+150x HP
 
-Max packet throughput
-	* 2 Mpps per 1G link
-	* 20 Mpps per 10G link
+Need two banks for the SGMII. Can theoretically use HR, but this is risky as we've done DP83867 bringup on HP only
+48/50 of each bank used for the SGMII itself
+One blocked by the calibration (IOSERDES loopback for clock phase alignment)
+One free pin, should probably not use for routability reasons
 
-	Total 4x 10G, 24x 1G = 128 Mpps (1 lookup per 7.81 ns)
+Max packet rate: 24x 1 Gbps + 1x 10 Gbps = 34 Gbps
 
-	Address table is 64x 2KB blocks @ 156.25 MHz
-	4K rows, 4 way set associative, 72 bits per entry.
-	1 lookup per clock, pipelined
+36 bit wide QDR-II+ needs:
+* 36x D write
+* 36x Q read
+* 1x WPS
+* 4x BWS
+* 18x A
+* RPS
+* QVLD
+* 2x K/K#
+* 2x CQ/CQ#
+= Total 101 pins, so 2 banks plus one extra pin in another bank?
 
-Total RAM usage
-	Input queues = 160
-	Exit queues = 200
-	MAC table = 64
-	Total = 424 = 65% of 7k160t
+Can definitely fit the QDR in the HR banks on a FBG484 packaged FPGA if we use the HP for the SGMII
 
-Switch fabric link selection
-	Driven by exit ports
-	Every clock, if not already forwarding a packet...
-		Each port has a bitmask indicating whether it wants to send to us
-		If our bit is set, read the packet into our queue
+QDR-II+ max data rates for FBG484:
+* HP = 500 MHz
+* HR = 400 MHz
 
-		How to handle multi/broadcast? (for now treat as the same?)
-		Global barrier sync is the easiest option but will potentially hurt performance
-		Set RTS to all ports that have broadcasts pending
-		Wait until they finish forwarding and assert CTS
-		Then push the packet
+For FFG676:
+* HP: 500 MHz
+* HR: 450 MHz
+
+QDR-II+ is 2.5 cycle read latency
+Simultaneous read and write on separate ports, burst length 4
+addresses single rate alternate clock cycles
+
+Max rate for streaming in fifo mode (i.e. 50/50 mix of linear reads and writes):
+* 400 MHz: 28.8 Gbps
+* 450 MHz: 32.4 Gbps
+* 500 MHz: 36.0 Gbps
+
+Only 550 MHz (FFG676 HP) is able to handle full throughput including the 10G interface
+
+All combinations can comfortably handle the 1G ports. This should be fine, since we don't need much buffering on the 10G
+
+Consider dual QDRs for FFG676 case??
+Dual needs 202 pins, will fit in 250x HR comfortably
+Provides 64.8 Gbps of buffer bandwidth
+May enable a second 10G uplink if sufficient logic capacity is available, TBD...

@@ -47,7 +47,7 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div
 		//Enable GPIO port A
 		RCC.AHB1ENR |= RCC_AHB1_GPIOA;
 
-		//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3
+		//Configure UART4_TX as AF8 on PA0 (PMOD0_DQ5) and USART2_RX as AF7 on PA3 (PMOD0_DQ1)
 		GPIOA.MODER = (GPIOA.MODER & 0xffffff3c) | 0x82;
 		GPIOA.AFRL = (GPIOA.AFRL & 0xffff0ff0) | 0x7008;
 

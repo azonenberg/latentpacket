@@ -347,13 +347,13 @@ module top(
 				.clk(tx_clk),
 				.probe0(tx_bus),
 				.probe1(xgmii_tx_bus),
-				.probe2(tx_header[g][1:0]),
-				.probe3(tx_data[g]),
+				.probe2(txfifo.pop_state),
+				.probe3(txfifo.start_ff),
 				.probe4(txfifo.pop_en),
 				.probe5(txfifo.pop_size),
 				.probe6(txfifo.pop_data),
-				.probe7(txfifo.start_ff),
-				.probe8(txfifo.pop_state)
+				.probe7(txfifo.fifo.rd_wr_ptr),
+				.probe8(txfifo.fifo.rd_wr_ptr_updated)
 				);
 		end
 

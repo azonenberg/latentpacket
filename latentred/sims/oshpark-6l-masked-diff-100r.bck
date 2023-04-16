@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SonnetProject Version="20" Type="GEO" xmlns="http://www.sonnetsoftware.com/schema/project" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sonnetsoftware.com/namespaces/project http://www.sonnetsoftware.com/schema/project/project-1.0.xsd">
+    <Header>
+        <Created Program="xgeom" Version="19.0.073">
+            <Date>03/14/2023 17:33:34</Date>
+        </Created>
+        <Modified Program="sonnet" Version="19.0.073">
+            <License>sonnet8.56.51917</License>
+            <Date>03/15/2023 00:08:33</Date>
+            <Change Importance="MEDIUM">
+                <Date>03/14/2023 23:46:53</Date>
+            </Change>
+            <Change Importance="HIGH">
+                <Date>03/14/2023 23:46:53</Date>
+            </Change>
+        </Modified>
+    </Header>
+    <Units>
+        <Angle>DEG</Angle>
+        <Capacitance>PF</Capacitance>
+        <Conductance>/OH</Conductance>
+        <Conductivity>SM</Conductivity>
+        <Frequency>GHZ</Frequency>
+        <Inductance>NH</Inductance>
+        <Length>MM</Length>
+        <Roughness>UM</Roughness>
+        <Resistance>OH</Resistance>
+        <Resistivity>OHCM</Resistivity>
+        <SheetRes>OHSQ</SheetRes>
+    </Units>
+    <Control>
+        <SweepType>VARSWP</SweepType>
+        <DeEmbed On="TRUE"/>
+        <Currents On="TRUE"/>
+        <SpeedControl>MAX_ACCURACY</SpeedControl>
+        <ABSCacheLevel>MULTI_SWEEP</ABSCacheLevel>
+    </Control>
+    <Geometry>
+        <Variable Name="WIDTH" Units="LENGTH" Value="0.25">
+            <GeoVar Type="ANCHORED" Direction="YDIR" Sign="-1" Scale="NORMAL">
+                <Position>(-0.388140394,0.08496979096)</Position>
+                <Reference Type="POLY" Point="1" Id="35">
+                    <Index Vertex="3"/>
+                </Reference>
+                <Reference Type="POLY" Point="2" Id="35">
+                    <Index Vertex="0"/>
+                </Reference>
+                <PointSet Set="1"/>
+                <PointSet Set="2">
+                    <Reference Type="POLY" Id="35">
+                        <Index Vertex="1"/>
+                    </Reference>
+                </PointSet>
+            </GeoVar>
+        </Variable>
+        <Variable Name="WIDTH2" Units="LENGTH" Value="WIDTH">
+            <GeoVar Type="ANCHORED" Direction="YDIR" Sign="1" Scale="NORMAL">
+                <Position>(-0.322229761,0.5216037716)</Position>
+                <Reference Type="POLY" Point="1" Id="37">
+                    <Index Vertex="0"/>
+                </Reference>
+                <Reference Type="POLY" Point="2" Id="37">
+                    <Index Vertex="3"/>
+                </Reference>
+                <PointSet Set="1"/>
+                <PointSet Set="2">
+                    <Reference Type="POLY" Id="37">
+                        <Index Vertex="2"/>
+                    </Reference>
+                </PointSet>
+            </GeoVar>
+        </Variable>
+        <Variable Name="SPACE" Units="LENGTH" Value="0.1">
+            <GeoVar Type="SYMMETRIC" Direction="YDIR" Sign="1" Scale="NORMAL">
+                <Position>(-0.1805744026,0.4584633776)</Position>
+                <Reference Type="POLY" Point="1" Id="35">
+                    <Index Vertex="3"/>
+                </Reference>
+                <Reference Type="POLY" Point="2" Id="37">
+                    <Index Vertex="0"/>
+                </Reference>
+                <PointSet Set="1">
+                    <Reference Type="POLY" Id="35">
+                        <Index Vertex="2"/>
+                    </Reference>
+                    <Reference Type="POLY" Id="35">
+                        <Index Vertex="1"/>
+                    </Reference>
+                    <Reference Type="POLY" Id="35">
+                        <Index Vertex="0"/>
+                    </Reference>
+                </PointSet>
+                <PointSet Set="2">
+                    <Reference Type="POLY" Id="37">
+                        <Index Vertex="1"/>
+                    </Reference>
+                    <Reference Type="POLY" Id="37">
+                        <Index Vertex="2"/>
+                    </Reference>
+                    <Reference Type="POLY" Id="37">
+                        <Index Vertex="3"/>
+                    </Reference>
+                </PointSet>
+            </GeoVar>
+        </Variable>
+        <Dielectric Name="Air" Conductivity="0.0" Eps="1.0" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.0"/>
+        <Dielectric Name="Substrate" Conductivity="0.0" Eps="1.0" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.0"/>
+        <Dielectric Name="Unnamed" Conductivity="0.0" Eps="1.0" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.0"/>
+        <Dielectric Name="Soldermask" Conductivity="0.0" Eps="3.5" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.02"/>
+        <Dielectric Name="FR408HR_106_prepreg" Conductivity="0.0" Eps="3.23" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.011"/>
+        <Dielectric Name="FR408HR_2113_core" Conductivity="0.0" Eps="3.66" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.0092"/>
+        <Dielectric Name="FR408HR_central_core" Conductivity="0.0" Eps="3.61" LossType="CONDUCTIVITY" MagLossTan="0.0" MuRel="1.0" Tan="0.0092"/>
+        <Conductor Name="Perfect Conductor" Conductivity="INF" LossType="CONDUCTIVITY"/>
+        <Conductor Name="Copper_1oz+plated_thick_up" Conductivity="5.8e7" LossType="CONDUCTIVITY"/>
+        <Conductor Name="Copper_1oz+plated_thin" Conductivity="5.8e7" LossType="CONDUCTIVITY"/>
+        <Conductor Name="Copper_0.5oz_thin" Conductivity="5.8e7" LossType="CONDUCTIVITY"/>
+        <Conductor Name="Copper_1oz+plated_thick_down" Conductivity="5.8e7" LossType="CONDUCTIVITY"/>
+        <Box>
+            <BoxCover Type="TOP" MaterialType="FREE_SPACE" Roughness="0.0" Thickness="0.0"/>
+            <BoxCover Type="BOTTOM" MaterialType="FREE_SPACE" Roughness="0.0" Thickness="0.0"/>
+            <Size X="20" Y="10" Z="0"/>
+            <NumCells X="800" Y="400"/>
+            <LocalOrigin X="0" Y="10"/>
+            <Symmetry On="FALSE"/>
+        </Box>
+        <Level MaterialName="Air" Number="0">
+            <DielectricMaterialModel Thickness="10.0"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="10.0"/>
+            </Objects>
+        </Level>
+        <Level MaterialName="Soldermask" Number="1">
+            <DielectricMaterialModel Thickness="0.05"/>
+            <ITFLevelProperties ITFConformal="TRUE"/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.05"/>
+                <PlanarTechLayer Name="F.Cu_thick" MaterialName="Copper_1oz+plated_thick_up">
+                    <ImportExportMapping CADLayerName="F.Cu" CADPurposeName="drawing" GDSData="0"/>
+                    <ColorPattern Color="#32cd32" Pattern="dwndiag"/>
+                    <PlanarMaterialModel ModelType="THICK_METAL" NumSheets="2.0" SheetsMode="AUTO_PLACEMENT" ThickDirection="UP" Thickness="0.0432"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                </PlanarTechLayer>
+                <PlanarTechLayer Name="F.Cu_thin" MaterialName="Copper_1oz+plated_thin">
+                    <ImportExportMapping CADLayerName="F.Cu_thin" CADPurposeName="drawing" GDSData="0" GDSStream="-2"/>
+                    <ColorPattern Color="#ff0000" Pattern="rangrey"/>
+                    <PlanarMaterialModel CurrentRatio="0.5" ModelType="THIN_METAL" Thickness="0.0432"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                    <Objects>
+                        <PlanarPolygon Id="35">
+                            <PlanarMaterialModel Thickness="0.0175"/>
+                            <Points>(0,4.7) (20,4.7) (20,4.95) (0,4.95)</Points>
+                            <Objects>
+                                <Port Number="1" Vertex="3">
+                                    <Type Type="BOX"/>
+                                    <Loss Resistance="100" Reactance="0" Inductance="0" Capacitance="0"/>
+                                    <Center>(0,4.825)</Center>
+                                </Port>
+                                <Port Number="2" Vertex="1">
+                                    <Type Type="BOX"/>
+                                    <Loss Resistance="100" Reactance="0" Inductance="0" Capacitance="0"/>
+                                    <Center>(20,4.825)</Center>
+                                </Port>
+                            </Objects>
+                        </PlanarPolygon>
+                        <PlanarPolygon Id="37">
+                            <PlanarMaterialModel ModelType="THICK_METAL"/>
+                            <Points>(0,5.05) (20,5.05) (20,5.3) (0,5.3)</Points>
+                            <Objects>
+                                <Port Number="-1" Vertex="3">
+                                    <Type Type="BOX"/>
+                                    <Loss Resistance="100" Reactance="0" Inductance="0" Capacitance="0"/>
+                                    <Center>(0,5.175)</Center>
+                                </Port>
+                                <Port Number="-2" Vertex="1">
+                                    <Type Type="BOX"/>
+                                    <Loss Resistance="100" Reactance="0" Inductance="0" Capacitance="0"/>
+                                    <Center>(20,5.175)</Center>
+                                </Port>
+                            </Objects>
+                        </PlanarPolygon>
+                    </Objects>
+                </PlanarTechLayer>
+            </Objects>
+        </Level>
+        <Level MaterialName="FR408HR_106_prepreg" Number="2">
+            <DielectricMaterialModel Thickness="0.1107"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.1107"/>
+                <PlanarTechLayer Name="In1.Cu" MaterialName="Copper_0.5oz_thin">
+                    <ImportExportMapping CADLayerName="In1.Cu" CADPurposeName="drawing" GDSData="0" GDSStream="-3"/>
+                    <ColorPattern Color="#a52a2a" Pattern="hatch"/>
+                    <PlanarMaterialModel CurrentRatio="0.5" ModelType="THIN_METAL" Thickness="0.0175"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                    <Objects>
+                        <PlanarPolygon Id="52">
+                            <Points>(2.220446049e-16,4.440892099e-16) (20,4.440892099e-16) (20,10) (2.220446049e-16,10)</Points>
+                        </PlanarPolygon>
+                    </Objects>
+                </PlanarTechLayer>
+            </Objects>
+        </Level>
+        <Level MaterialName="FR408HR_2113_core" Number="3">
+            <DielectricMaterialModel Thickness="0.1016"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.1016"/>
+                <PlanarTechLayer Name="In2.Cu" MaterialName="Copper_0.5oz_thin">
+                    <ImportExportMapping CADLayerName="In2.Cu" CADPurposeName="drawing" GDSData="0" GDSStream="-4"/>
+                    <ColorPattern Color="#a52a2a" Pattern="hatch"/>
+                    <PlanarMaterialModel CurrentRatio="0.5" ModelType="THIN_METAL" Thickness="0.0175"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                </PlanarTechLayer>
+            </Objects>
+        </Level>
+        <Level MaterialName="FR408HR_central_core" Number="4">
+            <DielectricMaterialModel Thickness="0.9256"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.9256"/>
+                <PlanarTechLayer Name="In3.Cu" MaterialName="Copper_0.5oz_thin">
+                    <ImportExportMapping CADLayerName="In3.Cu" CADPurposeName="drawing" GDSData="0" GDSStream="-5"/>
+                    <ColorPattern Color="#a52a2a" Pattern="hatch"/>
+                    <PlanarMaterialModel CurrentRatio="0.5" ModelType="THIN_METAL" Thickness="0.0175"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                </PlanarTechLayer>
+            </Objects>
+        </Level>
+        <Level MaterialName="FR408HR_2113_core" Number="5">
+            <DielectricMaterialModel Thickness="0.1016"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.1016"/>
+                <PlanarTechLayer Name="In4.Cu" MaterialName="Copper_0.5oz_thin">
+                    <ImportExportMapping CADLayerName="In4.Cu" CADPurposeName="drawing" GDSData="0" GDSStream="-6"/>
+                    <ColorPattern Color="#a52a2a" Pattern="hatch"/>
+                    <PlanarMaterialModel CurrentRatio="0.5" ModelType="THIN_METAL" Thickness="0.0175"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                </PlanarTechLayer>
+            </Objects>
+        </Level>
+        <Level MaterialName="FR408HR_106_prepreg" Number="6">
+            <DielectricMaterialModel Thickness="0.1107"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.1107"/>
+                <PlanarTechLayer Name="B.Cu_thick" MaterialName="Copper_1oz+plated_thick_down">
+                    <ImportExportMapping CADLayerName="B.Cu" CADPurposeName="drawing" GDSData="0" GDSStream="-7"/>
+                    <ColorPattern Color="#da70d6" Pattern="ltgrey"/>
+                    <PlanarMaterialModel ModelType="THICK_METAL" NumSheets="2.0" SheetsMode="AUTO_PLACEMENT" ThickDirection="DOWN" Thickness="0.0432"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                </PlanarTechLayer>
+                <PlanarTechLayer Name="B.Cu_thin" MaterialName="Copper_1oz+plated_thin">
+                    <ImportExportMapping CADLayerName="B.Cu_thin" CADPurposeName="drawing" GDSData="0" GDSStream="-8"/>
+                    <ColorPattern Color="#ff0000" Pattern="rangrey"/>
+                    <PlanarMaterialModel CurrentRatio="0.5" ModelType="THIN_METAL" Thickness="0.0432"/>
+                    <RoughnessModel BottomRoughness="0.0" RoughnessOn="FALSE" TopRoughness="0.0"/>
+                    <PlanarMeshing FillType="RECTANGULAR"/>
+                    <SubsectionMeshing XMin="1" XMax="100" YMin="1" YMax="100" EdgeMeshed="TRUE" DiagonalEdges="FALSE" AnisotropicType="X_AND_Y"/>
+                    <GLGMeshing GLG="FALSE"/>
+                </PlanarTechLayer>
+            </Objects>
+        </Level>
+        <Level MaterialName="Soldermask" Number="7">
+            <DielectricMaterialModel Thickness="0.05"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="0.05"/>
+            </Objects>
+        </Level>
+        <Level MaterialName="Air" Number="8">
+            <DielectricMaterialModel Thickness="10.0"/>
+            <ITFLevelProperties/>
+            <Objects>
+                <DielectricMaterialModel Thickness="10.0"/>
+            </Objects>
+        </Level>
+        <ViaTechLayer Name="Via1" MaterialName="Perfect Conductor">
+            <ImportExportMapping CADLayerName="Via1" CADPurposeName="drawing" GDSData="0" GDSStream="-9"/>
+            <ColorPattern Color="#b03060" Pattern="updiag"/>
+            <ViaMaterialModel ModelType="VOLUME" Solid="TRUE" Thickness="0.0"/>
+            <ViaMeshing AutoHeight="FALSE" FillType="RING" HasPads="FALSE"/>
+            <GLGMeshing GLG="FALSE"/>
+            <ViaLevels FromTechLayer="F.Cu_thick" FromType="TECH_LAYER" ToTechLayer="B.Cu_thick" ToType="TECH_LAYER"/>
+        </ViaTechLayer>
+    </Geometry>
+    <Sweeps SweepVariables="TRUE">
+        <Set On="TRUE">
+            <Frequencies>
+                <Sweep Type="ABS_ENTRY" On="TRUE" Addaptive="TRUE" Start="0.01" Stop="16" Target="300"/>
+            </Frequencies>
+            <Variables>
+                <SweptVar Name="WIDTH" Type="SWEEP" On="FALSE" Start="0.1999999999999993" Stop="0.1999999999999993"/>
+                <SweptVar Name="SPACE" Type="SWEEP" On="TRUE" Start="0.1" Stop="0.4" Step="0.1"/>
+            </Variables>
+        </Set>
+    </Sweeps>
+</SonnetProject>
