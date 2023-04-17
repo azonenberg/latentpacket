@@ -136,16 +136,19 @@ Total of 101 pins. Needs three consecutive HR I/O banks (i.e. including bank 14 
 Everything is 1.8V HSTL, we need the bank accepting read data to have 0.9V Vref as well.
 
 Write bank (output only, no Vref needed, total 42 pins, bank 13):
+
 * D[35:0] (align to byte groups)
 * BWS[3:0] (put in byte group)
 * K_P / K_N (use DQS pin pair)
 
 Address / control bank (output only, no Vref needed, total 20 pins, bank 14): 
+
 * WPS#
 * A[17:0]
 * RPS#
 
 Read bank (input only, Vref needed, total 41 pins, bank 15):  
+
 * Vref (x2)
 * CQ_P / CQ_N (on MRCC pins... MIG wants both on P??? Double check this)
 * Q[35:0]
@@ -183,5 +186,4 @@ otherwise
 
 ## Thermal
 
-Already a part we're very familiar with, doesn't need anything special. Runs warm but well within safe limits w/ no
-heatsinking
+Already a part we're very familiar with, doesn't need anything special. Runs warm but well within safe limits w/ no heatsinking
