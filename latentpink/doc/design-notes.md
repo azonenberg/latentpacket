@@ -155,7 +155,11 @@ Read bank (input only, Vref needed, total 41 pins, bank 15):
 * QVLD
 
 Not going to FPGA GPIOs:
-* ZQ, JTAG, Vref, ODT
+
+* ZQ  
+* JTAG
+* Vref
+* ODT
 
 ## Bandwidth
 
