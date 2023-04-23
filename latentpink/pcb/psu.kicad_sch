@@ -4,6 +4,13 @@
 
   (paper "A4")
 
+  (title_block
+    (date "2023-04-22")
+    (rev "0.1")
+    (company "Antikernel Labs")
+    (comment 1 "Andrew D. Zonenberg")
+  )
+
   (lib_symbols
   )
 
