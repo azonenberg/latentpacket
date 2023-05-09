@@ -458,12 +458,12 @@
       "QSGMII Power"
     ],
     [
-      "53ad7f5d-e8f7-4d9d-8211-bf10f2d97be3",
-      "FPGA Power"
-    ],
-    [
       "d5990d76-6ad3-4bfd-a9be-5da547fd1224",
       "QDR SRAM"
+    ],
+    [
+      "626b4a48-b66a-4c2b-9c82-5662baf5dfe0",
+      "RGMII PHY"
     ]
   ],
   "text_variables": {}
