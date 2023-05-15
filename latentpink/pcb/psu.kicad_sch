@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-05-10")
+    (date "2023-05-14")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -3996,7 +3996,7 @@
     (uuid 613a4392-83da-4c56-92d9-8063d7e5c151)
     (property "Reference" "U19" (id 0) (at 337.185 71.281 0))
     (property "Value" "TPS7A2533DRVR" (id 1) (at 337.185 73.8179 0))
-    (property "Footprint" "" (id 2) (at 331.47 83.82 0)
+    (property "Footprint" "azonenberg_pcb:DFN_6_0.65MM_2x2MM" (id 2) (at 331.47 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 331.47 83.82 0)
@@ -4788,7 +4788,7 @@
     (uuid baeab818-ea1c-4819-90a9-6f41f0680dcd)
     (property "Reference" "R28" (id 0) (at 194.31 24.13 90))
     (property "Value" "470 1/4W" (id 1) (at 187.96 26.67 90))
-    (property "Footprint" "" (id 2) (at 187.96 25.908 90)
+    (property "Footprint" "azonenberg_pcb:EIA_0603_RES_NOSILK" (id 2) (at 187.96 25.908 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 187.96 24.13 0)

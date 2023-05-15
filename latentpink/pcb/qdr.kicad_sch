@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-05-10")
+    (date "2023-05-14")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -8346,7 +8346,7 @@
     (uuid bfa4b31f-1bbb-48c8-8ffd-89b15a32a682)
     (property "Reference" "R76" (id 0) (at 261.62 36.83 90))
     (property "Value" "0" (id 1) (at 257.81 38.1 90))
-    (property "Footprint" "" (id 2) (at 257.81 39.878 90)
+    (property "Footprint" "azonenberg_pcb:EIA_0402_RES_NOSILK" (id 2) (at 257.81 39.878 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 257.81 38.1 0)

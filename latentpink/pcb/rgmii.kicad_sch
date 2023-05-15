@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-05-10")
+    (date "2023-05-14")
   )
 
   (lib_symbols
@@ -5055,7 +5055,7 @@
     (uuid a86168cd-7adf-4b14-be75-940c6e6de263)
     (property "Reference" "R74" (id 0) (at 273.05 34.6542 90))
     (property "Value" "49.9" (id 1) (at 273.05 37.1911 90))
-    (property "Footprint" "" (id 2) (at 273.05 41.148 90)
+    (property "Footprint" "azonenberg_pcb:EIA_0402_RES_NOSILK" (id 2) (at 273.05 41.148 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 273.05 39.37 0)
@@ -5382,7 +5382,7 @@
     (uuid e5bbf736-47a3-4173-a906-3cc7fff1aac2)
     (property "Reference" "R75" (id 0) (at 273.05 159.1142 90))
     (property "Value" "49.9" (id 1) (at 273.05 161.6511 90))
-    (property "Footprint" "" (id 2) (at 273.05 165.608 90)
+    (property "Footprint" "azonenberg_pcb:EIA_0402_RES_NOSILK" (id 2) (at 273.05 165.608 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 273.05 163.83 0)
@@ -5420,7 +5420,7 @@
     (property "Value" "ECX2-LMV-3CN-125.000-TR" (id 1) (at 68.58 218.6686 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Footprint" "" (id 2) (at 60.96 231.14 0)
+    (property "Footprint" "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5" (id 2) (at 60.96 231.14 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "" (id 3) (at 60.96 231.14 0)
