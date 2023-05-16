@@ -6,7 +6,7 @@
 
   (title_block
     (title "LATENTPINK - Top Level")
-    (date "2023-05-14")
+    (date "2023-05-15")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -235,7 +235,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 110f8433-9674-46a1-9464-59a8f6890a1c)
   )
-  (label "2V5" (at 165.1 25.4 180)
+  (label "2V5" (at 165.1 27.94 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 130de68f-c7ff-4062-8275-3d0545171a2b)
   )
@@ -246,6 +246,10 @@
   (label "GND" (at 365.76 224.79 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 19247f6f-a5f7-4d39-bd4d-081bca6e497c)
+  )
+  (label "3V3" (at 165.1 25.4 180)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 19e9d84d-a9f4-4d02-af21-54b917b37ff2)
   )
   (label "QDR_VTT" (at 30.48 175.26 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -315,7 +319,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 9b19663f-f34d-48ad-b659-514a3cedc94e)
   )
-  (label "1V0" (at 165.1 27.94 180)
+  (label "1V0" (at 165.1 30.48 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 9c5b6bae-e69f-48b0-9959-d96f2c2d1171)
   )
@@ -347,7 +351,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid ba39b843-7527-430e-b46c-5cf7c74e626a)
   )
-  (label "GND" (at 165.1 30.48 180)
+  (label "GND" (at 165.1 33.02 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid c2f377a4-e1d6-4fca-b811-cc868c7f5412)
   )
@@ -864,17 +868,21 @@
     (property "Sheet file" "phy.kicad_sch" (id 1) (at 165.1 47.5746 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
-    (pin "2V5" input (at 165.1 25.4 180)
+    (pin "2V5" input (at 165.1 27.94 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid e30c23fd-f981-4f26-b8b4-c7e3c701e0d6)
     )
-    (pin "1V0" input (at 165.1 27.94 180)
+    (pin "1V0" input (at 165.1 30.48 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid a80cfb51-d42d-40b8-b254-7df397629d7d)
     )
-    (pin "GND" input (at 165.1 30.48 180)
+    (pin "GND" input (at 165.1 33.02 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid 29f7b65e-4dd5-47eb-a0d7-abf5646c0be4)
+    )
+    (pin "3V3" input (at 165.1 25.4 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 3d26d097-3c0a-459f-8389-a61852e4c55f)
     )
   )
 
@@ -1944,6 +1952,15 @@
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/4c8b8d1d-6601-4615-8639-9415eda94e5b"
       (reference "C351") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/df06a539-89f8-4268-a26a-e33bea29d533"
+      (reference "C352") (unit 1) (value "1 uF") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3de6e371-6bf9-426c-9214-e89c5220dd1b"
+      (reference "C353") (unit 1) (value "1 uF") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/108ebd6a-9107-456e-a86d-3ebc4b9a79d6"
+      (reference "C354") (unit 1) (value "1 uF") (footprint "")
+    )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/dacf15d0-cabc-4cac-8b1d-8797d78eacd5"
       (reference "D1") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
     )
@@ -1989,11 +2006,14 @@
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/89c506ca-a35e-4b4f-a9f5-496898f70c87"
       (reference "J2") (unit 1) (value "SFP_CAGE") (footprint "azonenberg_pcb:CONN_SFP_CAGE_TE_2007194-1")
     )
-    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/89a83e70-694f-4c53-ad8d-d2417bda66cd"
-      (reference "J3") (unit 1) (value "RJ45") (footprint "azonenberg_pcb:CONN_RJ45_BELSTEWART_SS-7188S-A-PG4-1-BA-xx")
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/a9b2aa71-835b-4d9b-803d-8eba7f4051bf"
+      (reference "J3") (unit 1) (value "XILINX_JTAG") (footprint "azonenberg_pcb:XILINX_JTAG_PTH_MOLEX_0878311420")
     )
-    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/2891dd74-2f4c-437e-8a10-5686e0d2e7a2"
-      (reference "J4") (unit 1) (value "RJ45") (footprint "azonenberg_pcb:CONN_RJ45_BELSTEWART_SS-7188S-A-PG4-1-BA-xx")
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/a936e139-e0d5-40f2-a5e6-365d5a28087a"
+      (reference "J4") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/0190101c-a374-4d40-b6e0-9c7372f2bd86"
+      (reference "J4") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/3b01acef-34c0-4a0f-8f96-860d355af3cc"
       (reference "J5") (unit 1) (value "0826-1G1T-23-F") (footprint "azonenberg_pcb:CONN_BELFUSE_0826_1G1T_23_F")
@@ -2004,41 +2024,11 @@
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/f78e9972-df56-4581-b362-f294400bca11"
       (reference "J7") (unit 1) (value "RJ45") (footprint "azonenberg_pcb:CONN_RJ45_BELSTEWART_SS-7188S-A-PG4-1-BA-xx")
     )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1a76c803-4dbc-492c-9c82-b59fbd1d44ae"
-      (reference "J8") (unit 1) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/532c04a0-5790-4b91-8e46-fe45f8ec8f39"
+      (reference "J8") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
     )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/75d5af9f-0039-4f88-bb77-48403f157909"
-      (reference "J8") (unit 2) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/4eee0446-35a0-4a05-b66f-09b1fd90c771"
-      (reference "J8") (unit 3) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/31105c48-6011-48ad-a399-4ecdcf67821e"
-      (reference "J8") (unit 4) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/6f7c6c0e-3f42-4519-8011-af417bf95f29"
-      (reference "J8") (unit 5) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/6c9d92b0-144e-4c1c-86b8-70adb9604f44"
-      (reference "J8") (unit 6) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/ae18ac79-f681-46e4-9efe-b5578d8936a8"
-      (reference "J8") (unit 7) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/85dc50d0-f913-434e-b61f-02f527b656e8"
-      (reference "J8") (unit 8) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/9d162842-ae76-4f06-aadb-8105a3723760"
-      (reference "J8") (unit 9) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/0f546a28-b43f-4f36-9f1a-7428810d5bd2"
-      (reference "J8") (unit 10) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/7797d74d-72c4-46ce-9a6d-325734cb0185"
-      (reference "J8") (unit 11) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
-    )
-    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f58b8145-4a0d-4409-bf13-1bba0be21244"
-      (reference "J8") (unit 12) (value "08263-2X6R-54-F") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0863-2X6R-54-F")
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3537a82e-facd-4f53-be33-24915d7336f2"
+      (reference "J8") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/fb0e15e3-8c53-4a4b-a918-89e7882e65a4"
       (reference "J9") (unit 1) (value "XILINX_JTAG") (footprint "azonenberg_pcb:XILINX_JTAG_PTH_MOLEX_0878311420")
@@ -2059,13 +2049,43 @@
       (reference "J14") (unit 1) (value "CONN_01X03") (footprint "azonenberg_pcb:CONN_HEADER_2.54MM_1x3")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/7594156d-0342-42af-bcda-8d955235d42a"
-      (reference "J15") (unit 1) (value "CONN_01X03") (footprint "")
+      (reference "J15") (unit 1) (value "CONN_01X03") (footprint "azonenberg_pcb:CONN_HEADER_2.54MM_1x3")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/42526f9a-0aa7-4c37-8370-d9560e8b4619"
       (reference "J16") (unit 1) (value "JUMPER_0402_SPDT") (footprint "azonenberg_pcb:EIA_0402_JUMPER")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/1ee485e4-2588-4e7f-a0ec-c0497df9bbb2"
       (reference "J17") (unit 1) (value "JUMPER_0402_SPDT") (footprint "azonenberg_pcb:EIA_0402_JUMPER")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/77e7e4d8-1d94-445a-8b83-a2cd1bfdd63e"
+      (reference "J18") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/a80524df-af62-449d-93ba-ef8e76446ca3"
+      (reference "J18") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/cd2b7623-cc09-48a3-ac4d-097af45af3d2"
+      (reference "J19") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/7f2aa47f-e5ca-4dcd-a114-634adacfafdd"
+      (reference "J19") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/b3c91f78-1712-4d59-8658-7147c7c83460"
+      (reference "J20") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/2aca8659-fc0f-4e1c-81e5-91556cddec24"
+      (reference "J20") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/fb89dfbf-dcaa-455d-a957-977dd10cc797"
+      (reference "J21") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/0d1087c9-a76f-42fa-86c1-b20f94364afa"
+      (reference "J21") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/edc47307-8078-4147-be07-51c8eaa91abb"
+      (reference "J22") (unit 1) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/107100f0-69a1-463e-b538-051239d4ee2b"
+      (reference "J22") (unit 2) (value "BEL_FUSE_0845-2R1T-E4") (footprint "azonenberg_pcb:CONN_RJ45_BELFUSE_0845-2R1T-E4")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/d589f078-6a1e-4a81-b29e-070b1d87eeb8"
       (reference "L1") (unit 1) (value "2.2 uH") (footprint "")
@@ -2338,7 +2358,100 @@
       (reference "R79") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/8e52bd49-5448-4aa5-88f4-a4084b6d132f"
-      (reference "R80") (unit 1) (value "100") (footprint "")
+      (reference "R80") (unit 1) (value "100") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/65c58193-60d2-4411-b045-59dad86ee2fe"
+      (reference "R81") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/a86ee428-916d-42f4-8745-b310a59c0154"
+      (reference "R82") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1b1b5b3d-19ad-40e1-bbaa-0d00b29dd707"
+      (reference "R83") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/4418d154-c401-4d19-a31d-c9ff001af772"
+      (reference "R84") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/b383646f-fa69-4bc2-8a1c-93099cdbb7e3"
+      (reference "R85") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/817211e4-7fed-465f-ae0e-ae21c084c1ac"
+      (reference "R86") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3fe42635-0845-4345-a88d-5379badf9b11"
+      (reference "R87") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/af28185f-29ce-4bca-a1f1-f9a9e4d6664c"
+      (reference "R88") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/d65c47cc-c557-4dbc-8450-e1c83330973d"
+      (reference "R89") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1c7c8807-7b90-4fc6-a200-c3badd9d0515"
+      (reference "R90") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/45715f52-511f-4ddf-a832-87d781bd2a28"
+      (reference "R91") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/cb031c71-e327-4aa7-9366-1bc890e22e36"
+      (reference "R92") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/27a1ffb1-a9a3-41d1-a3a6-dbfb1adc254e"
+      (reference "R93") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/d0e09b43-68a8-4d0a-bdda-65ac88811cfa"
+      (reference "R94") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/fcc02d09-4c7b-4251-a493-7b1f5efbd638"
+      (reference "R95") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/dd42f356-6fd9-4d7b-a5d7-a04598020083"
+      (reference "R96") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/ab7d386b-69e7-4634-b18e-86efd412ef08"
+      (reference "R97") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/bc631815-759a-44d5-a134-a54e3f55a039"
+      (reference "R98") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/84867a56-cf49-4e37-8603-a65dbed1e4a1"
+      (reference "R99") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f48ed38c-e3df-4501-a3de-547fd771c68d"
+      (reference "R100") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3cacd732-ce60-4477-b326-30a1320ae843"
+      (reference "R101") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/bbbbd846-6560-4128-9eaa-6c666ee3536c"
+      (reference "R102") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/124f4cda-b19e-41fa-910c-105e31e7ef5f"
+      (reference "R103") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/bea8696f-be94-415a-b726-08001412f9ea"
+      (reference "R104") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/c045d9c8-b90c-4be0-991f-e5639890d347"
+      (reference "R105") (unit 1) (value "620 1%") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1001da07-fb78-4066-a02f-60f8b279997b"
+      (reference "R106") (unit 1) (value "1K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/feb82dca-370a-4ba8-aac8-be900f20ec4d"
+      (reference "R107") (unit 1) (value "1K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/b8aa5049-eebb-49a4-9c05-9db36276ef83"
+      (reference "R108") (unit 1) (value "1K") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f0a7b6f1-ee40-4bfe-acb4-c14ef08758ff"
+      (reference "R109") (unit 1) (value "2K 1%") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1263fb15-dac3-40c2-ba60-2b84e09077ec"
+      (reference "R110") (unit 1) (value "2K 1%") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/88fc9cdc-90b9-4930-bccd-ef137aac87a6"
+      (reference "R111") (unit 1) (value "2K 1%") (footprint "")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/4d701df3-1531-4e26-be52-80b3fa172f57"
       (reference "RN1") (unit 1) (value "YC124-FR-0749R9L") (footprint "")
@@ -2411,6 +2524,12 @@
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/eb162fe7-2d44-41b9-b893-0e1e220b90ba"
       (reference "TP18") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/486be270-1098-48b7-b9aa-183039ffd83f"
+      (reference "TP19") (unit 1) (value "TESTPOINT") (footprint "")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/8accbd04-9199-41ec-b9e5-11cd874a7f49"
+      (reference "TP20") (unit 1) (value "TESTPOINT") (footprint "")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f95d26ce-f739-4ae3-935e-eb3c6ddcaea7"
       (reference "U1") (unit 1) (value "VSC8512") (footprint "azonenberg_pcb:BGA_672_27x27_DEPOPCORNER_1MM")
@@ -2522,12 +2641,6 @@
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/6ec956a4-5119-485d-8d32-dadc6ddc6fa5"
       (reference "U6") (unit 1) (value "DP83867") (footprint "azonenberg_pcb:QFN_48_0.5MM_7x7MM")
-    )
-    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/75a9e495-ee1e-40f8-b084-e4068789a926"
-      (reference "U7") (unit 1) (value "BEL_FUSE_S558-5999-M8-F") (footprint "azonenberg_pcb:BELFUSE_S558-5999-M8-F")
-    )
-    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/78258ea5-fc92-40ca-a6f0-c1bd9b956d23"
-      (reference "U8") (unit 1) (value "BEL_FUSE_S558-5999-M8-F") (footprint "azonenberg_pcb:BELFUSE_S558-5999-M8-F")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/a4269fa5-c845-4112-bf7c-cf49496b4f36"
       (reference "U9") (unit 1) (value "KSZ9031RN") (footprint "azonenberg_pcb:QFN_48_0.5MM_7x7MM")

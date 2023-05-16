@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-05-14")
+    (date "2023-05-15")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -8332,7 +8332,7 @@
     (property "Value" "CONN_01X03" (id 1) (at 53.975 196.1766 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (id 2) (at 52.07 194.31 0)
+    (property "Footprint" "azonenberg_pcb:CONN_HEADER_2.54MM_1x3" (id 2) (at 52.07 194.31 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 52.07 194.31 0)
