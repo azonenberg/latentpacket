@@ -10354,7 +10354,7 @@
     (uuid efb93780-c482-4160-a587-e032d90f4ec4)
     (property "Reference" "U23" (id 0) (at 147.32 197.011 0))
     (property "Value" "ADM3101E_QFN" (id 1) (at 147.32 199.5479 0))
-    (property "Footprint" "" (id 2) (at 140.97 231.14 0)
+    (property "Footprint" "azonenberg_pcb:QFN_12_0.5MM_3x3MM" (id 2) (at 140.97 231.14 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 140.97 231.14 0)
