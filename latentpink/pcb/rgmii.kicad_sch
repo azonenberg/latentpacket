@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-05-16")
+    (date "2023-05-20")
   )
 
   (lib_symbols
@@ -3888,7 +3888,7 @@
     (property "Value" "0.47 uF" (id 1) (at 76.581 239.903 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (id 2) (at 74.6252 242.57 0)
+    (property "Footprint" "azonenberg_pcb:EIA_0402_CAP_NOSILK" (id 2) (at 74.6252 242.57 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 73.66 238.76 0)
@@ -5162,10 +5162,10 @@
     (property "Reference" "C228" (id 0) (at 43.561 264.2616 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "~" (id 1) (at 43.561 266.573 0)
+    (property "Value" "0.47 uF" (id 1) (at 43.561 266.573 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (id 2) (at 41.6052 269.24 0)
+    (property "Footprint" "azonenberg_pcb:EIA_0402_CAP_NOSILK" (id 2) (at 41.6052 269.24 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 40.64 265.43 0)
@@ -5288,7 +5288,7 @@
     (property "Value" "4.7 uF" (id 1) (at 63.881 239.903 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (id 2) (at 61.9252 242.57 0)
+    (property "Footprint" "azonenberg_pcb:EIA_0603_CAP_NOSILK" (id 2) (at 61.9252 242.57 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 60.96 238.76 0)

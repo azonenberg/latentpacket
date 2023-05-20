@@ -6,7 +6,7 @@
 
   (title_block
     (title "LATENTPINK - Top Level")
-    (date "2023-05-16")
+    (date "2023-05-20")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -216,6 +216,26 @@
         )
       )
     )
+    (symbol "special-azonenberg:MECHANICAL" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+      (property "Reference" "M" (id 0) (at 0 -2.54 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Value" "MECHANICAL" (id 1) (at 0 -5.08 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Footprint" "" (id 2) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "" (id 3) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "MECHANICAL_0_1"
+        (rectangle (start 0 1.27) (end 2.54 -1.27)
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type background))
+        )
+      )
+    )
   )
 
 
@@ -226,6 +246,10 @@
   (wire (pts (xy 64.77 30.48) (xy 73.66 30.48))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 11eaabc1-d348-42a4-ac97-291ba19d9a01)
+  )
+  (wire (pts (xy 190.5 45.72) (xy 201.93 45.72))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 16af0c7b-5903-4afb-9469-65eec0d2c740)
   )
   (wire (pts (xy 64.77 50.8) (xy 83.82 50.8))
     (stroke (width 0) (type default) (color 0 0 0 0))
@@ -247,9 +271,17 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 2537bc36-466d-428a-87f4-637a2e7fb3c5)
   )
+  (wire (pts (xy 190.5 48.26) (xy 201.93 48.26))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 2a677492-4f10-42cb-b4ea-fe5b1d357dd2)
+  )
   (wire (pts (xy 64.77 35.56) (xy 83.82 35.56))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 33743fef-72ff-417e-bf95-f713c04d60c3)
+  )
+  (wire (pts (xy 190.5 50.8) (xy 201.93 50.8))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 3d9aff5d-8ee8-4a1f-852f-10127a62c73f)
   )
   (wire (pts (xy 74.93 109.22) (xy 77.47 109.22))
     (stroke (width 0) (type default) (color 0 0 0 0))
@@ -262,6 +294,10 @@
   (wire (pts (xy 30.48 151.13) (xy 34.29 151.13))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 68faa1d6-6c0e-431a-903b-8e21218d4b48)
+  )
+  (wire (pts (xy 190.5 53.34) (xy 201.93 53.34))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 7092ebb0-8de7-469f-b998-70eb3fdc25e5)
   )
   (wire (pts (xy 77.47 109.22) (xy 77.47 118.11))
     (stroke (width 0) (type default) (color 0 0 0 0))
@@ -306,6 +342,10 @@
   (wire (pts (xy 64.77 33.02) (xy 73.66 33.02))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid ac835f51-799f-4583-8fc9-9da5adb1a476)
+  )
+  (wire (pts (xy 190.5 43.18) (xy 201.93 43.18))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid af8cf8a5-2982-49f2-8177-70c1ffd772ca)
   )
   (wire (pts (xy 30.48 140.97) (xy 34.29 140.97))
     (stroke (width 0) (type default) (color 0 0 0 0))
@@ -417,7 +457,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 3ef7fa25-583d-4b9e-8e65-9489c8e95c7e)
   )
-  (label "CHGND" (at 214.63 35.56 180)
+  (label "CHGND" (at 201.93 38.1 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 436774ea-d561-4082-ad77-766b0a1998e2)
   )
@@ -441,7 +481,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 5dc47e30-914e-46e5-ac79-ed470263230b)
   )
-  (label "1V8" (at 214.63 27.94 180)
+  (label "1V8" (at 201.93 27.94 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 689a9d4f-a8f1-4e21-9405-3781c46618b3)
   )
@@ -485,7 +525,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid b8cbe0f6-22ed-4f72-a31a-b29f3c6d50d4)
   )
-  (label "GND" (at 214.63 33.02 180)
+  (label "GND" (at 201.93 35.56 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid b8f7e40d-a000-45c7-bf28-1bdcfab23dd7)
   )
@@ -505,7 +545,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid c6ec0508-3e42-4344-a68a-b63fb4a4543f)
   )
-  (label "2V5" (at 214.63 25.4 180)
+  (label "2V5" (at 201.93 25.4 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid c859036f-6eea-409a-b326-fbd49bf1678c)
   )
@@ -521,11 +561,15 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid dd039c63-bf65-4ec3-a1b3-67aa03bb81be)
   )
+  (label "1V8_IO" (at 201.93 30.48 180)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid debcdd56-bae7-4939-bc24-853e8d55c6e4)
+  )
   (label "GND" (at 30.48 140.97 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid e0590f7b-b5f0-4384-a054-29edbaf79525)
   )
-  (label "1V0" (at 214.63 30.48 180)
+  (label "1V0" (at 201.93 33.02 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid e53c1d09-1afb-48a1-b363-fd3513c281bd)
   )
@@ -671,6 +715,40 @@
     (pin "2" (uuid a877019f-39a5-4b77-a385-1ce651c44042))
   )
 
+  (symbol (lib_id "special-azonenberg:MECHANICAL") (at 69.85 147.32 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 45542b58-57d2-4039-b6da-9cccd5ea2c20)
+    (property "Reference" "M10" (id 0) (at 73.025 146.4853 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "WEEE" (id 1) (at 73.025 149.0222 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "w_logo:Logo_silk_WEEE_3.4x5mm" (id 2) (at 69.85 147.32 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 69.85 147.32 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol (lib_id "special-azonenberg:MECHANICAL") (at 69.85 127 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 5abc0637-b868-4352-9fbd-b9895b3b47e8)
+    (property "Reference" "M7" (id 0) (at 73.025 126.1653 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "LONGTHING" (id 1) (at 73.025 128.7022 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "azonenberg_pcb:LONGTHING-1200DPI" (id 2) (at 69.85 127 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 69.85 127 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
   (symbol (lib_id "conn:CONN_COAXIAL") (at 34.29 156.21 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 76e188b7-7034-4372-87f8-cbeface58925)
@@ -705,6 +783,40 @@
     (pin "2" (uuid 597379ec-9fd6-4c20-9fe0-7e7d8967b124))
   )
 
+  (symbol (lib_id "special-azonenberg:MECHANICAL") (at 69.85 134.62 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 877ffc61-e135-4125-804d-a6b36735ce61)
+    (property "Reference" "M8" (id 0) (at 73.025 133.7853 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "OSHW" (id 1) (at 73.025 136.3222 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "w_logo:Logo_silk_OSHW_6x6mm" (id 2) (at 69.85 134.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 69.85 134.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (symbol (lib_id "special-azonenberg:MECHANICAL") (at 69.85 140.97 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 8f9c69bc-2401-49ae-87c7-b4a0cf8c6630)
+    (property "Reference" "M9" (id 0) (at 73.025 140.1353 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "POLARITY" (id 1) (at 73.025 142.6722 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "w_logo:Logo_silk_polarity_center_5x1.4mm" (id 2) (at 69.85 140.97 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 69.85 140.97 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
   (symbol (lib_id "conn:CONN_COAXIAL") (at 34.29 135.89 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 9c081b06-3c41-49e2-97b6-175c5737201b)
@@ -729,7 +841,7 @@
     (uuid a53e7caf-d1bd-41a0-9413-bbfa4452a48f)
     (property "Reference" "R122" (id 0) (at 73.66 113.3942 90))
     (property "Value" "DNP" (id 1) (at 73.66 115.9311 90))
-    (property "Footprint" "" (id 2) (at 73.66 119.888 90)
+    (property "Footprint" "azonenberg_pcb:EIA_1206_CAP_NOSILK" (id 2) (at 73.66 119.888 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 73.66 118.11 0)
@@ -894,35 +1006,59 @@
     )
   )
 
-  (sheet (at 214.63 22.86) (size 22.86 24.13) (fields_autoplaced)
+  (sheet (at 201.93 22.86) (size 22.86 31.75) (fields_autoplaced)
     (stroke (width 0.1524) (type solid) (color 0 0 0 0))
     (fill (color 0 0 0 0.0000))
     (uuid 22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa)
-    (property "Sheet name" "SGMII PHYs" (id 0) (at 214.63 22.1484 0)
+    (property "Sheet name" "SGMII PHYs" (id 0) (at 201.93 22.1484 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
-    (property "Sheet file" "sgmii.kicad_sch" (id 1) (at 214.63 47.5746 0)
+    (property "Sheet file" "sgmii.kicad_sch" (id 1) (at 201.93 55.1946 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
-    (pin "2V5" input (at 214.63 25.4 180)
+    (pin "2V5" input (at 201.93 25.4 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid cead3fd7-f474-4673-b60d-7a3f3161f8fe)
     )
-    (pin "1V0" input (at 214.63 30.48 180)
+    (pin "1V0" input (at 201.93 33.02 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid 0caedde2-6745-40d9-9a91-2a737b442b47)
     )
-    (pin "1V8" input (at 214.63 27.94 180)
+    (pin "1V8" input (at 201.93 27.94 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid 87184787-0274-44a4-a22e-a5f319f43fdd)
     )
-    (pin "GND" input (at 214.63 33.02 180)
+    (pin "GND" input (at 201.93 35.56 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid 3c4f07ee-21ab-4843-9c2d-e073b143e58f)
     )
-    (pin "CHGND" input (at 214.63 35.56 180)
+    (pin "CHGND" input (at 201.93 38.1 180)
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid ea627d77-0212-462f-b404-fc672b181514)
+    )
+    (pin "1V8_IO" input (at 201.93 30.48 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid d38866d9-4d16-41de-bfec-6470aa52e5eb)
+    )
+    (pin "VSC_FAST_STATUS_1V8" input (at 201.93 43.18 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid b198d77b-f44d-424f-9e32-417ca8c05945)
+    )
+    (pin "VSC_MDINT_1V8" input (at 201.93 45.72 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid bb598c27-bdf7-4257-bd4b-10f98728ec5b)
+    )
+    (pin "VSC_MDIO_1V8" bidirectional (at 201.93 50.8 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 04f201f2-f6b0-4f4a-97c2-145e2d410217)
+    )
+    (pin "VSC_MDC_1V8" output (at 201.93 53.34 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 184b519f-3833-407c-882c-e9feaf08aa93)
+    )
+    (pin "VSC_MDIO_OE" output (at 201.93 48.26 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 695b7fed-39d6-4f8e-9be6-12d3d0376757)
     )
   )
 
@@ -968,7 +1104,7 @@
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid 4bfe8718-2362-4a6c-8dee-58a42e7b24d6)
     )
-    (pin "FPGA_FLASH_SCK" output (at 116.84 35.56 0)
+    (pin "FPGA_FLASH_SCK" output (at 116.84 68.58 0)
       (effects (font (size 1.27 1.27)) (justify right))
       (uuid cda6a1d6-192e-4741-b324-6ed169edd605)
     )
@@ -1066,14 +1202,14 @@
     )
   )
 
-  (sheet (at 165.1 22.86) (size 26.67 24.13) (fields_autoplaced)
+  (sheet (at 165.1 22.86) (size 25.4 31.75) (fields_autoplaced)
     (stroke (width 0.1524) (type solid) (color 0 0 0 0))
     (fill (color 0 0 0 0.0000))
     (uuid d0e7363b-23d9-4272-a4d1-0db2834b87f3)
     (property "Sheet name" "QSGMII PHY" (id 0) (at 165.1 22.1484 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
-    (property "Sheet file" "phy.kicad_sch" (id 1) (at 165.1 47.5746 0)
+    (property "Sheet file" "phy.kicad_sch" (id 1) (at 165.1 55.1946 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (pin "2V5" input (at 165.1 27.94 180)
@@ -1096,6 +1232,26 @@
       (effects (font (size 1.27 1.27)) (justify left))
       (uuid a4410abc-4385-4376-8c64-81e4deeab1bc)
     )
+    (pin "VSC_FAST_STATUS_1V8" output (at 190.5 43.18 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid 56cfc133-983c-443f-8358-b9d9f5b07cb1)
+    )
+    (pin "VSC_MDINT_1V8" output (at 190.5 45.72 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid f9dedfd3-1a77-4d18-8d09-4192cdeeb078)
+    )
+    (pin "VSC_MDIO_OE" input (at 190.5 48.26 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid 8529768b-eab5-4875-a992-f663e256be78)
+    )
+    (pin "VSC_MDIO_1V8" bidirectional (at 190.5 50.8 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid 334969f5-ae2f-4ecb-881a-e5ffe1e0622a)
+    )
+    (pin "VSC_MDC_1V8" input (at 190.5 53.34 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid c3852f1a-c00e-4f2d-af53-96d450c8771a)
+    )
   )
 
   (sheet_instances
@@ -1112,7 +1268,7 @@
 
   (symbol_instances
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/7e547230-86f5-4ffe-8305-68ba0f48588b"
-      (reference "C1") (unit 1) (value "330 uF") (footprint "")
+      (reference "C1") (unit 1) (value "330 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/0c17dd6f-f69e-4604-a5c5-cf3d65381a41"
       (reference "C2") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1127,7 +1283,7 @@
       (reference "C5") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/4a31c3dc-8aea-4565-851c-3d311b05158b"
-      (reference "C6") (unit 1) (value "47 uF") (footprint "")
+      (reference "C6") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1206_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/599fbd27-8169-4a22-83df-bf970b8e3a0a"
       (reference "C7") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1310,7 +1466,7 @@
       (reference "C66") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/d3f803c7-4d77-46df-8622-f89257eeb917"
-      (reference "C67") (unit 1) (value "47 uF") (footprint "")
+      (reference "C67") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/c2da1706-3fd5-4e2f-9cf6-cfcba0cb5e56"
       (reference "C68") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1376,67 +1532,67 @@
       (reference "C88") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/781d9621-e54c-4c99-8102-0f282dd56131"
-      (reference "C89") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C89") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/5b620be6-e0bd-4d33-82f4-0ee919866b6b"
-      (reference "C90") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C90") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/63433c16-b568-4284-8920-837309e2859b"
-      (reference "C91") (unit 1) (value "220 uF") (footprint "")
+      (reference "C91") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/89880362-6dcc-4fed-a02d-8f34e6a6569b"
-      (reference "C92") (unit 1) (value "220 uF") (footprint "")
+      (reference "C92") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/29029ef2-ba47-445a-ab76-d50a05978995"
-      (reference "C93") (unit 1) (value "220 uF") (footprint "")
+      (reference "C93") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/4a968b95-751f-4bc2-9c23-8a424cd1c8c6"
-      (reference "C94") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C94") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/9e944856-b201-468d-be93-a9394fd682a4"
-      (reference "C95") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C95") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/b9a46698-fe93-44ab-9014-5dd986b54fbd"
-      (reference "C96") (unit 1) (value "220 uF") (footprint "")
+      (reference "C96") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/4bab56fc-5050-4ae0-964f-baf627effef2"
-      (reference "C97") (unit 1) (value "220 uF") (footprint "")
+      (reference "C97") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/2172764e-1b9a-46b1-8094-1af2ba572cc6"
-      (reference "C98") (unit 1) (value "10 uF 25V") (footprint "")
+      (reference "C98") (unit 1) (value "10 uF 25V") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/44c63d94-3442-4197-a57e-d031a0994991"
-      (reference "C99") (unit 1) (value "10 uF 25V") (footprint "")
+      (reference "C99") (unit 1) (value "10 uF 25V") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/b0fd78b5-2582-463a-8ed7-bf5126bb1118"
-      (reference "C100") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C100") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/c3d0a0cb-eecd-4c37-8b6b-13cdd86dad51"
-      (reference "C101") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C101") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/158eff9e-090c-4112-b7a1-0d3d52a6a701"
-      (reference "C102") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C102") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/ee040b00-9809-42dc-b384-254b1c069e0d"
-      (reference "C103") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C103") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/3bed5dd2-4988-4fbd-bf09-b051452521f5"
-      (reference "C104") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C104") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/bcdd3f4d-08a3-4ae5-a456-d422d31dad6b"
-      (reference "C105") (unit 1) (value "22 uF 25V") (footprint "")
+      (reference "C105") (unit 1) (value "22 uF 25V") (footprint "azonenberg_pcb:EIA_1812_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/18ef5ee5-d3a7-4b5c-9d24-904e6d9fe7f0"
       (reference "C106") (unit 1) (value "4.7 uF") (footprint "azonenberg_pcb:EIA_0603_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/1ba44cbe-3d90-4da2-9420-7273759b1557"
-      (reference "C107") (unit 1) (value "220 uF") (footprint "")
+      (reference "C107") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/60dbafb3-79aa-472e-9fb6-5859b2fc64e1"
-      (reference "C108") (unit 1) (value "220 uF") (footprint "")
+      (reference "C108") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/d2102c02-38cf-4ceb-9b7e-faa9fd8c43fd"
-      (reference "C109") (unit 1) (value "220 uF") (footprint "")
+      (reference "C109") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/7ecf2954-87e4-4dc1-82c4-e6ddf01023f5"
       (reference "C110") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1445,13 +1601,13 @@
       (reference "C111") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/fe99e888-38ba-45f8-b36c-60ed695dbd4e"
-      (reference "C112") (unit 1) (value "220 uF") (footprint "")
+      (reference "C112") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/72bf7460-a016-4cce-86dc-c2373b564531"
-      (reference "C113") (unit 1) (value "220 uF") (footprint "")
+      (reference "C113") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/c5a22d3d-64c3-4c24-bc3e-893ef38c63bc"
-      (reference "C114") (unit 1) (value "220 uF") (footprint "")
+      (reference "C114") (unit 1) (value "220 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/47282df9-277a-4402-be6f-2684f2c64c9a"
       (reference "C115") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1460,22 +1616,22 @@
       (reference "C116") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/03cb7755-a4ea-49c3-a3a4-a9cf04b3b400"
-      (reference "C117") (unit 1) (value "EEH-ZS1E102UV") (footprint "")
+      (reference "C117") (unit 1) (value "EEH-ZS1E102UV") (footprint "azonenberg_pcb:CAP_AL_10MM_SMT")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/307104b5-3b06-4659-9521-d41812bc51c2"
-      (reference "C118") (unit 1) (value "DNP") (footprint "")
+      (reference "C118") (unit 1) (value "DNP") (footprint "azonenberg_pcb:CAP_AL_10MM_SMT")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/d41c2041-1c27-4def-a8ab-2851ff6e8f14"
       (reference "C119") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/6012365b-4cb8-4cfe-b1e1-5fec4d27ee8d"
-      (reference "C120") (unit 1) (value "DNP") (footprint "")
+      (reference "C120") (unit 1) (value "DNP") (footprint "azonenberg_pcb:CAP_AL_10MM_SMT")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/062e5c1b-a7a2-4974-b6c3-f008ce7fecdf"
       (reference "C121") (unit 1) (value "0.015 uF") (footprint "azonenberg_pcb:EIA_0603_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/ca4a4fd8-55f2-4709-b813-7f57a70b368c"
-      (reference "C122") (unit 1) (value "EEH-ZS1E102UV") (footprint "")
+      (reference "C122") (unit 1) (value "EEH-ZS1E102UV") (footprint "azonenberg_pcb:CAP_AL_10MM_SMT")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/a9caccb4-1bbb-47c1-b0e9-07d124523f4d"
       (reference "C123") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1571,22 +1727,22 @@
       (reference "C153") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/9d39cb21-f1d5-4d11-bda8-95a0f8676d0b"
-      (reference "C154") (unit 1) (value "330 uF") (footprint "")
+      (reference "C154") (unit 1) (value "330 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/3814970d-2596-4f20-887a-50a764cdceb3"
-      (reference "C155") (unit 1) (value "47 uF") (footprint "")
+      (reference "C155") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/7f101469-4d68-4939-b865-42df47fb9958"
       (reference "C156") (unit 1) (value "100 uF") (footprint "")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/157c6eda-882e-498f-8d55-8cbf6437ba8e"
-      (reference "C157") (unit 1) (value "47 uF") (footprint "")
+      (reference "C157") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/ade48b9e-9e2e-49eb-8860-ff268c8d9658"
-      (reference "C158") (unit 1) (value "330 uF") (footprint "")
+      (reference "C158") (unit 1) (value "330 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/e4c5c8b5-db26-43b3-b304-8caec4f44369"
-      (reference "C159") (unit 1) (value "47 uF") (footprint "")
+      (reference "C159") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/aab3bf0a-1e49-4da7-93d5-e17c9ab71591"
       (reference "C160") (unit 1) (value "100 uF") (footprint "")
@@ -1793,7 +1949,10 @@
       (reference "C227") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/b86bb549-2bb5-413c-938e-f8ddae23c56e"
-      (reference "C228") (unit 1) (value "~") (footprint "")
+      (reference "C228") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/cad73cbf-3947-46b7-b9cd-803c603b11f5"
+      (reference "C229") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/0b976591-9a80-407c-9a49-3c3e8a86cfe3"
       (reference "C230") (unit 1) (value "4.7 uF") (footprint "azonenberg_pcb:EIA_0603_CAP_NOSILK")
@@ -1808,7 +1967,7 @@
       (reference "C233") (unit 1) (value "4.7 uF") (footprint "azonenberg_pcb:EIA_0603_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/dff2fdbc-9e48-4dd7-810f-930027fb1b60"
-      (reference "C234") (unit 1) (value "4.7 uF") (footprint "")
+      (reference "C234") (unit 1) (value "4.7 uF") (footprint "azonenberg_pcb:EIA_0603_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/1f939be6-891a-4942-91d7-c3c0152a2238"
       (reference "C235") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -1829,7 +1988,7 @@
       (reference "C240") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/0562f6ac-b2fe-4488-9771-d6e7f4092c80"
-      (reference "C241") (unit 1) (value "0.47 uF") (footprint "")
+      (reference "C241") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/a96ead5c-b446-487d-b6bd-80b145e56103"
       (reference "C242") (unit 1) (value "4.7 uF") (footprint "azonenberg_pcb:EIA_0603_CAP_NOSILK")
@@ -1973,7 +2132,7 @@
       (reference "C288") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/36dd2889-a46a-4b1f-b5d9-40d3d8b74da8"
-      (reference "C289") (unit 1) (value "47 uF") (footprint "")
+      (reference "C289") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/5820d176-a91e-45ee-be4b-21657beb2a8f"
       (reference "C290") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -2009,7 +2168,7 @@
       (reference "C300") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/8ca67482-37df-40e9-b28b-e4caf5c5dc05"
-      (reference "C301") (unit 1) (value "47 uF") (footprint "")
+      (reference "C301") (unit 1) (value "47 uF") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/53b012cf-05f8-4192-953c-495ff0ed825c"
       (reference "C302") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -2446,6 +2605,96 @@
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/737be4d2-c736-4be8-b5bd-29cfc3cd9dfa"
       (reference "C446") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/a860e651-6a4b-4e2a-afd8-70560b15f9a6"
+      (reference "C447") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/1d6e6525-9e4d-4605-9c98-69797b553739"
+      (reference "C448") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/76aad504-14e6-48f9-960d-b9f2dd5ec7d7"
+      (reference "C449") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/94c46c58-24dc-4845-8aaa-ab3c82e370b2"
+      (reference "C450") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/26e0d0f0-c419-4709-af62-f11b62c9f77d"
+      (reference "C451") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/83a7b12e-f3de-42a3-ae15-3ffd83f1741e"
+      (reference "C452") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/7c25eb82-0bd6-4a43-88d2-775649b27b4a"
+      (reference "C453") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/e29ec678-a1ca-426f-84fa-d1f67c1648e8"
+      (reference "C454") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/3d4a7285-fc2c-4749-a098-a3d001c9f2f5"
+      (reference "C455") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/8a763039-f0b3-4fb5-aaa5-24d18bdd2a22"
+      (reference "C456") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/5ccc89a4-fb4a-4b8c-b63e-646cc2c8751b"
+      (reference "C457") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/7e823a8a-83e9-439d-85d6-d19f2f9d0871"
+      (reference "C458") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/4b5a9cee-47c0-4bbb-ae2c-62f0e32882a8"
+      (reference "C459") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/7c1439b8-5249-4605-84d5-72cfdaa70f0e"
+      (reference "C460") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/ce114890-c11e-4c6c-adcc-d2443d7db0bc"
+      (reference "C461") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/04537e71-39b5-4f4f-b380-f36e85183ad4"
+      (reference "C462") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/e02e3f92-ef70-4ac0-beea-08189072c7c2"
+      (reference "C463") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/d2f8a5e3-16db-4f3b-b0eb-04f08bee9f10"
+      (reference "C464") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/584308f7-e3b6-4be7-a50c-b837312af56f"
+      (reference "C465") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/9f30b4e4-3894-4f14-9e5f-0f133bba96ca"
+      (reference "C466") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/9f5481ed-1dea-4b12-9f90-cf7c69797f0d"
+      (reference "C467") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3e66f014-0e11-4699-a10a-0a1c133b492d"
+      (reference "C468") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/285d4b1c-d3d1-418f-a681-52e354333dd5"
+      (reference "C469") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/817e2cf1-ed8e-4949-a43c-5ec3b18d32e8"
+      (reference "C470") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1bcb6d83-b751-4c5a-9a55-fac0cad464f0"
+      (reference "C471") (unit 1) (value "22 uF") (footprint "azonenberg_pcb:EIA_1206_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f10f5f80-e516-4265-b6bd-e90d7ff5ec39"
+      (reference "C472") (unit 1) (value "22 uF") (footprint "azonenberg_pcb:EIA_1206_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/49294cee-be90-4deb-93bc-b2e21ccccebf"
+      (reference "C473") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1960a2e6-6ae4-4a29-9981-849145ec84e4"
+      (reference "C474") (unit 1) (value "0.1 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/fc10e5b4-0aa4-4498-a124-c8f907a43de4"
+      (reference "C475") (unit 1) (value "DNP") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/41ff1ce5-25ba-4abd-87dc-d5785fdce5ab"
+      (reference "C476") (unit 1) (value "DNP") (footprint "azonenberg_pcb:EIA_1210_CAP_NOSILK")
+    )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/dacf15d0-cabc-4cac-8b1d-8797d78eacd5"
       (reference "D1") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
     )
@@ -2457,6 +2706,15 @@
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/edd17579-09a5-4bb2-a087-eab2925b240e"
       (reference "D4") (unit 1) (value "RED") (footprint "azonenberg_pcb:EIA_0603_LED")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/e388d61f-ca11-4cf2-b63a-8dcf6a7dd345"
+      (reference "D5") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/21d6b417-a9ff-4293-9991-b674ad135f4b"
+      (reference "D6") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/33b52ec3-56ac-4d2e-957d-3ed0b74936c9"
+      (reference "D7") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/d67410e9-b9d7-4681-a748-c3dfbad70b7a"
       (reference "F1") (unit 1) (value "ERB-RD4R00X") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
@@ -2525,10 +2783,10 @@
       (reference "J10") (unit 1) (value "XILINX_JTAG") (footprint "azonenberg_pcb:XILINX_JTAG_PTH_MOLEX_0878311420")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/9ef70077-addb-4ddc-a0ea-6c14aa275a2f"
-      (reference "J11") (unit 1) (value "FAN_01") (footprint "")
+      (reference "J11") (unit 1) (value "FAN_01") (footprint "azonenberg_pcb:CONN_MOLEX_KK_0470531000")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/75c7f911-5dbe-4796-9c7c-9053c1fdd6b1"
-      (reference "J12") (unit 1) (value "FAN_01") (footprint "")
+      (reference "J12") (unit 1) (value "FAN_01") (footprint "azonenberg_pcb:CONN_MOLEX_KK_0470531000")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/2ad3ec59-c9f9-45aa-a080-fd741953b48e"
       (reference "J13") (unit 1) (value "CONN_01X05") (footprint "azonenberg_pcb:CONN_HEADER_2.54MM_1x5")
@@ -2590,6 +2848,12 @@
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/d78dd4f9-ec2b-47f7-9f6a-43c6847238a1"
       (reference "L5") (unit 1) (value "HI1206N101R-10") (footprint "azonenberg_pcb:EIA_1206_CAP_NOSILK")
     )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/0ab0e514-3318-4800-b87e-cff68e811d2a"
+      (reference "L6") (unit 1) (value "4.7 uH") (footprint "azonenberg_pcb:EIA_0805_INDUCTOR_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/761e5d3d-547b-481b-a30e-e8bb006a84b3"
+      (reference "L7") (unit 1) (value "4.7 uH") (footprint "azonenberg_pcb:EIA_0805_INDUCTOR_NOSILK")
+    )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/d379d486-6b53-4994-9b70-6e1b8e8ecce6"
       (reference "M1") (unit 1) (value "960-27-12-D-AB-0") (footprint "azonenberg_pcb:HEATSINK_WAKEFIELDVETTE_960-27-12-D-AB-0")
     )
@@ -2607,6 +2871,18 @@
     )
     (path "/c0c32090-78fb-4117-94c6-2837619e26b2"
       (reference "M6") (unit 1) (value "SCREWHOLE") (footprint "azonenberg_pcb:MECHANICAL_CLEARANCEHOLE_4_40")
+    )
+    (path "/5abc0637-b868-4352-9fbd-b9895b3b47e8"
+      (reference "M7") (unit 1) (value "LONGTHING") (footprint "azonenberg_pcb:LONGTHING-1200DPI")
+    )
+    (path "/877ffc61-e135-4125-804d-a6b36735ce61"
+      (reference "M8") (unit 1) (value "OSHW") (footprint "w_logo:Logo_silk_OSHW_6x6mm")
+    )
+    (path "/8f9c69bc-2401-49ae-87c7-b4a0cf8c6630"
+      (reference "M9") (unit 1) (value "POLARITY") (footprint "w_logo:Logo_silk_polarity_center_5x1.4mm")
+    )
+    (path "/45542b58-57d2-4039-b6da-9cccd5ea2c20"
+      (reference "M10") (unit 1) (value "WEEE") (footprint "w_logo:Logo_silk_WEEE_3.4x5mm")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/b0a9c9bf-9c96-4205-9740-e1aecee316f8"
       (reference "R1") (unit 1) (value "16K") (footprint "")
@@ -2763,6 +3039,9 @@
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/09db9339-9357-4868-bb86-7791ffde5669"
       (reference "R52") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/9e354775-0bf2-478a-82e4-155483a90f9b"
+      (reference "R53") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/a90906dc-fbc9-4585-baaa-c07be24eb1f3"
       (reference "R54") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
@@ -2954,10 +3233,10 @@
       (reference "R116") (unit 1) (value "33") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/5cb53908-fb61-4d09-99db-8a24471b94aa"
-      (reference "R117") (unit 1) (value "100") (footprint "")
+      (reference "R117") (unit 1) (value "100") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/b8f77042-cfec-46c5-a50e-110bfc0146a9"
-      (reference "R118") (unit 1) (value "100") (footprint "")
+      (reference "R118") (unit 1) (value "100") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/3516cb4c-0cd1-4e27-b676-44f0e0810a7b"
       (reference "R119") (unit 1) (value "1.5K") (footprint "")
@@ -2969,7 +3248,103 @@
       (reference "R121") (unit 1) (value "11K 1%") (footprint "")
     )
     (path "/a53e7caf-d1bd-41a0-9413-bbfa4452a48f"
-      (reference "R122") (unit 1) (value "DNP") (footprint "")
+      (reference "R122") (unit 1) (value "DNP") (footprint "azonenberg_pcb:EIA_1206_CAP_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/2a3ebc98-d19a-402c-bfd2-fd91105936fd"
+      (reference "R123") (unit 1) (value "33") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/0759ec4e-bbc8-4ca8-8860-967d5c8d3a9c"
+      (reference "R124") (unit 1) (value "33") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/32374ab9-c347-4bd6-8975-613b0dc2ff2f"
+      (reference "R125") (unit 1) (value "33") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/f0700c40-4be4-4b44-8191-9e7da922844b"
+      (reference "R126") (unit 1) (value "33") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/08fd54c2-2dbc-4c8f-b95b-aa17662406db"
+      (reference "R127") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/d3a053fc-93bf-4720-90b2-355172fd9fc3"
+      (reference "R128") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/22f702da-1194-4a12-83dc-b6a920825db6"
+      (reference "R129") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/b2593168-a517-4112-af47-889e925167c2"
+      (reference "R130") (unit 1) (value "100") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/3ee552b1-d17f-42d0-9bfa-f4a87bae13c4"
+      (reference "R131") (unit 1) (value "100") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/fc4e0e72-e375-425a-bffc-90ff4637ae20"
+      (reference "R132") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/e0963d7a-021e-468f-a96c-274de863a0d9"
+      (reference "R133") (unit 1) (value "4.7K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/5f61725e-bbf0-4f48-87c7-576e007a4caa"
+      (reference "R134") (unit 1) (value "0.1") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/2114fac0-04bf-40d1-b670-3a9728250b20"
+      (reference "R135") (unit 1) (value "0.5") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f32efeee-1ab0-4f13-99aa-14369d9e4a88"
+      (reference "R136") (unit 1) (value "0.5") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/a22d6469-7e6b-47d3-b4f4-43b395d29e88"
+      (reference "R137") (unit 1) (value "5.76K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/8cf6329b-ad19-4c2d-9a55-bfc3b7a158ec"
+      (reference "R138") (unit 1) (value "2.49K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/b21171c1-f99f-465e-a7b8-b80cbf7ab583"
+      (reference "R139") (unit 1) (value "10K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/107c7d4a-c39c-4c78-aa87-b65cd77ceef7"
+      (reference "R140") (unit 1) (value "2.49K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/547186ef-5955-44de-8394-3d584fbb74d0"
+      (reference "R141") (unit 1) (value "5.76K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/b53bcd9a-e817-4c0a-b017-f9fcce4be701"
+      (reference "R142") (unit 1) (value "2.49K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/373c3030-1797-4116-894e-7cd6e0333e86"
+      (reference "R143") (unit 1) (value "10K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/5a7c4d84-9720-4c26-9f65-5b702ee902fb"
+      (reference "R144") (unit 1) (value "2.49K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/eac88480-3915-48b9-9c16-f99713218d7f"
+      (reference "R145") (unit 1) (value "10K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/56adc200-9e05-46ff-a8e7-9371c950d6fb"
+      (reference "R146") (unit 1) (value "2.49K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/a8d00b02-4c7c-489c-9b7e-4b1486b3592b"
+      (reference "R147") (unit 1) (value "10K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/646f001d-dd2d-455e-9d69-caa3f5ae1aa0"
+      (reference "R148") (unit 1) (value "2.49K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/b9778d42-9cb4-4d09-9923-170655d47d2d"
+      (reference "R149") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/e225562c-644d-4179-884d-5c4e20b23d6b"
+      (reference "R150") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/770ce1fe-4844-4cad-946f-4b8bbefcb900"
+      (reference "R151") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/69d71818-1a03-4156-ac72-b85193d199b3"
+      (reference "R152") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/d06a6346-2399-4904-90e2-fbbf15a08ab7"
+      (reference "R153") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/d75532e4-f44a-4b19-b367-7967512d572e"
+      (reference "R154") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/4d701df3-1531-4e26-be52-80b3fa172f57"
       (reference "RN1") (unit 1) (value "YC124-FR-0749R9L") (footprint "")
@@ -3044,16 +3419,25 @@
       (reference "TP18") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/486be270-1098-48b7-b9aa-183039ffd83f"
-      (reference "TP19") (unit 1) (value "TESTPOINT") (footprint "")
+      (reference "TP19") (unit 1) (value "TESTPOINT") (footprint "azonenberg_pcb:TESTPOINT_SMT_0.5MM")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/8accbd04-9199-41ec-b9e5-11cd874a7f49"
-      (reference "TP20") (unit 1) (value "TESTPOINT") (footprint "")
+      (reference "TP20") (unit 1) (value "TESTPOINT") (footprint "azonenberg_pcb:TESTPOINT_SMT_0.5MM")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/27d64db8-bcee-430f-87f1-48c19a466efe"
-      (reference "TP21") (unit 1) (value "TESTPOINT") (footprint "")
+      (reference "TP21") (unit 1) (value "TESTPOINT") (footprint "azonenberg_pcb:TESTPOINT_SMT_0.5MM")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/e292e4fa-3c9d-4345-bdf8-cf780a84e5b4"
-      (reference "TP22") (unit 1) (value "TESTPOINT") (footprint "")
+      (reference "TP22") (unit 1) (value "TESTPOINT") (footprint "azonenberg_pcb:TESTPOINT_SMT_0.5MM")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/f6e7c980-325d-4241-8157-23c449c738d6"
+      (reference "TP23") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/23a8430e-6571-47f9-9666-d94cc199f51c"
+      (reference "TP24") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/5dd0639d-8e08-46c5-8c20-31cae379d314"
+      (reference "TP25") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f95d26ce-f739-4ae3-935e-eb3c6ddcaea7"
       (reference "U1") (unit 1) (value "VSC8512") (footprint "azonenberg_pcb:BGA_672_27x27_DEPOPCORNER_1MM")
@@ -3167,10 +3551,10 @@
       (reference "U6") (unit 1) (value "DP83867") (footprint "azonenberg_pcb:QFN_48_0.5MM_7x7MM")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/5aad6019-9e82-4b56-99d2-de9c9a1bb2dc"
-      (reference "U7") (unit 1) (value "TBD") (footprint "")
+      (reference "U7") (unit 1) (value "ECS-1612MV-250-CN-TR") (footprint "azonenberg_pcb:OSCILLATOR_1.6x1.2")
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/dc3f3dbf-53fe-48fa-821c-7f19ffbd00a7"
-      (reference "U8") (unit 1) (value "TBD") (footprint "")
+      (reference "U8") (unit 1) (value "ECS-1612MV-250-CN-TR") (footprint "azonenberg_pcb:OSCILLATOR_1.6x1.2")
     )
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/a4269fa5-c845-4112-bf7c-cf49496b4f36"
       (reference "U9") (unit 1) (value "KSZ9031RN") (footprint "azonenberg_pcb:QFN_48_0.5MM_7x7MM")
@@ -3227,10 +3611,40 @@
       (reference "U23") (unit 1) (value "ADM3101E_QFN") (footprint "azonenberg_pcb:QFN_12_0.5MM_3x3MM")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/cc36542c-e4d9-41f5-9a25-62c8b032c9c6"
-      (reference "U24") (unit 1) (value "OSC_LVDS") (footprint "")
+      (reference "U24") (unit 1) (value "SIT9121AI-2BF-XXS200.000000G") (footprint "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/178c666c-8e77-4c5a-af37-fa2aac3e473f"
-      (reference "U25") (unit 1) (value "OSC_LVDS") (footprint "")
+      (reference "U25") (unit 1) (value "SIT9121AI-2BF-XXS156.250000G") (footprint "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/13f3535b-023c-4cdd-9a40-a5dc8916845a"
+      (reference "U26") (unit 1) (value "74LVC1T45") (footprint "azonenberg_pcb:DFN_6_0.5MM_1.45x1.00MM")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/3ef4bce5-734a-4e11-8fb0-576896e9b057"
+      (reference "U27") (unit 1) (value "74LVC1T45") (footprint "azonenberg_pcb:DFN_6_0.5MM_1.45x1.00MM")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/eaaab369-c3a0-42b8-add0-40870a065034"
+      (reference "U28") (unit 1) (value "IS25WP256D-JLLE") (footprint "azonenberg_pcb:DFN_8_1.27MM_8x6MM")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/75b03bf0-38e3-477a-95b1-f46e153b1156"
+      (reference "U29") (unit 1) (value "DSC1123CI2-150.0000T") (footprint "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/de029d66-19d4-4c92-a3f6-13b9da3f46b2"
+      (reference "U30") (unit 1) (value "DSC1123CI2-150.0000T") (footprint "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/da3aa2fa-5dcf-46b7-bfd4-62604cc44b8d"
+      (reference "U31") (unit 1) (value "74LVC1T45") (footprint "azonenberg_pcb:DFN_6_0.5MM_1.45x1.00MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/b6796416-bb3f-47af-b632-6ff06bda9ea0"
+      (reference "U32") (unit 1) (value "74LVC1T45") (footprint "azonenberg_pcb:DFN_6_0.5MM_1.45x1.00MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1dc48b81-3121-4ab7-b0a9-6043fd77896e"
+      (reference "U33") (unit 1) (value "74LVC1T45") (footprint "azonenberg_pcb:DFN_6_0.5MM_1.45x1.00MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/9e96d6e3-1865-432e-8149-625f4e06190a"
+      (reference "U34") (unit 1) (value "74LVC1T45") (footprint "azonenberg_pcb:DFN_6_0.5MM_1.45x1.00MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/58485f35-74f8-4475-995d-aa82e265cdd0"
+      (reference "U35") (unit 1) (value "SIT9121AC-2B2-33E125.000000") (footprint "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5")
     )
   )
 )
