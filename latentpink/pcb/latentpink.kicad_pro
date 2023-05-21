@@ -142,7 +142,10 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [],
+    "erc_exclusions": [
+      "pin_to_pin|3530600|1676400|94226b7f-4126-4ced-8349-faee65457968|3700fed5-1238-43cf-8f80-6f65687efc1a",
+      "pin_to_pin|3530600|1676400|94226b7f-4126-4ced-8349-faee65457968|b04b70b5-2d6e-432a-9fc4-fbe156daf8d1"
+    ],
     "meta": {
       "version": 0
     },
@@ -422,7 +425,7 @@
       "workbook_filename": ""
     },
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "/tmp",
     "spice_adjust_passive_values": false,
     "spice_external_command": "spice \"%I\"",
     "subpart_first_id": 65,
