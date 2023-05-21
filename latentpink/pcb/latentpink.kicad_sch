@@ -6,7 +6,7 @@
 
   (title_block
     (title "LATENTPINK - Top Level")
-    (date "2023-05-20")
+    (date "2023-05-21")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -343,6 +343,12 @@
     )
   )
 
+  (junction (at 72.39 173.99) (diameter 0) (color 0 0 0 0)
+    (uuid 912dcd3e-0d36-4908-ae47-a38f87e24709)
+  )
+  (junction (at 72.39 168.91) (diameter 0) (color 0 0 0 0)
+    (uuid 924e673b-8e5f-4d1f-8bb0-6c150e64e716)
+  )
 
   (no_connect (at 316.23 93.98) (uuid 4a33a8a2-8f20-4afc-b4c8-95f3cbac795d))
   (no_connect (at 316.23 33.02) (uuid 6028f65b-3e4a-44e3-8e66-aefbe737cbc1))
@@ -465,6 +471,10 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 8207b0ea-71f5-458a-9e79-a6afe6816c70)
   )
+  (wire (pts (xy 72.39 173.99) (xy 72.39 179.07))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 8520a928-0c92-41c5-86cf-326d65dae62e)
+  )
   (wire (pts (xy 30.48 190.5) (xy 34.29 190.5))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 8d01039c-7750-46b0-aeb3-9da46a5907b0)
@@ -513,6 +523,10 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid e13e1d0c-030e-434e-822a-be3edf70892a)
   )
+  (wire (pts (xy 72.39 168.91) (xy 72.39 173.99))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid e41b7b07-1608-4c48-a79b-f199dea9ff80)
+  )
   (wire (pts (xy 30.48 120.65) (xy 34.29 120.65))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid ea56ac6b-86ab-415a-ac6c-762847da67f2)
@@ -525,8 +539,12 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid f6a778d7-f25f-4f4c-a0d5-1bb72049d02e)
   )
+  (wire (pts (xy 72.39 163.83) (xy 72.39 168.91))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid fde0a898-dbb6-4558-aca9-442ddbdf6c5e)
+  )
 
-  (text "Schematic signoff progress:\nVerified pin numbers on PSU sheet"
+  (text "Schematic signoff progress:\nAbout to start power supply / general section"
     (at 133.35 133.35 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 32a0c1f1-8049-4b9a-b7e8-216d74db2897)
@@ -755,6 +773,10 @@
   (label "GND" (at 316.23 45.72 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 7484020f-b81e-4fab-9698-a03434985a8f)
+  )
+  (label "GND" (at 72.39 163.83 180)
+    (effects (font (size 1.27 1.27)) (justify right bottom))
+    (uuid 82a759e3-b07e-4c46-8093-296a5a9dcc28)
   )
   (label "TEMP_I2C_SDA" (at 295.91 30.48 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -1185,6 +1207,24 @@
     )
   )
 
+  (symbol (lib_id "conn:CONN_01X01") (at 77.47 168.91 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 6cab3199-1be4-40c2-a283-04f3dab278d0)
+    (property "Reference" "TP33" (id 0) (at 79.375 168.0753 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "GROUNDCLIP" (id 1) (at 79.375 170.6122 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" (id 2) (at 77.47 168.91 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 77.47 168.91 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 81c33c76-a0d3-4d1b-9675-fd1ef74e190b))
+  )
+
   (symbol (lib_id "device:C") (at 337.82 44.45 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 7295c72b-2fcb-43b1-840b-f34f65d4b4d0)
@@ -1240,6 +1280,42 @@
     )
     (pin "1" (uuid 3a4369ea-e6b3-4471-a309-e70c40640e06))
     (pin "2" (uuid 3231544b-4381-4037-b499-e730da29df32))
+  )
+
+  (symbol (lib_id "conn:CONN_01X01") (at 77.47 173.99 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 7d8e4008-466c-4ed6-9e0f-22ac85840f13)
+    (property "Reference" "TP34" (id 0) (at 79.375 173.1553 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "GROUNDCLIP" (id 1) (at 79.375 175.6922 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" (id 2) (at 77.47 173.99 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 77.47 173.99 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 3a509624-8eb0-416b-8ad6-59c02eaf34e3))
+  )
+
+  (symbol (lib_id "conn:CONN_01X01") (at 77.47 163.83 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 80002df1-210f-44c9-ac86-b601402bcf9a)
+    (property "Reference" "TP32" (id 0) (at 79.375 162.9953 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "GROUNDCLIP" (id 1) (at 79.375 165.5322 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" (id 2) (at 77.47 163.83 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 77.47 163.83 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 4219be5f-3134-4888-9d50-f92d2d8a293d))
   )
 
   (symbol (lib_id "device:Ferrite_Bead_Small") (at 72.39 109.22 90) (unit 1)
@@ -1323,6 +1399,24 @@
     )
     (pin "1" (uuid 88683439-0a50-463a-83b6-58e3ff903d5f))
     (pin "2" (uuid e660268f-1a47-4740-b552-47a7c1ddde76))
+  )
+
+  (symbol (lib_id "conn:CONN_01X01") (at 77.47 179.07 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid a82424d9-c21c-40f6-88db-6f984e53482e)
+    (property "Reference" "TP35" (id 0) (at 79.375 178.2353 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "GROUNDCLIP" (id 1) (at 79.375 180.7722 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" (id 2) (at 77.47 179.07 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 77.47 179.07 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid fc99d9eb-22b9-4f95-8e0d-3684f366eb8f))
   )
 
   (symbol (lib_id "conn:CONN_COAXIAL") (at 34.29 185.42 0) (unit 1)
@@ -3323,6 +3417,12 @@
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/77350c55-2eb0-48a5-8f54-337eaff5367b"
       (reference "D15") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
     )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/9e161449-e137-4951-be09-6af8631656a8"
+      (reference "D16") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/40a9ff30-f90c-4171-be6b-c57887c62da3"
+      (reference "D17") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
+    )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/d67410e9-b9d7-4681-a748-c3dfbad70b7a"
       (reference "F1") (unit 1) (value "ERB-RD4R00X") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
@@ -3989,6 +4089,15 @@
     (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/270b767f-3383-42ed-a294-1834f673023e"
       (reference "R163") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/abe3af9d-8d07-4694-83b0-02bd2d2b72e0"
+      (reference "R164") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/1c30b4cc-1c78-4d4a-b045-9913b60da471"
+      (reference "R165") (unit 1) (value "470") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/257db866-fb51-4837-970d-eba7d6636664"
+      (reference "R166") (unit 1) (value "0") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/4d701df3-1531-4e26-be52-80b3fa172f57"
       (reference "RN1") (unit 1) (value "YC124-FR-0749R9L") (footprint "azonenberg_pcb:YAGEO_YC124-FR")
     )
@@ -4087,6 +4196,30 @@
     )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/c7363551-9633-4146-b1a9-9165108b293b"
       (reference "TP27") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/fa0e385b-60d1-42e6-bcf0-636dccf98cda"
+      (reference "TP28") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/b911ed54-c427-4b1d-91db-cd1392145069"
+      (reference "TP29") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/924adf40-2733-4801-9974-0af2bf57d054"
+      (reference "TP30") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/379f5e66-dbd3-4fb9-af06-2265e254abd3"
+      (reference "TP31") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/80002df1-210f-44c9-ac86-b601402bcf9a"
+      (reference "TP32") (unit 1) (value "GROUNDCLIP") (footprint "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016")
+    )
+    (path "/6cab3199-1be4-40c2-a283-04f3dab278d0"
+      (reference "TP33") (unit 1) (value "GROUNDCLIP") (footprint "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016")
+    )
+    (path "/7d8e4008-466c-4ed6-9e0f-22ac85840f13"
+      (reference "TP34") (unit 1) (value "GROUNDCLIP") (footprint "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016")
+    )
+    (path "/a82424d9-c21c-40f6-88db-6f984e53482e"
+      (reference "TP35") (unit 1) (value "GROUNDCLIP") (footprint "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f95d26ce-f739-4ae3-935e-eb3c6ddcaea7"
       (reference "U1") (unit 1) (value "VSC8512") (footprint "azonenberg_pcb:BGA_672_27x27_DEPOPCORNER_1MM")
