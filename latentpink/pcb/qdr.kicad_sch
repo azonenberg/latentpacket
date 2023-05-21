@@ -9177,6 +9177,11 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 74f6eb40-fea3-408a-b895-17b9129abcdb)
   )
+  (text "256 Mbits\nLow 64 Mbit for prod bitstream\nSecond 64 Mbit scratch space for updates\nHigh 128 Mbits uncommitted"
+    (at 285.75 236.22 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 999193f2-0ec1-4ef7-85d4-82e8b813c6d9)
+  )
 
   (label "QDR_D28" (at 31.75 113.03 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
