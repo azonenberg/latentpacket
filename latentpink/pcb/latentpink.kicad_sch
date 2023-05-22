@@ -544,11 +544,6 @@
     (uuid fde0a898-dbb6-4558-aca9-442ddbdf6c5e)
   )
 
-  (text "Schematic signoff progress:\nAbout to start power supply / general section"
-    (at 133.35 133.35 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 32a0c1f1-8049-4b9a-b7e8-216d74db2897)
-  )
   (text "Address = 8'h90" (at 298.45 36.83 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid b383a75f-fa34-4411-b9ea-87d4f645c5b4)
@@ -568,6 +563,10 @@
   (text "Address = 8'h96" (at 298.45 97.79 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ea804a75-b87c-4b4d-82b0-14f0b3b2bcff)
+  )
+  (text "Debug ground points (may add more at layout time)" (at 72.39 184.15 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid fc2189aa-5b14-40bc-a240-3be07cf68e8c)
   )
 
   (label "3V3" (at 295.91 83.82 180)
@@ -3640,7 +3639,7 @@
       (reference "R13") (unit 1) (value "300") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/78eecf8b-2789-4144-a6b7-458d044a281a"
-      (reference "R14") (unit 1) (value "10K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+      (reference "R14") (unit 1) (value "DNP") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/5ec38d89-6595-48ed-8d79-f385cb86a61d"
       (reference "R15") (unit 1) (value "1K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
@@ -4439,6 +4438,84 @@
     )
     (path "/f5c90ea9-0130-4f0b-84aa-d6fef7b3f6bf"
       (reference "U39") (unit 1) (value "AT30TS74_UDFN") (footprint "azonenberg_pcb:DFN_8_0.5MM_2x3MM_TALL")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3f704481-088c-47de-abc3-38e6895ce91f"
+      (reference "U40") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/1b07a677-26b0-449d-8070-83ecf83a62b5"
+      (reference "U41") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/7f603147-0502-4caf-92be-b1b6a471faa1"
+      (reference "U42") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/4313a044-81fe-4936-935b-77af07209a24"
+      (reference "U43") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/3a12eab6-ee93-4b0e-9f03-59b75cad863f"
+      (reference "U44") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/cbf48daf-9a5c-4c50-b788-025e94475671"
+      (reference "U45") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/75ae1b41-cd85-4f67-abd2-74ca2087b945"
+      (reference "U46") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/ded72b3d-ca3b-4833-8c55-1c5300a0e1b4"
+      (reference "U47") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/fcad12aa-0765-4007-a275-6c513f12ec66"
+      (reference "U48") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/42e79451-2219-4b18-a479-6e44450bf4f6"
+      (reference "U49") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/052b9873-a982-4227-848c-10158c78aee0"
+      (reference "U50") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/6af7e5e2-246e-476a-9f74-d63ccca8b32b"
+      (reference "U51") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/219b6a96-df34-4479-a274-6416406bfab9"
+      (reference "U52") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/52b7bf0e-044b-4e73-98ca-5dd669e82726"
+      (reference "U53") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/6d45e6ff-805b-4288-b6cc-c92ec9fc6551"
+      (reference "U54") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/8c470854-0b0a-488b-82ba-ba3e2eb261de"
+      (reference "U55") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f2803b37-9908-4144-b3f3-bbaf2a6d6940"
+      (reference "U56") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/36a2c9e9-924c-4312-9713-4320c11e383b"
+      (reference "U57") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/781c3da1-bb51-445b-979c-c867d809bd52"
+      (reference "U58") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/dff6c742-0d8c-46e1-b811-978889075608"
+      (reference "U59") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/c8fb365e-d863-4735-b58e-87894309034d"
+      (reference "U60") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/a21fe9d8-002d-443c-a18b-b88c9a559d81"
+      (reference "U61") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/053bb1b7-8f8a-4a7b-a53d-5fe80c9fd9f6"
+      (reference "U62") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/0d6a1662-f085-4e28-bbab-24e2db022f80"
+      (reference "U63") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/a8eff87b-0b24-407d-ae30-084902115f59"
+      (reference "U64") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
+    )
+    (path "/035a8a96-1dae-486c-a84e-a11c0c87b4ac/626b4a48-b66a-4c2b-9c82-5662baf5dfe0/a4fc545c-1018-46a8-b09c-57cd78b9392d"
+      (reference "U65") (unit 1) (value "RCLAMP0514M") (footprint "azonenberg_pcb:SOP_10_0.5MM_3MM")
     )
   )
 )
