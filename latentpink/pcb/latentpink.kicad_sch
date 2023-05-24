@@ -6,7 +6,7 @@
 
   (title_block
     (title "LATENTPINK - Top Level")
-    (date "2023-05-21")
+    (date "2023-05-23")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -4219,6 +4219,18 @@
     )
     (path "/a82424d9-c21c-40f6-88db-6f984e53482e"
       (reference "TP35") (unit 1) (value "GROUNDCLIP") (footprint "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/1728ae03-0862-41b9-9895-cb3578af1e3c"
+      (reference "TP36") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/d2513390-b087-4d89-a571-6e19687a0ecf"
+      (reference "TP37") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/0ad25be6-9584-4c8c-a0be-8966c311da48"
+      (reference "TP38") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
+    )
+    (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/69847bb6-bd31-40e7-b8eb-2ee30e457578/3b38e8de-0de3-412c-bacb-ec2cb06725a1"
+      (reference "TP39") (unit 1) (value "U.FL") (footprint "azonenberg_pcb:CONN_U.FL_TE_1909763-1")
     )
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/f95d26ce-f739-4ae3-935e-eb3c6ddcaea7"
       (reference "U1") (unit 1) (value "VSC8512") (footprint "azonenberg_pcb:BGA_672_27x27_DEPOPCORNER_1MM")
