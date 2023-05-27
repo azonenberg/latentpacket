@@ -14251,6 +14251,10 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 672fd370-2f52-46fa-81cb-4d5851228a9e)
   )
+  (text "TODO: can we shove more caps on A2V5?" (at 306.07 193.04 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid e55803ac-9caa-4901-9681-4a0f6f2eb45d)
+  )
 
   (label "1V0" (at 180.34 209.55 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
