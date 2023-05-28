@@ -8675,7 +8675,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 2ca80b5c-60dd-49dd-a1b2-59531885ace1)
   )
-  (label "1V8" (at 83.82 144.78 180)
+  (label "1V8_IO" (at 83.82 144.78 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 334aad29-4ed2-4769-9e47-01dc74ecd8d2)
   )

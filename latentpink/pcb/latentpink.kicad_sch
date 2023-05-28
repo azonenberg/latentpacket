@@ -3932,9 +3932,6 @@
     (path "/d0e7363b-23d9-4272-a4d1-0db2834b87f3/88fc9cdc-90b9-4930-bccd-ef137aac87a6"
       (reference "R111") (unit 1) (value "2K 1%") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
-    (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/926a27e9-b662-45ef-978d-e55596944054"
-      (reference "R112") (unit 1) (value "1.5K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
-    )
     (path "/22109ef7-0bd2-46c3-8dd9-ecb52bedcbfa/a43c166d-2a69-4462-ad57-29106c839e41"
       (reference "R113") (unit 1) (value "2.2K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )

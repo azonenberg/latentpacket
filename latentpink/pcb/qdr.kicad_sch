@@ -9444,7 +9444,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 329fe92d-9850-49c9-879d-52d60e4a5ad4)
   )
-  (label "1V8" (at 254 38.1 180)
+  (label "1V8_IO" (at 254 38.1 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 3418cdce-e0e6-4177-8fca-ce7306636ba2)
   )
@@ -13813,7 +13813,7 @@
   )
 
   (symbol (lib_id "device:C") (at 243.84 178.435 0) (unit 1)
-    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (in_bom yes) (on_board yes)
     (uuid fe92cd33-afd6-44d4-8eb2-2ece40a56ab6)
     (property "Reference" "C178" (id 0) (at 246.761 177.6003 0)
       (effects (font (size 1.27 1.27)) (justify left))
