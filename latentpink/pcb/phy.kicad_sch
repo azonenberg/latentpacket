@@ -23647,7 +23647,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 34683c77-48aa-4cd9-b10b-dc177538e733)
   )
-  (label "GND" (at 133.35 284.48 180)
+  (label "CHGND" (at 133.35 284.48 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 34b55819-48f0-4719-b27d-54a2ff7fd8fb)
   )
