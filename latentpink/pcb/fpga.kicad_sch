@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-05-27")
+    (date "2023-05-28")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -8827,7 +8827,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid e79d6c43-5011-4fbe-bde2-d43fe2c89916)
   )
-  (label "1V8" (at 350.52 31.75 180)
+  (label "1V8_IO" (at 350.52 31.75 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid ed6a0779-8c9a-4583-b6d6-7f6a8b115071)
   )

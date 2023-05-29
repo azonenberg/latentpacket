@@ -6,7 +6,7 @@
 
   (title_block
     (title "LATENTPINK - Top Level")
-    (date "2023-05-27")
+    (date "2023-05-28")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -3370,6 +3370,12 @@
     )
     (path "/519aa98f-2938-4385-bfab-6a7fd8b97c8c"
       (reference "C484") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/0afd4808-a4e6-4fb1-ab85-295c02707888"
+      (reference "C485") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
+    )
+    (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/439aeacf-b5c9-4ac4-b9ee-86a5992202e2"
+      (reference "C486") (unit 1) (value "0.47 uF") (footprint "azonenberg_pcb:EIA_0402_CAP_NOSILK")
     )
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/dacf15d0-cabc-4cac-8b1d-8797d78eacd5"
       (reference "D1") (unit 1) (value "GREEN") (footprint "azonenberg_pcb:EIA_0603_LED")
