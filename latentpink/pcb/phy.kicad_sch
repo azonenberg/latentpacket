@@ -22996,6 +22996,10 @@
     (uuid ffdfe0ba-9880-4e97-8f06-8582177db884)
   )
 
+  (text "Polarity swap\nInvert in FPGA" (at 119.38 127 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 05420261-8d12-48b7-a687-2d42ecc2b5ec)
+  )
   (text "Refclk is LVDS (must be AC coupled) and\ninternally terminated / biased\n(Fig. 12 on page 16)"
     (at 337.82 267.97 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -24715,7 +24719,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid a35fd5a6-3e05-4713-a92c-795b7b52e7db)
   )
-  (label "QSGMII_2_RX_AC_N" (at 99.06 124.46 0)
+  (label "QSGMII_2_RX_AC_N" (at 99.06 127 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid a37da705-5a09-48ee-8e3f-578bc84ad4a1)
   )
@@ -24891,7 +24895,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid b526cf4e-7e78-4ccd-af4f-ab83317dd340)
   )
-  (label "QSGMII_2_RX_AC_P" (at 99.06 127 0)
+  (label "QSGMII_2_RX_AC_P" (at 99.06 124.46 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid b53e677b-b68a-4817-89bc-3adf985a106f)
   )
