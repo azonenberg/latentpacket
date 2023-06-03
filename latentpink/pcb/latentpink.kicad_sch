@@ -4100,6 +4100,12 @@
     (path "/70fb61fd-2f76-4850-9d6b-7e1d9a86570a/257db866-fb51-4837-970d-eba7d6636664"
       (reference "R166") (unit 1) (value "0") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
     )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/4dc8cd51-96cd-4f75-a3a9-a26f9100438f"
+      (reference "R167") (unit 1) (value "1K") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
+    (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/fea1bc5b-48ab-4e15-8de3-2f45f173f038"
+      (reference "R168") (unit 1) (value "DNP") (footprint "azonenberg_pcb:EIA_0402_RES_NOSILK")
+    )
     (path "/6c4b0638-d970-4292-bc58-db2e1b793524/d5990d76-6ad3-4bfd-a9be-5da547fd1224/4d701df3-1531-4e26-be52-80b3fa172f57"
       (reference "RN1") (unit 1) (value "YC124-FR-0749R9L") (footprint "azonenberg_pcb:YAGEO_YC124-FR")
     )
