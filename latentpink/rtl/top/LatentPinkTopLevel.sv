@@ -60,6 +60,8 @@ module LatentPinkTopLevel(
 
 	output wire[1:0]	sfp_led,
 
+	input wire			sfp_rx_los,
+
 	//GTX refclks
 	input wire			gtx_refclk_156m25_p,
 	input wire			gtx_refclk_156m25_n,
@@ -189,10 +191,23 @@ module LatentPinkTopLevel(
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Pass through the LEDs
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Clocking
 
 	wire	qpll_lock;
 	wire	qpll_clkout_10g3125;
+
+	wire	qpll_refclk;
+	wire	qpll_refclk_lost;
+
+	wire clk_125mhz;
+	wire clk_250mhz;
+	wire clk_312p5mhz;
+	wire clk_400mhz;
+	wire clk_625mhz_0;
+	wire clk_625mhz_90;
 
 	SerdesClocking clk_serdes(
 		.gtx_refclk_156m25_p(gtx_refclk_156m25_p),
@@ -200,19 +215,19 @@ module LatentPinkTopLevel(
 		.gtx_refclk_200m_p(gtx_refclk_200m_p),
 		.gtx_refclk_200m_n(gtx_refclk_200m_n),
 
+		.clk_125mhz(clk_125mhz),
+
 		.qpll_lock(qpll_lock),
+		.qpll_refclk(qpll_refclk),
+		.qpll_refclk_lost(qpll_refclk_lost),
 		.qpll_clkout_10g3125(qpll_clkout_10g3125)
 	);
-
-	wire clk_125mhz;
-	wire clk_250mhz;
-	wire clk_312p5mhz;
-	wire clk_625mhz_0;
-	wire clk_625mhz_90;
 
 	wire pll_main_lock;
 
 	wire clk_ram;
+	wire clk_ram_ctl;
+	wire clk_ram_90;
 
 	wire pll_ram_lock;
 
@@ -223,18 +238,28 @@ module LatentPinkTopLevel(
 		.clk_125mhz(clk_125mhz),
 		.clk_250mhz(clk_250mhz),
 		.clk_312p5mhz(clk_312p5mhz),
+		.clk_400mhz(clk_400mhz),
 		.clk_625mhz_0(clk_625mhz_0),
 		.clk_625mhz_90(clk_625mhz_90),
 
 		.pll_main_lock(pll_main_lock),
 
 		.clk_ram(clk_ram),
+		.clk_ram_ctl(clk_ram_ctl),
+		.clk_ram_90(clk_ram_90),
 
 		.pll_ram_lock(pll_ram_lock)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// I/O delay calibration for SGMII
+
+	IODelayCalibration iocal(.refclk(clk_400mhz));
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dummy logic to use SGMII RX clock
+
+	//We really don't need to blink our LEDs at 312.5 MHz but it's too much of a pain to divide in fabric this fast...
 
 	wire	sgmii_rxclk0;
 	wire	sgmii_rxclk1;
@@ -242,19 +267,114 @@ module LatentPinkTopLevel(
 	IBUFDS #(.DIFF_TERM("TRUE")) ibuf_sgmii0(.I(g12_sgmii_rxclk_p), .IB(g12_sgmii_rxclk_n), .O(sgmii_rxclk0));
 	IBUFDS #(.DIFF_TERM("TRUE")) ibuf_sgmii1(.I(g13_sgmii_rxclk_p), .IB(g13_sgmii_rxclk_n), .O(sgmii_rxclk1));
 
-	logic[23:0] led_count0 = 0;
-	logic[23:0] led_count1 = 0;
+	wire led_clk0;
+	wire led_clk1;
+
+	wire led_fbclk0;
+	PLLE2_BASE #(
+		.BANDWIDTH("OPTIMIZED"),
+		.CLKOUT0_DIVIDE(4),
+		.CLKOUT1_DIVIDE(10),
+		.CLKOUT2_DIVIDE(10),
+		.CLKOUT3_DIVIDE(10),
+		.CLKOUT4_DIVIDE(10),
+		.CLKOUT5_DIVIDE(10),
+
+		.CLKOUT0_PHASE(0),
+		.CLKOUT1_PHASE(0),
+		.CLKOUT2_PHASE(0),
+		.CLKOUT3_PHASE(0),
+		.CLKOUT4_PHASE(0),
+		.CLKOUT5_PHASE(0),
+
+		.CLKOUT0_DUTY_CYCLE(0.5),
+		.CLKOUT1_DUTY_CYCLE(0.5),
+		.CLKOUT2_DUTY_CYCLE(0.5),
+		.CLKOUT3_DUTY_CYCLE(0.5),
+		.CLKOUT4_DUTY_CYCLE(0.5),
+		.CLKOUT5_DUTY_CYCLE(0.5),
+
+		.CLKFBOUT_MULT(2),
+		.DIVCLK_DIVIDE(1),
+		.CLKFBOUT_PHASE(0),
+
+		.CLKIN1_PERIOD(1.6),
+		.STARTUP_WAIT("FALSE")
+
+	) led_pll0 (
+		.CLKIN1(sgmii_rxclk0),
+		.CLKFBIN(led_fbclk0),
+		.RST(1'b0),
+		.PWRDWN(1'b0),
+		.CLKOUT0(led_clk0),
+		.CLKOUT1(),
+		.CLKOUT2(),
+		.CLKOUT3(),
+		.CLKOUT4(),
+		.CLKOUT5(),
+		.CLKFBOUT(led_fbclk0),
+		.LOCKED()
+	);
+
+	wire led_fbclk1;
+	PLLE2_BASE #(
+		.BANDWIDTH("OPTIMIZED"),
+		.CLKOUT0_DIVIDE(4),
+		.CLKOUT1_DIVIDE(10),
+		.CLKOUT2_DIVIDE(10),
+		.CLKOUT3_DIVIDE(10),
+		.CLKOUT4_DIVIDE(10),
+		.CLKOUT5_DIVIDE(10),
+
+		.CLKOUT0_PHASE(0),
+		.CLKOUT1_PHASE(0),
+		.CLKOUT2_PHASE(0),
+		.CLKOUT3_PHASE(0),
+		.CLKOUT4_PHASE(0),
+		.CLKOUT5_PHASE(0),
+
+		.CLKOUT0_DUTY_CYCLE(0.5),
+		.CLKOUT1_DUTY_CYCLE(0.5),
+		.CLKOUT2_DUTY_CYCLE(0.5),
+		.CLKOUT3_DUTY_CYCLE(0.5),
+		.CLKOUT4_DUTY_CYCLE(0.5),
+		.CLKOUT5_DUTY_CYCLE(0.5),
+
+		.CLKFBOUT_MULT(2),
+		.DIVCLK_DIVIDE(1),
+		.CLKFBOUT_PHASE(0),
+
+		.CLKIN1_PERIOD(1.6),
+		.STARTUP_WAIT("FALSE")
+
+	) led_pll1 (
+		.CLKIN1(sgmii_rxclk1),
+		.CLKFBIN(led_fbclk1),
+		.RST(1'b0),
+		.PWRDWN(1'b0),
+		.CLKOUT0(led_clk1),
+		.CLKOUT1(),
+		.CLKOUT2(),
+		.CLKOUT3(),
+		.CLKOUT4(),
+		.CLKOUT5(),
+		.CLKFBOUT(led_fbclk1),
+		.LOCKED()
+	);
 
 	logic[1:0] sgmii_led = 0;
 	assign gpio_led[1:0] = sgmii_led;
 
-	always_ff @(posedge sgmii_rxclk0) begin
+	logic[20:0] led_count0 = 0;
+	logic[20:0] led_count1 = 0;
+
+	always_ff @(posedge led_clk0) begin
 		led_count0 <= led_count0 + 1;
 		if(led_count0 == 0)
 			sgmii_led[0] <= !sgmii_led[0];
 	end
 
-	always_ff @(posedge sgmii_rxclk1) begin
+	always_ff @(posedge led_clk1) begin
 		led_count1 <= led_count1 + 1;
 		if(led_count1 == 0)
 			sgmii_led[1] <= !sgmii_led[1];
@@ -266,15 +386,168 @@ module LatentPinkTopLevel(
 	`include "GmiiBus.svh"
 	`include "EthernetBus.svh"
 
+	wire			xg0_rx_clk;
+	wire			xg0_tx_clk;
+
+	wire			xg0_rx_clk_raw;
+	wire			xg0_tx_clk_raw;
+
+	wire			xg0_rx_data_valid;
+	wire			xg0_rx_header_valid;
+	wire[1:0]		xg0_rx_header;
+	wire[31:0]		xg0_rx_data;
+	wire			xg0_rx_bitslip;
+
+	wire[5:0]		xg0_tx_sequence;
+	wire[1:0]		xg0_tx_header;
+	wire[31:0]		xg0_tx_data;
+
+	wire			xg0_mac_rx_clk;
+	EthernetRxBus	xg0_mac_rx_bus;
+
+	wire			xg0_mac_tx_clk;
+	EthernetTxBus	xg0_mac_tx_bus;
+
+	wire			xg0_link_up;
+	wire			xg0_remote_fault;
+
+	//TODO: performance counters
+
+	//Clock buffers
+	ClockBuffer #(
+		.TYPE("GLOBAL"),
+		.CE("NO")
+	) clk_buf_xg0_tx_clk (
+		.clkin(xg0_tx_clk_raw),
+		.ce(1'b1),
+		.clkout(xg0_tx_clk)
+		);
+
+	ClockBuffer #(
+		.TYPE("GLOBAL"),
+		.CE("NO")
+	) clk_buf_xg0_rx_clk (
+		.clkin(xg0_rx_clk_raw),
+		.ce(1'b1),
+		.clkout(xg0_rx_clk)
+		);
+
+	sfp_wizard xg_transceiver(
+
+		.sysclk_in(clk_125mhz),
+		.soft_reset_tx_in(1'b0),
+		.soft_reset_rx_in(1'b0),
+		.dont_reset_on_data_error_in(1'b1),
+		.gt0_tx_fsm_reset_done_out(),
+		.gt0_rx_fsm_reset_done_out(),
+		.gt0_data_valid_in(1'b1),
+
+		//QPLL clocks
+		.gt0_qplllock_in(qpll_lock),
+		.gt0_qpllrefclklost_in(qpll_refclk_lost),
+		.gt0_qpllreset_out(),
+		.gt0_qplloutclk_in(qpll_clkout_10g3125),
+		.gt0_qplloutrefclk_in(qpll_refclk),
+
+		//DRP - not used, tie off
+		.gt0_drpaddr_in(9'b0),
+		.gt0_drpclk_in(clk_125mhz),
+		.gt0_drpdi_in(16'b0),
+		.gt0_drpdo_out(),
+		.gt0_drpen_in(1'b0),
+		.gt0_drprdy_out(),
+		.gt0_drpwe_in(1'b0),
+
+		//Polarity control
+		.gt0_rxpolarity_in(1'b1),	//Invert RX to compensate for PCB pair swap
+		.gt0_txpolarity_in(1'b1),	//Invert TX to compensate for PCB pair swap
+
+		//Tie off other miscellaneous ports for unused interfaces
+		.gt0_dmonitorout_out(),
+		.gt0_eyescanreset_in(1'b0),
+		.gt0_eyescandataerror_out(),
+		.gt0_eyescantrigger_in(1'b0),
+		.gt0_rxdfelpmreset_in(1'b0),
+		.gt0_rxmonitorout_out(),
+		.gt0_rxmonitorsel_in(2'b0),
+
+		//Fabric RX interface
+		.gt0_rxusrclk_in(xg0_rx_clk),
+		.gt0_rxusrclk2_in(xg0_rx_clk),
+		.gt0_rxdata_out(xg0_rx_data),
+		.gt0_rxoutclk_out(xg0_rx_clk_raw),
+		.gt0_rxoutclkfabric_out(),
+		.gt0_rxdatavalid_out(xg0_rx_data_valid),
+		.gt0_rxheader_out(xg0_rx_header),
+		.gt0_rxheadervalid_out(xg0_rx_header_valid),
+		.gt0_rxgearboxslip_in(xg0_rx_bitslip),
+
+		//Reset controls
+		.gt0_gtrxreset_in(1'b0),
+		.gt0_rxpmareset_in(1'b0),
+		.gt0_rxresetdone_out(),
+		.gt0_gttxreset_in(1'b0),
+		.gt0_rxuserrdy_in(1'b1),
+		.gt0_txuserrdy_in(1'b1),
+		.gt0_txresetdone_out(),
+
+		//TX driver control
+		.gt0_txpostcursor_in(5'b0),
+		.gt0_txprecursor_in(5'b0),
+		.gt0_txmaincursor_in(6'b0),
+		.gt0_txdiffctrl_in(4'b0100),	//543 mV ppd
+
+		//Fabric TX interface
+		.gt0_txusrclk_in(xg0_tx_clk),
+		.gt0_txusrclk2_in(xg0_tx_clk),
+		.gt0_txdata_in(xg0_tx_data),
+		.gt0_txoutclk_out(xg0_tx_clk_raw),
+		.gt0_txoutclkfabric_out(),
+		.gt0_txoutclkpcs_out(),
+		.gt0_txheader_in(xg0_tx_header),
+		.gt0_txsequence_in({1'b0, xg0_tx_sequence}),
+
+		//Top level I/Os
+		.gt0_gtxrxp_in(sfp_rx_p),
+		.gt0_gtxrxn_in(sfp_rx_n),
+		.gt0_gtxtxp_out(sfp_tx_p),
+		.gt0_gtxtxn_out(sfp_tx_n)
+	);
+
+	XGMACWrapper port_xg0(
+		.rx_clk(xg0_rx_clk),
+		.tx_clk(xg0_tx_clk),
+
+		.rx_data_valid(xg0_rx_data_valid),
+		.rx_header_valid(xg0_rx_header_valid),
+		.rx_header(xg0_rx_header),
+		.rx_data(xg0_rx_data),
+		.rx_bitslip(xg0_rx_bitslip),
+
+		.tx_sequence(xg0_tx_sequence),
+		.tx_header(xg0_tx_header),
+		.tx_data(xg0_tx_data),
+
+		.sfp_los(sfp_rx_los),
+
+		.mac_rx_clk(xg0_mac_rx_clk),
+		.mac_rx_bus(xg0_mac_rx_bus),
+
+		.mac_tx_clk(xg0_mac_tx_clk),
+		.mac_tx_bus(xg0_mac_tx_bus),
+
+		.link_up(xg0_link_up),
+		.remote_fault(xg0_remote_fault)
+	);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSGMII interfaces (g0-g11)
+	// QSGMII interfaces (g0-g11) TODO
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII interfaces (g12, g13)
 
 	`include "SGMIIToGMIIBridge.svh"
 
-	wire			g12_rx_clk;
 	EthernetRxBus	g12_rx_bus;
 
 	EthernetTxBus	g12_tx_bus;
@@ -286,6 +559,8 @@ module LatentPinkTopLevel(
 	wire							g12_rst_stat;
 	SGMIIPerformanceCounters		g12_sgmii_perf;
 	GigabitMacPerformanceCounters	g12_mac_perf;
+
+	assign g12_rst_stat = 0;
 
 	SGMIIMACWrapper #(
 		.RX_INVERT(0),
@@ -302,7 +577,7 @@ module LatentPinkTopLevel(
 		.sgmii_tx_data_p(g12_sgmii_tx_p),
 		.sgmii_tx_data_n(g12_sgmii_tx_n),
 
-		.mac_rx_clk(g12_rx_clk),
+		.mac_rx_clk(),
 		.mac_rx_bus(g12_rx_bus),
 
 		.mac_tx_bus(g12_tx_bus),
@@ -318,7 +593,6 @@ module LatentPinkTopLevel(
 		.rx_error()	//ignore, just look at perf counters to see when we get errors
 	);
 
-	wire			g13_rx_clk;
 	EthernetRxBus	g13_rx_bus;
 
 	EthernetTxBus	g13_tx_bus;
@@ -330,6 +604,8 @@ module LatentPinkTopLevel(
 	wire							g13_rst_stat;
 	SGMIIPerformanceCounters		g13_sgmii_perf;
 	GigabitMacPerformanceCounters	g13_mac_perf;
+
+	assign g13_rst_stat = 0;
 
 	SGMIIMACWrapper #(
 		.RX_INVERT(1),
@@ -346,7 +622,7 @@ module LatentPinkTopLevel(
 		.sgmii_tx_data_p(g13_sgmii_tx_p),
 		.sgmii_tx_data_n(g13_sgmii_tx_n),
 
-		.mac_rx_clk(g13_rx_clk),
+		.mac_rx_clk(),
 		.mac_rx_bus(g13_rx_bus),
 
 		.mac_tx_bus(g13_tx_bus),
@@ -365,7 +641,7 @@ module LatentPinkTopLevel(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// RGMII PHY for mgmt0
 
-	wire			mgmt0_rx_clk;
+	wire			mgmt0_rx_clk_buf;
 	EthernetRxBus	mgmt0_rx_bus;
 
 	EthernetTxBus	mgmt0_tx_bus;
@@ -388,7 +664,7 @@ module LatentPinkTopLevel(
 		.rgmii_txd(mgmt0_txd),
 		.rgmii_tx_ctl(mgmt0_tx_en),
 
-		.mac_rx_clk(mgmt0_rx_clk),
+		.mac_rx_clk(mgmt0_rx_clk_buf),
 		.mac_rx_bus(mgmt0_rx_bus),
 
 		.mac_tx_bus(mgmt0_tx_bus),
@@ -399,6 +675,122 @@ module LatentPinkTopLevel(
 		);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// QDR-II+ SRAM
+
+	//Tie off unused address pins since we've only got a 36 Mbit SRAM stuffed
+	assign qdr_a[20:18] = 2'b0;
+
+	wire		ram_rd_en;
+	wire[17:0]	ram_rd_addr;
+	wire		ram_rd_valid;
+	wire[143:0]	ram_rd_data;
+	wire		ram_wr_en;
+	wire[17:0]	ram_wr_addr;
+	wire[143:0]	ram_wr_data;
+
+	wire		qdr_pll_lock;
+
+	QDR2PController #(
+		.RAM_WIDTH(36),
+		.ADDR_BITS(18)
+	) qdr (
+		.clk_ctl(clk_ram_ctl),
+		.clk_ram(clk_ram),
+		.clk_ram_90(clk_ram_90),
+
+		.rd_en(ram_rd_en),
+		.rd_addr(ram_rd_addr),
+		.rd_valid(ram_rd_valid),
+		.rd_data(ram_rd_data),
+		.wr_en(ram_wr_en),
+		.wr_addr(ram_wr_addr),
+		.wr_data(ram_wr_data),
+		.pll_lock(qdr_pll_lock),
+
+		.qdr_d(qdr_d),
+		.qdr_q(qdr_q),
+		.qdr_a(qdr_a[17:0]),
+		.qdr_wps_n(qdr_wps_n),
+		.qdr_bws_n(qdr_bws_n),
+		.qdr_rps_n(qdr_rps_n),
+		.qdr_qvld(qdr_qvld),
+		.qdr_dclk_p(qdr_k_p),
+		.qdr_dclk_n(qdr_k_n),
+		.qdr_qclk_p(qdr_cq_p),
+		.qdr_qclk_n(qdr_cq_n)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Write all incoming data from every port to the RAM
+
+	//DEBUG: VIOs to see input data from SGMII interfaces
+	vio_2 vio_g12_rx(
+		.clk(clk_125mhz),
+		.probe_in0(g12_rx_bus),
+		.probe_in1(g12_link_up),
+		.probe_in2(g12_link_speed));
+
+	vio_2 vio_g13_rx(
+		.clk(clk_125mhz),
+		.probe_in0(g13_rx_bus),
+		.probe_in1(g13_link_up),
+		.probe_in2(g13_link_speed));
+
+	vio_1 vio_g12_tx(
+		.clk(clk_125mhz),
+		.probe_in0(g12_tx_ready),
+		.probe_out0(g12_tx_bus));
+
+	vio_1 vio_g13_tx(
+		.clk(clk_125mhz),
+		.probe_in0(g13_tx_ready),
+		.probe_out0(g13_tx_bus));
+
+	vio_2 vio_xg0_rx(
+		.clk(xg0_mac_rx_clk),
+		.probe_in0(xg0_mac_rx_bus),
+		.probe_in1(xg0_link_up),
+		.probe_in2(2'b0));
+
+	vio_1 vio_xg0_tx(
+		.clk(xg0_mac_tx_clk),
+		.probe_in0(1'b1),
+		.probe_out0(xg0_mac_tx_bus)
+		);
+
+	//DEBUG: VIOs to control command/address bus of QDR
+	vio_4 vio_qdr(
+		.clk(clk_ram_ctl),
+		.probe_out0(ram_rd_en),
+		.probe_out1(ram_rd_addr),
+		.probe_out2(ram_wr_en),
+		.probe_out3(ram_wr_addr),
+		.probe_out4(ram_wr_data),
+
+		.probe_in0(ram_rd_valid),
+		.probe_in1(ram_rd_data),
+		.probe_in2(qdr_pll_lock)
+	);
+
+	vio_3 vio(
+		.clk(clk_ram_ctl),
+		.probe_in0(ram_rd_data),
+		.probe_in1(ram_rd_valid)
+		);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Management subsystem
+
+	ManagementSubsystem mgmt(
+		.sys_clk(clk_312p5mhz),
+
+		.mgmt0_rx_clk(mgmt0_rx_clk_buf),
+		.mgmt0_rx_bus(mgmt0_rx_bus),
+		.mgmt0_tx_clk(clk_125mhz),
+		.mgmt0_tx_bus(mgmt0_tx_bus),
+		.mgmt0_tx_ready(mgmt0_tx_ready),
+		.mgmt0_link_up(mgmt0_link_up),
+		.mgmt0_link_speed(mgmt0_link_speed)
+	);
 
 endmodule

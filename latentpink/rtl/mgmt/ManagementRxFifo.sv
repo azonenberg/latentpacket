@@ -29,108 +29,98 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "EthernetBus.svh"
+
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief Clock input buffers and quad PLL for the SERDES subsystem
+	@brief FIFO for shifting Ethernet frames from the management clock domain to the QSPI clock domain
  */
-module SerdesClocking(
-	input wire			gtx_refclk_156m25_p,
-	input wire			gtx_refclk_156m25_n,
+module ManagementRxFifo(
+	input wire					sys_clk,
 
-	input wire			gtx_refclk_200m_p,
-	input wire			gtx_refclk_200m_n,
+	input wire					mgmt0_rx_clk,
 
-	input wire			clk_125mhz,
-
-	output wire			qpll_lock,
-	output wire			qpll_clkout_10g3125,
-	output wire			qpll_refclk,
-	output wire			qpll_refclk_lost
+	input wire EthernetRxBus	mgmt0_rx_bus,
+	input wire					mgmt0_link_up
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Reference clock input buffers
+	// Main FIFO and push logic
 
-	wire	serdes_refclk_156m25;
-	wire	serdes_refclk_200m;
+	logic		rxfifo_wr_en		= 0;
+	logic[34:0]	rxfifo_wr_data		= 0;
 
-	IBUFDS_GTE2 ibuf_156m25(
-		.I(gtx_refclk_156m25_p),
-		.IB(gtx_refclk_156m25_n),
-		.CEB(1'b0),
-		.O(serdes_refclk_156m25),
-		.ODIV2()
+	wire		rxfifo_rd_en;
+	wire		rxfifo_rd_pop_single;
+	wire[2:0]	rxfifo_rd_bytes_valid;
+	wire[31:0]	rxfifo_rd_data;
+	wire[10:0]	rxfifo_rd_size;
+
+	wire		wr_reset;
+	assign		wr_reset = !mgmt0_link_up;
+
+	wire		rd_reset;
+
+	ThreeStageSynchronizer sync_fifo_rst(
+		.clk_in(mgmt0_rx_clk),
+		.din(wr_reset),
+		.clk_out(sys_clk),
+		.dout(rd_reset)
 	);
 
-	IBUFDS_GTE2 ibuf_200m(
-		.I(gtx_refclk_200m_p),
-		.IB(gtx_refclk_200m_n),
-		.CEB(1'b0),
-		.O(serdes_refclk_200m),
-		.ODIV2()
+	//An all-zero word indicates packet boundaries
+	CrossClockPacketFifo #(
+		.WIDTH(35),		//3 bytes valid + 32 data
+		.DEPTH(1024)	//at least 2 packets worth
+	) rx_cdc_fifo (
+		.wr_clk(mgmt0_rx_clk),
+		.wr_en(rxfifo_wr_en),
+		.wr_data(rxfifo_wr_data),
+		.wr_reset(wr_reset),
+		.wr_size(),
+		.wr_commit(mgmt0_rx_bus.commit),
+		.wr_rollback(mgmt0_rx_bus.drop),
+
+		.rd_clk(sys_clk),
+		.rd_en(rxfifo_rd_en),
+		.rd_offset(10'h0),
+		.rd_pop_single(rxfifo_rd_pop_single),
+		.rd_pop_packet(1'b0),
+		.rd_packet_size(10'h0),
+		.rd_data( {rxfifo_rd_bytes_valid, rxfifo_rd_data} ),
+		.rd_size(rxfifo_rd_size),
+		.rd_reset(rd_reset)
 	);
+
+	//PUSH SIDE
+	always_comb begin
+
+		//Frame delimiter
+		if(mgmt0_rx_bus.start) begin
+			rxfifo_wr_en	<= 1;
+			rxfifo_wr_data	<= 35'h0;
+		end
+
+		//Nope, push data as needed
+		else begin
+			rxfifo_wr_en	<= mgmt0_rx_bus.data_valid;
+			rxfifo_wr_data	<= { mgmt0_rx_bus.bytes_valid, mgmt0_rx_bus.data };
+		end
+
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Quad PLL (for 10GbE)
+	// Pop logic
 
-	GTXE2_COMMON #(
-
-		//Multiply the 156.25 MHz refclk up by 66 to get 10.3125 GHz
-		.QPLL_REFCLK_DIV(1),
-		.QPLL_FBDIV(66),
-
-		//Magic numbers from transceivers wizard for 156.25 -> 10.3125
-		.BIAS_CFG                               (64'h0000040000001000),
-		.COMMON_CFG                             (32'h00000000),
-		.QPLL_CFG                               (27'h0680181),
-		.QPLL_CLKOUT_CFG                        (4'b0000),
-		.QPLL_COARSE_FREQ_OVRD                  (6'b010000),
-		.QPLL_COARSE_FREQ_OVRD_EN               (1'b0),
-		.QPLL_CP                                (10'b0000011111),
-		.QPLL_CP_MONITOR_EN                     (1'b0),
-		.QPLL_DMONITOR_SEL                      (1'b0),
-		.QPLL_FBDIV_MONITOR_EN                  (1'b0),
-		.QPLL_FBDIV_RATIO                       (1'b0),
-		.QPLL_INIT_CFG                          (24'h000006),
-		.QPLL_LOCK_CFG                          (16'h21E8),
-		.QPLL_LPF                               (4'b1111)
-	) qpll (
-		.DRPADDR(8'b0),
-		.DRPCLK(clk_125mhz),
-		.DRPDI(16'b0),
-		.DRPEN(1'b0),
-		.DRPWE(1'b0),
-		.DRPRDY(),
-		.DRPDO(),
-		.REFCLKOUTMONITOR(),
-		.GTGREFCLK(1'b0),
-		.GTNORTHREFCLK0(1'b0),
-		.GTNORTHREFCLK1(1'b0),
-		.GTSOUTHREFCLK0(1'b0),
-		.GTSOUTHREFCLK1(1'b0),
-		.GTREFCLK0(serdes_refclk_156m25),
-		.GTREFCLK1(serdes_refclk_200m),
-		.QPLLDMONITOR(),
-		.QPLLFBCLKLOST(),
-		.QPLLLOCK(qpll_lock),
-		.QPLLLOCKDETCLK(clk_125mhz),
-		.QPLLLOCKEN(1'b1),
-		.QPLLOUTCLK(qpll_clkout_10g3125),
-		.QPLLOUTREFCLK(qpll_refclk),
-		.QPLLOUTRESET(1'b0),
-		.QPLLPD(1'b0),
-		.QPLLREFCLKLOST(qpll_refclk_lost),
-		.QPLLREFCLKSEL(3'b001),			//use REFCLK0 (156.25 MHz)
-		.QPLLRESET(1'b0),
-		.QPLLRSVD1(16'h0),
-		.QPLLRSVD2(5'b11111),
-		.BGBYPASSB(1'b1),
-		.BGMONITORENB(1'b1),
-		.BGPDB(1'b1),
-		.BGRCALOVRD(5'b11111),
-		.RCALENB(1'b1),
-		.PMARSVD(1'b0)
-	);
+	//DEBUG: toss a VIO on here to control the read and write stuff
+	vio_0 vio(
+		.clk(sys_clk),
+		.probe_out0(rxfifo_rd_en),
+		.probe_out1(rxfifo_rd_pop_single),
+		.probe_in0(rxfifo_rd_bytes_valid),
+		.probe_in1(rxfifo_rd_data),
+		.probe_in2(rxfifo_rd_size)
+		);
 
 endmodule

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="QDRSim_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="QDRSim" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="673.917 ns"></ZoomStartTime>
+      <ZoomEndTime time="809.218 ns"></ZoomEndTime>
+      <Cursor1Time time="786.667 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="162"></NameColumnWidth>
+      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="56" />
+   <wvobject type="logic" fp_name="/QDRSim/clk_125mhz_p">
+      <obj_property name="ElementShortName">clk_125mhz_p</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz_p</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_125mhz_n">
+      <obj_property name="ElementShortName">clk_125mhz_n</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/pll_main_lock">
+      <obj_property name="ElementShortName">pll_main_lock</obj_property>
+      <obj_property name="ObjectShortName">pll_main_lock</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider34" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_125mhz">
+      <obj_property name="ElementShortName">clk_125mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_250mhz">
+      <obj_property name="ElementShortName">clk_250mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_250mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_312p5mhz">
+      <obj_property name="ElementShortName">clk_312p5mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_312p5mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_400mhz">
+      <obj_property name="ElementShortName">clk_400mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_400mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_625mhz_0">
+      <obj_property name="ElementShortName">clk_625mhz_0</obj_property>
+      <obj_property name="ObjectShortName">clk_625mhz_0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_625mhz_90">
+      <obj_property name="ElementShortName">clk_625mhz_90</obj_property>
+      <obj_property name="ObjectShortName">clk_625mhz_90</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider35" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_ram">
+      <obj_property name="ElementShortName">clk_ram</obj_property>
+      <obj_property name="ObjectShortName">clk_ram</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_ram_ctl">
+      <obj_property name="ElementShortName">clk_ram_ctl</obj_property>
+      <obj_property name="ObjectShortName">clk_ram_ctl</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/clk_ram_90">
+      <obj_property name="ElementShortName">clk_ram_90</obj_property>
+      <obj_property name="ObjectShortName">clk_ram_90</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/pll_ram_lock">
+      <obj_property name="ElementShortName">pll_ram_lock</obj_property>
+      <obj_property name="ObjectShortName">pll_ram_lock</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_pll_lock">
+      <obj_property name="ElementShortName">qdr_pll_lock</obj_property>
+      <obj_property name="ObjectShortName">qdr_pll_lock</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ctrl/clk_qcapture">
+      <obj_property name="ElementShortName">clk_qcapture</obj_property>
+      <obj_property name="ObjectShortName">clk_qcapture</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ctrl/clk_qcapture_div2">
+      <obj_property name="ElementShortName">clk_qcapture_div2</obj_property>
+      <obj_property name="ObjectShortName">clk_qcapture_div2</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider36" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/state">
+      <obj_property name="ElementShortName">state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">state[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider218" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ram_rd_en">
+      <obj_property name="ElementShortName">ram_rd_en</obj_property>
+      <obj_property name="ObjectShortName">ram_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ram_rd_addr">
+      <obj_property name="ElementShortName">ram_rd_addr[17:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_rd_addr[17:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ram_rd_valid">
+      <obj_property name="ElementShortName">ram_rd_valid</obj_property>
+      <obj_property name="ObjectShortName">ram_rd_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ram_rd_data">
+      <obj_property name="ElementShortName">ram_rd_data[143:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_rd_data[143:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider217" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ram_wr_en">
+      <obj_property name="ElementShortName">ram_wr_en</obj_property>
+      <obj_property name="ObjectShortName">ram_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ram_wr_addr">
+      <obj_property name="ElementShortName">ram_wr_addr[17:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_wr_addr[17:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ram_wr_data">
+      <obj_property name="ElementShortName">ram_wr_data[143:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_wr_data[143:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider38" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/wr_data_ff">
+      <obj_property name="ElementShortName">wr_data_ff[143:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_data_ff[143:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ctrl/wr_en_ff">
+      <obj_property name="ElementShortName">wr_en_ff</obj_property>
+      <obj_property name="ObjectShortName">wr_en_ff</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ctrl/wr_en_ff_ctl">
+      <obj_property name="ElementShortName">wr_en_ff_ctl</obj_property>
+      <obj_property name="ObjectShortName">wr_en_ff_ctl</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ctrl/wr_phase">
+      <obj_property name="ElementShortName">wr_phase</obj_property>
+      <obj_property name="ObjectShortName">wr_phase</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qcapture_0">
+      <obj_property name="ElementShortName">qcapture_0[35:0]</obj_property>
+      <obj_property name="ObjectShortName">qcapture_0[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qcapture_1">
+      <obj_property name="ElementShortName">qcapture_1[35:0]</obj_property>
+      <obj_property name="ObjectShortName">qcapture_1[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qcapture_0_ff">
+      <obj_property name="ElementShortName">qcapture_0_ff[35:0]</obj_property>
+      <obj_property name="ObjectShortName">qcapture_0_ff[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qcapture_1_ff">
+      <obj_property name="ElementShortName">qcapture_1_ff[35:0]</obj_property>
+      <obj_property name="ObjectShortName">qcapture_1_ff[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qvld_capture">
+      <obj_property name="ElementShortName">qvld_capture[1:0]</obj_property>
+      <obj_property name="ObjectShortName">qvld_capture[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qvld_pipe">
+      <obj_property name="ElementShortName">qvld_pipe[1:0]</obj_property>
+      <obj_property name="ObjectShortName">qvld_pipe[1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qvld_pipe_ff">
+      <obj_property name="ElementShortName">qvld_pipe_ff[1:0]</obj_property>
+      <obj_property name="ObjectShortName">qvld_pipe_ff[1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="divider100" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/ctrl/qcapture_cdc_in">
+      <obj_property name="ElementShortName">qcapture_cdc_in[143:0]</obj_property>
+      <obj_property name="ObjectShortName">qcapture_cdc_in[143:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/ctrl/qcapture_cdc_en">
+      <obj_property name="ElementShortName">qcapture_cdc_en</obj_property>
+      <obj_property name="ObjectShortName">qcapture_cdc_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider37" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_dclk_p">
+      <obj_property name="ElementShortName">qdr_dclk_p</obj_property>
+      <obj_property name="ObjectShortName">qdr_dclk_p</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_dclk_n">
+      <obj_property name="ElementShortName">qdr_dclk_n</obj_property>
+      <obj_property name="ObjectShortName">qdr_dclk_n</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/qdr_a">
+      <obj_property name="ElementShortName">qdr_a[17:0]</obj_property>
+      <obj_property name="ObjectShortName">qdr_a[17:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_rps_n">
+      <obj_property name="ElementShortName">qdr_rps_n</obj_property>
+      <obj_property name="ObjectShortName">qdr_rps_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_wps_n">
+      <obj_property name="ElementShortName">qdr_wps_n</obj_property>
+      <obj_property name="ObjectShortName">qdr_wps_n</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/qdr_bws_n">
+      <obj_property name="ElementShortName">qdr_bws_n[3:0]</obj_property>
+      <obj_property name="ObjectShortName">qdr_bws_n[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/qdr_d">
+      <obj_property name="ElementShortName">qdr_d[35:0]</obj_property>
+      <obj_property name="ObjectShortName">qdr_d[35:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_qclk_p">
+      <obj_property name="ElementShortName">qdr_qclk_p</obj_property>
+      <obj_property name="ObjectShortName">qdr_qclk_p</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_qclk_n">
+      <obj_property name="ElementShortName">qdr_qclk_n</obj_property>
+      <obj_property name="ObjectShortName">qdr_qclk_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/QDRSim/qdr_qvld">
+      <obj_property name="ElementShortName">qdr_qvld</obj_property>
+      <obj_property name="ObjectShortName">qdr_qvld</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/QDRSim/qdr_q">
+      <obj_property name="ElementShortName">qdr_q[35:0]</obj_property>
+      <obj_property name="ObjectShortName">qdr_q[35:0]</obj_property>
+   </wvobject>
+</wave_config>
