@@ -5,7 +5,7 @@
   (paper "A3")
 
   (title_block
-    (date "2023-06-09")
+    (date "2023-06-15")
     (rev "0.1")
     (company "Antikernel Labs")
     (comment 1 "Andrew D. Zonenberg")
@@ -5810,7 +5810,6 @@
   (no_connect (at 260.35 88.9) (uuid ebe5e89d-8a53-45a0-afd0-932153fa9957))
   (no_connect (at 260.35 106.68) (uuid ec029968-b277-4267-9002-718d29c5b46e))
   (no_connect (at 212.09 199.39) (uuid ec2dc584-f3a3-464d-9dbd-17e2e7dc4c3c))
-  (no_connect (at 335.28 129.54) (uuid f135fa11-30a2-4ee0-aaa0-0d01656c6229))
   (no_connect (at 165.1 116.84) (uuid f19b20f0-6176-4d63-8f31-d197a07c0a6c))
   (no_connect (at 260.35 96.52) (uuid f2d3ff58-b8ee-43e1-a7cb-994a9c8c9a99))
   (no_connect (at 303.53 30.48) (uuid fa281aae-a2fa-41ad-9b35-df4e4a4cafaf))
@@ -7071,6 +7070,10 @@
     (uuid ff2da063-8681-442f-a831-4818a23bb3c3)
   )
 
+  (hierarchical_label "SFP_RX_LOS" (shape input) (at 335.28 129.54 180)
+    (effects (font (size 1.27 1.27)) (justify right))
+    (uuid 10e4660a-524d-4b25-a4d7-eee0b2f60eaa)
+  )
   (hierarchical_label "12V0" (shape input) (at 27.94 257.81 180)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid 26a26f8d-8cfa-4690-93f0-ada2ffd04aa2)
