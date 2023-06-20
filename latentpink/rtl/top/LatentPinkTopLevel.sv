@@ -202,6 +202,9 @@ module LatentPinkTopLevel(
 	wire	qpll_refclk;
 	wire	qpll_refclk_lost;
 
+	wire	serdes_refclk_156m25;
+	wire	serdes_refclk_200m;
+
 	wire clk_125mhz;
 	wire clk_250mhz;
 	wire clk_312p5mhz;
@@ -214,6 +217,9 @@ module LatentPinkTopLevel(
 		.gtx_refclk_156m25_n(gtx_refclk_156m25_n),
 		.gtx_refclk_200m_p(gtx_refclk_200m_p),
 		.gtx_refclk_200m_n(gtx_refclk_200m_n),
+
+		.serdes_refclk_156m25(serdes_refclk_156m25),
+		.serdes_refclk_200m(serdes_refclk_200m),
 
 		.clk_125mhz(clk_125mhz),
 
@@ -542,6 +548,336 @@ module LatentPinkTopLevel(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QSGMII interfaces (g0-g11) TODO
+
+	wire[2:0]	cpll_lock;
+
+	wire[2:0]	qsgmii_rx_clk;
+	wire[2:0]	qsgmii_rx_clk_raw;
+	wire[3:0]	qsgmii_rx_disparity_err[2:0];
+	wire[3:0]	qsgmii_rx_symbol_err[2:0];
+	wire[31:0]	qsgmii_rx_data_out[2:0];
+	wire[3:0]	qsgmii_rx_data_is_ctl[2:0];
+	wire[2:0]	qsgmii_rx_aligned;
+
+	wire[2:0]	qsgmii_tx_clk;
+	wire[2:0]	qsgmii_tx_clk_raw;
+	wire[3:0]	qsgmii_tx_force_disparity_negative[2:0];
+	wire[31:0]	qsgmii_tx_data[3:0];
+	wire[3:0]	qsgmii_tx_data_is_ctl[2:0];
+
+	EthernetRxBus[11:0] 					qsgmii_mac_rx_bus;
+	GigabitMacPerformanceCounters[11:0]		qsgmii_mac_perf;
+
+	EthernetTxBus[11:0] qsgmii_mac_tx_bus;
+	wire[11:0]			qsgmii_mac_tx_ready;
+	wire[11:0]			qsgmii_link_up;
+	lspeed_t[11:0]		qsgmii_link_speed;
+
+	qsgmii_transceiver port_g0_g11(
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Common
+
+		.sysclk_in(clk_125mhz),
+		.soft_reset_tx_in(1'b0),
+		.soft_reset_rx_in(1'b0),
+		.dont_reset_on_data_error_in(1'b0),
+
+		.gt0_tx_fsm_reset_done_out(),
+		.gt0_rx_fsm_reset_done_out(),
+		.gt0_data_valid_in(1'b1),
+		.gt0_tx_mmcm_lock_in(1'b1),
+		.gt0_tx_mmcm_reset_out(),
+
+		.gt1_tx_fsm_reset_done_out(),
+		.gt1_rx_fsm_reset_done_out(),
+		.gt1_data_valid_in(1'b1),
+		.gt1_tx_mmcm_lock_in(1'b1),
+		.gt1_tx_mmcm_reset_out(),
+
+		.gt2_tx_fsm_reset_done_out(),
+		.gt2_rx_fsm_reset_done_out(),
+		.gt2_data_valid_in(1'b1),
+		.gt2_tx_mmcm_lock_in(1'b1),
+		.gt2_tx_mmcm_reset_out(),
+
+		.gt0_qplloutclk_in(qpll_clkout_10g3125),
+		.gt0_qplloutrefclk_in(qpll_refclk),
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Lane 0 (g0-g3)
+
+		.gt0_cpllfbclklost_out(),
+		.gt0_cplllock_out(cpll_lock[0]),
+		.gt0_cplllockdetclk_in(clk_125mhz),
+		.gt0_cpllreset_in(1'b0),
+
+		.gt0_gtrefclk0_in(serdes_refclk_156m25),
+		.gt0_gtrefclk1_in(serdes_refclk_200m),
+
+		.gt0_drpaddr_in(8'b0),
+		.gt0_drpclk_in(clk_125mhz),
+		.gt0_drpdi_in(16'b0),
+		.gt0_drpdo_out(),
+		.gt0_drpen_in(1'b0),
+		.gt0_drprdy_out(),
+		.gt0_drpwe_in(1'b0),
+
+		.gt0_dmonitorout_out(),
+		.gt0_eyescanreset_in(1'b0),
+		.gt0_rxuserrdy_in(pll_main_lock),
+		.gt0_eyescandataerror_out(),
+		.gt0_eyescantrigger_in(),
+
+		.gt0_rxusrclk_in(qsgmii_rx_clk[0]),
+		.gt0_rxusrclk2_in(qsgmii_rx_clk[0]),
+		.gt0_rxdata_out(qsgmii_rx_data_out[0]),
+		.gt0_rxdisperr_out(qsgmii_rx_disparity_err[0]),
+		.gt0_rxnotintable_out(qsgmii_rx_symbol_err[0]),
+
+		.gt0_gtxrxp_in(qsgmii_rx_p[0]),
+		.gt0_gtxrxn_in(qsgmii_rx_n[0]),
+
+		.gt0_rxbyteisaligned_out(qsgmii_rx_aligned[0]),
+
+		.gt0_rxdfelpmreset_in(1'b0),
+		.gt0_rxmonitorout_out(),
+		.gt0_rxmonitorsel_in(2'b0),
+
+		.gt0_rxoutclk_out(qsgmii_rx_clk_raw[0]),
+		.gt0_rxoutclkfabric_out(),
+
+		.gt0_gtrxreset_in(1'b0),
+		.gt0_rxpmareset_in(),
+
+		.gt0_rxpolarity_in(1'b0),	//no inversion
+
+		.gt0_rxcharisk_out(qsgmii_rx_data_is_ctl[0]),
+
+		.gt0_rxresetdone_out(),
+
+		.gt0_gttxreset_in(1'b0),
+		.gt0_txuserrdy_in(pll_main_lock),
+		.gt0_txchardispmode_in(qsgmii_tx_force_disparity_negative[0]),
+		.gt0_txchardispval_in(4'b0),
+
+		.gt0_txusrclk_in(qsgmii_tx_clk[0]),
+		.gt0_txusrclk2_in(qsgmii_tx_clk[0]),
+
+		.gt0_txdata_in(qsgmii_tx_data[0]),
+
+		.gt0_gtxtxn_out(qsgmii_tx_n[0]),
+		.gt0_gtxtxp_out(qsgmii_tx_p[0]),
+
+		.gt0_txoutclk_out(qsgmii_tx_clk_raw[0]),
+		.gt0_txoutclkfabric_out(),
+		.gt0_txoutclkpcs_out(),
+
+		.gt0_txcharisk_in(qsgmii_tx_data_is_ctl[0]),
+
+		.gt0_txresetdone_out(),
+		.gt0_txpolarity_in(1'b0),	//no inversion
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Lane 1 (g4-g7)
+
+		.gt1_cpllfbclklost_out(),
+		.gt1_cplllock_out(cpll_lock[1]),
+		.gt1_cplllockdetclk_in(clk_125mhz),
+		.gt1_cpllreset_in(1'b0),
+
+		.gt1_gtrefclk0_in(serdes_refclk_156m25),
+		.gt1_gtrefclk1_in(serdes_refclk_200m),
+
+		.gt1_drpaddr_in(8'b0),
+		.gt1_drpclk_in(clk_125mhz),
+		.gt1_drpdi_in(16'b0),
+		.gt1_drpdo_out(),
+		.gt1_drpen_in(1'b0),
+		.gt1_drprdy_out(),
+		.gt1_drpwe_in(1'b0),
+
+		.gt1_dmonitorout_out(),
+		.gt1_eyescanreset_in(1'b0),
+		.gt1_rxuserrdy_in(pll_main_lock),
+		.gt1_eyescandataerror_out(),
+		.gt1_eyescantrigger_in(),
+
+		.gt1_rxusrclk_in(qsgmii_rx_clk[1]),
+		.gt1_rxusrclk2_in(qsgmii_rx_clk[1]),
+		.gt1_rxdata_out(qsgmii_rx_data_out[1]),
+		.gt1_rxdisperr_out(qsgmii_rx_disparity_err[1]),
+		.gt1_rxnotintable_out(qsgmii_rx_symbol_err[1]),
+
+		.gt1_gtxrxp_in(qsgmii_rx_p[1]),
+		.gt1_gtxrxn_in(qsgmii_rx_n[1]),
+
+		.gt1_rxbyteisaligned_out(qsgmii_rx_aligned[1]),
+
+		.gt1_rxdfelpmreset_in(1'b0),
+		.gt1_rxmonitorout_out(),
+		.gt1_rxmonitorsel_in(2'b0),
+
+		.gt1_rxoutclk_out(qsgmii_rx_clk_raw[1]),
+		.gt1_rxoutclkfabric_out(),
+
+		.gt1_gtrxreset_in(1'b0),
+		.gt1_rxpmareset_in(),
+
+		.gt1_rxpolarity_in(1'b0),	//no inversion
+
+		.gt1_rxcharisk_out(qsgmii_rx_data_is_ctl[1]),
+
+		.gt1_rxresetdone_out(),
+
+		.gt1_gttxreset_in(1'b0),
+		.gt1_txuserrdy_in(pll_main_lock),
+		.gt1_txchardispmode_in(qsgmii_tx_force_disparity_negative[1]),
+		.gt1_txchardispval_in(4'b0),
+
+		.gt1_txusrclk_in(qsgmii_tx_clk[1]),
+		.gt1_txusrclk2_in(qsgmii_tx_clk[1]),
+
+		.gt1_txdata_in(qsgmii_tx_data[1]),
+
+		.gt1_gtxtxn_out(qsgmii_tx_n[1]),
+		.gt1_gtxtxp_out(qsgmii_tx_p[1]),
+
+		.gt1_txoutclk_out(qsgmii_tx_clk_raw[1]),
+		.gt1_txoutclkfabric_out(),
+		.gt1_txoutclkpcs_out(),
+
+		.gt1_txcharisk_in(qsgmii_tx_data_is_ctl[1]),
+
+		.gt1_txresetdone_out(),
+		.gt1_txpolarity_in(1'b0),	//no inversion
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Lane 2 (g8-g11)
+
+		.gt2_cpllfbclklost_out(),
+		.gt2_cplllock_out(cpll_lock[2]),
+		.gt2_cplllockdetclk_in(clk_125mhz),
+		.gt2_cpllreset_in(1'b0),
+
+		.gt2_gtrefclk0_in(serdes_refclk_156m25),
+		.gt2_gtrefclk1_in(serdes_refclk_200m),
+
+		.gt2_drpaddr_in(8'b0),
+		.gt2_drpclk_in(clk_125mhz),
+		.gt2_drpdi_in(16'b0),
+		.gt2_drpdo_out(),
+		.gt2_drpen_in(1'b0),
+		.gt2_drprdy_out(),
+		.gt2_drpwe_in(1'b0),
+
+		.gt2_dmonitorout_out(),
+		.gt2_eyescanreset_in(1'b0),
+		.gt2_rxuserrdy_in(pll_main_lock),
+		.gt2_eyescandataerror_out(),
+		.gt2_eyescantrigger_in(),
+
+		.gt2_rxusrclk_in(qsgmii_rx_clk[2]),
+		.gt2_rxusrclk2_in(qsgmii_rx_clk[2]),
+		.gt2_rxdata_out(qsgmii_rx_data_out[2]),
+		.gt2_rxdisperr_out(qsgmii_rx_disparity_err[2]),
+		.gt2_rxnotintable_out(qsgmii_rx_symbol_err[2]),
+
+		.gt2_gtxrxp_in(qsgmii_rx_p[2]),
+		.gt2_gtxrxn_in(qsgmii_rx_n[2]),
+
+		.gt2_rxbyteisaligned_out(qsgmii_rx_aligned[2]),
+
+		.gt2_rxdfelpmreset_in(1'b0),
+		.gt2_rxmonitorout_out(),
+		.gt2_rxmonitorsel_in(2'b0),
+
+		.gt2_rxoutclk_out(qsgmii_rx_clk_raw[2]),
+		.gt2_rxoutclkfabric_out(),
+
+		.gt2_gtrxreset_in(1'b0),
+		.gt2_rxpmareset_in(),
+
+		.gt2_rxpolarity_in(1'b1),	//inverted for pcb routability
+
+		.gt2_rxcharisk_out(qsgmii_rx_data_is_ctl[2]),
+
+		.gt2_rxresetdone_out(),
+
+		.gt2_gttxreset_in(1'b0),
+		.gt2_txuserrdy_in(pll_main_lock),
+		.gt2_txchardispmode_in(qsgmii_tx_force_disparity_negative[2]),
+		.gt2_txchardispval_in(4'b0),
+
+		.gt2_txusrclk_in(qsgmii_tx_clk[2]),
+		.gt2_txusrclk2_in(qsgmii_tx_clk[2]),
+
+		.gt2_txdata_in(qsgmii_tx_data[2]),
+
+		.gt2_gtxtxn_out(qsgmii_tx_n[2]),
+		.gt2_gtxtxp_out(qsgmii_tx_p[2]),
+
+		.gt2_txoutclk_out(qsgmii_tx_clk_raw[2]),
+		.gt2_txoutclkfabric_out(),
+		.gt2_txoutclkpcs_out(),
+
+		.gt2_txcharisk_in(qsgmii_tx_data_is_ctl[2]),
+
+		.gt2_txresetdone_out(),
+		.gt2_txpolarity_in(1'b0)	//no inversion
+	);
+
+	for(genvar g=0; g<3; g=g+1) begin : qsgmii
+
+		//RX can use a BUFH since we transition away from that domain quickly
+		BUFH clkbuf_rx(
+			.I(qsgmii_rx_clk_raw[g]),
+			.O(qsgmii_rx_clk[g])
+		);
+
+		//TX clock is used for more stuff
+		BUFG clkbuf_tx(
+			.I(qsgmii_tx_clk_raw[g]),
+			.O(qsgmii_tx_clk[g])
+		);
+
+		QSGMIIMACWrapper quad(
+			.rx_clk(qsgmii_rx_clk[g]),
+			.rx_data_valid(qsgmii_rx_aligned[g]),
+			.rx_data_is_ctl(qsgmii_rx_data_is_ctl[g]),
+			.rx_data(qsgmii_rx_data_out[g]),
+			.rx_disparity_err(qsgmii_rx_disparity_err[g]),
+			.rx_symbol_err(qsgmii_rx_symbol_err[g]),
+
+			.tx_clk(qsgmii_tx_clk[g]),
+			.tx_data_is_ctl(qsgmii_tx_data_is_ctl[g]),
+			.tx_data(qsgmii_tx_data[g]),
+			.tx_force_disparity_negative(qsgmii_tx_force_disparity_negative[g]),
+
+			.mac_rx_bus(qsgmii_mac_rx_bus[g*4 +: 4]),
+			.link_up(qsgmii_link_up[g*4 +: 4]),
+			.link_speed(qsgmii_link_speed[g*4 +: 4]),
+			.mac_perf(qsgmii_mac_perf[g*4 +: 4]),
+
+			.mac_tx_bus(qsgmii_mac_tx_bus[g*4 +: 4]),
+			.mac_tx_ready(qsgmii_mac_tx_ready[g*4 +: 4])
+		);
+
+		//DEBUG: VIOs to keep stuff from being optimized out
+		for(genvar i=0; i<4; i=i+1) begin
+			vio_2 vio_rx(
+				.clk(qsgmii_tx_clk[g]),
+				.probe_in0(qsgmii_mac_rx_bus[g*4 + i]),
+				.probe_in1(qsgmii_link_up[g*4 + i]),
+				.probe_in2(qsgmii_link_speed[g*4 + i]));
+
+			vio_1 vio_tx(
+				.clk(qsgmii_tx_clk[g]),
+				.probe_in0(qsgmii_mac_tx_ready[g*4 + i]),
+				.probe_out0(qsgmii_mac_tx_bus[g*4 + i]));
+		end
+
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII interfaces (g12, g13)

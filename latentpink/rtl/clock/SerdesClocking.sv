@@ -41,6 +41,9 @@ module SerdesClocking(
 	input wire			gtx_refclk_200m_p,
 	input wire			gtx_refclk_200m_n,
 
+	output wire			serdes_refclk_156m25,
+	output wire			serdes_refclk_200m,
+
 	input wire			clk_125mhz,
 
 	output wire			qpll_lock,
@@ -51,9 +54,6 @@ module SerdesClocking(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Reference clock input buffers
-
-	wire	serdes_refclk_156m25;
-	wire	serdes_refclk_200m;
 
 	IBUFDS_GTE2 ibuf_156m25(
 		.I(gtx_refclk_156m25_p),
