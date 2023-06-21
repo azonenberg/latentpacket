@@ -265,8 +265,6 @@ module LatentPinkTopLevel(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dummy logic to use SGMII RX clock
 
-	//We really don't need to blink our LEDs at 312.5 MHz but it's too much of a pain to divide in fabric this fast...
-
 	wire	sgmii_rxclk0;
 	wire	sgmii_rxclk1;
 
@@ -627,7 +625,7 @@ module LatentPinkTopLevel(
 		.gt0_eyescanreset_in(1'b0),
 		.gt0_rxuserrdy_in(pll_main_lock),
 		.gt0_eyescandataerror_out(),
-		.gt0_eyescantrigger_in(),
+		.gt0_eyescantrigger_in(1'b0),
 
 		.gt0_rxusrclk_in(qsgmii_rx_clk[0]),
 		.gt0_rxusrclk2_in(qsgmii_rx_clk[0]),
@@ -648,7 +646,7 @@ module LatentPinkTopLevel(
 		.gt0_rxoutclkfabric_out(),
 
 		.gt0_gtrxreset_in(1'b0),
-		.gt0_rxpmareset_in(),
+		.gt0_rxpmareset_in(1'b0),
 
 		.gt0_rxpolarity_in(1'b0),	//no inversion
 
@@ -701,7 +699,7 @@ module LatentPinkTopLevel(
 		.gt1_eyescanreset_in(1'b0),
 		.gt1_rxuserrdy_in(pll_main_lock),
 		.gt1_eyescandataerror_out(),
-		.gt1_eyescantrigger_in(),
+		.gt1_eyescantrigger_in(1'b0),
 
 		.gt1_rxusrclk_in(qsgmii_rx_clk[1]),
 		.gt1_rxusrclk2_in(qsgmii_rx_clk[1]),
@@ -722,7 +720,7 @@ module LatentPinkTopLevel(
 		.gt1_rxoutclkfabric_out(),
 
 		.gt1_gtrxreset_in(1'b0),
-		.gt1_rxpmareset_in(),
+		.gt1_rxpmareset_in(1'b0),
 
 		.gt1_rxpolarity_in(1'b0),	//no inversion
 
@@ -775,7 +773,7 @@ module LatentPinkTopLevel(
 		.gt2_eyescanreset_in(1'b0),
 		.gt2_rxuserrdy_in(pll_main_lock),
 		.gt2_eyescandataerror_out(),
-		.gt2_eyescantrigger_in(),
+		.gt2_eyescantrigger_in(1'b0),
 
 		.gt2_rxusrclk_in(qsgmii_rx_clk[2]),
 		.gt2_rxusrclk2_in(qsgmii_rx_clk[2]),
@@ -796,7 +794,7 @@ module LatentPinkTopLevel(
 		.gt2_rxoutclkfabric_out(),
 
 		.gt2_gtrxreset_in(1'b0),
-		.gt2_rxpmareset_in(),
+		.gt2_rxpmareset_in(1'b0),
 
 		.gt2_rxpolarity_in(1'b1),	//inverted for pcb routability
 
@@ -865,11 +863,12 @@ module LatentPinkTopLevel(
 
 		//DEBUG: VIOs to keep stuff from being optimized out
 		for(genvar i=0; i<4; i=i+1) begin
+			/*
 			vio_2 vio_rx(
 				.clk(qsgmii_tx_clk[g]),
 				.probe_in0(qsgmii_mac_rx_bus[g*4 + i]),
 				.probe_in1(qsgmii_link_up[g*4 + i]),
-				.probe_in2(qsgmii_link_speed[g*4 + i]));
+				.probe_in2(qsgmii_link_speed[g*4 + i]));*/
 
 			vio_1 vio_tx(
 				.clk(qsgmii_tx_clk[g]),
@@ -1059,6 +1058,49 @@ module LatentPinkTopLevel(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Write all incoming data from every port to the RAM
 
+	IngressFifo #(
+		.NUM_PORTS(15)
+	) infifo (
+		.port_rx_clk(
+		{
+			xg0_mac_rx_clk,		//xg0 serdes clock
+			clk_125mhz,			//g13:12 oversample to 125 MHz domain
+			clk_125mhz,
+			qsgmii_rx_clk[2],	//g11:8 serdes clock
+			qsgmii_rx_clk[2],
+			qsgmii_rx_clk[2],
+			qsgmii_rx_clk[2],
+			qsgmii_rx_clk[1],	//g7:4 serdes clock
+			qsgmii_rx_clk[1],
+			qsgmii_rx_clk[1],
+			qsgmii_rx_clk[1],
+			qsgmii_rx_clk[0],	//g3:0 serdes clock
+			qsgmii_rx_clk[0],
+			qsgmii_rx_clk[0],
+			qsgmii_rx_clk[0]
+		}),
+		.port_link_up(
+		{
+			xg0_link_up,
+			g13_link_up,
+			g12_link_up,
+			qsgmii_link_up
+		}),
+		.port_rx_bus(
+		{
+			xg0_mac_rx_bus,
+			g13_rx_bus,
+			g12_rx_bus,
+			qsgmii_mac_rx_bus
+		}),
+
+		.clk_ram_ctl(clk_ram_ctl),
+		.ram_wr_en(ram_wr_en),
+		.ram_wr_addr(ram_wr_addr),
+		.ram_wr_data(ram_wr_data)
+	);
+
+	/*
 	//DEBUG: VIOs to see input data from SGMII interfaces
 	vio_2 vio_g12_rx(
 		.clk(clk_125mhz),
@@ -1107,6 +1149,11 @@ module LatentPinkTopLevel(
 		.probe_in1(ram_rd_data),
 		.probe_in2(qdr_pll_lock)
 	);
+	*/
+
+	//DEBUG: tie off read bus
+	assign ram_rd_en = ram_wr_en;
+	assign ram_rd_addr = ram_wr_addr;
 
 	vio_3 vio(
 		.clk(clk_ram_ctl),
