@@ -6,21 +6,21 @@
       <db_ref path="IngressCDCSim_behav.wdb" id="1">
          <top_modules>
             <top_module name="IngressCDCSim" />
-            <top_module name="\$unit_CrossClockPacketFifo_sv_1213176626 " />
+            <top_module name="\$unit_CrossClockFifo_sv_2065150714 " />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="785.833 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,042.834 ns"></ZoomEndTime>
-      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="514.801 ns"></ZoomEndTime>
+      <Cursor1Time time="28.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="258"></NameColumnWidth>
-      <ValueColumnWidth column_width="106"></ValueColumnWidth>
+      <ValueColumnWidth column_width="102"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="22" />
+   <WVObjectSize size="26" />
    <wvobject type="logic" fp_name="/IngressCDCSim/rx_clk">
       <obj_property name="ElementShortName">rx_clk</obj_property>
       <obj_property name="ObjectShortName">rx_clk</obj_property>
@@ -48,6 +48,10 @@
    </wvobject>
    <wvobject fp_name="divider14" type="divider">
    </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_fifo_full">
+      <obj_property name="ElementShortName">header_fifo_full</obj_property>
+      <obj_property name="ObjectShortName">header_fifo_full</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/IngressCDCSim/dut/wr_phase">
       <obj_property name="ElementShortName">wr_phase[1:0]</obj_property>
       <obj_property name="ObjectShortName">wr_phase[1:0]</obj_property>
@@ -55,6 +59,7 @@
    <wvobject type="array" fp_name="/IngressCDCSim/dut/wr_frame_bytelen">
       <obj_property name="ElementShortName">wr_frame_bytelen[10:0]</obj_property>
       <obj_property name="ObjectShortName">wr_frame_bytelen[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/wr_dropping">
       <obj_property name="ElementShortName">wr_dropping</obj_property>
@@ -73,6 +78,7 @@
    <wvobject type="array" fp_name="/IngressCDCSim/dut/fifo_wr_size">
       <obj_property name="ElementShortName">fifo_wr_size[9:0]</obj_property>
       <obj_property name="ObjectShortName">fifo_wr_size[9:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/fifo_wr_commit">
       <obj_property name="ElementShortName">fifo_wr_commit</obj_property>
@@ -99,5 +105,17 @@
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/fifo_rd_en">
       <obj_property name="ElementShortName">fifo_rd_en</obj_property>
       <obj_property name="ObjectShortName">fifo_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_rd_en">
+      <obj_property name="ElementShortName">header_rd_en</obj_property>
+      <obj_property name="ObjectShortName">header_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/header_rd_data">
+      <obj_property name="ElementShortName">header_rd_data[10:0]</obj_property>
+      <obj_property name="ObjectShortName">header_rd_data[10:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_rd_empty">
+      <obj_property name="ElementShortName">header_rd_empty</obj_property>
+      <obj_property name="ObjectShortName">header_rd_empty</obj_property>
    </wvobject>
 </wave_config>

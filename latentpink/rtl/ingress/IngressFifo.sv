@@ -35,6 +35,11 @@
 	@file
 	@author Andrew D. Zonenberg
 	@brief Input FIFO block, writes data from each of the inbound switch ports to QDR-II+
+
+	With a 36 Mbit SRAM (32 Mbit after FEC overhead) and 15 ports (round to 16 to keep addressing simple),
+	we have 2 Mbits per port of buffer.
+
+	This is 256 kB or 16K 128-bit data blocks.
  */
 module IngressFifo #(
 	parameter NUM_PORTS = 15

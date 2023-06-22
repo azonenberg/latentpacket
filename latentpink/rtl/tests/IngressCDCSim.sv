@@ -58,18 +58,32 @@ module IngressCDCSim();
 	logic			link_up	= 0;
 	EthernetRxBus	rx_bus = 0;
 
+	logic			mem_frame_start;
+	wire			mem_frame_ready;
+
 	IngressCDC dut(
 		.rx_clk(rx_clk),
 		.link_up(link_up),
 		.rx_bus(rx_bus),
 
-		.clk_mem(clk_mem)
+		.clk_mem(clk_mem),
+		.mem_frame_ready(mem_frame_ready),
+		.mem_frame_bytelen(),
+		.mem_valid(),
+		.mem_data(),
+		.mem_frame_done(),
+		.mem_frame_start(mem_frame_start)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Input signal generation
 
 	logic[7:0] state = 0;
+	logic[7:0] count = 0;
+
+	always_comb begin
+		mem_frame_start	= mem_frame_ready;
+	end
 
 	always_ff @(posedge rx_clk) begin
 
@@ -89,7 +103,11 @@ module IngressCDCSim();
 				state	<= 2;
 			end
 
-			2: state <= 3;
+			2: begin
+				count	<= count + 1;
+				if(count == 'h2)
+					state <= 3;
+			end
 
 			//Send a dummy frame
 			3: begin
@@ -137,7 +155,64 @@ module IngressCDCSim();
 				state				<= 10;
 			end
 
-			//TODO
+			//Immediately send a second frame
+			10: begin
+				rx_bus.start	<= 1;
+				state			<= 11;
+			end
+			11: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h11111111;
+				state				<= 12;
+			end
+			12: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h22222222;
+				state				<= 13;
+			end
+			13: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h33333333;
+				state				<= 14;
+			end
+			14: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h44444444;
+				state				<= 15;
+			end
+
+			15: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h55555555;
+				state				<= 16;
+			end
+			16: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h66666666;
+				state				<= 17;
+			end
+			17: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h77777777;
+				state				<= 18;
+			end
+			18: begin
+				rx_bus.data_valid	<= 1;
+				rx_bus.bytes_valid	<= 4;
+				rx_bus.data			<= 32'h88888888;
+				state				<= 19;
+			end
+			19: begin
+				rx_bus.commit		<= 1;
+				state				<= 20;
+			end
 
 		endcase
 
