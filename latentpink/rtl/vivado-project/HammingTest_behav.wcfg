@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="HammingTest_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="HammingTest" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,269.001 ns"></ZoomEndTime>
+      <Cursor1Time time="25.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="283"></NameColumnWidth>
+      <ValueColumnWidth column_width="113"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="28" />
+   <wvobject type="logic" fp_name="/HammingTest/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/plaintext">
+      <obj_property name="ElementShortName">plaintext[63:0]</obj_property>
+      <obj_property name="ObjectShortName">plaintext[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider95" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/codeword_valid">
+      <obj_property name="ElementShortName">codeword_valid</obj_property>
+      <obj_property name="ObjectShortName">codeword_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/codeword">
+      <obj_property name="ElementShortName">codeword[71:0]</obj_property>
+      <obj_property name="ObjectShortName">codeword[71:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider96" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/corrupted_valid">
+      <obj_property name="ElementShortName">corrupted_valid</obj_property>
+      <obj_property name="ObjectShortName">corrupted_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/corrupted">
+      <obj_property name="ElementShortName">corrupted[71:0]</obj_property>
+      <obj_property name="ObjectShortName">corrupted[71:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider97" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/numbits">
+      <obj_property name="ElementShortName">numbits[31:0]</obj_property>
+      <obj_property name="ObjectShortName">numbits[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/bitpos">
+      <obj_property name="ElementShortName">bitpos[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bitpos[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider98" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/decoded_valid">
+      <obj_property name="ElementShortName">decoded_valid</obj_property>
+      <obj_property name="ObjectShortName">decoded_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/decoded">
+      <obj_property name="ElementShortName">decoded[63:0]</obj_property>
+      <obj_property name="ObjectShortName">decoded[63:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/plaintext_ff3">
+      <obj_property name="ElementShortName">plaintext_ff3[63:0]</obj_property>
+      <obj_property name="ObjectShortName">plaintext_ff3[63:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/numbits_ff2">
+      <obj_property name="ElementShortName">numbits_ff2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">numbits_ff2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider99" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/correctable_err">
+      <obj_property name="ElementShortName">correctable_err</obj_property>
+      <obj_property name="ObjectShortName">correctable_err</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/correctable_expected">
+      <obj_property name="ElementShortName">correctable_expected</obj_property>
+      <obj_property name="ObjectShortName">correctable_expected</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/uncorrectable_err">
+      <obj_property name="ElementShortName">uncorrectable_err</obj_property>
+      <obj_property name="ObjectShortName">uncorrectable_err</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/uncorrectable_expected">
+      <obj_property name="ElementShortName">uncorrectable_expected</obj_property>
+      <obj_property name="ObjectShortName">uncorrectable_expected</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider100" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/decoder/check_expected">
+      <obj_property name="ElementShortName">check_expected[6:0]</obj_property>
+      <obj_property name="ObjectShortName">check_expected[6:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/decoder/parity_expected">
+      <obj_property name="ElementShortName">parity_expected</obj_property>
+      <obj_property name="ObjectShortName">parity_expected</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/decoder/check_actual">
+      <obj_property name="ElementShortName">check_actual[6:0]</obj_property>
+      <obj_property name="ObjectShortName">check_actual[6:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/HammingTest/decoder/check_err">
+      <obj_property name="ElementShortName">check_err[6:0]</obj_property>
+      <obj_property name="ObjectShortName">check_err[6:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/decoder/parity_actual">
+      <obj_property name="ElementShortName">parity_actual</obj_property>
+      <obj_property name="ObjectShortName">parity_actual</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/HammingTest/decoder/parity_err">
+      <obj_property name="ElementShortName">parity_err</obj_property>
+      <obj_property name="ObjectShortName">parity_err</obj_property>
+   </wvobject>
+</wave_config>
