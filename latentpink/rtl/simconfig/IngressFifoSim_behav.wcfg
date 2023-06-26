@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="IngressFifoSim_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="IngressFifoSim" />
+            <top_module name="\$unit_CrossClockFifo_sv_1691257 " />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="538.757 ns"></ZoomEndTime>
+      <Cursor1Time time="26.281 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="283"></NameColumnWidth>
+      <ValueColumnWidth column_width="109"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="31" />
+   <wvobject type="logic" fp_name="/IngressFifoSim/rx_clk">
+      <obj_property name="ElementShortName">rx_clk</obj_property>
+      <obj_property name="ObjectShortName">rx_clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressFifoSim/clk_mem">
+      <obj_property name="ElementShortName">clk_mem</obj_property>
+      <obj_property name="ObjectShortName">clk_mem</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider119" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/port_rx_clk">
+      <obj_property name="ElementShortName">port_rx_clk[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_rx_clk[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/port_link_up">
+      <obj_property name="ElementShortName">port_link_up[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_link_up[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/port_rx_bus">
+      <obj_property name="ElementShortName">port_rx_bus[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_rx_bus[14:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider120" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressFifoSim/ram_wr_en">
+      <obj_property name="ElementShortName">ram_wr_en</obj_property>
+      <obj_property name="ObjectShortName">ram_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/ram_wr_addr">
+      <obj_property name="ElementShortName">ram_wr_addr[17:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_wr_addr[17:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/ram_wr_data">
+      <obj_property name="ElementShortName">ram_wr_data[143:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_wr_data[143:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider136" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/state">
+      <obj_property name="ElementShortName">state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">state[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/count">
+      <obj_property name="ElementShortName">count[15:0]</obj_property>
+      <obj_property name="ObjectShortName">count[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider143" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_start">
+      <obj_property name="ElementShortName">port_frame_start[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_frame_start[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_ready">
+      <obj_property name="ElementShortName">port_frame_ready[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_frame_ready[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_bytelen">
+      <obj_property name="ElementShortName">port_frame_bytelen[14:0][10:0]</obj_property>
+      <obj_property name="ObjectShortName">port_frame_bytelen[14:0][10:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_mem_valid">
+      <obj_property name="ElementShortName">port_mem_valid[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_mem_valid[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_mem_data">
+      <obj_property name="ElementShortName">port_mem_data[14:0][127:0]</obj_property>
+      <obj_property name="ObjectShortName">port_mem_data[14:0][127:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_done">
+      <obj_property name="ElementShortName">port_frame_done[14:0]</obj_property>
+      <obj_property name="ObjectShortName">port_frame_done[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/fifo_wr_ptr">
+      <obj_property name="ElementShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/rr_port">
+      <obj_property name="ElementShortName">rr_port[3:0]</obj_property>
+      <obj_property name="ObjectShortName">rr_port[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/next_port">
+      <obj_property name="ElementShortName">next_port[3:0]</obj_property>
+      <obj_property name="ObjectShortName">next_port[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressFifoSim/dut/next_port_valid">
+      <obj_property name="ElementShortName">next_port_valid</obj_property>
+      <obj_property name="ObjectShortName">next_port_valid</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressFifoSim/dut/busy">
+      <obj_property name="ElementShortName">busy</obj_property>
+      <obj_property name="ObjectShortName">busy</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/current_port">
+      <obj_property name="ElementShortName">current_port[3:0]</obj_property>
+      <obj_property name="ObjectShortName">current_port[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider274" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressFifoSim/dut/fec_wr_en">
+      <obj_property name="ElementShortName">fec_wr_en</obj_property>
+      <obj_property name="ObjectShortName">fec_wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/fec_wr_data">
+      <obj_property name="ElementShortName">fec_wr_data[127:0]</obj_property>
+      <obj_property name="ObjectShortName">fec_wr_data[127:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/fec_wr_port">
+      <obj_property name="ElementShortName">fec_wr_port[3:0]</obj_property>
+      <obj_property name="ObjectShortName">fec_wr_port[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider234" type="divider">
+   </wvobject>
+</wave_config>

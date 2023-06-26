@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="514.801 ns"></ZoomEndTime>
-      <Cursor1Time time="28.000 ns"></Cursor1Time>
+      <ZoomStartTime time="48.590 ns"></ZoomStartTime>
+      <ZoomEndTime time="556.191 ns"></ZoomEndTime>
+      <Cursor1Time time="247.938 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="258"></NameColumnWidth>
-      <ValueColumnWidth column_width="102"></ValueColumnWidth>
+      <NameColumnWidth column_width="283"></NameColumnWidth>
+      <ValueColumnWidth column_width="113"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="26" />
+   <WVObjectSize size="40" />
    <wvobject type="logic" fp_name="/IngressCDCSim/rx_clk">
       <obj_property name="ElementShortName">rx_clk</obj_property>
       <obj_property name="ObjectShortName">rx_clk</obj_property>
@@ -106,9 +106,33 @@
       <obj_property name="ElementShortName">fifo_rd_en</obj_property>
       <obj_property name="ObjectShortName">fifo_rd_en</obj_property>
    </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/fifo_rd_valid">
+      <obj_property name="ElementShortName">fifo_rd_valid</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/fifo_rd_offset">
+      <obj_property name="ElementShortName">fifo_rd_offset[8:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_offset[8:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/fifo_pop_packet">
+      <obj_property name="ElementShortName">fifo_pop_packet</obj_property>
+      <obj_property name="ObjectShortName">fifo_pop_packet</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/fifo_pop_wordsize">
+      <obj_property name="ElementShortName">fifo_pop_wordsize[9:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_pop_wordsize[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/fifo_rd_data">
+      <obj_property name="ElementShortName">fifo_rd_data[127:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_data[127:0]</obj_property>
+   </wvobject>
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_rd_en">
       <obj_property name="ElementShortName">header_rd_en</obj_property>
       <obj_property name="ObjectShortName">header_rd_en</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_rd_en_ff">
+      <obj_property name="ElementShortName">header_rd_en_ff</obj_property>
+      <obj_property name="ObjectShortName">header_rd_en_ff</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/IngressCDCSim/dut/header_rd_data">
       <obj_property name="ElementShortName">header_rd_data[10:0]</obj_property>
@@ -117,5 +141,36 @@
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_rd_empty">
       <obj_property name="ElementShortName">header_rd_empty</obj_property>
       <obj_property name="ObjectShortName">header_rd_empty</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/pop_active">
+      <obj_property name="ElementShortName">pop_active</obj_property>
+      <obj_property name="ObjectShortName">pop_active</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider69" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/mem_frame_ready">
+      <obj_property name="ElementShortName">mem_frame_ready</obj_property>
+      <obj_property name="ObjectShortName">mem_frame_ready</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/mem_frame_bytelen">
+      <obj_property name="ElementShortName">mem_frame_bytelen[10:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_frame_bytelen[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/mem_valid">
+      <obj_property name="ElementShortName">mem_valid</obj_property>
+      <obj_property name="ObjectShortName">mem_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/mem_data">
+      <obj_property name="ElementShortName">mem_data[127:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_data[127:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/mem_frame_done">
+      <obj_property name="ElementShortName">mem_frame_done</obj_property>
+      <obj_property name="ObjectShortName">mem_frame_done</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/mem_frame_start">
+      <obj_property name="ElementShortName">mem_frame_start</obj_property>
+      <obj_property name="ObjectShortName">mem_frame_start</obj_property>
    </wvobject>
 </wave_config>

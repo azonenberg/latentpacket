@@ -100,7 +100,7 @@ module IngressCDC(
 			//Make sure we have space to store the length
 			if(header_fifo_full) begin
 				`ifdef SIMULATION
-					`$display("Dropping packet because no space in header fifo");
+					$display("Dropping packet because no space in header fifo");
 				`endif
 				wr_dropping		<= 1;
 			end
@@ -306,6 +306,7 @@ module IngressCDC(
 		header_rd_en_ff		<= header_rd_en;
 		fifo_rd_offset_ff	<= fifo_rd_offset;
 		fifo_pop_packet		<= 0;
+		mem_frame_done		<= 0;
 
 		//Read data is not valid after consumption
 		if(mem_valid)
@@ -348,6 +349,7 @@ module IngressCDC(
 			fifo_pop_packet		<= 1;
 			sending				<= 0;
 			pop_active			<= 0;
+			mem_frame_done		<= 1;
 			fifo_pop_wordsize	<= rd_wordcount;
 		end
 

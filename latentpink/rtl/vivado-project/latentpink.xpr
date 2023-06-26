@@ -58,7 +58,7 @@
     <Option Name="IPUserFilesDir" Val="$PIPUSERFILESDIR"/>
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="182"/>
+    <Option Name="WTXSimLaunchSim" Val="237"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -174,6 +174,13 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../../antikernel-ipcores/interface/ethernet/GigBaseXPCS.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../antikernel-ipcores/fec/HammingEncoder.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -398,6 +405,14 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../../../antikernel-ipcores/fec/HammingDecoder.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="LatentPinkTopLevel"/>
@@ -422,8 +437,38 @@
     </FileSet>
     <FileSet Name="sim_1" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_1" RelGenDir="$PGENDIR/sim_1">
       <Filter Type="Srcs"/>
+      <File Path="$PPRDIR/../../../antikernel-ipcores/interface/ethernet/Ethertypes.svh">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+          <Attr Name="IsVisible" Val="1"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../antikernel-ipcores/interface/ethernet/EthernetBus.svh">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+          <Attr Name="IsVisible" Val="1"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../tests/IngressFifoSim.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PPRDIR/../tests/IngressCDCSim.sv">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../antikernel-ipcores/tests/HammingTest.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -443,22 +488,6 @@
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../antikernel-ipcores/interface/ethernet/Ethertypes.svh">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-          <Attr Name="IsVisible" Val="1"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../antikernel-ipcores/interface/ethernet/EthernetBus.svh">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-          <Attr Name="IsVisible" Val="1"/>
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../../antikernel-ipcores/interface/ethernet/SGMIIToGMIIBridge.svh">
@@ -517,12 +546,24 @@
       </File>
       <File Path="$PPRDIR/../simconfig/IngressCDCSim_behav.wcfg">
         <FileInfo>
+          <Attr Name="UserDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/HammingTest_behav.wcfg">
+        <FileInfo>
+          <Attr Name="UserDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../simconfig/IngressFifoSim_behav.wcfg">
+        <FileInfo>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="IngressCDCSim"/>
+        <Option Name="TopModule" Val="IngressFifoSim"/>
         <Option Name="TopLib" Val="xil_defaultlib"/>
         <Option Name="TransportPathDelay" Val="0"/>
         <Option Name="TransportIntDelay" Val="0"/>
@@ -534,6 +575,8 @@
         <Option Name="SrcSet" Val="sources_1"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/QDRSim.wcfg"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/IngressCDCSim_behav.wcfg"/>
+        <Option Name="XSimWcfgFile" Val="$PPRDIR/HammingTest_behav.wcfg"/>
+        <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/IngressFifoSim_behav.wcfg"/>
         <Define Name="XILINX_7SERIES" Val="1"/>
         <Define Name="XILINX_KINTEX7" Val="1"/>
         <Define Name="XILINX_SPEEDGRADE" Val="2"/>
@@ -701,9 +744,7 @@
   <Runs Version="1" Minor="20">
     <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7k160tfbg484-2" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="true" IncrementalCheckpoint="$PSRCDIR/utils_1/imports/synth_1/LatentPinkTopLevel.dcp" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/synth_1" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/synth_1">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2023"/>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -783,9 +824,7 @@
     </Run>
     <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7k160tfbg484-2" ConstrsSet="constrs_1" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" Dir="$PRUNDIR/impl_1" SynthRun="synth_1" IncludeInArchive="true" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/impl_1" LaunchOptions="-jobs 16 " AutoRQSDir="$PSRCDIR/utils_1/imports/impl_1">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2023"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
@@ -800,7 +839,7 @@
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
       <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2023" CtrlBit="true">
-        <ReportConfig DisplayName="Timing Summary - Design Initialization" Name="impl_1_init_report_timing_summary_0" Spec="report_timing_summary" RunStep="init_design" ReportFile="LatentPinkTopLevel_timing_summary_init.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Timing Summary - Design Initialization" Name="impl_1_init_report_timing_summary_0" Spec="report_timing_summary" RunStep="init_design" ReportFile="LatentPinkTopLevel_timing_summary_init_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
@@ -811,13 +850,13 @@
           <ReportConfigOutputOption Name="pb" Type="string" Value="LatentPinkTopLevel_drc_opted.pb"/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value="LatentPinkTopLevel_drc_opted.rpx"/>
         </ReportConfig>
-        <ReportConfig DisplayName="Timing Summary - Opt Design" Name="impl_1_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="opt_design" ReportFile="LatentPinkTopLevel_timing_summary_opted.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Timing Summary - Opt Design" Name="impl_1_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="opt_design" ReportFile="LatentPinkTopLevel_timing_summary_opted_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value=""/>
         </ReportConfig>
-        <ReportConfig DisplayName="Timing Summary - Power Opt Design" Name="impl_1_power_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="power_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_pwropted.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Timing Summary - Power Opt Design" Name="impl_1_power_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="power_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_pwropted_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
@@ -834,25 +873,25 @@
         <ReportConfig DisplayName="Control Sets - Place Design" Name="impl_1_place_report_control_sets_0" Spec="report_control_sets" RunStep="place_design" ReportFile="LatentPinkTopLevel_control_sets_placed.rpt" Version="1" Minor="0">
           <ReportConfigOption Name="verbose" Type="" Value="true"/>
         </ReportConfig>
-        <ReportConfig DisplayName="Incremental Reuse - Place Design" Name="impl_1_place_report_incremental_reuse_0" Spec="report_incremental_reuse" RunStep="place_design" ReportFile="LatentPinkTopLevel_incremental_reuse_pre_placed.rpt.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Incremental Reuse - Place Design" Name="impl_1_place_report_incremental_reuse_0" Spec="report_incremental_reuse" RunStep="place_design" ReportFile="LatentPinkTopLevel_incremental_reuse_pre_placed.rpt_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
-        <ReportConfig DisplayName="Incremental Reuse - Place Design" Name="impl_1_place_report_incremental_reuse_1" Spec="report_incremental_reuse" RunStep="place_design" ReportFile="LatentPinkTopLevel_incremental_reuse_placed.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Incremental Reuse - Place Design" Name="impl_1_place_report_incremental_reuse_1" Spec="report_incremental_reuse" RunStep="place_design" ReportFile="LatentPinkTopLevel_incremental_reuse_placed_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
-        <ReportConfig DisplayName="Timing Summary - Place Design" Name="impl_1_place_report_timing_summary_0" Spec="report_timing_summary" RunStep="place_design" ReportFile="LatentPinkTopLevel_timing_summary_placed.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Timing Summary - Place Design" Name="impl_1_place_report_timing_summary_0" Spec="report_timing_summary" RunStep="place_design" ReportFile="LatentPinkTopLevel_timing_summary_placed_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value=""/>
         </ReportConfig>
-        <ReportConfig DisplayName="Timing Summary - Post-Place Power Opt Design" Name="impl_1_post_place_power_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="post_place_power_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_postplace_pwropted.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Timing Summary - Post-Place Power Opt Design" Name="impl_1_post_place_power_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="post_place_power_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_postplace_pwropted_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value=""/>
         </ReportConfig>
-        <ReportConfig DisplayName="Timing Summary - Post-Place Phys Opt Design" Name="impl_1_phys_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="phys_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_physopted.rpt" Version="1" Minor="0" IsDisabled="true">
+        <ReportConfig DisplayName="Timing Summary - Post-Place Phys Opt Design" Name="impl_1_phys_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="phys_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_physopted_1.rpt" Version="1" Minor="0" IsDisabled="true">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
@@ -883,7 +922,7 @@
           <ReportConfigOutputOption Name="pb" Type="string" Value="LatentPinkTopLevel_timing_summary_routed.pb"/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value="LatentPinkTopLevel_timing_summary_routed.rpx"/>
         </ReportConfig>
-        <ReportConfig DisplayName="Incremental Reuse - Route Design" Name="impl_1_route_report_incremental_reuse_0" Spec="report_incremental_reuse" RunStep="route_design" ReportFile="LatentPinkTopLevel_incremental_reuse_routed.rpt" Version="1" Minor="0">
+        <ReportConfig DisplayName="Incremental Reuse - Route Design" Name="impl_1_route_report_incremental_reuse_0" Spec="report_incremental_reuse" RunStep="route_design" ReportFile="LatentPinkTopLevel_incremental_reuse_routed_1.rpt" Version="1" Minor="0">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
         <ReportConfig DisplayName="Clock Utilization - Route Design" Name="impl_1_route_report_clock_utilization_0" Spec="report_clock_utilization" RunStep="route_design" ReportFile="LatentPinkTopLevel_clock_utilization_routed.rpt" Version="1" Minor="0">
@@ -897,14 +936,14 @@
         <ReportConfig DisplayName="implementation_log" Name="impl_1_route_implementation_log_0" Spec="" RunStep="route_design" ReportFile="LatentPinkTopLevel.vdi">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
-        <ReportConfig DisplayName="Timing Summary - Post-Route Phys Opt Design" Name="impl_1_post_route_phys_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="post_route_phys_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_postroute_physopted.rpt" Version="1" Minor="0">
+        <ReportConfig DisplayName="Timing Summary - Post-Route Phys Opt Design" Name="impl_1_post_route_phys_opt_report_timing_summary_0" Spec="report_timing_summary" RunStep="post_route_phys_opt_design" ReportFile="LatentPinkTopLevel_timing_summary_postroute_physopted_1.rpt" Version="1" Minor="0">
           <ReportConfigOption Name="max_paths" Type="" Value="10"/>
           <ReportConfigOption Name="report_unconstrained" Type="" Value="true"/>
           <ReportConfigOption Name="warn_on_violation" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value=""/>
         </ReportConfig>
-        <ReportConfig DisplayName="Bus Skew - Post-Route Phys Opt Design" Name="impl_1_post_route_phys_opt_report_bus_skew_0" Spec="report_bus_skew" RunStep="post_route_phys_opt_design" ReportFile="LatentPinkTopLevel_bus_skew_postroute_physopted.rpt" Version="1" Minor="1">
+        <ReportConfig DisplayName="Bus Skew - Post-Route Phys Opt Design" Name="impl_1_post_route_phys_opt_report_bus_skew_0" Spec="report_bus_skew" RunStep="post_route_phys_opt_design" ReportFile="LatentPinkTopLevel_bus_skew_postroute_physopted_1.rpt" Version="1" Minor="1">
           <ReportConfigOption Name="warn_on_violation" Type="" Value="true"/>
           <ReportConfigOutputOption Name="pb" Type="string" Value=""/>
           <ReportConfigOutputOption Name="rpx" Type="string" Value=""/>
@@ -912,7 +951,7 @@
         <ReportConfig DisplayName="report_webtalk" Name="impl_1_bitstream_report_webtalk_0" Spec="" RunStep="write_bitstream" ReportFile="usage_statistics_webtalk.html">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
-        <ReportConfig DisplayName="implementation_log" Name="impl_1_bitstream_implementation_log_0" Spec="" RunStep="write_bitstream">
+        <ReportConfig DisplayName="implementation_log" Name="impl_1_bitstream_implementation_log_0" Spec="" RunStep="write_bitstream" ReportFile="LatentPinkTopLevel.vdi">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
       </ReportStrategy>
