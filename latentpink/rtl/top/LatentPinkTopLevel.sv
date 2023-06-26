@@ -828,7 +828,8 @@ module LatentPinkTopLevel(
 	for(genvar g=0; g<3; g=g+1) begin : qsgmii
 
 		//RX can use a BUFH since we transition away from that domain quickly
-		BUFH clkbuf_rx(
+		//But for now, we place that logic in another clock region so stick with a BUFG?
+		BUFG clkbuf_rx(
 			.I(qsgmii_rx_clk_raw[g]),
 			.O(qsgmii_rx_clk[g])
 		);
@@ -1100,60 +1101,9 @@ module LatentPinkTopLevel(
 		.ram_wr_data(ram_wr_data)
 	);
 
-	/*
-	//DEBUG: VIOs to see input data from SGMII interfaces
-	vio_2 vio_g12_rx(
-		.clk(clk_125mhz),
-		.probe_in0(g12_rx_bus),
-		.probe_in1(g12_link_up),
-		.probe_in2(g12_link_speed));
-
-	vio_2 vio_g13_rx(
-		.clk(clk_125mhz),
-		.probe_in0(g13_rx_bus),
-		.probe_in1(g13_link_up),
-		.probe_in2(g13_link_speed));
-
-	vio_1 vio_g12_tx(
-		.clk(clk_125mhz),
-		.probe_in0(g12_tx_ready),
-		.probe_out0(g12_tx_bus));
-
-	vio_1 vio_g13_tx(
-		.clk(clk_125mhz),
-		.probe_in0(g13_tx_ready),
-		.probe_out0(g13_tx_bus));
-
-	vio_2 vio_xg0_rx(
-		.clk(xg0_mac_rx_clk),
-		.probe_in0(xg0_mac_rx_bus),
-		.probe_in1(xg0_link_up),
-		.probe_in2(2'b0));
-
-	vio_1 vio_xg0_tx(
-		.clk(xg0_mac_tx_clk),
-		.probe_in0(1'b1),
-		.probe_out0(xg0_mac_tx_bus)
-		);
-
-	//DEBUG: VIOs to control command/address bus of QDR
-	vio_4 vio_qdr(
-		.clk(clk_ram_ctl),
-		.probe_out0(ram_rd_en),
-		.probe_out1(ram_rd_addr),
-		.probe_out2(ram_wr_en),
-		.probe_out3(ram_wr_addr),
-		.probe_out4(ram_wr_data),
-
-		.probe_in0(ram_rd_valid),
-		.probe_in1(ram_rd_data),
-		.probe_in2(qdr_pll_lock)
-	);
-	*/
-
-	//DEBUG: tie off read bus
+	//DEBUG: tie off read bus so the logic doesn't get optimized out
 	assign ram_rd_en = ram_wr_en;
-	assign ram_rd_addr = ram_wr_addr;
+	assign ram_rd_addr = ram_wr_addr + 1;
 
 	vio_3 vio(
 		.clk(clk_ram_ctl),
