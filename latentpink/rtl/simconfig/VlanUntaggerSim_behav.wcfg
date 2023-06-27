@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="VlanUntaggerSim_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="VlanUntaggerSim" />
+            <top_module name="\$unit_IngressCDC_sv_198632221 " />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="256.730 ns"></ZoomStartTime>
+      <ZoomEndTime time="765.931 ns"></ZoomEndTime>
+      <Cursor1Time time="356.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="283"></NameColumnWidth>
+      <ValueColumnWidth column_width="105"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="15" />
+   <wvobject type="logic" fp_name="/VlanUntaggerSim/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/in_bus">
+      <obj_property name="ElementShortName">in_bus</obj_property>
+      <obj_property name="ObjectShortName">in_bus</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/VlanUntaggerSim/next_packet">
+      <obj_property name="ElementShortName">next_packet</obj_property>
+      <obj_property name="ObjectShortName">next_packet</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider11" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/gen/state">
+      <obj_property name="ElementShortName">state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">state[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/gen/pack_len">
+      <obj_property name="ElementShortName">pack_len[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pack_len[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/gen/count">
+      <obj_property name="ElementShortName">count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">count[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider12" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/port_vlan">
+      <obj_property name="ElementShortName">port_vlan[11:0]</obj_property>
+      <obj_property name="ObjectShortName">port_vlan[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/VlanUntaggerSim/tagged_allowed">
+      <obj_property name="ElementShortName">tagged_allowed</obj_property>
+      <obj_property name="ObjectShortName">tagged_allowed</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/VlanUntaggerSim/untagged_allowed">
+      <obj_property name="ElementShortName">untagged_allowed</obj_property>
+      <obj_property name="ObjectShortName">untagged_allowed</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/out_bus">
+      <obj_property name="ElementShortName">out_bus</obj_property>
+      <obj_property name="ObjectShortName">out_bus</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/out_vlan">
+      <obj_property name="ElementShortName">out_vlan[11:0]</obj_property>
+      <obj_property name="ObjectShortName">out_vlan[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/VlanUntaggerSim/state">
+      <obj_property name="ElementShortName">state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">state[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider89" type="divider">
+   </wvobject>
+</wave_config>
