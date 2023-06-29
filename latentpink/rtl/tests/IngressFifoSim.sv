@@ -55,30 +55,94 @@ module IngressFifoSim();
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Packet generators
+
+	EthernetRxBus[14:0]	port_rx_bus;
+	logic[14:0]			port_next_packet	= 0;
+
+	vlan_t[14:0]		port_vlan;
+	wire[14:0]			tagged_allowed;
+	wire[14:0]			untagged_allowed;
+
+	for(genvar g=0; g<15; g=g+1) begin
+
+		//all rx ports use the same clock for now
+		assign port_rx_clk[g] = rx_clk;
+
+		//allow tagged and untagged on all traffic
+		assign tagged_allowed[g] = 1;
+		assign untagged_allowed[g] = 1;
+
+		//g3 has two packets tagged for vlan 5 and two untagged using the port native vlan (4)
+		if(g == 3) begin
+			PcapPacketGenerator #(
+				.FILENAME("../../../../../../../testdata/2tagged-2untagged.pcapng")
+			) gen (
+				.clk(rx_clk),
+				.next(port_next_packet[g]),
+				.bus(port_rx_bus[g])
+			);
+
+			assign port_vlan[g] = 4;
+		end
+
+		//g4 has ten untagged pings using the port native vlan(6)
+		else if(g == 4) begin
+			PcapPacketGenerator #(
+				.FILENAME("../../../../../../../testdata/pings.pcapng")
+			) gen (
+				.clk(rx_clk),
+				.next(port_next_packet[g]),
+				.bus(port_rx_bus[g])
+			);
+
+			assign port_vlan[g] = 6;
+		end
+
+		//all other ports get tied off, on vlan 1, and never send anything
+		else begin
+			assign port_rx_bus[g] = 0;
+			assign port_vlan[g] = 1;
+		end
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// RAM emulator
+
+	wire				ram_wr_en;
+	wire[17:0]			ram_wr_addr;
+	wire[143:0]			ram_wr_data;
+
+	wire				ram_rd_en;
+	wire[17:0]			ram_rd_addr;
+	wire[143:0]			ram_rd_data;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The DUT
 
 	wire[14:0]			port_rx_clk;
 	logic[14:0]			port_link_up	= 0;
-	EthernetRxBus[14:0]	port_rx_bus		= 0;
-
-	wire		ram_wr_en;
-	wire[17:0]	ram_wr_addr;
-	wire[143:0]	ram_wr_data;
 
 	IngressFifo dut(
 		.port_rx_clk(port_rx_clk),
 		.port_link_up(port_link_up),
 		.port_rx_bus(port_rx_bus),
 
+		.port_vlan(port_vlan),
+		.tagged_allowed(tagged_allowed),
+		.untagged_allowed(untagged_allowed),
+
 		.clk_ram_ctl(clk_mem),
 		.ram_wr_en(ram_wr_en),
 		.ram_wr_addr(ram_wr_addr),
-		.ram_wr_data(ram_wr_data)
-	);
+		.ram_wr_data(ram_wr_data),
 
-	for(genvar g=0; g<15; g=g+1) begin
-		assign port_rx_clk[g] = rx_clk;
-	end
+		.ram_rd_en(),
+		.ram_rd_addr(),
+		.ram_rd_valid(),
+		.ram_rd_data()
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Test logic
@@ -88,7 +152,7 @@ module IngressFifoSim();
 
 	always_ff @(posedge rx_clk) begin
 
-		port_rx_bus	<= 0;
+		port_next_packet	<= 0;
 
 		case(state)
 
@@ -101,115 +165,23 @@ module IngressFifoSim();
 			1: begin
 				count	<= count + 1;
 				if(count == 'h5)
-					state <= 3;
+					state <= 2;
 			end
 
-			//state 2 not used currently
+			//Send a single tagged frame on vlan 5 to port g3
+			2: begin
+				port_next_packet[3]	<= 1;
+				state				<= 3;
+			end
 
-			//Send a dummy frame to a random interface
+			//Send a single untagged frame on vlan 6 to port g4
 			3: begin
-				port_rx_bus[3].start	<= 1;
-				state					<= 4;
+				port_next_packet[4]	<= 1;
+				state				<= 4;
 			end
 
+			//TODO
 			4: begin
-				port_rx_bus[3].data_valid	<= 1;
-				port_rx_bus[3].bytes_valid	<= 4;
-				port_rx_bus[3].data			<= 32'hfeedface;
-				state						<= 5;
-
-				//Start another frame on a different port
-				port_rx_bus[2].start		<= 1;
-			end
-
-			5: begin
-				port_rx_bus[3].data_valid	<= 1;
-				port_rx_bus[3].bytes_valid	<= 4;
-				port_rx_bus[3].data			<= 32'hdeadbeef;
-
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h11111111;
-
-				state						<= 6;
-			end
-
-			6: begin
-				port_rx_bus[3].data_valid	<= 1;
-				port_rx_bus[3].bytes_valid	<= 4;
-				port_rx_bus[3].data			<= 32'hcafef00d;
-
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h22222222;
-
-				state						<= 7;
-			end
-
-			7: begin
-				port_rx_bus[3].data_valid	<= 1;
-				port_rx_bus[3].bytes_valid	<= 4;
-				port_rx_bus[3].data			<= 32'hbaadc0de;
-
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h33333333;
-
-				state						<= 8;
-			end
-
-			8: begin
-				port_rx_bus[3].data_valid	<= 1;
-				port_rx_bus[3].bytes_valid	<= 3;
-				port_rx_bus[3].data			<= 32'h41414100;
-
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h44444444;
-
-				state						<= 9;
-			end
-
-			9: begin
-				port_rx_bus[3].commit		<= 1;
-
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h55555555;
-
-				state						<= 10;
-			end
-
-			10: begin
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h66666666;
-				state						<= 11;
-
-			end
-
-			11: begin
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h77777777;
-
-				state						<= 12;
-			end
-
-			12: begin
-				port_rx_bus[2].data_valid	<= 1;
-				port_rx_bus[2].bytes_valid	<= 4;
-				port_rx_bus[2].data			<= 32'h88888888;
-
-				state						<= 13;
-			end
-
-			13: begin
-				port_rx_bus[2].commit		<= 1;
-				state						<= 14;
-			end
-
-			14: begin
 			end
 
 		endcase

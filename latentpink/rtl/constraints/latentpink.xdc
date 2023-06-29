@@ -1,396 +1,18 @@
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list {infifo/cdcs[0].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg \
-          qdr/fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          qdr/fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          qdr/fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          qdr/fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          {qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg}]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list {infifo/cdcs[0].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[0].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[10].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[10].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[11].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[11].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[12].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[12].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[13].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[13].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[14].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[14].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[1].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[1].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[2].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[2].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[3].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[3].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[4].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[4].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[5].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[5].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[6].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[6].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[7].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[7].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[8].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[8].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[9].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} {infifo/cdcs[9].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} {infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} {infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} {infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg qdr/fifo/sync_rd_ptr/sync_ack/sync/dout0_reg qdr/fifo/sync_rd_ptr/sync_en/sync/dout0_reg qdr/fifo/sync_wr_ptr/sync_ack/sync/dout0_reg qdr/fifo/sync_wr_ptr/sync_en/sync/dout0_reg {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg}]] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
-set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
-set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
-set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g12/bridge/sync_rst_stat/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          port_g13/bridge/sync_rst_stat/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
-          port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg]] -to [get_clocks [list clk_125mhz_p clk_125mhz_raw]] 2.500
 ########################################################################################################################
 # Pinout constraints
 
@@ -856,8 +478,8 @@ create_generated_clock -name qdr_k_p -source [get_pins qdr/ram_clk_oddr/C] -divi
 create_clock -period 6.400 -name gtx_refclk_156m25_p -waveform {0.000 3.200} [get_ports gtx_refclk_156m25_p]
 create_clock -period 5.000 -name gtx_refclk_200m_p -waveform {0.000 2.500} [get_ports gtx_refclk_200m_p]
 
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets sgmii_rxclk0]
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets sgmii_rxclk1]
+set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets interfaces/sgmii_rxclk0]
+set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets interfaces/sgmii_rxclk1]
 
 ########################################################################################################################
 # CDC
@@ -881,21 +503,21 @@ set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i0 -to [g
 
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg}] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg port_g12/bridge/sync_perf/sync_en/sync/dout0_reg port_g12/bridge/sync_rst_stat/dout0_reg port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg port_g13/bridge/sync_perf/sync_en/sync/dout0_reg port_g13/bridge/sync_rst_stat/dout0_reg port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] 2.500
-set_max_delay -from [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg port_g12/bridge/sync_perf/sync_en/sync/dout0_reg port_g12/bridge/sync_rst_stat/dout0_reg port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg port_g13/bridge/sync_perf/sync_en/sync/dout0_reg port_g13/bridge/sync_rst_stat/dout0_reg port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] 2.500
+set_max_delay -from [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
 
 set_max_delay -from [get_cells -hierarchical *samples_*_2x*] -to [get_cells -hierarchical *samples_*_sync*] 2.000
 
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks clk_qcapture_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_qcapture_raw] -group [get_clocks clk_ram_ctl_raw]
 
-set_false_path -from [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK]
-set_false_path -from [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK]
-set_false_path -from [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK]
+set_false_path -from [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK]
+set_false_path -from [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK]
+set_false_path -from [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK]
 
-set_clock_groups -asynchronous -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK] -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
-set_clock_groups -asynchronous -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK] -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
-set_clock_groups -asynchronous -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK] -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK] -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK] -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/TXOUTCLK] -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
 
 ########################################################################################################################
 # Floorplanning: clock synthesis blocks
@@ -922,130 +544,130 @@ resize_pblock [get_pblocks pblock_ram] -add {RAMB36_X0Y10:RAMB36_X1Y39}
 # Floorplanning: SGMII g13
 
 create_pblock pblock_sgmii
-add_cells_to_pblock [get_pblocks pblock_sgmii] [get_cells -quiet [list port_g12 port_g13]]
+add_cells_to_pblock [get_pblocks pblock_sgmii] [get_cells -quiet [list interfaces/port_g12 interfaces/port_g13]]
 resize_pblock [get_pblocks pblock_sgmii] -add {CLOCKREGION_X1Y1:CLOCKREGION_X1Y1}
 set_property IS_SOFT FALSE [get_pblocks pblock_sgmii]
 
-set_property LOC SLICE_X109Y84 [get_cells {port_g13/bridge/cdr/samples_hi_reg[0]}]
-set_property LOC SLICE_X109Y84 [get_cells {port_g13/bridge/cdr/samples_hi_reg[1]}]
-set_property LOC SLICE_X109Y84 [get_cells {port_g13/bridge/cdr/samples_hi_reg[2]}]
-set_property LOC SLICE_X109Y84 [get_cells {port_g13/bridge/cdr/samples_hi_reg[3]}]
+set_property LOC SLICE_X109Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[0]}]
+set_property LOC SLICE_X109Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[1]}]
+set_property LOC SLICE_X109Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[2]}]
+set_property LOC SLICE_X109Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[3]}]
 
-set_property LOC SLICE_X109Y83 [get_cells {port_g13/bridge/cdr/samples_hi_reg[7]}]
-set_property LOC SLICE_X109Y83 [get_cells {port_g13/bridge/cdr/samples_hi_reg[6]}]
-set_property LOC SLICE_X109Y83 [get_cells {port_g13/bridge/cdr/samples_hi_reg[5]}]
-set_property LOC SLICE_X109Y83 [get_cells {port_g13/bridge/cdr/samples_hi_reg[4]}]
+set_property LOC SLICE_X109Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[7]}]
+set_property LOC SLICE_X109Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[6]}]
+set_property LOC SLICE_X109Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[5]}]
+set_property LOC SLICE_X109Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[4]}]
 
-set_property LOC SLICE_X109Y82 [get_cells {port_g13/bridge/cdr/samples_lo_reg[0]}]
-set_property LOC SLICE_X109Y82 [get_cells {port_g13/bridge/cdr/samples_lo_reg[1]}]
-set_property LOC SLICE_X109Y82 [get_cells {port_g13/bridge/cdr/samples_lo_reg[2]}]
-set_property LOC SLICE_X109Y82 [get_cells {port_g13/bridge/cdr/samples_lo_reg[3]}]
+set_property LOC SLICE_X109Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_reg[0]}]
+set_property LOC SLICE_X109Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_reg[1]}]
+set_property LOC SLICE_X109Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_reg[2]}]
+set_property LOC SLICE_X109Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_reg[3]}]
 
-set_property LOC SLICE_X109Y81 [get_cells {port_g13/bridge/cdr/samples_lo_reg[5]}]
+set_property LOC SLICE_X109Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_reg[5]}]
 
-set_property LOC SLICE_X108Y84 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[0]}]
-set_property LOC SLICE_X108Y84 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[1]}]
-set_property LOC SLICE_X108Y84 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[2]}]
-set_property LOC SLICE_X108Y84 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[3]}]
+set_property LOC SLICE_X108Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[0]}]
+set_property LOC SLICE_X108Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[1]}]
+set_property LOC SLICE_X108Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[2]}]
+set_property LOC SLICE_X108Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[3]}]
 
-set_property LOC SLICE_X108Y83 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[7]}]
-set_property LOC SLICE_X108Y83 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[6]}]
-set_property LOC SLICE_X108Y83 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[5]}]
-set_property LOC SLICE_X108Y83 [get_cells {port_g13/bridge/cdr/samples_hi_2x_reg[4]}]
+set_property LOC SLICE_X108Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[7]}]
+set_property LOC SLICE_X108Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[6]}]
+set_property LOC SLICE_X108Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[5]}]
+set_property LOC SLICE_X108Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_2x_reg[4]}]
 
-set_property LOC SLICE_X108Y82 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[0]}]
-set_property LOC SLICE_X108Y82 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[1]}]
-set_property LOC SLICE_X108Y82 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[2]}]
-set_property LOC SLICE_X108Y82 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[3]}]
+set_property LOC SLICE_X108Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[0]}]
+set_property LOC SLICE_X108Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[1]}]
+set_property LOC SLICE_X108Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[2]}]
+set_property LOC SLICE_X108Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[3]}]
 
-set_property LOC SLICE_X108Y81 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[7]}]
-set_property LOC SLICE_X108Y81 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[6]}]
-set_property LOC SLICE_X108Y81 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[5]}]
-set_property LOC SLICE_X108Y81 [get_cells {port_g13/bridge/cdr/samples_lo_2x_reg[4]}]
+set_property LOC SLICE_X108Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[7]}]
+set_property LOC SLICE_X108Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[6]}]
+set_property LOC SLICE_X108Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[5]}]
+set_property LOC SLICE_X108Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_2x_reg[4]}]
 
-set_property LOC SLICE_X107Y84 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[0]}]
-set_property LOC SLICE_X107Y84 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[1]}]
-set_property LOC SLICE_X107Y84 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[2]}]
-set_property LOC SLICE_X107Y84 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[3]}]
+set_property LOC SLICE_X107Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[0]}]
+set_property LOC SLICE_X107Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[1]}]
+set_property LOC SLICE_X107Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[2]}]
+set_property LOC SLICE_X107Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[3]}]
 
-set_property LOC SLICE_X107Y83 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[7]}]
-set_property LOC SLICE_X107Y83 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[6]}]
-set_property LOC SLICE_X107Y83 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[5]}]
-set_property LOC SLICE_X107Y83 [get_cells {port_g13/bridge/cdr/samples_hi_sync_reg[4]}]
+set_property LOC SLICE_X107Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[7]}]
+set_property LOC SLICE_X107Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[6]}]
+set_property LOC SLICE_X107Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[5]}]
+set_property LOC SLICE_X107Y83 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_sync_reg[4]}]
 
-set_property LOC SLICE_X107Y82 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[0]}]
-set_property LOC SLICE_X107Y82 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[1]}]
-set_property LOC SLICE_X107Y82 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[2]}]
-set_property LOC SLICE_X107Y82 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[3]}]
+set_property LOC SLICE_X107Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[0]}]
+set_property LOC SLICE_X107Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[1]}]
+set_property LOC SLICE_X107Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[2]}]
+set_property LOC SLICE_X107Y82 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[3]}]
 
-set_property LOC SLICE_X107Y81 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[7]}]
-set_property LOC SLICE_X107Y81 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[6]}]
-set_property LOC SLICE_X107Y81 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[5]}]
-set_property LOC SLICE_X107Y81 [get_cells {port_g13/bridge/cdr/samples_lo_sync_reg[4]}]
+set_property LOC SLICE_X107Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[7]}]
+set_property LOC SLICE_X107Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[6]}]
+set_property LOC SLICE_X107Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[5]}]
+set_property LOC SLICE_X107Y81 [get_cells {interfaces/port_g13/bridge/cdr/samples_lo_sync_reg[4]}]
 
 ########################################################################################################################
 # Floorplanning: SGMII g12
 
-set_property LOC SLICE_X109Y74 [get_cells {port_g12/bridge/cdr/samples_hi_reg[0]}]
-set_property LOC SLICE_X109Y74 [get_cells {port_g12/bridge/cdr/samples_hi_reg[1]}]
-set_property LOC SLICE_X109Y74 [get_cells {port_g12/bridge/cdr/samples_hi_reg[2]}]
-set_property LOC SLICE_X109Y74 [get_cells {port_g12/bridge/cdr/samples_hi_reg[3]}]
+set_property LOC SLICE_X109Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[0]}]
+set_property LOC SLICE_X109Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[1]}]
+set_property LOC SLICE_X109Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[2]}]
+set_property LOC SLICE_X109Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[3]}]
 
-set_property LOC SLICE_X109Y73 [get_cells {port_g12/bridge/cdr/samples_hi_reg[7]}]
-set_property LOC SLICE_X109Y73 [get_cells {port_g12/bridge/cdr/samples_hi_reg[6]}]
-set_property LOC SLICE_X109Y73 [get_cells {port_g12/bridge/cdr/samples_hi_reg[5]}]
-set_property LOC SLICE_X109Y73 [get_cells {port_g12/bridge/cdr/samples_hi_reg[4]}]
+set_property LOC SLICE_X109Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[7]}]
+set_property LOC SLICE_X109Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[6]}]
+set_property LOC SLICE_X109Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[5]}]
+set_property LOC SLICE_X109Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_reg[4]}]
 
-set_property LOC SLICE_X109Y72 [get_cells {port_g12/bridge/cdr/samples_lo_reg[3]}]
+set_property LOC SLICE_X109Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_reg[3]}]
 
-set_property LOC SLICE_X109Y71 [get_cells {port_g12/bridge/cdr/samples_lo_reg[6]}]
-set_property LOC SLICE_X109Y71 [get_cells {port_g12/bridge/cdr/samples_lo_reg[5]}]
+set_property LOC SLICE_X109Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_reg[6]}]
+set_property LOC SLICE_X109Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_reg[5]}]
 
-set_property LOC SLICE_X108Y74 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[0]}]
-set_property LOC SLICE_X108Y74 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[1]}]
-set_property LOC SLICE_X108Y74 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[2]}]
-set_property LOC SLICE_X108Y74 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[3]}]
+set_property LOC SLICE_X108Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[0]}]
+set_property LOC SLICE_X108Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[1]}]
+set_property LOC SLICE_X108Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[2]}]
+set_property LOC SLICE_X108Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[3]}]
 
-set_property LOC SLICE_X108Y73 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[7]}]
-set_property LOC SLICE_X108Y73 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[6]}]
-set_property LOC SLICE_X108Y73 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[5]}]
-set_property LOC SLICE_X108Y73 [get_cells {port_g12/bridge/cdr/samples_hi_2x_reg[4]}]
+set_property LOC SLICE_X108Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[7]}]
+set_property LOC SLICE_X108Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[6]}]
+set_property LOC SLICE_X108Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[5]}]
+set_property LOC SLICE_X108Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_2x_reg[4]}]
 
-set_property LOC SLICE_X108Y72 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[0]}]
-set_property LOC SLICE_X108Y72 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[1]}]
-set_property LOC SLICE_X108Y72 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[2]}]
-set_property LOC SLICE_X108Y72 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[3]}]
+set_property LOC SLICE_X108Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[0]}]
+set_property LOC SLICE_X108Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[1]}]
+set_property LOC SLICE_X108Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[2]}]
+set_property LOC SLICE_X108Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[3]}]
 
-set_property LOC SLICE_X108Y71 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[7]}]
-set_property LOC SLICE_X108Y71 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[6]}]
-set_property LOC SLICE_X108Y71 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[5]}]
-set_property LOC SLICE_X108Y71 [get_cells {port_g12/bridge/cdr/samples_lo_2x_reg[4]}]
+set_property LOC SLICE_X108Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[7]}]
+set_property LOC SLICE_X108Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[6]}]
+set_property LOC SLICE_X108Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[5]}]
+set_property LOC SLICE_X108Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_2x_reg[4]}]
 
-set_property LOC SLICE_X107Y74 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[0]}]
-set_property LOC SLICE_X107Y74 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[1]}]
-set_property LOC SLICE_X107Y74 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[2]}]
-set_property LOC SLICE_X107Y74 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[3]}]
+set_property LOC SLICE_X107Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[0]}]
+set_property LOC SLICE_X107Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[1]}]
+set_property LOC SLICE_X107Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[2]}]
+set_property LOC SLICE_X107Y74 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[3]}]
 
-set_property LOC SLICE_X107Y73 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[7]}]
-set_property LOC SLICE_X107Y73 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[6]}]
-set_property LOC SLICE_X107Y73 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[5]}]
-set_property LOC SLICE_X107Y73 [get_cells {port_g12/bridge/cdr/samples_hi_sync_reg[4]}]
+set_property LOC SLICE_X107Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[7]}]
+set_property LOC SLICE_X107Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[6]}]
+set_property LOC SLICE_X107Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[5]}]
+set_property LOC SLICE_X107Y73 [get_cells {interfaces/port_g12/bridge/cdr/samples_hi_sync_reg[4]}]
 
-set_property LOC SLICE_X107Y72 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[0]}]
-set_property LOC SLICE_X107Y72 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[1]}]
-set_property LOC SLICE_X107Y72 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[2]}]
-set_property LOC SLICE_X107Y72 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[3]}]
+set_property LOC SLICE_X107Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[0]}]
+set_property LOC SLICE_X107Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[1]}]
+set_property LOC SLICE_X107Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[2]}]
+set_property LOC SLICE_X107Y72 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[3]}]
 
-set_property LOC SLICE_X107Y71 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[7]}]
-set_property LOC SLICE_X107Y71 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[6]}]
-set_property LOC SLICE_X107Y71 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[5]}]
-set_property LOC SLICE_X107Y71 [get_cells {port_g12/bridge/cdr/samples_lo_sync_reg[4]}]
+set_property LOC SLICE_X107Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[7]}]
+set_property LOC SLICE_X107Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[6]}]
+set_property LOC SLICE_X107Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[5]}]
+set_property LOC SLICE_X107Y71 [get_cells {interfaces/port_g12/bridge/cdr/samples_lo_sync_reg[4]}]
 
 ########################################################################################################################
 # Floorplanning: RGMII mgmt0
 
 create_pblock pblock_rgmii
-add_cells_to_pblock [get_pblocks pblock_rgmii] [get_cells -quiet [list port_mgmt0]]
+add_cells_to_pblock [get_pblocks pblock_rgmii] [get_cells -quiet [list interfaces/port_mgmt0]]
 resize_pblock [get_pblocks pblock_rgmii] -add {SLICE_X88Y100:SLICE_X109Y149}
 resize_pblock [get_pblocks pblock_rgmii] -add {DSP48_X5Y40:DSP48_X5Y59}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB18_X6Y40:RAMB18_X6Y59}
@@ -1055,7 +677,7 @@ resize_pblock [get_pblocks pblock_rgmii] -add {RAMB36_X6Y20:RAMB36_X6Y29}
 # Floorplanning: QSGMII
 
 create_pblock pblock_qsgmii
-add_cells_to_pblock [get_pblocks pblock_qsgmii] [get_cells -quiet [list port_g0_g11 {qsgmii[0].quad} {qsgmii[1].quad} {qsgmii[2].quad}]]
+add_cells_to_pblock [get_pblocks pblock_qsgmii] [get_cells -quiet [list interfaces/port_g0_g11 {interfaces/qsgmii[0].quad} {interfaces/qsgmii[1].quad} {interfaces/qsgmii[2].quad}]]
 resize_pblock [get_pblocks pblock_qsgmii] -add {CLOCKREGION_X1Y3:CLOCKREGION_X1Y4}
 set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii]
 
@@ -1063,7 +685,7 @@ set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii]
 # Floorplanning: SFP+ xg0
 
 create_pblock pblock_10g
-add_cells_to_pblock [get_pblocks pblock_10g] [get_cells -quiet [list port_xg0 xg_transceiver]]
+add_cells_to_pblock [get_pblocks pblock_10g] [get_cells -quiet [list interfaces/port_xg0 interfaces/xg_transceiver]]
 resize_pblock [get_pblocks pblock_10g] -add {SLICE_X56Y170:SLICE_X101Y224}
 resize_pblock [get_pblocks pblock_10g] -add {DSP48_X3Y68:DSP48_X5Y89}
 resize_pblock [get_pblocks pblock_10g] -add {RAMB18_X3Y68:RAMB18_X5Y89}
@@ -1081,12 +703,12 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg}] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg port_g12/bridge/sync_perf/sync_en/sync/dout0_reg port_g12/bridge/sync_rst_stat/dout0_reg port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg port_g13/bridge/sync_perf/sync_en/sync/dout0_reg port_g13/bridge/sync_rst_stat/dout0_reg port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] 2.500
-set_max_delay -from [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg port_g12/bridge/sync_perf/sync_en/sync/dout0_reg port_g12/bridge/sync_rst_stat/dout0_reg port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg port_g13/bridge/sync_perf/sync_en/sync/dout0_reg port_g13/bridge/sync_rst_stat/dout0_reg port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] 2.500
+set_max_delay -from [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
 set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg}] -to [get_clocks clk_312p5mhz_raw] 2.500
 set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg port_g12/bridge/sync_perf/sync_en/sync/dout0_reg port_g12/bridge/sync_rst_stat/dout0_reg port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg port_g13/bridge/sync_perf/sync_en/sync/dout0_reg port_g13/bridge/sync_rst_stat/dout0_reg port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] 2.500
-set_max_delay -from [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg port_g12/bridge/sync_perf/sync_en/sync/dout0_reg port_g12/bridge/sync_rst_stat/dout0_reg port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg port_g13/bridge/sync_perf/sync_en/sync/dout0_reg port_g13/bridge/sync_rst_stat/dout0_reg port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] 2.500
+set_max_delay -from [get_clocks {clk_312p5mhz_io_raw clk_312p5mhz_raw}] -through [get_cells {mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/sync_fifo_rst/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g12/bridge/sync_rst_stat/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg interfaces/port_g13/bridge/sync_rst_stat/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg}] -to [get_clocks {clk_125mhz_p clk_125mhz_raw}] 2.500
 
 ########################################################################################################################
 # Debug clocking
@@ -1118,14 +740,14 @@ set_property ASYNC_REG true [get_cells {infifo/cdcs[10].cdc/sync_rst/ff_0_reg}]
 set_property ASYNC_REG true [get_cells {infifo/cdcs[10].cdc/sync_rst/rst_out_n_reg}]
 set_property ASYNC_REG true [get_cells {infifo/cdcs[14].cdc/sync_rst/ff_0_reg}]
 set_property ASYNC_REG true [get_cells {infifo/cdcs[14].cdc/sync_rst/rst_out_n_reg}]
-set_clock_groups -asynchronous -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
-set_clock_groups -asynchronous -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
-set_clock_groups -asynchronous -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
-set_clock_groups -asynchronous -group [get_clocks xg_transceiver/inst/sfp_wizard_i/gt0_sfp_wizard_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
-set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
-set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
-set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
-set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks xg_transceiver/inst/sfp_wizard_i/gt0_sfp_wizard_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
+set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
+set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
+set_clock_groups -asynchronous -group [get_clocks interfaces/xg_transceiver/inst/sfp_wizard_i/gt0_sfp_wizard_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
+set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK]
+set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks interfaces/xg_transceiver/inst/sfp_wizard_i/gt0_sfp_wizard_i/gtxe2_i/RXOUTCLK]
 
 create_pblock pblock_infifo_cdc
 add_cells_to_pblock [get_pblocks pblock_infifo_cdc] [get_cells -quiet [list \
@@ -1146,6 +768,7 @@ add_cells_to_pblock [get_pblocks pblock_infifo_cdc] [get_cells -quiet [list \
           {infifo/cdcs[9].cdc}]]
 resize_pblock [get_pblocks pblock_infifo_cdc] -add {CLOCKREGION_X0Y4:CLOCKREGION_X0Y4}
 set_property IS_SOFT FALSE [get_pblocks pblock_infifo_cdc]
+
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]

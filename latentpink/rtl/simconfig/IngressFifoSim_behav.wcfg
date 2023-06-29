@@ -6,21 +6,22 @@
       <db_ref path="IngressFifoSim_behav.wdb" id="1">
          <top_modules>
             <top_module name="IngressFifoSim" />
-            <top_module name="\$unit_CrossClockFifo_sv_1691257 " />
+            <top_module name="\$unit_CRC32_Ethernet_x32_variable_lat2_sv_1274400520 " />
+            <top_module name="\$unit_HammingTest_sv_4014206516 " />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="538.757 ns"></ZoomEndTime>
-      <Cursor1Time time="26.281 ns"></Cursor1Time>
+      <ZoomStartTime time="277.290 ns"></ZoomStartTime>
+      <ZoomEndTime time="819.446 ns"></ZoomEndTime>
+      <Cursor1Time time="375.906 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="283"></NameColumnWidth>
-      <ValueColumnWidth column_width="109"></ValueColumnWidth>
+      <ValueColumnWidth column_width="101"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="31" />
+   <WVObjectSize size="38" />
    <wvobject type="logic" fp_name="/IngressFifoSim/rx_clk">
       <obj_property name="ElementShortName">rx_clk</obj_property>
       <obj_property name="ObjectShortName">rx_clk</obj_property>
@@ -42,6 +43,20 @@
    <wvobject type="array" fp_name="/IngressFifoSim/port_rx_bus">
       <obj_property name="ElementShortName">port_rx_bus[14:0]</obj_property>
       <obj_property name="ObjectShortName">port_rx_bus[14:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider239" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/port_vlan">
+      <obj_property name="ElementShortName">port_vlan[14:0][11:0]</obj_property>
+      <obj_property name="ObjectShortName">port_vlan[14:0][11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/tagged_allowed">
+      <obj_property name="ElementShortName">tagged_allowed[14:0]</obj_property>
+      <obj_property name="ObjectShortName">tagged_allowed[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/untagged_allowed">
+      <obj_property name="ElementShortName">untagged_allowed[14:0]</obj_property>
+      <obj_property name="ObjectShortName">untagged_allowed[14:0]</obj_property>
    </wvobject>
    <wvobject fp_name="divider120" type="divider">
    </wvobject>
@@ -72,6 +87,7 @@
    <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_start">
       <obj_property name="ElementShortName">port_frame_start[14:0]</obj_property>
       <obj_property name="ObjectShortName">port_frame_start[14:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_ready">
       <obj_property name="ElementShortName">port_frame_ready[14:0]</obj_property>
@@ -92,6 +108,10 @@
    <wvobject type="array" fp_name="/IngressFifoSim/dut/port_frame_done">
       <obj_property name="ElementShortName">port_frame_done[14:0]</obj_property>
       <obj_property name="ObjectShortName">port_frame_done[14:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/port_mem_vlan">
+      <obj_property name="ElementShortName">port_mem_vlan[14:0][11:0]</obj_property>
+      <obj_property name="ObjectShortName">port_mem_vlan[14:0][11:0]</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/IngressFifoSim/dut/fifo_wr_ptr">
       <obj_property name="ElementShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
@@ -132,5 +152,41 @@
       <obj_property name="ObjectShortName">fec_wr_port[3:0]</obj_property>
    </wvobject>
    <wvobject fp_name="divider234" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[3].wdata ">
+      <obj_property name="ElementShortName">\metafifo[3].wdata </obj_property>
+      <obj_property name="ObjectShortName">\metafifo[3].wdata </obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[3].wdata .src_vlan">
+         <obj_property name="ElementShortName">.src_vlan[11:0]</obj_property>
+         <obj_property name="ObjectShortName">.src_vlan[11:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[3].wdata .dst_mac">
+         <obj_property name="ElementShortName">.dst_mac[47:0]</obj_property>
+         <obj_property name="ObjectShortName">.dst_mac[47:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[3].wdata .len">
+         <obj_property name="ElementShortName">.len[10:0]</obj_property>
+         <obj_property name="ObjectShortName">.len[10:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[4].wdata ">
+      <obj_property name="ElementShortName">\metafifo[4].wdata </obj_property>
+      <obj_property name="ObjectShortName">\metafifo[4].wdata </obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[4].wdata .src_vlan">
+         <obj_property name="ElementShortName">.src_vlan[11:0]</obj_property>
+         <obj_property name="ObjectShortName">.src_vlan[11:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[4].wdata .dst_mac">
+         <obj_property name="ElementShortName">.dst_mac[47:0]</obj_property>
+         <obj_property name="ObjectShortName">.dst_mac[47:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/IngressFifoSim/dut/\metafifo[4].wdata .len">
+         <obj_property name="ElementShortName">.len[10:0]</obj_property>
+         <obj_property name="ObjectShortName">.len[10:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

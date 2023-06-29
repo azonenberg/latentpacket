@@ -54,8 +54,9 @@ module VlanUntagger(
 
 	input wire EthernetRxBus	in_bus,
 
-	output EthernetRxBus		out_bus		= 0,
-	output logic[11:0]			out_vlan	= 0
+	output EthernetRxBus		out_bus			= 0,
+	output logic[11:0]			out_vlan		= 0,
+	output logic				out_vlan_valid	= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +70,7 @@ module VlanUntagger(
 
 		//Clear single cycle flags
 		out_bus			<= 0;
+		out_vlan_valid	<= 0;
 
 		//Forward start flag
 		out_bus.start	<= in_bus.start;
@@ -83,6 +85,11 @@ module VlanUntagger(
 		if(in_bus.drop)
 			dropping	<= 1;
 		else if(dropping) begin
+		end
+
+		//Commit incoming data (if not dropping)
+		else if(in_bus.commit) begin
+			out_bus.commit		<= 1;
 		end
 
 		//Forward incoming data
@@ -100,6 +107,7 @@ module VlanUntagger(
 			//Conveniently, it's exactly four octets!
 			//So we can just not forward this one word if required
 			if(count == 3) begin
+				out_vlan_valid			<= 1;
 
 				//Is it a VLAN tag?
 				if(in_bus.data[31:16] == 16'h8100) begin

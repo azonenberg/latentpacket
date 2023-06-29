@@ -6,21 +6,21 @@
       <db_ref path="IngressCDCSim_behav.wdb" id="1">
          <top_modules>
             <top_module name="IngressCDCSim" />
-            <top_module name="\$unit_CrossClockFifo_sv_2065150714 " />
+            <top_module name="\$unit_CrossClockFifo_sv_3000414130 " />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="48.590 ns"></ZoomStartTime>
-      <ZoomEndTime time="556.191 ns"></ZoomEndTime>
-      <Cursor1Time time="247.938 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="2,626.793 ns"></ZoomEndTime>
+      <Cursor1Time time="60.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="283"></NameColumnWidth>
-      <ValueColumnWidth column_width="113"></ValueColumnWidth>
+      <ValueColumnWidth column_width="105"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="40" />
+   <WVObjectSize size="47" />
    <wvobject type="logic" fp_name="/IngressCDCSim/rx_clk">
       <obj_property name="ElementShortName">rx_clk</obj_property>
       <obj_property name="ObjectShortName">rx_clk</obj_property>
@@ -41,12 +41,39 @@
    </wvobject>
    <wvobject fp_name="divider12" type="divider">
    </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/next_packet">
+      <obj_property name="ElementShortName">next_packet</obj_property>
+      <obj_property name="ObjectShortName">next_packet</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/IngressCDCSim/rx_bus">
       <obj_property name="ElementShortName">rx_bus</obj_property>
       <obj_property name="ObjectShortName">rx_bus</obj_property>
       <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="divider14" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/port_vlan">
+      <obj_property name="ElementShortName">port_vlan[11:0]</obj_property>
+      <obj_property name="ObjectShortName">port_vlan[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/tagged_allowed">
+      <obj_property name="ElementShortName">tagged_allowed</obj_property>
+      <obj_property name="ObjectShortName">tagged_allowed</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/IngressCDCSim/dut/untagged_allowed">
+      <obj_property name="ElementShortName">untagged_allowed</obj_property>
+      <obj_property name="ObjectShortName">untagged_allowed</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/rx_vlan">
+      <obj_property name="ElementShortName">rx_vlan[11:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_vlan[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/rx_stripped">
+      <obj_property name="ElementShortName">rx_stripped</obj_property>
+      <obj_property name="ObjectShortName">rx_stripped</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="divider83" type="divider">
    </wvobject>
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_fifo_full">
       <obj_property name="ElementShortName">header_fifo_full</obj_property>
@@ -134,10 +161,6 @@
       <obj_property name="ElementShortName">header_rd_en_ff</obj_property>
       <obj_property name="ObjectShortName">header_rd_en_ff</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/IngressCDCSim/dut/header_rd_data">
-      <obj_property name="ElementShortName">header_rd_data[10:0]</obj_property>
-      <obj_property name="ObjectShortName">header_rd_data[10:0]</obj_property>
-   </wvobject>
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/header_rd_empty">
       <obj_property name="ElementShortName">header_rd_empty</obj_property>
       <obj_property name="ObjectShortName">header_rd_empty</obj_property>
@@ -172,5 +195,9 @@
    <wvobject type="logic" fp_name="/IngressCDCSim/dut/mem_frame_start">
       <obj_property name="ElementShortName">mem_frame_start</obj_property>
       <obj_property name="ObjectShortName">mem_frame_start</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/IngressCDCSim/dut/mem_frame_vlan">
+      <obj_property name="ElementShortName">mem_frame_vlan[11:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_frame_vlan[11:0]</obj_property>
    </wvobject>
 </wave_config>

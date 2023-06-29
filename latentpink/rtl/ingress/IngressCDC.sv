@@ -43,6 +43,11 @@ module IngressCDC(
 	input wire					link_up,
 	input wire EthernetRxBus	rx_bus,
 
+	//VLAN configuration
+	input wire vlan_t			port_vlan,
+	input wire					tagged_allowed,
+	input wire					untagged_allowed,
+
 	//Output bus to the memory arbiter
 	input wire					clk_mem,
 
@@ -51,8 +56,30 @@ module IngressCDC(
 	output logic				mem_valid			= 0,
 	output logic[127:0]			mem_data			= 0,
 	output logic				mem_frame_done		= 0,
+	output logic[11:0]			mem_frame_vlan		= 0,
 	input wire					mem_frame_start
 );
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Strip VLAN tags off the inbound data stream
+
+	EthernetRxBus	rx_stripped;
+	wire[11:0]		rx_vlan;
+	wire			rx_vlan_valid;
+
+	VlanUntagger untagger(
+		.clk(rx_clk),
+
+		.port_vlan(port_vlan),
+		.tagged_allowed(tagged_allowed),
+		.untagged_allowed(untagged_allowed),
+
+		.in_bus(rx_bus),
+
+		.out_bus(rx_stripped),
+		.out_vlan(rx_vlan),
+		.out_vlan_valid(rx_vlan_valid)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Width expansion
@@ -92,7 +119,7 @@ module IngressCDC(
 			fifo_wr_commit		<= 1;
 
 		//Start a new frame
-		if(rx_bus.start) begin
+		if(rx_stripped.start) begin
 			wr_phase			<= 0;
 			wr_frame_bytelen	<= 0;
 			wr_dropping			<= 0;
@@ -108,7 +135,7 @@ module IngressCDC(
 		end
 
 		//If MAC requests a drop, roll back any partly pushed data
-		else if(rx_bus.drop) begin
+		else if(rx_stripped.drop) begin
 			fifo_wr_rollback	<= 1;
 			wr_dropping			<= 1;
 		end
@@ -118,16 +145,16 @@ module IngressCDC(
 		end
 
 		//Process incoming data
-		else if(rx_bus.data_valid) begin
+		else if(rx_stripped.data_valid) begin
 			case(wr_phase)
-				0:	fifo_wr_data[96 +: 32]	<= rx_bus.data;
-				1:	fifo_wr_data[64 +: 32]	<= rx_bus.data;
-				2:	fifo_wr_data[32 +: 32]	<= rx_bus.data;
-				3:	fifo_wr_data[0 +: 32]	<= rx_bus.data;
+				0:	fifo_wr_data[96 +: 32]	<= rx_stripped.data;
+				1:	fifo_wr_data[64 +: 32]	<= rx_stripped.data;
+				2:	fifo_wr_data[32 +: 32]	<= rx_stripped.data;
+				3:	fifo_wr_data[0 +: 32]	<= rx_stripped.data;
 			endcase
 
 			wr_phase				<= wr_phase + 1;
-			wr_frame_bytelen		<= wr_frame_bytelen + rx_bus.bytes_valid;
+			wr_frame_bytelen		<= wr_frame_bytelen + rx_stripped.bytes_valid;
 
 			if(wr_phase == 3)
 				fifo_wr_en			<= 1;
@@ -141,13 +168,13 @@ module IngressCDC(
 		end
 
 		//Finish up a frame
-		else if(rx_bus.commit) begin
+		else if(rx_stripped.commit) begin
 
 			//If we have in-progress data (phase not zero), push it
 			//Zero off any garbage at the end of the frame if needed to prevent possible leakage of frame content
 			case(wr_phase)
 				0: begin
-					fifo_wr_commit	<= 1;
+					fifo_wr_commit		<= 1;
 				end
 
 				1: begin
@@ -222,23 +249,24 @@ module IngressCDC(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Packet length FIFO
+	// Packet length (and vlan) FIFO
 
 	logic		header_rd_en = 0;
-	wire[10:0]	header_rd_data;
+	wire[10:0]	header_rd_bytelen;
+	wire[11:0]	header_rd_vlan;
 	wire		header_rd_empty;
 
 	//RAM64X1D is 2 LUTs so this should be about 22 LUTs
 	//If it's synthesized as 4x RAM64Ms instead it would be 16
 	CrossClockFifo #(
-		.WIDTH(11),
+		.WIDTH(23),
 		.DEPTH(64),
 		.USE_BLOCK(0),
 		.OUT_REG(1)
 	) header_fifo (
 		.wr_clk(rx_clk),
-		.wr_en(rx_bus.commit && !wr_dropping),
-		.wr_data(wr_frame_bytelen),
+		.wr_en(rx_stripped.commit && !wr_dropping),
+		.wr_data({ wr_frame_bytelen, rx_vlan } ),
 		.wr_size(),
 		.wr_full(header_fifo_full),
 		.wr_overflow(),
@@ -246,7 +274,7 @@ module IngressCDC(
 
 		.rd_clk(clk_mem),
 		.rd_en(header_rd_en),
-		.rd_data(header_rd_data),
+		.rd_data({header_rd_bytelen, header_rd_vlan}),
 		.rd_size(),
 		.rd_empty(header_rd_empty),
 		.rd_underflow(),
@@ -319,12 +347,13 @@ module IngressCDC(
 		//Tell host when we're ready to send it
 		if(header_rd_en_ff) begin
 			mem_frame_ready		<= 1;
-			mem_frame_bytelen	<= header_rd_data;
+			mem_frame_bytelen	<= header_rd_bytelen;
+			mem_frame_vlan		<= header_rd_vlan;
 
-			if(header_rd_data[3:0])
-				rd_wordcount	<= header_rd_data[10:4] + 1;
+			if(header_rd_bytelen[3:0])
+				rd_wordcount	<= header_rd_bytelen[10:4] + 1;
 			else
-				rd_wordcount	<= header_rd_data[10:4];
+				rd_wordcount	<= header_rd_bytelen[10:4];
 		end
 
 		//Idle, no frame in progress
@@ -340,8 +369,8 @@ module IngressCDC(
 
 		//Starting to send
 		if(mem_frame_start) begin
-			sending	<= 1;
-			mem_frame_ready	<= 0;
+			sending				<= 1;
+			mem_frame_ready		<= 0;
 		end
 
 		//Wrap up a frame when the last word comes out
