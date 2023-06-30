@@ -10,6 +10,7 @@ General fabrication notes
     * Finished board thickness is 1.6 mm.
     * Place UL mark and date code in the area marked on the "F. Fab" gerber layer.
     * Boards to be rotated 10 degrees on panel, to reduce fiber weave effect
+    * Vias to be filled with nonconductive epoxy and plated over.
 
 Impedances
 
