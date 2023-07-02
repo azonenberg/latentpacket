@@ -191,7 +191,11 @@ module LatentPinkTopLevel(
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// TODO: Pass through the LEDs
+	// Level shift LEDs
+
+	assign mgmt0_led_p_3v3 = ~mgmt0_led_n_1v8;
+	assign g12_led_p_3v3 = g12_led_p_1v8;
+	assign g13_led_p_3v3 = g13_led_p_1v8;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Clocking
@@ -399,75 +403,38 @@ module LatentPinkTopLevel(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QDR-II+ SRAM
+	// Buffer inbound packets
 
-	//Tie off unused address pins since we've only got a 36 Mbit SRAM stuffed
-	assign qdr_a[20:18] = 2'b0;
+	vlan_t[14:0]	port_vlan;
+	wire[14:0]		tagged_allowed;
+	wire[14:0]		untagged_allowed;
 
-	wire		ram_rd_en;
-	wire[17:0]	ram_rd_addr;
-	wire		ram_rd_valid;
-	wire[143:0]	ram_rd_data;
-	wire		ram_wr_en;
-	wire[17:0]	ram_wr_addr;
-	wire[143:0]	ram_wr_data;
+	wire[14:0]		port_rx_clk;
 
-	wire		qdr_pll_lock;
+	assign port_rx_clk =
+	{
+		xg0_mac_rx_clk,		//xg0 serdes clock
+		clk_125mhz,			//g13:12 oversample to 125 MHz domain
+		clk_125mhz,
+		qsgmii_rx_clk[2],	//g11:8 serdes clock
+		qsgmii_rx_clk[2],
+		qsgmii_rx_clk[2],
+		qsgmii_rx_clk[2],
+		qsgmii_rx_clk[1],	//g7:4 serdes clock
+		qsgmii_rx_clk[1],
+		qsgmii_rx_clk[1],
+		qsgmii_rx_clk[1],
+		qsgmii_rx_clk[0],	//g3:0 serdes clock
+		qsgmii_rx_clk[0],
+		qsgmii_rx_clk[0],
+		qsgmii_rx_clk[0]
+	};
 
-	QDR2PController #(
-		.RAM_WIDTH(36),
-		.ADDR_BITS(18)
-	) qdr (
-		.clk_ctl(clk_ram_ctl),
-		.clk_ram(clk_ram),
-		.clk_ram_90(clk_ram_90),
-
-		.rd_en(ram_rd_en),
-		.rd_addr(ram_rd_addr),
-		.rd_valid(ram_rd_valid),
-		.rd_data(ram_rd_data),
-		.wr_en(ram_wr_en),
-		.wr_addr(ram_wr_addr),
-		.wr_data(ram_wr_data),
-		.pll_lock(qdr_pll_lock),
-
-		.qdr_d(qdr_d),
-		.qdr_q(qdr_q),
-		.qdr_a(qdr_a[17:0]),
-		.qdr_wps_n(qdr_wps_n),
-		.qdr_bws_n(qdr_bws_n),
-		.qdr_rps_n(qdr_rps_n),
-		.qdr_qvld(qdr_qvld),
-		.qdr_dclk_p(qdr_k_p),
-		.qdr_dclk_n(qdr_k_n),
-		.qdr_qclk_p(qdr_cq_p),
-		.qdr_qclk_n(qdr_cq_n)
-	);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Write all incoming data from every port to the RAM
-
-	IngressFifo #(
+	PacketBuffering #(
 		.NUM_PORTS(15)
-	) infifo (
-		.port_rx_clk(
-		{
-			xg0_mac_rx_clk,		//xg0 serdes clock
-			clk_125mhz,			//g13:12 oversample to 125 MHz domain
-			clk_125mhz,
-			qsgmii_rx_clk[2],	//g11:8 serdes clock
-			qsgmii_rx_clk[2],
-			qsgmii_rx_clk[2],
-			qsgmii_rx_clk[2],
-			qsgmii_rx_clk[1],	//g7:4 serdes clock
-			qsgmii_rx_clk[1],
-			qsgmii_rx_clk[1],
-			qsgmii_rx_clk[1],
-			qsgmii_rx_clk[0],	//g3:0 serdes clock
-			qsgmii_rx_clk[0],
-			qsgmii_rx_clk[0],
-			qsgmii_rx_clk[0]
-		}),
+	) buffer (
+
+		.port_rx_clk(port_rx_clk),
 		.port_link_up(
 		{
 			xg0_link_up,
@@ -483,11 +450,41 @@ module LatentPinkTopLevel(
 			qsgmii_mac_rx_bus
 		}),
 
+		.port_vlan(port_vlan),
+		.tagged_allowed(tagged_allowed),
+		.untagged_allowed(untagged_allowed),
+
 		.clk_ram_ctl(clk_ram_ctl),
-		.ram_wr_en(ram_wr_en),
-		.ram_wr_addr(ram_wr_addr),
-		.ram_wr_data(ram_wr_data)
+		.clk_ram(clk_ram),
+		.clk_ram_90(clk_ram_90),
+
+		.qdr_d(qdr_d),
+		.qdr_q(qdr_q),
+		.qdr_a(qdr_a),
+		.qdr_wps_n(qdr_wps_n),
+		.qdr_bws_n(qdr_bws_n),
+		.qdr_rps_n(qdr_rps_n),
+		.qdr_qvld(qdr_qvld),
+		.qdr_k_p(qdr_k_p),
+		.qdr_k_n(qdr_k_n),
+		.qdr_cq_p(qdr_cq_p),
+		.qdr_cq_n(qdr_cq_n),
+
+		.fabric_state(),
+		.forward_en(),
+		.frame_valid(),
+		.frame_last(),
+		.frame_data()
 	);
+
+	for(genvar g=0; g<15; g=g+1) begin
+		vio_2 vio_portstate(
+			.clk(port_rx_clk[g]),
+			.probe_out0(port_vlan[g]),
+			.probe_out1(tagged_allowed[g]),
+			.probe_out2(untagged_allowed[g])
+		);
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// VIOs to tie off not-yet-used transmit ports

@@ -29,7 +29,9 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "GmiiBus.svh"
 `include "EthernetBus.svh"
+`include "SGMIIToGMIIBridge.svh"
 
 /**
 	@file
