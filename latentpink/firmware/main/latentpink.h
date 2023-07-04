@@ -27,56 +27,30 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "latentpink.h"
-#include <termios.h>
-#include "STDOutputStream.h"
-#include "STDCharacterDevice.h"
-#include "../../cli/SwitchCLISessionContext.h"
+#ifndef latentpink_h
+#define latentpink_h
 
-int main(int argc, char* argv[])
-{
-	//Disable line buffering and echoing on stdin to emulate normal RS232 behavior
-	termios term;
-	if(0 != tcgetattr(STDIN_FILENO, &term))
-	{
-		perror("tcgetattr failed");
-		return 1;
-	}
-	term.c_lflag &= ~ICANON;
-	term.c_lflag &= ~ECHO;
-	term.c_cc[VMIN] = 1;
-	term.c_cc[VTIME] = 0;
-	if(0 != tcsetattr(STDIN_FILENO, TCSANOW, &term))
-	{
-		perror("tcsetattr failed");
-		return 1;
-	}
+#ifdef SIMULATION
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#endif
 
-	//Initialize the logger
-	STDCharacterDevice logdev;
-	Timer timer;
-	g_log.Initialize(&logdev, &timer);
-	g_log("Logging initialized\n");
+#include <microkvs/kvs/KVS.h>
+#include <microkvs/driver/TestStorageBank.h>
 
-	//Initialize for main event loop
-	STDOutputStream stream;
+#include <util/Logger.h>
 
-	//Initialize the key-value store
-	TestStorageBank left;
-	TestStorageBank right;
-	KVS kvs(&left, &right, 256);
-	g_kvs = &kvs;
+/*
+#include <staticnet-config.h>
+#include <staticnet/stack/staticnet.h>
+#include <staticnet/drivers/tap/TapEthernetInterface.h>
 
-	//Initialize the CLI
-	SwitchCLISessionContext context;
-	context.Initialize(&stream, "user");
-	context.PrintPrompt();
+#include "BridgeTCPProtocol.h"
+#include "BridgeCryptoEngine.h"
+*/
 
-	//Run main event loop
-	while(true)
-	{
-		char c = getchar();
-		context.OnKeystroke(c);
-	}
-	return 0;
-}
+extern KVS* g_kvs;
+extern Logger g_log;
+
+#endif

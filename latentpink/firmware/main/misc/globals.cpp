@@ -28,55 +28,13 @@
 ***********************************************************************************************************************/
 
 #include "latentpink.h"
-#include <termios.h>
-#include "STDOutputStream.h"
-#include "STDCharacterDevice.h"
-#include "../../cli/SwitchCLISessionContext.h"
 
-int main(int argc, char* argv[])
-{
-	//Disable line buffering and echoing on stdin to emulate normal RS232 behavior
-	termios term;
-	if(0 != tcgetattr(STDIN_FILENO, &term))
-	{
-		perror("tcgetattr failed");
-		return 1;
-	}
-	term.c_lflag &= ~ICANON;
-	term.c_lflag &= ~ECHO;
-	term.c_cc[VMIN] = 1;
-	term.c_cc[VTIME] = 0;
-	if(0 != tcsetattr(STDIN_FILENO, TCSANOW, &term))
-	{
-		perror("tcsetattr failed");
-		return 1;
-	}
+/**
+	@brief Global key-value store for persistent configuration
+ */
+KVS* g_kvs = nullptr;
 
-	//Initialize the logger
-	STDCharacterDevice logdev;
-	Timer timer;
-	g_log.Initialize(&logdev, &timer);
-	g_log("Logging initialized\n");
-
-	//Initialize for main event loop
-	STDOutputStream stream;
-
-	//Initialize the key-value store
-	TestStorageBank left;
-	TestStorageBank right;
-	KVS kvs(&left, &right, 256);
-	g_kvs = &kvs;
-
-	//Initialize the CLI
-	SwitchCLISessionContext context;
-	context.Initialize(&stream, "user");
-	context.PrintPrompt();
-
-	//Run main event loop
-	while(true)
-	{
-		char c = getchar();
-		context.OnKeystroke(c);
-	}
-	return 0;
-}
+/**
+	@brief Logger for output stuff
+ */
+Logger g_log;

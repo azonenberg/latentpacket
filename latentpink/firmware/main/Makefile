@@ -1,13 +1,19 @@
 SRCDIR=$(CURDIR)
 ROOTDIR=$(CURDIR)/../../../
-CXXFLAGS=-g -O0 --std=c++17 -I$(ROOTDIR)
+CXXFLAGS=-g -O0 --std=c++17 -I$(ROOTDIR) -I$(SRCDIR) -I$(ROOTDIR)/stm32-cpp/devices/inc -I$(ROOTDIR)/stm32-cpp/src
 CXX=g++
 
 .ONESHELL:
 .SILENT: sim
+sim: CXXFLAGS += -DSIMULATION -DHAVE_TIM -lrt
 
 sim:
 	cd output/sim
-	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/target/sim/*.cpp
-	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/embedded-cli/*.cpp
-	$(CXX) $(CXXFLAGS) *.o -o simcli
+	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/target/sim/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/misc/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/cli/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/stm32-cpp/src/util/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/microkvs/kvs/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/microkvs/driver/TestStorageBank.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/embedded-cli/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) *.o -o simcli || exit 1

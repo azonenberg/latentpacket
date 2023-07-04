@@ -27,56 +27,48 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "latentpink.h"
-#include <termios.h>
-#include "STDOutputStream.h"
-#include "STDCharacterDevice.h"
-#include "../../cli/SwitchCLISessionContext.h"
+/**
+	@file
+	@brief Declaration of SwitchCLISessionContext
+ */
+#ifndef SwitchCLISessionContext_h
+#define SwitchCLISessionContext_h
 
-int main(int argc, char* argv[])
+#include <embedded-cli/CLIOutputStream.h>
+#include <embedded-cli/CLISessionContext.h>
+//#include <staticnet/cli/SSHOutputStream.h>
+
+class SwitchCLISessionContext : public CLISessionContext
 {
-	//Disable line buffering and echoing on stdin to emulate normal RS232 behavior
-	termios term;
-	if(0 != tcgetattr(STDIN_FILENO, &term))
+public:
+	SwitchCLISessionContext();
+
+	/*void Initialize(int sessid, TCPTableEntry* socket, SSHTransportServer* server, const char* username)
 	{
-		perror("tcgetattr failed");
-		return 1;
-	}
-	term.c_lflag &= ~ICANON;
-	term.c_lflag &= ~ECHO;
-	term.c_cc[VMIN] = 1;
-	term.c_cc[VTIME] = 0;
-	if(0 != tcsetattr(STDIN_FILENO, TCSANOW, &term))
+		m_stream.Initialize(sessid, socket, server);
+
+		CLISessionContext::Initialize(&m_stream, username);
+	}*/
+
+	//Generic init for non-SSH streams
+	void Initialize(CLIOutputStream* stream, const char* username)
 	{
-		perror("tcsetattr failed");
-		return 1;
+		m_stream = stream;
+		CLISessionContext::Initialize(m_stream, username);
 	}
 
-	//Initialize the logger
-	STDCharacterDevice logdev;
-	Timer timer;
-	g_log.Initialize(&logdev, &timer);
-	g_log("Logging initialized\n");
+	virtual ~SwitchCLISessionContext()
+	{}
 
-	//Initialize for main event loop
-	STDOutputStream stream;
+	virtual void PrintPrompt();
 
-	//Initialize the key-value store
-	TestStorageBank left;
-	TestStorageBank right;
-	KVS kvs(&left, &right, 256);
-	g_kvs = &kvs;
+protected:
+	virtual void OnExecute();
 
-	//Initialize the CLI
-	SwitchCLISessionContext context;
-	context.Initialize(&stream, "user");
-	context.PrintPrompt();
+	//SSHOutputStream m_stream;
+	CLIOutputStream* m_stream;
 
-	//Run main event loop
-	while(true)
-	{
-		char c = getchar();
-		context.OnKeystroke(c);
-	}
-	return 0;
-}
+	char m_hostname[33];
+};
+
+#endif

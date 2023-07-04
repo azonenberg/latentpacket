@@ -28,55 +28,121 @@
 ***********************************************************************************************************************/
 
 #include "latentpink.h"
-#include <termios.h>
-#include "STDOutputStream.h"
-#include "STDCharacterDevice.h"
-#include "../../cli/SwitchCLISessionContext.h"
+#include <algorithm>
+#include "SwitchCLISessionContext.h"
 
-int main(int argc, char* argv[])
+static const char* hostname_objid = "hostname";
+
+//List of all valid commands
+enum cmdid_t
 {
-	//Disable line buffering and echoing on stdin to emulate normal RS232 behavior
-	termios term;
-	if(0 != tcgetattr(STDIN_FILENO, &term))
+	CMD_EXIT,
+	CMD_HOSTNAME,
+	CMD_SHOW,
+	CMD_IP,
+	CMD_ADDRESS,
+	CMD_FOO,
+	CMD_BAR,
+	CMD_BAZ
+};
+
+static const clikeyword_t g_hostnameCommands[] =
+{
+	{"<string>",	FREEFORM_TOKEN,		nullptr,	"New host name"},
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+static const clikeyword_t g_ipCommands[] =
+{
+	{"address",		CMD_ADDRESS,		nullptr,	"ip help"},
+
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+static const clikeyword_t g_showCommands[] =
+{
+	{"foo",			CMD_FOO,			nullptr,	"Look at foo"},
+	{"bar",			CMD_BAR,			nullptr,	"Look at bar"},
+	{"baz",			CMD_BAZ,			nullptr,	"Look at baz"},
+
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+
+//The top level command list
+static const clikeyword_t g_rootCommands[] =
+{
+	{"exit",		CMD_EXIT,			nullptr,				"Log out"},
+	{"hostname",	CMD_HOSTNAME,		g_hostnameCommands,		"Change the host name"},
+	{"ip",			CMD_IP,				g_ipCommands,			"Configure IP addresses"},
+	{"show",		CMD_SHOW,			g_showCommands,			"Print information"},
+
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+SwitchCLISessionContext::SwitchCLISessionContext()
+	: CLISessionContext(g_rootCommands)
+{
+	//Read hostname, set to default value if not found
+	auto hlog = g_kvs->FindObject(hostname_objid);
+	if(hlog)
+		strncpy(m_hostname, (const char*)g_kvs->MapObject(hlog), std::min((size_t)hlog->m_len, sizeof(m_hostname)-1));
+	else
+		strncpy(m_hostname, "switch", sizeof(m_hostname)-1);
+}
+
+void SwitchCLISessionContext::PrintPrompt()
+{
+	m_stream->Printf("%s@%s$ ", m_username, m_hostname);
+	m_stream->Flush();
+}
+
+void SwitchCLISessionContext::OnExecute()
+{
+	switch(m_command[0].m_commandID)
 	{
-		perror("tcgetattr failed");
-		return 1;
+		case CMD_EXIT:
+			m_stream->Flush();
+			//m_stream.GetServer()->GracefulDisconnect(m_stream.GetSessionID(), m_stream.GetSocket());
+			#ifdef SIMULATION
+				exit(0);
+			#endif
+			break;
+
+		case CMD_HOSTNAME:
+			strncpy(m_hostname, m_command[1].m_text, sizeof(m_hostname)-1);
+
+			if(!g_kvs->StoreObject(hostname_objid, (uint8_t*)m_hostname, strlen(m_hostname)))
+				m_stream->Printf("KVS write error\n");
+			break;
+
+		/*
+		case CMD_IP:
+			m_stream.Printf("set ip\n");
+			break;
+
+		case CMD_SHOW:
+			switch(m_command[1].m_commandID)
+			{
+				case CMD_FOO:
+					m_stream.Printf("showing foo\n");
+					break;
+
+				case CMD_BAR:
+					m_stream.Printf("showing bar\n");
+					break;
+
+				case CMD_BAZ:
+					m_stream.Printf("showing baz\n");
+					break;
+			}
+			break;
+		*/
+
+		default:
+			m_stream->Printf("Unrecognized command\n");
+			break;
 	}
-	term.c_lflag &= ~ICANON;
-	term.c_lflag &= ~ECHO;
-	term.c_cc[VMIN] = 1;
-	term.c_cc[VTIME] = 0;
-	if(0 != tcsetattr(STDIN_FILENO, TCSANOW, &term))
-	{
-		perror("tcsetattr failed");
-		return 1;
-	}
 
-	//Initialize the logger
-	STDCharacterDevice logdev;
-	Timer timer;
-	g_log.Initialize(&logdev, &timer);
-	g_log("Logging initialized\n");
-
-	//Initialize for main event loop
-	STDOutputStream stream;
-
-	//Initialize the key-value store
-	TestStorageBank left;
-	TestStorageBank right;
-	KVS kvs(&left, &right, 256);
-	g_kvs = &kvs;
-
-	//Initialize the CLI
-	SwitchCLISessionContext context;
-	context.Initialize(&stream, "user");
-	context.PrintPrompt();
-
-	//Run main event loop
-	while(true)
-	{
-		char c = getchar();
-		context.OnKeystroke(c);
-	}
-	return 0;
+	m_stream->Flush();
 }
