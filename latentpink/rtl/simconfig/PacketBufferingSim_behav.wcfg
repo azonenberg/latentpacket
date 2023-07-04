@@ -13,13 +13,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="2,064.480 ns"></ZoomStartTime>
-      <ZoomEndTime time="3,187.105 ns"></ZoomEndTime>
-      <Cursor1Time time="3,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="1,001.160 ns"></ZoomStartTime>
+      <ZoomEndTime time="2,126.615 ns"></ZoomEndTime>
+      <Cursor1Time time="1,160.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="296"></NameColumnWidth>
-      <ValueColumnWidth column_width="259"></ValueColumnWidth>
+      <ValueColumnWidth column_width="251"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="18" />
    <wvobject type="group" fp_name="group600">
@@ -565,6 +565,7 @@
       <wvobject type="array" fp_name="/PacketBufferingSim/fwd/port_vlan_match">
          <obj_property name="ElementShortName">port_vlan_match[14:0]</obj_property>
          <obj_property name="ObjectShortName">port_vlan_match[14:0]</obj_property>
+         <obj_property name="Radix">BINARYRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/fwd/dst_port">
          <obj_property name="ElementShortName">dst_port[14:0][3:0]</obj_property>
@@ -578,6 +579,14 @@
       <wvobject type="array" fp_name="/PacketBufferingSim/fwd/dst_vlan">
          <obj_property name="ElementShortName">dst_vlan[14:0][11:0]</obj_property>
          <obj_property name="ObjectShortName">dst_vlan[14:0][11:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/PacketBufferingSim/fwd/start_forwarding_adv">
+         <obj_property name="ElementShortName">start_forwarding_adv</obj_property>
+         <obj_property name="ObjectShortName">start_forwarding_adv</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/PacketBufferingSim/fwd/start_forwarding">
+         <obj_property name="ElementShortName">start_forwarding</obj_property>
+         <obj_property name="ObjectShortName">start_forwarding</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/PacketBufferingSim/fwd/forwarding">
          <obj_property name="ElementShortName">forwarding</obj_property>

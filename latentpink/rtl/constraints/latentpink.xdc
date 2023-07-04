@@ -1219,12 +1219,13 @@ resize_pblock [get_pblocks pblock_prefetch] -add {RAMB36_X0Y20:RAMB36_X1Y24}
 
 
 create_pblock pblock_mactable
-add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd/mactable]]
-resize_pblock [get_pblocks pblock_mactable] -add {SLICE_X0Y50:SLICE_X55Y124}
-resize_pblock [get_pblocks pblock_mactable] -add {DSP48_X0Y20:DSP48_X2Y49}
-resize_pblock [get_pblocks pblock_mactable] -add {RAMB18_X0Y20:RAMB18_X2Y49}
-resize_pblock [get_pblocks pblock_mactable] -add {RAMB36_X0Y10:RAMB36_X2Y24}
+add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd]]
+resize_pblock [get_pblocks pblock_mactable] -add {SLICE_X0Y50:SLICE_X55Y104}
+resize_pblock [get_pblocks pblock_mactable] -add {DSP48_X0Y20:DSP48_X2Y41}
+resize_pblock [get_pblocks pblock_mactable] -add {RAMB18_X0Y20:RAMB18_X2Y41}
+resize_pblock [get_pblocks pblock_mactable] -add {RAMB36_X0Y10:RAMB36_X2Y20}
 set_property IS_SOFT FALSE [get_pblocks pblock_mactable]
+
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]

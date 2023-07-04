@@ -199,6 +199,9 @@ module LatentPinkTopLevel(
 	assign g12_led_p_3v3 = g12_led_p_1v8;
 	assign g13_led_p_3v3 = g13_led_p_1v8;
 
+	//TODO: pulse stretching
+	assign sfp_led = 2'b11;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Clocking
 

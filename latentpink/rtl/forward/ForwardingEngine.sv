@@ -150,12 +150,16 @@ module ForwardingEngine #(
 	logic[PORT_BITS-1:0]	lookup_rr_port			= 0;
 	logic[PORT_BITS-1:0]	fwd_rr_port				= 0;
 	logic					forwarding				= 0;
+	logic					start_forwarding_adv	= 0;
 	logic					start_forwarding		= 0;
 
+	(* DONT_TOUCH = "TRUE" *)
 	logic[PORT_BITS-1:0]	fwd_source				= 0;
-	logic[PORT_BITS-1:0]	fwd_source_ff			= 0;
 
+	//Pipelined match registers
+	logic					fwd_broadcast			= 0;
 	logic[NUM_PORTS-1:0]	port_vlan_match			= 0;
+	logic[NUM_PORTS-1:0]	unicast_match			= 0;
 
 	always_ff @(posedge clk_ram_ctl) begin
 
@@ -167,10 +171,9 @@ module ForwardingEngine #(
 		mac_lookup_dst_mac	<= 0;
 
 		//Pipeline the forwarding decision
-		if(start_forwarding) begin
+		start_forwarding		<= start_forwarding_adv;
+		if(start_forwarding)
 			forwarding			= 1;
-			fwd_source_ff		<= fwd_source;
-		end
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Arbitration for lookups
@@ -239,6 +242,17 @@ module ForwardingEngine #(
 			port_state[fwd_source]	<= PORT_STATE_IDLE;
 		end
 
+		if(start_forwarding_adv) begin
+
+			//Match flag detection
+			for(integer i=0; i<NUM_PORTS; i=i+1) begin
+				port_vlan_match[i]	<= (port_vlan[i] == dst_vlan[fwd_source]);
+				unicast_match[i]	<= (i == dst_port[fwd_source]);
+			end
+			fwd_broadcast			<= broadcast[fwd_source];
+
+		end
+
 		//Start forwarding after a pipeline delay
 		if(start_forwarding) begin
 
@@ -258,21 +272,21 @@ module ForwardingEngine #(
 				//If broadcast: send to everything matching the target VLAN,
 				//or to all trunk ports
 				//TODO: exit filter for trunks that don't do all vlans
-				else if(broadcast[fwd_source])
+				else if(fwd_broadcast)
 					frame_port_wr[i]		<= port_vlan_match[i] || port_trunk[i];
 
 				//If unicast, send to the requested destination port
 				else
-					frame_port_wr[i]		<= (i == dst_port[fwd_source]);
+					frame_port_wr[i]		<= unicast_match[i];
 
 			end
 
 		end
 
-		start_forwarding			= 0;
+		start_forwarding_adv					= 0;
 
 		//But should we start forwarding a new one?
-		if(!forwarding || frame_last) begin
+		if( (!forwarding && !start_forwarding) || frame_last) begin
 
 			//Check the RR winner first
 			if(port_state[fwd_rr_port] == PORT_STATE_READY) begin
@@ -281,8 +295,8 @@ module ForwardingEngine #(
 				if(	(port_space_avail[dst_port[fwd_rr_port]] && !broadcast[fwd_rr_port] ) ||
 					(&port_space_avail && broadcast[fwd_rr_port] ) ) begin
 
-					fwd_source					= fwd_rr_port;
-					start_forwarding			= 1;
+					fwd_source					<= fwd_rr_port;
+					start_forwarding_adv		= 1;
 
 				end
 
@@ -291,24 +305,19 @@ module ForwardingEngine #(
 			//Check all ports
 			for(integer i=NUM_PORTS-1; i>=0; i=i-1) begin
 
-				if(!start_forwarding && (port_state[i] == PORT_STATE_READY) ) begin
+				if(!start_forwarding_adv && (port_state[i] == PORT_STATE_READY) ) begin
 
 					//Forward if there's space in the destination FIFO, or broadcast and space in all FIFOs
 					if(	(port_space_avail[dst_port[i]] && !broadcast[i] ) ||
 						(&port_space_avail && broadcast[i] ) ) begin
 
-						fwd_source					= i;
-						start_forwarding			= 1;
+						fwd_source					<= i;
+						start_forwarding_adv		= 1;
 
 					end
 
 				end
 
-			end
-
-			//Check for VLAN tag match
-			for(integer i=0; i<NUM_PORTS; i=i+1) begin
-				port_vlan_match[i]	<= (port_vlan[i] == dst_vlan[fwd_source]);
 			end
 
 		end
