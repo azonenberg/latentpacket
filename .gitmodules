@@ -10,3 +10,6 @@
 [submodule "staticnet"]
 	path = staticnet
 	url = ../staticnet.git
+[submodule "microkvs"]
+	path = microkvs
+	url = ../microkvs.git
