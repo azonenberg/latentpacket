@@ -201,7 +201,10 @@ module PacketBufferingSim();
 	`include "IngressPortState.svh"
 
 	inportstate_t[14:0]	fabric_state;
-	logic[14:0]			forward_en	= 0;
+	wire[14:0]			forward_en;
+	wire				frame_last;
+	wire				frame_valid;
+	wire[127:0]			frame_data;
 
 	PacketBuffering dut(
 		.port_rx_clk(port_rx_clk),
@@ -229,7 +232,27 @@ module PacketBufferingSim();
 		.qdr_cq_n(qdr_cq_n),
 
 		.fabric_state(fabric_state),
-		.forward_en(forward_en)
+		.forward_en(forward_en),
+		.frame_valid(frame_valid),
+		.frame_last(frame_last),
+		.frame_data(frame_data)
+	);
+
+	logic[14:0] port_space_avail = 15'h7fff;
+	logic[14:0] port_trunk = 15'h0001;			//port g0 is a trunk port
+
+	ForwardingEngine fwd(
+		.clk_ram_ctl(clk_ram_ctl),
+
+		.fabric_state(fabric_state),
+		.forward_en(forward_en),
+		.frame_valid(frame_valid),
+		.frame_last(frame_last),
+		.frame_data(frame_data),
+
+		.port_vlan(port_vlan),
+		.port_trunk(port_trunk),
+		.port_space_avail(port_space_avail)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,7 +264,6 @@ module PacketBufferingSim();
 	always_ff @(posedge clk_125mhz_p) begin
 
 		port_next_packet	<= 0;
-		forward_en			<= 0;
 
 		case(state)
 
@@ -276,14 +298,6 @@ module PacketBufferingSim();
 				if(port_rx_bus[3].commit) begin
 					port_next_packet[3]	<= 1;
 					state				<= 5;
-				end
-			end
-
-			//Once the frame on port 3 is ready, forward it
-			5: begin
-				if(fabric_state[3].ready) begin
-					forward_en[3]		<= 1;
-					state				<= 6;
 				end
 			end
 

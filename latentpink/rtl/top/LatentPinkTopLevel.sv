@@ -190,6 +190,8 @@ module LatentPinkTopLevel(
 	inout wire			i2c_derp_sda_device
 );
 
+	localparam NUM_PORTS = 15;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Level shift LEDs
 
@@ -405,11 +407,11 @@ module LatentPinkTopLevel(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer inbound packets
 
-	vlan_t[14:0]	port_vlan;
-	wire[14:0]		tagged_allowed;
-	wire[14:0]		untagged_allowed;
+	vlan_t[NUM_PORTS-1:0]	port_vlan_rxclk;
+	wire[NUM_PORTS-1:0]		tagged_allowed;
+	wire[NUM_PORTS-1:0]		untagged_allowed;
 
-	wire[14:0]		port_rx_clk;
+	wire[NUM_PORTS-1:0]		port_rx_clk;
 
 	assign port_rx_clk =
 	{
@@ -430,8 +432,14 @@ module LatentPinkTopLevel(
 		qsgmii_rx_clk[0]
 	};
 
+	inportstate_t[NUM_PORTS-1:0]	fabric_state;
+	wire[NUM_PORTS-1:0]				forward_en;
+	wire							frame_last;
+	wire							frame_valid;
+	wire[127:0]						frame_data;
+
 	PacketBuffering #(
-		.NUM_PORTS(15)
+		.NUM_PORTS(NUM_PORTS)
 	) buffer (
 
 		.port_rx_clk(port_rx_clk),
@@ -450,7 +458,7 @@ module LatentPinkTopLevel(
 			qsgmii_mac_rx_bus
 		}),
 
-		.port_vlan(port_vlan),
+		.port_vlan(port_vlan_rxclk),
 		.tagged_allowed(tagged_allowed),
 		.untagged_allowed(untagged_allowed),
 
@@ -470,21 +478,66 @@ module LatentPinkTopLevel(
 		.qdr_cq_p(qdr_cq_p),
 		.qdr_cq_n(qdr_cq_n),
 
-		.fabric_state(),
-		.forward_en(),
-		.frame_valid(),
-		.frame_last(),
-		.frame_data()
+		.fabric_state(fabric_state),
+		.forward_en(forward_en),
+		.frame_valid(frame_valid),
+		.frame_last(frame_last),
+		.frame_data(frame_data)
 	);
 
-	for(genvar g=0; g<15; g=g+1) begin
+	//VIO to set control signals that aren't yet writable via management interface
+	for(genvar g=0; g<NUM_PORTS; g=g+1) begin
 		vio_2 vio_portstate(
 			.clk(port_rx_clk[g]),
-			.probe_out0(port_vlan[g]),
+			.probe_out0(port_vlan_rxclk[g]),
 			.probe_out1(tagged_allowed[g]),
 			.probe_out2(untagged_allowed[g])
 		);
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Forwarding engine: takes frames out of the buffer and makes them go places
+
+	vlan_t[NUM_PORTS-1:0]	port_vlan_fabric;
+	wire[NUM_PORTS-1:0]		port_trunk;
+	wire[NUM_PORTS-1:0]		port_space_avail;	//TODO: hook up to exit queues
+
+	wire[NUM_PORTS-1:0]		frame_port_wr;
+	wire[10:0]				frame_len;
+
+	ForwardingEngine #(
+		.NUM_PORTS(NUM_PORTS)
+	) fwd (
+		.clk_ram_ctl(clk_ram_ctl),
+
+		.fabric_state(fabric_state),
+		.forward_en(forward_en),
+
+		.frame_valid(frame_valid),
+		.frame_last(frame_last),
+		.frame_data(frame_data),
+
+		.port_vlan(port_vlan_fabric),
+		.port_trunk(port_trunk),
+		.port_space_avail(port_space_avail),
+
+		.frame_port_wr(frame_port_wr),
+		.frame_len(frame_len)
+	);
+
+
+	//VIO to generate forwarding requests
+	vio_3 vio_bufout(
+		.clk(clk_ram_ctl),
+		.probe_out0(port_vlan_fabric),
+		.probe_out1(port_trunk),
+		.probe_out2(port_space_avail),
+		.probe_in0(frame_valid),
+		.probe_in1(frame_last),
+		.probe_in2(frame_data),
+		.probe_in3(frame_port_wr),
+		.probe_in4(frame_len)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// VIOs to tie off not-yet-used transmit ports

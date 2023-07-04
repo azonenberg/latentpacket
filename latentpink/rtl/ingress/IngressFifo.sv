@@ -158,7 +158,8 @@ module IngressFifo #(
 	logic[PORT_BITS-1:0]	next_port;
 	logic					next_port_valid;
 	wire[NUM_PORTS-1:0]		metafifo_full;
-	always_comb begin
+
+	always_ff @(posedge clk_ram_ctl) begin
 
 		next_port		= 0;
 		next_port_valid	= 0;
@@ -388,8 +389,8 @@ module IngressFifo #(
 	localparam PREFETCH_BITS		= $clog2(PREFETCH_DEPTH);
 	localparam NUM_PORTS_ROUNDED	= 2 ** PORT_BITS;
 
-	logic					prefetch_rd_en	= 0;
-	logic[PORT_BITS-1:0]	prefetch_rd_channel;
+	logic					prefetch_rd_en		= 0;
+	logic[PORT_BITS-1:0]	prefetch_rd_channel	= 0;
 
 	SingleClockMultiplexedFifo #(
 		.WIDTH(128),
@@ -567,6 +568,9 @@ module IngressFifo #(
 					if(forward_en[i]) begin
 
 						//TODO: Start prefetching more data so it'll be ready when we've emptied the prefetch buffer
+
+						//Clear ready flag since forwarding has already started
+						fabric_state[i].ready		<= 0;
 
 						//Start popping the prefetch buffer
 						prefetch_rd_en				<= 1;

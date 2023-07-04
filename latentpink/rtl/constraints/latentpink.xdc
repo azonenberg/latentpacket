@@ -1,3 +1,448 @@
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list {buffer/infifo/cdcs[0].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          buffer/qdr/fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
+          buffer/qdr/fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
+          buffer/qdr/fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
+          buffer/qdr/fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/sync_rst_stat/dout0_reg \
+          interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/sync_rst_stat/dout0_reg \
+          interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
+          interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
+          interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg \
+          {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
+          mgmt/rx_fifo/sync_fifo_rst/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
+          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_head/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          buffer/qdr/fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
+          buffer/qdr/fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
+          buffer/qdr/fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
+          buffer/qdr/fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
+          interfaces/port_g12/bridge/sync_rst_stat/dout0_reg \
+          interfaces/port_g12/mac/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
+          interfaces/port_g13/bridge/sync_rst_stat/dout0_reg \
+          interfaces/port_g13/mac/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
+          interfaces/port_mgmt0/mac/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
+          interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_ack/sync/dout0_reg \
+          interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg \
+          {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
+          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
+          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg]] -to [get_clocks clk_125mhz_raw] 2.500
 ########################################################################################################################
 # Pinout constraints
 
@@ -474,13 +919,14 @@ set_clock_groups -asynchronous -group [get_clocks mgmt0_rx_clk] -group [get_cloc
 set_clock_groups -asynchronous -group [get_clocks clk_125mhz_raw] -group [get_clocks mgmt0_rx_clk]
 set_clock_groups -asynchronous -group [get_clocks clk_312p5mhz_raw] -group [get_clocks mgmt0_rx_clk]
 
-set_max_delay -from [get_clocks *clk_125mhz_raw*] -through [get_cells -hierarchical -filter { NAME =~  "*sync*" && NAME =~  "*dout0_reg*" }] -to [get_clocks *clk_312p5mhz*] 2.500
-set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical -filter { NAME =~  "*sync*" && NAME =~  "*dout0_reg*" }] -to [get_clocks *clk_125mhz_raw*] 2.500
-set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *storage_reg*] -to [get_cells -hierarchical *portb_dout_raw_reg*] 2.500
-
-set _xlnx_shared_i0 [get_cells -hierarchical *reg_a_ff*]
+set _xlnx_shared_i0 [get_cells -hierarchical -filter { NAME =~  "*sync*" && NAME =~  "*dout0_reg*" }]
 set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_312p5mhz*] 2.500
 set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i0 -to [get_clocks *clk_125mhz_raw*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *storage_reg*] -to [get_cells -hierarchical *portb_dout_raw_reg*] 2.500
+
+set _xlnx_shared_i1 [get_cells -hierarchical *reg_a_ff*]
+set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_312p5mhz*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i1 -to [get_clocks *clk_125mhz_raw*] 2.500
 
 set_max_delay -from [get_cells -hierarchical *samples_*_2x*] -to [get_cells -hierarchical *samples_*_sync*] 2.000
 
@@ -570,7 +1016,7 @@ set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets clk_system/sysclk_in]
 # Floorplanning: RAM
 
 create_pblock pblock_ram
-add_cells_to_pblock [get_pblocks pblock_ram] [get_cells -quiet [list buffer/infifo/ecc_hi buffer/infifo/ecc_lo qdr]]
+add_cells_to_pblock [get_pblocks pblock_ram] [get_cells -quiet [list buffer/infifo/decc_hi buffer/infifo/decc_lo buffer/infifo/ecc_hi buffer/infifo/ecc_lo]]
 resize_pblock [get_pblocks pblock_ram] -add {SLICE_X0Y50:SLICE_X23Y199}
 resize_pblock [get_pblocks pblock_ram] -add {DSP48_X0Y20:DSP48_X1Y79}
 resize_pblock [get_pblocks pblock_ram] -add {RAMB18_X0Y20:RAMB18_X1Y79}
@@ -708,8 +1154,8 @@ resize_pblock [get_pblocks pblock_rgmii] -add {SLICE_X88Y100:SLICE_X109Y149}
 resize_pblock [get_pblocks pblock_rgmii] -add {DSP48_X5Y40:DSP48_X5Y59}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB18_X6Y40:RAMB18_X6Y59}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB36_X6Y20:RAMB36_X6Y29}
-
 set_property IS_SOFT FALSE [get_pblocks pblock_rgmii]
+
 
 #######################################################################################################################
 # Floorplanning: QSGMII
@@ -738,6 +1184,47 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 
 ########################################################################################################################
 # Debug clocking
+
+
+create_pblock pblock_metafifo
+add_cells_to_pblock [get_pblocks pblock_metafifo] [get_cells -quiet [list \
+          {buffer/infifo/metafifo[0].fifo} \
+          {buffer/infifo/metafifo[10].fifo} \
+          {buffer/infifo/metafifo[11].fifo} \
+          {buffer/infifo/metafifo[12].fifo} \
+          {buffer/infifo/metafifo[13].fifo} \
+          {buffer/infifo/metafifo[14].fifo} \
+          {buffer/infifo/metafifo[1].fifo} \
+          {buffer/infifo/metafifo[2].fifo} \
+          {buffer/infifo/metafifo[3].fifo} \
+          {buffer/infifo/metafifo[4].fifo} \
+          {buffer/infifo/metafifo[5].fifo} \
+          {buffer/infifo/metafifo[6].fifo} \
+          {buffer/infifo/metafifo[7].fifo} \
+          {buffer/infifo/metafifo[8].fifo} \
+          {buffer/infifo/metafifo[9].fifo}]]
+resize_pblock [get_pblocks pblock_metafifo] -add {SLICE_X0Y125:SLICE_X55Y199}
+resize_pblock [get_pblocks pblock_metafifo] -add {DSP48_X0Y50:DSP48_X2Y79}
+resize_pblock [get_pblocks pblock_metafifo] -add {RAMB18_X0Y50:RAMB18_X2Y79}
+resize_pblock [get_pblocks pblock_metafifo] -add {RAMB36_X0Y25:RAMB36_X2Y39}
+set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
+
+set_property PARENT pblock_ram [get_pblocks pblock_prefetch]
+create_pblock pblock_prefetch
+add_cells_to_pblock [get_pblocks pblock_prefetch] [get_cells -quiet [list buffer/infifo/prefetch_fifo buffer/infifo/tagfifo]]
+resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X0Y100:SLICE_X23Y124}
+resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X0Y40:DSP48_X1Y49}
+resize_pblock [get_pblocks pblock_prefetch] -add {RAMB18_X0Y40:RAMB18_X1Y49}
+resize_pblock [get_pblocks pblock_prefetch] -add {RAMB36_X0Y20:RAMB36_X1Y24}
+
+
+create_pblock pblock_mactable
+add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd/mactable]]
+resize_pblock [get_pblocks pblock_mactable] -add {SLICE_X0Y50:SLICE_X55Y124}
+resize_pblock [get_pblocks pblock_mactable] -add {DSP48_X0Y20:DSP48_X2Y49}
+resize_pblock [get_pblocks pblock_mactable] -add {RAMB18_X0Y20:RAMB18_X2Y49}
+resize_pblock [get_pblocks pblock_mactable] -add {RAMB36_X0Y10:RAMB36_X2Y24}
+set_property IS_SOFT FALSE [get_pblocks pblock_mactable]
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]

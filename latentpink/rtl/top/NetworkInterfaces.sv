@@ -120,7 +120,7 @@ module NetworkInterfaces(
 	// Output MAC buses
 
 	output wire					xg0_mac_rx_clk,
-	input wire EthernetRxBus	xg0_mac_rx_bus,
+	output wire EthernetRxBus	xg0_mac_rx_bus,
 
 	output wire					xg0_mac_tx_clk,
 	input wire EthernetTxBus	xg0_mac_tx_bus,
