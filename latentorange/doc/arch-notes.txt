@@ -1,0 +1,32 @@
+XCKU035-2FFVA1156E = $2082 Digikey as of 2022-04-25, $2026 avnet
+
+New proposal: 24x SGMII, 8x 10G SFP+, 2x 40G QSFP+
+Dual channel QDR-IV XP
+	CY7C4142KV13
+	144 Mbit, 4M x 36 bits
+	800 MHz = 1600 MT/s
+Block RAM based buffering for QSFP+ ports, use QDR for SGMII and SFP+ ports
+
+Max packet throughput
+	* 2 Mpps per 1G link
+	* 20 Mpps per 10G link
+	* 80 Mpps per 40G link
+
+	Total 2x 40G, 8x 10G, 24x 1G = 368 Mpps (1 lookup per 2.7 ns)
+
+	Existing implementation of address table is 64x 2KB blocks @ 156.25 MHz
+	4K rows, 4 way set associative, 72 bits per entry.
+	1 lookup per clock, pipelined
+	We need to more than double this!
+
+Switch fabric link selection
+	Driven by exit ports
+	Every clock, if not already forwarding a packet...
+		Each port has a bitmask indicating whether it wants to send to us
+		If our bit is set, read the packet into our queue
+
+		How to handle multi/broadcast? (for now treat as the same?)
+		Global barrier sync is the easiest option but will potentially hurt performance
+			Set RTS to all ports that have broadcasts pending
+			Wait until they finish forwarding and assert CTS
+			Then push the packet
