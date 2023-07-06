@@ -64,10 +64,22 @@ public:
 
 protected:
 	virtual void OnExecute();
+	void OnExecuteRoot();
+	void OnExecuteInterface();
+
+	void OnInterfaceCommand();
+	void OnShowCommand();
+	void OnShowInterfaceCommand();
+	void OnShowInterfaceStatus();
+	void OnShowVersion();
 
 	//SSHOutputStream m_stream;
 	CLIOutputStream* m_stream;
 
+	///@brief The interface we're working with (if in config-interface mode)
+	uint32_t m_activeInterface;
+
+	///@brief Hostname (only used for display)
 	char m_hostname[33];
 };
 

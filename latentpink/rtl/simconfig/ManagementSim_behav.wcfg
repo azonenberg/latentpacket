@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="ManagementSim_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="ManagementSim" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="120.202457 us"></ZoomEndTime>
+      <Cursor1Time time="1.314667 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="296"></NameColumnWidth>
+      <ValueColumnWidth column_width="243"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="28" />
+   <wvobject type="logic" fp_name="/ManagementSim/clk_125mhz_p">
+      <obj_property name="ElementShortName">clk_125mhz_p</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz_p</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_125mhz_n">
+      <obj_property name="ElementShortName">clk_125mhz_n</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_125mhz">
+      <obj_property name="ElementShortName">clk_125mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_125mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_250mhz">
+      <obj_property name="ElementShortName">clk_250mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_250mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_312p5mhz">
+      <obj_property name="ElementShortName">clk_312p5mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_312p5mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_400mhz">
+      <obj_property name="ElementShortName">clk_400mhz</obj_property>
+      <obj_property name="ObjectShortName">clk_400mhz</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_625mhz_0">
+      <obj_property name="ElementShortName">clk_625mhz_0</obj_property>
+      <obj_property name="ObjectShortName">clk_625mhz_0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_625mhz_90">
+      <obj_property name="ElementShortName">clk_625mhz_90</obj_property>
+      <obj_property name="ObjectShortName">clk_625mhz_90</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider382" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/pll_main_lock">
+      <obj_property name="ElementShortName">pll_main_lock</obj_property>
+      <obj_property name="ObjectShortName">pll_main_lock</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_ram">
+      <obj_property name="ElementShortName">clk_ram</obj_property>
+      <obj_property name="ObjectShortName">clk_ram</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_ram_ctl">
+      <obj_property name="ElementShortName">clk_ram_ctl</obj_property>
+      <obj_property name="ObjectShortName">clk_ram_ctl</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/clk_ram_90">
+      <obj_property name="ElementShortName">clk_ram_90</obj_property>
+      <obj_property name="ObjectShortName">clk_ram_90</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/pll_ram_lock">
+      <obj_property name="ElementShortName">pll_ram_lock</obj_property>
+      <obj_property name="ObjectShortName">pll_ram_lock</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider383" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/die_serial">
+      <obj_property name="ElementShortName">die_serial[63:0]</obj_property>
+      <obj_property name="ObjectShortName">die_serial[63:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/die_serial_valid">
+      <obj_property name="ElementShortName">die_serial_valid</obj_property>
+      <obj_property name="ObjectShortName">die_serial_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/idcode">
+      <obj_property name="ElementShortName">idcode[31:0]</obj_property>
+      <obj_property name="ObjectShortName">idcode[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/idcode_valid">
+      <obj_property name="ElementShortName">idcode_valid</obj_property>
+      <obj_property name="ObjectShortName">idcode_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider404" type="divider">
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/iface/reading">
+      <obj_property name="ElementShortName">reading</obj_property>
+      <obj_property name="ObjectShortName">reading</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/iface/count">
+      <obj_property name="ElementShortName">count[7:0]</obj_property>
+      <obj_property name="ObjectShortName">count[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/mbridge/rd_en">
+      <obj_property name="ElementShortName">rd_en</obj_property>
+      <obj_property name="ObjectShortName">rd_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/mbridge/rd_addr">
+      <obj_property name="ElementShortName">rd_addr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_addr[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/mbridge/rd_len">
+      <obj_property name="ElementShortName">rd_len[15:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_len[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/mbridge/rd_valid">
+      <obj_property name="ElementShortName">rd_valid</obj_property>
+      <obj_property name="ObjectShortName">rd_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/mbridge/rd_data">
+      <obj_property name="ElementShortName">rd_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rd_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/mbridge/rd_pending">
+      <obj_property name="ElementShortName">rd_pending</obj_property>
+      <obj_property name="ObjectShortName">rd_pending</obj_property>
+   </wvobject>
+</wave_config>

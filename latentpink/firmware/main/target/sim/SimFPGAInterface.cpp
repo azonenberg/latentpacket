@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -29,43 +27,70 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`include "EthernetBus.svh"
+#include "latentpink.h"
+#include "SimFPGAInterface.h"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+SimFPGAInterface::SimFPGAInterface()
+{
+	//TODO: ensure these exist and are fifo devices
+	//Must open in this order
+
+	g_log("Initializing interface to FPGA simulation\n");
+	LogIndenter li(g_log);
+
+	m_fpRead = fopen("/tmp/sim-write-pipe", "r");
+	if(!m_fpRead)
+	{
+		perror("fail to open sim-write-pipe");
+		exit(1);
+	}
+
+	m_fpWrite = fopen("/tmp/sim-read-pipe", "w");
+	if(!m_fpWrite)
+	{
+		perror("fail to open sim-read-pipe");
+		exit(1);
+	}
+
+	//Send a bunch of NOPs during init
+	for(int i=0; i<10; i++)
+		Nop();
+
+	g_log("Simulation bridge is up\n");
+}
+
+SimFPGAInterface::~SimFPGAInterface()
+{
+	fclose(m_fpWrite);
+	fclose(m_fpRead);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Data I/O
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief Container for management logic
+	@brief Do nothing, but keep simulation time flowing
  */
-module ManagementSubsystem(
-	input wire					sys_clk,
+void SimFPGAInterface::Nop()
+{
+	fprintf(m_fpWrite, "nop\n");
+	fflush(m_fpWrite);
+}
 
-	input wire					mgmt0_rx_clk,
-	input wire					mgmt0_tx_clk,
+void SimFPGAInterface::BlockingRead(uint32_t insn, uint8_t* data, uint32_t len)
+{
+	//Write the "read data" request
+	fprintf(m_fpWrite, "read\n%d %d\n", insn, len);
+	fflush(m_fpWrite);
 
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	output EthernetTxBus		mgmt0_tx_bus,
-	input wire					mgmt0_tx_ready,
-	input wire					mgmt0_link_up,
-	input wire lspeed_t			mgmt0_link_speed
-);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// FIFO for storing incoming Ethernet frames
-
-	ManagementRxFifo rx_fifo(
-		.sys_clk(sys_clk),
-		.mgmt0_rx_clk(mgmt0_rx_clk),
-		.mgmt0_rx_bus(mgmt0_rx_bus),
-		.mgmt0_link_up(mgmt0_link_up)
-	);
-
-	//DEBUG: vio on tx bus so it doesn't get optimized out
-	vio_1 vio(
-		.clk(mgmt0_tx_clk),
-		.probe_in0(mgmt0_tx_ready),
-		.probe_out0(mgmt0_tx_bus));
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI device controller
-
-endmodule
+	//Get the reply back
+	unsigned int tmp;
+	for(uint32_t i=0; i<len; i++)
+	{
+		fscanf(m_fpRead, "%x", &tmp);
+		data[i] = tmp;
+	}
+}

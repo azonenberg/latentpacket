@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -29,43 +27,26 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`include "EthernetBus.svh"
+#ifndef fpgainterface_h
+#define fpgainterface_h
 
-/**
-	@file
-	@author Andrew D. Zonenberg
-	@brief Container for management logic
- */
-module ManagementSubsystem(
-	input wire					sys_clk,
+class FPGAInterface
+{
+public:
+	virtual ~FPGAInterface()
+	{}
 
-	input wire					mgmt0_rx_clk,
-	input wire					mgmt0_tx_clk,
+	virtual void Nop()
+	{};
 
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	output EthernetTxBus		mgmt0_tx_bus,
-	input wire					mgmt0_tx_ready,
-	input wire					mgmt0_link_up,
-	input wire lspeed_t			mgmt0_link_speed
-);
+	virtual void BlockingRead(uint32_t insn, uint8_t* data, uint32_t len) = 0;
+};
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// FIFO for storing incoming Ethernet frames
+//must match regid_t in ManagementRegisterInterface.sv
+enum regid_t
+{
+	REG_FPGA_IDCODE	= 0x0000,
+	REG_FPGA_SERIAL	= 0x0004
+};
 
-	ManagementRxFifo rx_fifo(
-		.sys_clk(sys_clk),
-		.mgmt0_rx_clk(mgmt0_rx_clk),
-		.mgmt0_rx_bus(mgmt0_rx_bus),
-		.mgmt0_link_up(mgmt0_link_up)
-	);
-
-	//DEBUG: vio on tx bus so it doesn't get optimized out
-	vio_1 vio(
-		.clk(mgmt0_tx_clk),
-		.probe_in0(mgmt0_tx_ready),
-		.probe_out0(mgmt0_tx_bus));
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI device controller
-
-endmodule
+#endif

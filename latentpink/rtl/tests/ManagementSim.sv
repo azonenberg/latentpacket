@@ -31,41 +31,114 @@
 
 `include "EthernetBus.svh"
 
-/**
-	@file
-	@author Andrew D. Zonenberg
-	@brief Container for management logic
- */
-module ManagementSubsystem(
-	input wire					sys_clk,
-
-	input wire					mgmt0_rx_clk,
-	input wire					mgmt0_tx_clk,
-
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	output EthernetTxBus		mgmt0_tx_bus,
-	input wire					mgmt0_tx_ready,
-	input wire					mgmt0_link_up,
-	input wire lspeed_t			mgmt0_link_speed
-);
+module ManagementSim();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// FIFO for storing incoming Ethernet frames
+	// Simulated external oscillator
 
-	ManagementRxFifo rx_fifo(
-		.sys_clk(sys_clk),
-		.mgmt0_rx_clk(mgmt0_rx_clk),
-		.mgmt0_rx_bus(mgmt0_rx_bus),
-		.mgmt0_link_up(mgmt0_link_up)
+	logic	clk_125mhz_p = 1;
+	logic	clk_125mhz_n = 0;
+
+	always begin
+		#4;
+		clk_125mhz_p = !clk_125mhz_p;
+		clk_125mhz_n = !clk_125mhz_n;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Clock synthesis
+
+	wire clk_125mhz;
+	wire clk_250mhz;
+	wire clk_312p5mhz;
+	wire clk_400mhz;
+	wire clk_625mhz_0;
+	wire clk_625mhz_90;
+
+	wire pll_main_lock;
+
+	wire clk_ram;
+	wire clk_ram_ctl;
+	wire clk_ram_90;
+
+	wire pll_ram_lock;
+
+	ClockGeneration clk_system(
+		.clk_125mhz_p(clk_125mhz_p),
+		.clk_125mhz_n(clk_125mhz_n),
+
+		.clk_125mhz(clk_125mhz),
+		.clk_250mhz(clk_250mhz),
+		.clk_312p5mhz(clk_312p5mhz),
+		.clk_400mhz(clk_400mhz),
+		.clk_625mhz_0(clk_625mhz_0),
+		.clk_625mhz_90(clk_625mhz_90),
+
+		.pll_main_lock(pll_main_lock),
+
+		.clk_ram(clk_ram),
+		.clk_ram_ctl(clk_ram_ctl),
+		.clk_ram_90(clk_ram_90),
+
+		.pll_ram_lock(pll_ram_lock)
 	);
 
-	//DEBUG: vio on tx bus so it doesn't get optimized out
-	vio_1 vio(
-		.clk(mgmt0_tx_clk),
-		.probe_in0(mgmt0_tx_ready),
-		.probe_out0(mgmt0_tx_bus));
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Device information
+
+	logic	clk_50mhz = 0;
+	always begin
+		#10;
+		clk_50mhz = !clk_50mhz;
+	end
+
+	wire[63:0]	die_serial;
+	wire		die_serial_valid;
+
+	wire[31:0]	idcode;
+	wire		idcode_valid;
+
+	DeviceInfo_7series info(
+		.clk(clk_50mhz),
+
+		.die_serial(die_serial),
+		.die_serial_valid(die_serial_valid),
+		.idcode(idcode),
+		.idcode_valid(idcode_valid)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI device controller
+	// The management interface
+
+	wire		mgmt_rd_en;
+	wire[15:0]	mgmt_rd_addr;
+	wire[15:0]	mgmt_rd_len;
+	wire		mgmt_rd_valid;
+	wire[7:0]	mgmt_rd_data;
+
+	SimulationManagementBridge mbridge(
+		.clk(clk_ram_ctl),
+
+		.rd_en(mgmt_rd_en),
+		.rd_addr(mgmt_rd_addr),
+		.rd_len(mgmt_rd_len),
+		.rd_valid(mgmt_rd_valid),
+		.rd_data(mgmt_rd_data)
+	);
+
+	ManagementRegisterInterface iface(
+		.clk(clk_ram_ctl),
+
+		.rd_en(mgmt_rd_en),
+		.rd_addr(mgmt_rd_addr),
+		.rd_len(mgmt_rd_len),
+		.rd_valid(mgmt_rd_valid),
+		.rd_data(mgmt_rd_data),
+
+		.die_serial_valid(die_serial_valid),
+		.die_serial(die_serial),
+		.idcode_valid(idcode_valid),
+		.idcode(idcode)
+	);
 
 endmodule

@@ -29,43 +29,96 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`include "EthernetBus.svh"
-
 /**
 	@file
-	@author Andrew D. Zonenberg
-	@brief Container for management logic
+	@author	Andrew D. Zonenberg
+	@brief	Far end of SimFPGAInterface bridge
  */
-module ManagementSubsystem(
-	input wire					sys_clk,
+module SimulationManagementBridge(
+	input wire		clk,
 
-	input wire					mgmt0_rx_clk,
-	input wire					mgmt0_tx_clk,
+	output logic		rd_en	= 0,
+	output logic[15:0]	rd_addr	= 0,
+	output logic[15:0]	rd_len	= 0,
 
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	output EthernetTxBus		mgmt0_tx_bus,
-	input wire					mgmt0_tx_ready,
-	input wire					mgmt0_link_up,
-	input wire lspeed_t			mgmt0_link_speed
+	input wire			rd_valid,
+	input wire[7:0]		rd_data
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// FIFO for storing incoming Ethernet frames
+	// Input processing loop
 
-	ManagementRxFifo rx_fifo(
-		.sys_clk(sys_clk),
-		.mgmt0_rx_clk(mgmt0_rx_clk),
-		.mgmt0_rx_bus(mgmt0_rx_bus),
-		.mgmt0_link_up(mgmt0_link_up)
-	);
+	integer hwrite;
+	integer hread;
 
-	//DEBUG: vio on tx bus so it doesn't get optimized out
-	vio_1 vio(
-		.clk(mgmt0_tx_clk),
-		.probe_in0(mgmt0_tx_ready),
-		.probe_out0(mgmt0_tx_bus));
+	//Open the pipes to the SimFPGAInterface. Must be in this order
+	initial begin
+		$display("[%m] Opening management pipes");
+		hwrite = $fopen("/tmp/sim-write-pipe", "w");
+		hread = $fopen("/tmp/sim-read-pipe", "r");
+		$display("[%m] Management pipes opened");
+	end
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI device controller
+	string op;
+	logic[15:0] addr	= 0;
+	logic[15:0] len		= 0;
+	logic done			= 0;
+	logic[15:0]	rcount	= 0;
+
+	logic	rd_pending	= 0;
+
+	always_ff @(posedge clk) begin
+
+		rd_en	<= 0;
+
+		if(rd_pending) begin
+
+			if(rd_valid) begin
+				$fdisplay(hwrite, "%x\n", rd_data);
+				$fflush(hwrite);
+				rcount		= rcount + 1;
+
+				if(rcount >= len)
+					rd_pending	<= 0;
+			end
+
+		end
+
+		//Read command (nop, read, write, etc)
+		else if(0 != $fscanf(hread, "%s", op)) begin
+
+			//Begin a read request
+			if(op == "read") begin
+				$fscanf(hread, "%d %d", addr, len);
+				$display("[%m] read %d bytes from 0x%x", len, addr);
+
+				rd_en		<= 1;
+				rd_len		<= len;
+				rd_addr		<= addr;
+				rd_pending	<= 1;
+				rcount		= 0;
+
+			end
+
+			//Nothing to do
+			else if(op == "nop") begin
+			end
+
+			//Invalid command
+			else begin
+				$display("[%m] op = %s (unrecognized)", op);
+			end
+
+		end
+
+		//Bridge dropped, stop communication
+		else begin
+			if(!done) begin
+				$display("[%m] Simulation bridge disconnected");
+				done = 1;
+			end
+		end
+
+	end
 
 endmodule

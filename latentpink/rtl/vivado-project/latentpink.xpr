@@ -59,7 +59,7 @@
     <Option Name="IPUserFilesDir" Val="$PIPUSERFILESDIR"/>
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="598"/>
+    <Option Name="WTXSimLaunchSim" Val="702"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -461,6 +461,20 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../../../antikernel-ipcores/device_abstraction/DeviceInfo_7series.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../mgmt/ManagementRegisterInterface.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="LatentPinkTopLevel"/>
@@ -629,12 +643,39 @@
       </File>
       <File Path="$PPRDIR/../simconfig/PacketBufferingSim_behav.wcfg">
         <FileInfo>
+          <Attr Name="UserDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../simutil/SimulationManagementBridge.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../ingress/IngressPortState.svh">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+          <Attr Name="IsVisible" Val="1"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../tests/ManagementSim.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../simconfig/ManagementSim_behav.wcfg">
+        <FileInfo>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="PacketBufferingSim"/>
+        <Option Name="TopModule" Val="ManagementSim"/>
         <Option Name="TopLib" Val="xil_defaultlib"/>
         <Option Name="TransportPathDelay" Val="0"/>
         <Option Name="TransportIntDelay" Val="0"/>
@@ -650,7 +691,8 @@
         <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/IngressFifoSim_behav.wcfg"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/VlanUntaggerSim_behav.wcfg"/>
         <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/PacketBufferingSim_behav.wcfg"/>
-        <Option Name="xsim.simulate.runtime" Val="3000ns"/>
+        <Option Name="XSimWcfgFile" Val="$PPRDIR/../simconfig/ManagementSim_behav.wcfg"/>
+        <Option Name="xsim.simulate.runtime" Val="10ms"/>
         <Define Name="XILINX_7SERIES" Val="1"/>
         <Define Name="XILINX_KINTEX7" Val="1"/>
         <Define Name="XILINX_SPEEDGRADE" Val="2"/>
@@ -1023,7 +1065,7 @@
         <ReportConfig DisplayName="report_webtalk" Name="impl_1_bitstream_report_webtalk_0" Spec="" RunStep="write_bitstream" ReportFile="usage_statistics_webtalk.html">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
-        <ReportConfig DisplayName="implementation_log" Name="impl_1_bitstream_implementation_log_0" Spec="" RunStep="write_bitstream">
+        <ReportConfig DisplayName="implementation_log" Name="impl_1_bitstream_implementation_log_0" Spec="" RunStep="write_bitstream" ReportFile="LatentPinkTopLevel.vdi">
           <ReportConfigOption Name="dummy_option" Type="string"/>
         </ReportConfig>
       </ReportStrategy>

@@ -28,10 +28,20 @@
 ***********************************************************************************************************************/
 
 #include "latentpink.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/select.h>
 #include <termios.h>
 #include "STDOutputStream.h"
 #include "STDCharacterDevice.h"
 #include "../../cli/SwitchCLISessionContext.h"
+
+TestStorageBank g_leftBank;
+TestStorageBank g_rightBank;
+
+void LoadKVS();
 
 int main(int argc, char* argv[])
 {
@@ -55,17 +65,21 @@ int main(int argc, char* argv[])
 	//Initialize the logger
 	STDCharacterDevice logdev;
 	Timer timer;
-	g_log.Initialize(&logdev, &timer);
-	g_log("Logging initialized\n");
+	InitLog(&logdev, &timer);
 
-	//Initialize for main event loop
+	//Output stream for main event loop
 	STDOutputStream stream;
 
 	//Initialize the key-value store
-	TestStorageBank left;
-	TestStorageBank right;
-	KVS kvs(&left, &right, 256);
-	g_kvs = &kvs;
+	LoadKVS();
+	InitKVS(&g_leftBank, &g_rightBank, 256);
+
+	DetectHardware();
+
+	//Set up the FPGA and start bringing up stuff there
+	InitFPGAInterface();
+	InitFPGA();
+	InitInterfaces();
 
 	//Initialize the CLI
 	SwitchCLISessionContext context;
@@ -73,10 +87,45 @@ int main(int argc, char* argv[])
 	context.PrintPrompt();
 
 	//Run main event loop
+	timeval timeout;
 	while(true)
 	{
-		char c = getchar();
-		context.OnKeystroke(c);
+		//Read next keystroke, or give up and time out after 250ms
+		fd_set set;
+		FD_ZERO(&set);
+		FD_SET(STDIN_FILENO, &set);
+		timeout.tv_sec = 0;
+		timeout.tv_usec = 250000;
+		if(1 == select(STDIN_FILENO+1, &set, nullptr, nullptr, &timeout))
+		{
+			char c;
+			read(STDIN_FILENO, &c, 1);
+			context.OnKeystroke(c);
+		}
+
+		//Time out, nothing to do. Keep simulation time moving
+		else
+			g_fpga->Nop();
+
+		fflush(stdout);
 	}
 	return 0;
+}
+
+/**
+	@brief Load KVS data from file
+ */
+void LoadKVS()
+{
+	g_leftBank.Load("kvs-left.bin");
+	g_rightBank.Load("kvs-right.bin");
+}
+
+/**
+	@brief Persist KVS data to file
+ */
+void OnShutdown()
+{
+	g_leftBank.Serialize("kvs-left.bin");
+	g_rightBank.Serialize("kvs-right.bin");
 }

@@ -10,6 +10,8 @@ sim: CXXFLAGS += -DSIMULATION -DHAVE_TIM -lrt
 sim:
 	cd output/sim
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/target/sim/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/init/CommonInit.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/init/SimInit.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/misc/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/cli/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/stm32-cpp/src/util/*.cpp || exit 1

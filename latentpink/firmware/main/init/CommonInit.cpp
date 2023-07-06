@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -29,43 +27,86 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`include "EthernetBus.svh"
-
 /**
 	@file
-	@author Andrew D. Zonenberg
-	@brief Container for management logic
+	@author	Andrew D. Zonenberg
+	@brief	Common initialization used by both simulation and real hardware
  */
-module ManagementSubsystem(
-	input wire					sys_clk,
 
-	input wire					mgmt0_rx_clk,
-	input wire					mgmt0_tx_clk,
+#include "latentpink.h"
 
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	output EthernetTxBus		mgmt0_tx_bus,
-	input wire					mgmt0_tx_ready,
-	input wire					mgmt0_link_up,
-	input wire lspeed_t			mgmt0_link_speed
-);
+/**
+	@brief Initialize the logging library
+ */
+void InitLog(CharacterDevice* logdev, Timer* timer)
+{
+	g_logTimer = timer;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// FIFO for storing incoming Ethernet frames
+	g_log.Initialize(logdev, timer);
+	g_log("Logging ready\n");
+}
 
-	ManagementRxFifo rx_fifo(
-		.sys_clk(sys_clk),
-		.mgmt0_rx_clk(mgmt0_rx_clk),
-		.mgmt0_rx_bus(mgmt0_rx_bus),
-		.mgmt0_link_up(mgmt0_link_up)
-	);
+/**
+	@brief Set up the microkvs key-value store for persisting our configuration
+ */
+void InitKVS(StorageBank* left, StorageBank* right, uint32_t logsize)
+{
+	g_log("Initializing microkvs key-value store\n");
+	static KVS kvs(left, right, logsize);
+	g_kvs = &kvs;
 
-	//DEBUG: vio on tx bus so it doesn't get optimized out
-	vio_1 vio(
-		.clk(mgmt0_tx_clk),
-		.probe_in0(mgmt0_tx_ready),
-		.probe_out0(mgmt0_tx_bus));
+	LogIndenter li(g_log);
+	g_log("Block size:  %d bytes\n", kvs.GetBlockSize());
+	g_log("Log:         %d / %d slots free\n", (int)kvs.GetFreeLogEntries(), (int)kvs.GetLogCapacity());
+	g_log("Data:        %d / %d bytes free\n", (int)kvs.GetFreeDataSpace(), (int)kvs.GetDataCapacity());
+	g_log("Active bank: %s\n", kvs.IsLeftBankActive() ? "left" : "right");
+}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI device controller
+/**
+	@brief Bring up the control interface to the FPGA
+ */
+void InitFPGA()
+{
+	g_log("Initializing FPGA\n");
+	LogIndenter li(g_log);
 
-endmodule
+	//Wait 500ms to make sure the FPGA is booted
+	//TODO: more formal handshake
+	g_log("Waiting for boot\n");
+	g_logTimer->Sleep(5000);
+
+	//Read the FPGA IDCODE and serial number
+	uint8_t buf[8];
+	g_fpga->BlockingRead(REG_FPGA_IDCODE, buf, 4);
+	uint32_t idcode = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+	g_fpga->BlockingRead(REG_FPGA_SERIAL, buf, 8);
+
+	//Print status
+	switch(idcode & 0x0fffffff)
+	{
+		case 0x364c093:
+			g_log("IDCODE: %08x (XC7K160T rev %d)\n", idcode, idcode >> 28);
+			break;
+
+		default:
+			g_log("IDCODE: %08x (unknown device, rev %d)\n", idcode, idcode >> 28);
+			break;
+	}
+	g_log("Serial: %02x%02x%02x%02x%02x%02x%02x%02x\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+}
+
+/**
+	@brief Initialize all of our network interfaces
+ */
+void InitInterfaces()
+{
+	//TODO: load saved config for each interfac
+
+	for(uint32_t i=0; i<NUM_PORTS; i++)
+	{
+		//Mark each interface as down
+		g_linkState[i] = LINK_STATE_DOWN;
+		g_linkSpeed[i] = LINK_SPEED_1G;
+	}
+	g_linkSpeed[NUM_PORTS-1] = LINK_SPEED_10G;
+}

@@ -50,7 +50,50 @@
 #include "BridgeCryptoEngine.h"
 */
 
+#include "misc/FPGAInterface.h"
+
 extern KVS* g_kvs;
 extern Logger g_log;
+extern FPGAInterface* g_fpga;
+extern Timer* g_logTimer;
+
+//includes fabric ports, management, and uplink
+#define NUM_PORTS 16
+
+enum linkstate_t
+{
+	LINK_STATE_DOWN,			//no link partner or failure to link
+	LINK_STATE_UP,				//active
+	LINK_STATE_ADMIN_DOWN,		//user forced the port off
+	LINK_STATE_ERR_DISABLE,		//hardware failure or similar
+	LINK_STATE_TESTPATTERN		//sending test pattern
+};
+
+enum linkspeed_t
+{
+	LINK_SPEED_10M,
+	LINK_SPEED_100M,
+	LINK_SPEED_1G,
+	LINK_SPEED_10G
+};
+
+extern linkstate_t g_linkState[NUM_PORTS];
+extern linkspeed_t g_linkSpeed[NUM_PORTS];
+extern const char* g_linkStateNames[];
+extern const char* g_linkSpeedNames[];
+extern const char* g_interfaceNames[];
+extern const char g_interfaceDescriptions[NUM_PORTS][64];
+
+void InitLog(CharacterDevice* logdev, Timer* timer);
+void InitKVS(StorageBank* left, StorageBank* right, uint32_t logsize);
+void InitFPGAInterface();
+void InitFPGA();
+void InitInterfaces();
+
+void DetectHardware();
+
+#ifdef SIMULATION
+void OnShutdown();
+#endif
 
 #endif
