@@ -157,6 +157,8 @@ SwitchCLISessionContext::SwitchCLISessionContext()
 	: CLISessionContext(g_rootCommands)
 	, m_activeInterface(0)
 {
+	memset(m_hostname, 0, sizeof(m_hostname));
+
 	//Read hostname, set to default value if not found
 	auto hlog = g_kvs->FindObject(hostname_objid);
 	if(hlog)
