@@ -112,7 +112,6 @@ module ManagementSim();
 
 	wire		mgmt_rd_en;
 	wire[15:0]	mgmt_rd_addr;
-	wire[15:0]	mgmt_rd_len;
 	wire		mgmt_rd_valid;
 	wire[7:0]	mgmt_rd_data;
 
@@ -121,7 +120,6 @@ module ManagementSim();
 
 		.rd_en(mgmt_rd_en),
 		.rd_addr(mgmt_rd_addr),
-		.rd_len(mgmt_rd_len),
 		.rd_valid(mgmt_rd_valid),
 		.rd_data(mgmt_rd_data)
 	);
@@ -131,7 +129,6 @@ module ManagementSim();
 
 		.rd_en(mgmt_rd_en),
 		.rd_addr(mgmt_rd_addr),
-		.rd_len(mgmt_rd_len),
 		.rd_valid(mgmt_rd_valid),
 		.rd_data(mgmt_rd_data),
 

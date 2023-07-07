@@ -46,9 +46,12 @@ module ManagementRegisterInterface(
 	//Data bus from QSPI interface or simulation bridge
 	input wire			rd_en,
 	input wire[15:0]	rd_addr,
-	input wire[15:0]	rd_len,
 	output logic		rd_valid	= 0,
 	output logic[7:0]	rd_data		= 0,
+
+	input wire			wr_en,
+	input wire[15:0]	wr_addr,
+	input wire[7:0]		wr_data,
 
 	//Device information bus
 	//Must be divided down from core clock, but phase aligned
@@ -85,48 +88,37 @@ module ManagementRegisterInterface(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Address decoding and muxing logic
 
-	logic[7:0]	count	= 0;
 	logic		reading	= 0;
 
-	logic[15:0]	rd_addr_real;
+	logic[15:0]	rd_addr;
 
 	always_ff @(posedge clk) begin
 
 		rd_valid	<= 0;
 
 		//Start a new read
-		if(rd_en) begin
-			count	<= 0;
+		if(rd_en)
 			reading	<= 1;
-		end
-
-		//Read address within burst
-		rd_addr_real = rd_addr + count;
 
 		//Continue a read
-		if(reading) begin
+		if(rd_en || reading) begin
 
 			//Data not ready? Wait
-			if( (rd_addr_real >= REG_FPGA_IDCODE) && (rd_addr_real <= REG_FPGA_IDCODE_3) && !idcode_valid) begin
+			if( (rd_addr >= REG_FPGA_IDCODE) && (rd_addr <= REG_FPGA_IDCODE_3) && !idcode_valid) begin
 			end
-			else if( (rd_addr_real >= REG_FPGA_SERIAL) && (rd_addr_real <= REG_FPGA_SERIAL_7) && !die_serial_valid) begin
+			else if( (rd_addr >= REG_FPGA_SERIAL) && (rd_addr <= REG_FPGA_SERIAL_7) && !die_serial_valid) begin
 			end
 
 			//Data is ready
 			else begin
 
 				rd_valid	<= 1;
-				count		<= count + 1;
+				reading		<= 0;
 
-				//Done?
-				if(count+1 >= rd_len) begin
-					count	<= 0;
-					reading	<= 0;
-				end
 			end
 
 			//Main register decoder
-			case(rd_addr_real)
+			case(rd_addr)
 
 				REG_FPGA_IDCODE:	rd_data <= idcode[3*8 +: 8];
 				REG_FPGA_IDCODE_1:	rd_data <= idcode[2*8 +: 8];

@@ -43,7 +43,7 @@ module ClockGeneration(
 	//PLL A: 1250 MHz VCO (x10)
 	output wire			clk_125mhz,			//1x RGMII
 	output wire			clk_250mhz,			//2x RGMII
-	output wire			clk_312p5mhz,		//Main switch fabric clock
+	output wire			clk_312p5mhz,		//SGMII oversampling clock, divided
 	output wire			clk_400mhz,			//IODELAY calibration for SGMII
 	output wire			clk_625mhz_0,		//SGMII oversampling clock, 0 degree phase
 	output wire			clk_625mhz_90,		//SGMII oversampling clock, 90 degree phase
@@ -56,6 +56,7 @@ module ClockGeneration(
 	output wire			clk_ram,		//VCO/4 = 375 MHz
 	output wire			clk_ram_ctl,	//VCO/8 = 187.5 MHz
 	output wire			clk_ram_90,		//VCO/4 = 375 MHz
+	output wire			clk_sysinfo,	//VCO / 16 = 93.75 MHz
 
 	output wire			pll_ram_lock
 );
@@ -178,13 +179,14 @@ module ClockGeneration(
 	wire	clk_ram_raw;
 	wire	clk_ram_ctl_raw;
 	wire	clk_ram_90_raw;
+	wire	clk_sysinfo_raw;
 
 	PLLE2_BASE #(
 		.BANDWIDTH("OPTIMIZED"),
 		.CLKOUT0_DIVIDE(4),			//1500 MHz / 4 = 375 MHz
 		.CLKOUT1_DIVIDE(8),			//1500 MHz / 8 = 187.5 MHz
 		.CLKOUT2_DIVIDE(4),			//1500 MHz / 4 = 375 MHz
-		.CLKOUT3_DIVIDE(10),		//unused
+		.CLKOUT3_DIVIDE(16),		//1500 MHz / 16 = 93.75 MHz
 		.CLKOUT4_DIVIDE(10),		//unused
 		.CLKOUT5_DIVIDE(10),		//unused
 
@@ -217,7 +219,7 @@ module ClockGeneration(
 		.CLKOUT0(clk_ram_raw),
 		.CLKOUT1(clk_ram_ctl_raw),
 		.CLKOUT2(clk_ram_90_raw),
-		.CLKOUT3(),
+		.CLKOUT3(clk_sysinfo_raw),
 		.CLKOUT4(),
 		.CLKOUT5(),
 		.CLKFBOUT(ram_fbclk),
@@ -237,6 +239,11 @@ module ClockGeneration(
 	BUFGCE buf_ram_90(
 		.I(clk_ram_90_raw),
 		.O(clk_ram_90),
+		.CE(pll_ram_lock));
+
+	BUFGCE buf_sysinfo(
+		.I(clk_sysinfo_raw),
+		.O(clk_sysinfo),
 		.CE(pll_ram_lock));
 
 endmodule

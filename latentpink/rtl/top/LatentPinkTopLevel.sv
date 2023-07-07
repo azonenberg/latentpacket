@@ -243,6 +243,7 @@ module LatentPinkTopLevel(
 	wire clk_ram;
 	wire clk_ram_ctl;
 	wire clk_ram_90;
+	wire clk_sysinfo;
 
 	wire pll_ram_lock;
 
@@ -262,6 +263,7 @@ module LatentPinkTopLevel(
 		.clk_ram(clk_ram),
 		.clk_ram_ctl(clk_ram_ctl),
 		.clk_ram_90(clk_ram_90),
+		.clk_sysinfo(clk_sysinfo),
 
 		.pll_ram_lock(pll_ram_lock)
 	);
@@ -574,8 +576,11 @@ module LatentPinkTopLevel(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Management subsystem
 
+	//Run core of management logic in the RAM control domain so that we need less synchronizers
+	//187.5 MHz, Fmax for QSPI is 1/4 this, so QSPI must be under 46.875 MHz
 	ManagementSubsystem mgmt(
-		.sys_clk(clk_312p5mhz),
+		.sys_clk(clk_ram_ctl),
+		.clk_sysinfo(clk_sysinfo),
 
 		.mgmt0_rx_clk(mgmt0_rx_clk_buf),
 		.mgmt0_rx_bus(mgmt0_rx_bus),

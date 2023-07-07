@@ -32,93 +32,90 @@
 /**
 	@file
 	@author	Andrew D. Zonenberg
-	@brief	Far end of SimFPGAInterface bridge
+	@brief	Quad SPI interface
  */
-module SimulationManagementBridge(
+module ManagementBridge(
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// System clocks
+
 	input wire			clk,
 
-	output logic		rd_en	= 0,
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Bus to MCU
+
+	input wire			qspi_sck,
+	input wire			qspi_cs_n,
+	inout wire[3:0]		qspi_dq,
+	output logic		irq = 0,
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Bus to ManagementRegisterInterface
+
+	output wire			rd_en,
 	output logic[15:0]	rd_addr	= 0,
 
 	input wire			rd_valid,
-	input wire[7:0]		rd_data
-);
+	input wire[7:0]		rd_data,
+
+	output wire			wr_en,
+	output logic[15:0]	wr_addr	= 0,
+	output wire[7:0]	wr_data
+
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Input processing loop
+	// QSPI interface
 
-	integer hwrite;
-	integer hread;
+	wire		start;
+	wire		insn_valid;
+	wire[15:0]	insn;
+	logic		rd_mode		= 0;
+	wire		rd_ready;
 
-	//Open the pipes to the SimFPGAInterface. Must be in this order
-	initial begin
-		$display("[%m] Opening management pipes");
-		hwrite = $fopen("/tmp/sim-write-pipe", "w");
-		hread = $fopen("/tmp/sim-read-pipe", "r");
-		$display("[%m] Management pipes opened");
-	end
+	QSPIDeviceInterface #(
+		.INSN_BYTES(2)
+	) qspi (
+		.clk(clk),
+		.sck(qspi_sck),
+		.cs_n(qspi_cs_n),
+		.dq(qspi_dq),
 
-	string op;
-	logic[15:0] addr	= 0;
-	logic[15:0] len		= 0;
-	logic done			= 0;
-	logic[15:0]	rcount	= 0;
+		.start(start),
+		.insn_valid(insn_valid),
+		.insn(insn),
+		.wr_valid(wr_en),
+		.wr_data(wr_data),
 
-	logic	rd_pending	= 0;
+		.rd_mode(rd_mode),
+		.rd_ready(rd_en),
+		.rd_valid(rd_valid),
+		.rd_data(rd_data)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Address counting
 
 	always_ff @(posedge clk) begin
 
-		rd_en	<= 0;
+		if(rd_en)
+			rd_addr		<= rd_addr + 1;
+		if(wr_en)
+			wr_addr		<= wr_addr + 1;
 
-		if(rd_pending) begin
+		//Process instruction
+		if(insn_valid) begin
 
-			if(rd_valid) begin
-				$fdisplay(hwrite, "%x\n", rd_data);
-				$fflush(hwrite);
-				rcount		= rcount + 1;
-
-				if(rcount >= len)
-					rd_pending	<= 0;
-				else begin
-					rd_en		<= 1;
-					rd_addr		<= rd_addr + 1;
-				end
-			end
+			//MSB of opcode is read flag (0=read, 1=write)
+			rd_mode		<= !insn[15];
+			rd_addr		<= {1'b0, insn[14:0]};
+			wr_addr		<= {1'b0, insn[14:0]};
 
 		end
 
-		//Read command (nop, read, write, etc)
-		else if(0 != $fscanf(hread, "%s", op)) begin
-
-			//Begin a read request
-			if(op == "read") begin
-				$fscanf(hread, "%d %d", addr, len);
-				$display("[%m] read %d bytes from 0x%x", len, addr);
-
-				rd_en		<= 1;
-				rd_addr		<= addr;
-				rd_pending	<= 1;
-				rcount		= 0;
-
-			end
-
-			//Nothing to do
-			else if(op == "nop") begin
-			end
-
-			//Invalid command
-			else begin
-				$display("[%m] op = %s (unrecognized)", op);
-			end
-
-		end
-
-		//Bridge dropped, stop communication
-		else begin
-			if(!done) begin
-				$display("[%m] Simulation bridge disconnected");
-				done = 1;
-			end
+		//Reset anything we need on CS# falling edge
+		if(start) begin
+			rd_mode		<= 0;
 		end
 
 	end
