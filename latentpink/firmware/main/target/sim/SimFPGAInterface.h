@@ -40,13 +40,7 @@ public:
 
 	virtual void Nop();
 	virtual void BlockingRead(uint32_t insn, uint8_t* data, uint32_t len);
-
-	uint32_t BlockingRead32(uint32_t insn, uint32_t addr)
-	{
-		uint32_t data;
-		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
-		return data;
-	}
+	virtual void BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len);
 
 protected:
 	FILE* m_fpWrite;

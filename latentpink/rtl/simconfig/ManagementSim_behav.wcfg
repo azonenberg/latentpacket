@@ -6,20 +6,21 @@
       <db_ref path="ManagementSim_behav.wdb" id="1">
          <top_modules>
             <top_module name="ManagementSim" />
+            <top_module name="\$unit_CRC32_Ethernet_x32_variable_lat2_sv_891335330 " />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="120.202457 us"></ZoomEndTime>
-      <Cursor1Time time="1.314667 us"></Cursor1Time>
+      <ZoomStartTime time="81,508.750 ns"></ZoomStartTime>
+      <ZoomEndTime time="82,710.251 ns"></ZoomEndTime>
+      <Cursor1Time time="82,510.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="296"></NameColumnWidth>
-      <ValueColumnWidth column_width="243"></ValueColumnWidth>
+      <ValueColumnWidth column_width="235"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="28" />
+   <WVObjectSize size="32" />
    <wvobject type="logic" fp_name="/ManagementSim/clk_125mhz_p">
       <obj_property name="ElementShortName">clk_125mhz_p</obj_property>
       <obj_property name="ObjectShortName">clk_125mhz_p</obj_property>
@@ -98,10 +99,6 @@
       <obj_property name="ElementShortName">reading</obj_property>
       <obj_property name="ObjectShortName">reading</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/ManagementSim/iface/count">
-      <obj_property name="ElementShortName">count[7:0]</obj_property>
-      <obj_property name="ObjectShortName">count[7:0]</obj_property>
-   </wvobject>
    <wvobject type="logic" fp_name="/ManagementSim/mbridge/rd_en">
       <obj_property name="ElementShortName">rd_en</obj_property>
       <obj_property name="ObjectShortName">rd_en</obj_property>
@@ -109,10 +106,6 @@
    <wvobject type="array" fp_name="/ManagementSim/mbridge/rd_addr">
       <obj_property name="ElementShortName">rd_addr[15:0]</obj_property>
       <obj_property name="ObjectShortName">rd_addr[15:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/ManagementSim/mbridge/rd_len">
-      <obj_property name="ElementShortName">rd_len[15:0]</obj_property>
-      <obj_property name="ObjectShortName">rd_len[15:0]</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/ManagementSim/mbridge/rd_valid">
       <obj_property name="ElementShortName">rd_valid</obj_property>
@@ -125,5 +118,28 @@
    <wvobject type="logic" fp_name="/ManagementSim/mbridge/rd_pending">
       <obj_property name="ElementShortName">rd_pending</obj_property>
       <obj_property name="ObjectShortName">rd_pending</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/mbridge/wr_pending">
+      <obj_property name="ElementShortName">wr_pending</obj_property>
+      <obj_property name="ObjectShortName">wr_pending</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/ManagementSim/mbridge/wr_en">
+      <obj_property name="ElementShortName">wr_en</obj_property>
+      <obj_property name="ObjectShortName">wr_en</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/mbridge/wr_addr">
+      <obj_property name="ElementShortName">wr_addr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_addr[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/mbridge/wr_data">
+      <obj_property name="ElementShortName">wr_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">wr_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider61" type="divider">
+   </wvobject>
+   <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan">
+      <obj_property name="ElementShortName">port_rx_vlan[14:0][11:0]</obj_property>
+      <obj_property name="ObjectShortName">port_rx_vlan[14:0][11:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
 </wave_config>

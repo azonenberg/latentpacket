@@ -115,13 +115,26 @@ module ManagementSim();
 	wire		mgmt_rd_valid;
 	wire[7:0]	mgmt_rd_data;
 
+	wire		mgmt_wr_en;
+	wire[15:0]	mgmt_wr_addr;
+	wire[7:0]	mgmt_wr_data;
+
+	wire[14:0]	port_rx_clk;
+	for(genvar g=0; g<15; g=g+1) begin
+		assign port_rx_clk[g] = clk_125mhz_p;
+	end
+
 	SimulationManagementBridge mbridge(
 		.clk(clk_ram_ctl),
 
 		.rd_en(mgmt_rd_en),
 		.rd_addr(mgmt_rd_addr),
 		.rd_valid(mgmt_rd_valid),
-		.rd_data(mgmt_rd_data)
+		.rd_data(mgmt_rd_data),
+
+		.wr_en(mgmt_wr_en),
+		.wr_addr(mgmt_wr_addr),
+		.wr_data(mgmt_wr_data)
 	);
 
 	ManagementRegisterInterface iface(
@@ -132,10 +145,17 @@ module ManagementSim();
 		.rd_valid(mgmt_rd_valid),
 		.rd_data(mgmt_rd_data),
 
+		.wr_en(mgmt_wr_en),
+		.wr_addr(mgmt_wr_addr),
+		.wr_data(mgmt_wr_data),
+
 		.die_serial_valid(die_serial_valid),
 		.die_serial(die_serial),
 		.idcode_valid(idcode_valid),
-		.idcode(idcode)
+		.idcode(idcode),
+
+		.port_rx_vlan(),
+		.port_rx_clk(port_rx_clk)
 	);
 
 endmodule

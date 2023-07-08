@@ -36,23 +36,31 @@
 	@author Andrew D. Zonenberg
 	@brief Container for management logic
  */
-module ManagementSubsystem(
-	input wire					sys_clk,
-	input wire					clk_sysinfo,
+module ManagementSubsystem #(
+	parameter NUM_PORTS						= 15
+)(
+	input wire						sys_clk,
+	input wire						clk_sysinfo,
 
-	input wire					qspi_sck,
-	input wire					qspi_cs_n,
-	inout wire[3:0]				qspi_dq,
-	output wire					irq,
+	input wire						qspi_sck,
+	input wire						qspi_cs_n,
+	inout wire[3:0]					qspi_dq,
+	output wire						irq,
 
-	input wire					mgmt0_rx_clk,
-	input wire					mgmt0_tx_clk,
+	input wire						mgmt0_rx_clk,
+	input wire						mgmt0_tx_clk,
 
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	output EthernetTxBus		mgmt0_tx_bus,
-	input wire					mgmt0_tx_ready,
-	input wire					mgmt0_link_up,
-	input wire lspeed_t			mgmt0_link_speed
+	input wire EthernetRxBus		mgmt0_rx_bus,
+	output EthernetTxBus			mgmt0_tx_bus,
+	input wire						mgmt0_tx_ready,
+	input wire						mgmt0_link_up,
+	input wire lspeed_t				mgmt0_link_speed,
+
+	//Configuration registers in port RX clock domains
+	input wire[NUM_PORTS-1:0]		port_rx_clk,
+	output vlan_t[NUM_PORTS-1:0]	port_rx_vlan,
+	output wire[NUM_PORTS-1:0]		port_rx_tagged_allowed,
+	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,12 +127,14 @@ module ManagementSubsystem(
 		.idcode_valid(idcode_valid)
 	);
 
-	//TODO: XADC logic so we can read PTV sensors etc?
+	//TODO: XADC so we can read PTV sensors etc?
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Register interface
 
-	ManagementRegisterInterface regs(
+	ManagementRegisterInterface #(
+		.NUM_PORTS(NUM_PORTS)
+	) regs (
 		.clk(sys_clk),
 
 		//Memory bus
@@ -141,7 +151,13 @@ module ManagementSubsystem(
 		.die_serial_valid(die_serial_valid),
 		.die_serial(die_serial),
 		.idcode_valid(idcode_valid),
-		.idcode(idcode)
+		.idcode(idcode),
+
+		//Control registers (port RX clock domain)
+		.port_rx_clk(port_rx_clk),
+		.port_rx_vlan(port_rx_vlan),
+		.port_rx_tagged_allowed(port_rx_tagged_allowed),
+		.port_rx_untagged_allowed(port_rx_untagged_allowed)
 	);
 
 endmodule

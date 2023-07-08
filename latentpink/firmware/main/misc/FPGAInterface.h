@@ -40,13 +40,45 @@ public:
 	{};
 
 	virtual void BlockingRead(uint32_t insn, uint8_t* data, uint32_t len) = 0;
+	virtual void BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len) = 0;
+
+	uint32_t BlockingRead32(uint32_t insn)
+	{
+		uint32_t data;
+		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
+		return data;
+	}
+
+	uint16_t BlockingRead16(uint32_t insn)
+	{
+		uint16_t data;
+		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
+		return data;
+	}
+
+	void BlockingWrite16(uint32_t insn, uint16_t data)
+	{ BlockingWrite(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data)); }
+
 };
 
 //must match regid_t in ManagementRegisterInterface.sv
 enum regid_t
 {
-	REG_FPGA_IDCODE	= 0x0000,
-	REG_FPGA_SERIAL	= 0x0004
+	REG_FPGA_IDCODE		= 0x0000,
+	REG_FPGA_SERIAL		= 0x0004,
+
+	REG_INTERFACE_BASE	= 0x4000
+};
+
+enum regconsts
+{
+	INTERFACE_STRIDE	= 0x0400
+};
+
+enum ifregid_t
+{
+	REG_VLAN_NUM		= 0x0000,
+	REG_TAG_MODE		= 0x0002
 };
 
 #endif

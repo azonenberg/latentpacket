@@ -777,8 +777,8 @@
         "C_PROBE_IN0_WIDTH": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "C_EN_SYNCHRONIZATION": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "C_NUM_PROBE_OUT": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "C_EN_PROBE_IN_ACTIVITY": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "C_NUM_PROBE_IN": [ { "value": "1", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "C_EN_PROBE_IN_ACTIVITY": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "all" } ],
+        "C_NUM_PROBE_IN": [ { "value": "1", "value_src": "user", "resolve_type": "user", "format": "long", "usage": "all" } ],
         "Component_Name": [ { "value": "vio_1", "resolve_type": "user", "usage": "all" } ]
       },
       "model_parameters": {
@@ -801,7 +801,7 @@
         "C_BUS_ADDR_WIDTH": [ { "value": "17", "format": "long", "usage": "all" } ],
         "C_BUS_DATA_WIDTH": [ { "value": "16", "format": "long", "usage": "all" } ],
         "C_NUM_PROBE_IN": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "C_EN_PROBE_IN_ACTIVITY": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
+        "C_EN_PROBE_IN_ACTIVITY": [ { "value": "0", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_NUM_PROBE_OUT": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "C_EN_SYNCHRONIZATION": [ { "value": "1", "resolve_type": "dependent", "format": "long", "usage": "all" } ],
         "C_PROBE_IN0_WIDTH": [ { "value": "1", "resolve_type": "dependent", "format": "long", "usage": "all" } ],

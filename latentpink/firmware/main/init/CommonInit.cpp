@@ -100,13 +100,21 @@ void InitFPGA()
  */
 void InitInterfaces()
 {
-	//TODO: load saved config for each interfac
-
 	for(uint32_t i=0; i<NUM_PORTS; i++)
 	{
+		//Base address of the interface
+		uint32_t ifbase = REG_INTERFACE_BASE + i*INTERFACE_STRIDE;
+
 		//Mark each interface as down
 		g_linkState[i] = LINK_STATE_DOWN;
 		g_linkSpeed[i] = LINK_SPEED_1G;
+
+		//TODO: load saved config for each interface
+
+		//Set all ports to VLAN 2
+		g_fpga->BlockingWrite16(ifbase + REG_VLAN_NUM, 2);
 	}
 	g_linkSpeed[NUM_PORTS-1] = LINK_SPEED_10G;
+
+	//Push initial configuration to the FPGA
 }

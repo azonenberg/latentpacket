@@ -41,7 +41,11 @@ module SimulationManagementBridge(
 	output logic[15:0]	rd_addr	= 0,
 
 	input wire			rd_valid,
-	input wire[7:0]		rd_data
+	input wire[7:0]		rd_data,
+
+	output logic		wr_en	= 0,
+	output logic[15:0]	wr_addr	= 0,
+	output logic[7:0]	wr_data	= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,10 +69,12 @@ module SimulationManagementBridge(
 	logic[15:0]	rcount	= 0;
 
 	logic	rd_pending	= 0;
+	logic	wr_pending	= 0;
 
 	always_ff @(posedge clk) begin
 
 		rd_en	<= 0;
+		wr_en	<= 0;
 
 		if(rd_pending) begin
 
@@ -87,6 +93,23 @@ module SimulationManagementBridge(
 
 		end
 
+		if(wr_pending) begin
+			$fscanf(hread, "%x", wr_data);
+
+			rcount		= rcount + 1;
+
+			if(rcount >= len)
+				wr_pending	<= 0;
+			else begin
+				wr_en		<= 1;
+				wr_addr		<= wr_addr + 1;
+			end
+		end
+
+		//Don't read commands if doing IO this cycle
+		if(rd_pending || wr_pending) begin
+		end
+
 		//Read command (nop, read, write, etc)
 		else if(0 != $fscanf(hread, "%s", op)) begin
 
@@ -98,6 +121,20 @@ module SimulationManagementBridge(
 				rd_en		<= 1;
 				rd_addr		<= addr;
 				rd_pending	<= 1;
+				rcount		= 0;
+
+			end
+
+			//Begin a write request
+			else if(op == "write") begin
+				$fscanf(hread, "%d %d", addr, len);
+				$display("[%m] write %d bytes to 0x%x", len, addr);
+
+				wr_en		<= 1;
+				wr_addr		<= addr;
+				wr_pending	<= 1;
+				$fscanf(hread, "%x", wr_data);
+
 				rcount		= 0;
 
 			end

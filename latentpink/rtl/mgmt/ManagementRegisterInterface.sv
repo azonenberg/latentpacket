@@ -38,31 +38,106 @@
 
 	Management registers have 16-bit addresses and are 8 bits in size.
  */
-module ManagementRegisterInterface(
+module ManagementRegisterInterface #(
+	parameter NUM_PORTS						= 15
+)(
 
 	//Core clock for the management domain
-	input wire			clk,
+	input wire						clk,
 
 	//Data bus from QSPI interface or simulation bridge
-	input wire			rd_en,
-	input wire[15:0]	rd_addr,
-	output logic		rd_valid	= 0,
-	output logic[7:0]	rd_data		= 0,
+	input wire						rd_en,
+	input wire[15:0]				rd_addr,
+	output logic					rd_valid	= 0,
+	output logic[7:0]				rd_data		= 0,
 
-	input wire			wr_en,
-	input wire[15:0]	wr_addr,
-	input wire[7:0]		wr_data,
+	input wire						wr_en,
+	input wire[15:0]				wr_addr,
+	input wire[7:0]					wr_data,
 
 	//Device information bus
 	//Must be divided down from core clock, but phase aligned
-	input wire			die_serial_valid,
-	input wire[63:0]	die_serial,
-	input wire			idcode_valid,
-	input wire[31:0]	idcode
+	input wire						die_serial_valid,
+	input wire[63:0]				die_serial,
+	input wire						idcode_valid,
+	input wire[31:0]				idcode,
+
+	//Configuration registers in port RX clock domains
+	input wire[NUM_PORTS-1:0]		port_rx_clk,
+	output vlan_t[NUM_PORTS-1:0]	port_rx_vlan,
+	output wire[NUM_PORTS-1:0]		port_rx_tagged_allowed,
+	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Synchronizers for per-port configuration registers
+
+	vlan_t[NUM_PORTS-1:0]	port_vlan;
+	logic[NUM_PORTS-1:0]	port_vlan_updated	= 0;
+
+	logic[NUM_PORTS-1:0]	port_tagged_allowed		= 0;
+	logic[NUM_PORTS-1:0]	port_untagged_allowed	= 0;
+	logic[NUM_PORTS-1:0]	port_tagmode_updated	= 0;
+
+	initial begin
+		for(integer i=0; i<NUM_PORTS; i=i+1) begin
+			port_vlan[i]	= 0;
+		end
+	end
+
+	for(genvar g=0; g<NUM_PORTS; g=g+1) begin : portsyncs
+
+		RegisterSynchronizer #(
+			.WIDTH($bits(vlan_t))
+		) sync_rx_vlan (
+			.clk_a(clk),
+			.en_a(port_vlan_updated[g]),
+			.ack_a(),
+			.reg_a(port_vlan[g]),
+
+			.clk_b(port_rx_clk[g]),
+			.updated_b(),
+			.reset_b(1'b0),
+			.reg_b(port_rx_vlan[g])
+		);
+
+		//TODO: TX vlan stuff
+
+		RegisterSynchronizer #(
+			.WIDTH(1)
+		) sync_rx_tagged_allowed (
+			.clk_a(clk),
+			.en_a(port_tagmode_updated[g]),
+			.ack_a(),
+			.reg_a(port_tagged_allowed[g]),
+
+			.clk_b(port_rx_clk[g]),
+			.updated_b(),
+			.reset_b(1'b0),
+			.reg_b(port_rx_tagged_allowed[g])
+		);
+
+		RegisterSynchronizer #(
+			.WIDTH(1)
+		) sync_rx_untagged_allowed (
+			.clk_a(clk),
+			.en_a(port_tagmode_updated[g]),
+			.ack_a(),
+			.reg_a(port_untagged_allowed[g]),
+
+			.clk_b(port_rx_clk[g]),
+			.updated_b(),
+			.reset_b(1'b0),
+			.reg_b(port_rx_untagged_allowed[g])
+		);
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// List of named registers
+
+	//Note that ManagementBridge uses MSB of address as read/write flag
+	//so we actually have only 15 bits available for addressing
 
 	//must match ManagementRegisterInterface in FPGAInterface.h
 	typedef enum logic[15:0]
@@ -81,20 +156,48 @@ module ManagementRegisterInterface(
 		REG_FPGA_SERIAL_6	= 16'h000a,
 		REG_FPGA_SERIAL_7	= 16'h000b,
 
+		//Per port configuration starts here
+		REG_INTERFACE_BASE	= 16'h4000,
+
+		//helper just so we can use commas to separate list items
 		REG_LAST
 
 	} regid_t;
+
+	//Amount of register address space allocated to each port
+	localparam INTERFACE_STRIDE	= 16'h0400;
+
+	//Register offsets within each interface block
+	typedef enum logic[15:0]
+	{
+		REG_VLAN_NUM		= 16'h0000,		//VLAN number
+		REG_VLAN_NUM_1		= 16'h0001,
+		REG_TAG_MODE		= 16'h0002,		//[0] = inbound tagged traffic allowed
+											//[1] = inbound untagged traffic allowed
+											//[2] = tag outbound traffic to native vlan
+											//[3] = tag outbound traffic to other vlans
+		REG_IF_LAST
+	} ifoff_t;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Address decoding and muxing logic
 
 	logic		reading	= 0;
 
-	logic[15:0]	rd_addr;
+	//Split interface config into port number and register ID
+	localparam PORT_BITS 	= 4;
+	localparam REGID_BITS	= 10;
+	logic[PORT_BITS-1:0]	rd_port		= 0;
+	logic[REGID_BITS-1:0]	rd_regid	= 0;
+
+	logic[PORT_BITS-1:0]	wr_port		= 0;
+	logic[REGID_BITS-1:0]	wr_regid	= 0;
 
 	always_ff @(posedge clk) begin
 
-		rd_valid	<= 0;
+		rd_valid				<= 0;
+		port_vlan_updated		<= 0;
+		port_tagmode_updated	<= 0;
 
 		//Start a new read
 		if(rd_en)
@@ -103,8 +206,23 @@ module ManagementRegisterInterface(
 		//Continue a read
 		if(rd_en || reading) begin
 
+			//Interface registers are decoded separately
+			if(rd_addr >= REG_INTERFACE_BASE) begin
+
+				//Extract port number and register ID
+				rd_port	= rd_addr[REGID_BITS +: PORT_BITS];
+				rd_regid = rd_addr[0 +: REGID_BITS];
+
+				//All OK if we get here
+				rd_valid	<= 1;
+				reading		<= 0;
+
+				//Note that multi byte registers are little endian for easier access from ARM (and x86 simulation) hosts
+
+			end
+
 			//Data not ready? Wait
-			if( (rd_addr >= REG_FPGA_IDCODE) && (rd_addr <= REG_FPGA_IDCODE_3) && !idcode_valid) begin
+			else if( (rd_addr >= REG_FPGA_IDCODE) && (rd_addr <= REG_FPGA_IDCODE_3) && !idcode_valid) begin
 			end
 			else if( (rd_addr >= REG_FPGA_SERIAL) && (rd_addr <= REG_FPGA_SERIAL_7) && !die_serial_valid) begin
 			end
@@ -136,6 +254,34 @@ module ManagementRegisterInterface(
 
 				default: begin
 					rd_data	<= 0;
+				end
+
+			endcase
+
+		end
+
+		//Execute a write
+		if(wr_en) begin
+
+			//Extract port number and register ID
+			wr_port	= wr_addr[REGID_BITS +: PORT_BITS];
+			wr_regid = wr_addr[0 +: REGID_BITS];
+
+			//Note that multi byte registers are little endian for easier access from ARM (and x86 simulation) hosts
+			case(wr_regid)
+
+				REG_VLAN_NUM:	port_vlan[wr_port][7:0]	<= wr_data;
+				REG_VLAN_NUM_1: begin
+					port_vlan[wr_port][11:8]	<= wr_data[3:0];
+					port_vlan_updated[wr_port]	<= 1;
+				end
+
+				REG_TAG_MODE: begin
+					port_tagged_allowed[wr_port]	<= wr_data[0];
+					port_untagged_allowed[wr_port]	<= wr_data[1];
+					port_tagmode_updated[wr_port]	<= 1;
+
+					//TODO: TX vlan stuff
 				end
 
 			endcase

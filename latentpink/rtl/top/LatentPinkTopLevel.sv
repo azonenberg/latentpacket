@@ -412,9 +412,10 @@ module LatentPinkTopLevel(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer inbound packets
 
-	vlan_t[NUM_PORTS-1:0]	port_vlan_rxclk;
-	wire[NUM_PORTS-1:0]		tagged_allowed;
-	wire[NUM_PORTS-1:0]		untagged_allowed;
+	vlan_t[NUM_PORTS-1:0]	port_rx_vlan;
+
+	wire[NUM_PORTS-1:0]		port_rx_tagged_allowed;
+	wire[NUM_PORTS-1:0]		port_rx_untagged_allowed;
 
 	wire[NUM_PORTS-1:0]		port_rx_clk;
 
@@ -463,9 +464,9 @@ module LatentPinkTopLevel(
 			qsgmii_mac_rx_bus
 		}),
 
-		.port_vlan(port_vlan_rxclk),
-		.tagged_allowed(tagged_allowed),
-		.untagged_allowed(untagged_allowed),
+		.port_vlan(port_rx_vlan),
+		.tagged_allowed(port_rx_tagged_allowed),
+		.untagged_allowed(port_rx_untagged_allowed),
 
 		.clk_ram_ctl(clk_ram_ctl),
 		.clk_ram(clk_ram),
@@ -489,16 +490,6 @@ module LatentPinkTopLevel(
 		.frame_last(frame_last),
 		.frame_data(frame_data)
 	);
-
-	//VIO to set control signals that aren't yet writable via management interface
-	for(genvar g=0; g<NUM_PORTS; g=g+1) begin
-		vio_2 vio_portstate(
-			.clk(port_rx_clk[g]),
-			.probe_out0(port_vlan_rxclk[g]),
-			.probe_out1(tagged_allowed[g]),
-			.probe_out2(untagged_allowed[g])
-		);
-	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Forwarding engine: takes frames out of the buffer and makes them go places
@@ -549,7 +540,7 @@ module LatentPinkTopLevel(
 
 	vio_1 vio_xg_tx(
 		.clk(xg0_mac_tx_clk),
-		.probe_in0(xg0_link_up),
+		.probe_in0(1'b0),
 		.probe_out0(xg0_mac_tx_bus));
 
 	vio_1 vio_g12_tx(
@@ -582,13 +573,23 @@ module LatentPinkTopLevel(
 		.sys_clk(clk_ram_ctl),
 		.clk_sysinfo(clk_sysinfo),
 
+		.qspi_sck(mcu_sck),
+		.qspi_cs_n(mcu_cs_n),
+		.qspi_dq(mcu_dq),
+		.irq(mcu_irq),
+
 		.mgmt0_rx_clk(mgmt0_rx_clk_buf),
 		.mgmt0_rx_bus(mgmt0_rx_bus),
 		.mgmt0_tx_clk(clk_125mhz),
 		.mgmt0_tx_bus(mgmt0_tx_bus),
 		.mgmt0_tx_ready(mgmt0_tx_ready),
 		.mgmt0_link_up(mgmt0_link_up),
-		.mgmt0_link_speed(mgmt0_link_speed)
+		.mgmt0_link_speed(mgmt0_link_speed),
+
+		.port_rx_clk(port_rx_clk),
+		.port_rx_vlan(port_rx_vlan),
+		.port_rx_tagged_allowed(port_rx_tagged_allowed),
+		.port_rx_untagged_allowed(port_rx_untagged_allowed)
 	);
 
 endmodule

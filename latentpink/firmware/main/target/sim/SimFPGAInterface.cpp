@@ -94,3 +94,14 @@ void SimFPGAInterface::BlockingRead(uint32_t insn, uint8_t* data, uint32_t len)
 		data[i] = tmp;
 	}
 }
+
+void SimFPGAInterface::BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len)
+{
+	//Write the "write data" request
+	fprintf(m_fpWrite, "write\n%d %d\n", insn, len);
+
+	//Send the data
+	for(uint32_t i=0; i<len; i++)
+		fprintf(m_fpWrite, "%x\n", data[i]);
+	fflush(m_fpWrite);
+}
