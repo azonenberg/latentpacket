@@ -5,7 +5,8 @@ CXXFLAGS=-g -O0 --std=c++17 \
 	-I$(SRCDIR) \
 	-I$(ROOTDIR)/stm32-cpp/devices/inc \
 	-I$(ROOTDIR)/stm32-cpp/src \
-	-DMICROKVS_WRITE_BLOCK_SIZE=32
+	-DMICROKVS_WRITE_BLOCK_SIZE=32 \
+	-DTEST_BANK_SIZE=131072
 CXX=g++
 
 .ONESHELL:

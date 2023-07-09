@@ -122,7 +122,7 @@ void InitInterfaces()
 			char objname[KVS_NAMELEN+1] = {0};
 			StringBuffer sbuf(objname, sizeof(objname));
 			sbuf.Printf("%s.vlan", g_interfaceNames[i]);
-			g_portVlans[i] = GetConfigValue<uint16_t>(objname, 1);
+			g_portVlans[i] = g_kvs->ReadObject<uint16_t>(objname, 1);
 			g_fpga->BlockingWrite16(ifbase + REG_VLAN_NUM, g_portVlans[i]);
 		}
 		else

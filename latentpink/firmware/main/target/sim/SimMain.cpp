@@ -71,8 +71,10 @@ int main(int argc, char* argv[])
 	STDOutputStream stream;
 
 	//Initialize the key-value store
+	//128 kB total size to match STM32H7 erase block size
+	//Allocate ~50% of total storage to log since objects are fairly small
 	LoadKVS();
-	InitKVS(&g_leftBank, &g_rightBank, 256);
+	InitKVS(&g_leftBank, &g_rightBank, 1024);
 
 	DetectHardware();
 

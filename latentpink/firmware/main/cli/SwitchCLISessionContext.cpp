@@ -38,6 +38,7 @@ static const char* hostname_objid = "hostname";
 enum cmdid_t
 {
 	CMD_ADDRESS,
+	CMD_COMMIT,
 	CMD_DETAIL,
 	CMD_END,
 	CMD_EXIT,
@@ -159,6 +160,7 @@ static const clikeyword_t g_vlanCommands[] =
 //Top level commands in root mode
 static const clikeyword_t g_rootCommands[] =
 {
+	{"commit",		CMD_COMMIT,			nullptr,				"Commit volatile config changes to flash memory"},
 	{"exit",		CMD_EXIT,			nullptr,				"Log out"},
 	{"hostname",	CMD_HOSTNAME,		g_hostnameCommands,		"Change the host name"},
 	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Configure interface properties"},
@@ -259,6 +261,10 @@ void SwitchCLISessionContext::OnExecuteRoot()
 {
 	switch(m_command[0].m_commandID)
 	{
+		case CMD_COMMIT:
+			OnCommit();
+			break;
+
 		case CMD_EXIT:
 			m_stream->Flush();
 			//m_stream.GetServer()->GracefulDisconnect(m_stream.GetSessionID(), m_stream.GetSocket());
@@ -291,6 +297,21 @@ void SwitchCLISessionContext::OnExecuteRoot()
 		default:
 			m_stream->Printf("Unrecognized command\n");
 			break;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "commit"
+
+void SwitchCLISessionContext::OnCommit()
+{
+	for(int i=0; i<NUM_PORTS; i=i+1)
+	{
+		//VLAN number for everything but management
+		if(i != MGMT_PORT)
+		{
+			g_kvs->StoreObjectIfNecessary<uint16_t>(g_portVlans[i], 1, "%s.vlan", g_interfaceNames[i]);
+		}
 	}
 }
 
@@ -509,12 +530,4 @@ void SwitchCLISessionContext::OnVlan()
 	//Update our local config and push to hardware
 	g_portVlans[m_activeInterface] = vlanNum;
 	g_fpga->BlockingWrite16(GetInterfaceBase() + REG_VLAN_NUM, vlanNum);
-
-	//Persist the change
-	char objname[KVS_NAMELEN+1];
-	StringBuffer sbuf(objname, sizeof(objname));
-	sbuf.Printf("%s.vlan", g_interfaceNames[m_activeInterface]);
-
-	if(!g_kvs->StoreObject(objname, (uint8_t*)&vlanNum, sizeof(vlanNum)))
-		m_stream->Printf("KVS write error\n");
 }

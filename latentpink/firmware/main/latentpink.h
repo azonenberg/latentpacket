@@ -97,19 +97,6 @@ void InitInterfaces();
 
 void DetectHardware();
 
-/**
-	@brief Reads a value from the configuration database, returning a default value if not found
- */
-template<class T>
-T GetConfigValue(const char* name, T defaultValue)
-{
-	auto hlog = g_kvs->FindObject(name);
-	if(hlog)
-		return *reinterpret_cast<const T*>(g_kvs->MapObject(hlog));
-	else
-		return defaultValue;
-}
-
 #ifdef SIMULATION
 void OnShutdown();
 #endif

@@ -67,6 +67,8 @@ protected:
 	void OnExecuteRoot();
 	void OnExecuteInterface();
 
+	void OnCommit();
+
 	void OnInterfaceCommand();
 	void OnShowCommand();
 	void OnShowFlash();
