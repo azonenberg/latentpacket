@@ -6,19 +6,19 @@
       <db_ref path="ManagementSim_behav.wdb" id="1">
          <top_modules>
             <top_module name="ManagementSim" />
-            <top_module name="\$unit_CRC32_Ethernet_x32_variable_lat2_sv_891335330 " />
+            <top_module name="\$unit_CRC32_Ethernet_x32_variable_lat2_sv_1461961033 " />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="81,508.750 ns"></ZoomStartTime>
-      <ZoomEndTime time="82,710.251 ns"></ZoomEndTime>
-      <Cursor1Time time="82,510.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="120.350001 us"></ZoomEndTime>
+      <Cursor1Time time="48.918166 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="296"></NameColumnWidth>
-      <ValueColumnWidth column_width="235"></ValueColumnWidth>
+      <ValueColumnWidth column_width="231"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="32" />
    <wvobject type="logic" fp_name="/ManagementSim/clk_125mhz_p">
@@ -141,5 +141,81 @@
       <obj_property name="ElementShortName">port_rx_vlan[14:0][11:0]</obj_property>
       <obj_property name="ObjectShortName">port_rx_vlan[14:0][11:0]</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[14]">
+         <obj_property name="ElementShortName">[14][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[14][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[13]">
+         <obj_property name="ElementShortName">[13][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[13][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[12]">
+         <obj_property name="ElementShortName">[12][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[12][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[11]">
+         <obj_property name="ElementShortName">[11][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[11][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[10]">
+         <obj_property name="ElementShortName">[10][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[10][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[9]">
+         <obj_property name="ElementShortName">[9][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[9][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[8]">
+         <obj_property name="ElementShortName">[8][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[8][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[7]">
+         <obj_property name="ElementShortName">[7][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[7][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[6]">
+         <obj_property name="ElementShortName">[6][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[6][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[5]">
+         <obj_property name="ElementShortName">[5][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[5][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[4]">
+         <obj_property name="ElementShortName">[4][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[4][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[3]">
+         <obj_property name="ElementShortName">[3][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[3][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[2]">
+         <obj_property name="ElementShortName">[2][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[2][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[1]">
+         <obj_property name="ElementShortName">[1][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[1][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/ManagementSim/iface/port_rx_vlan[0]">
+         <obj_property name="ElementShortName">[0][11:0]</obj_property>
+         <obj_property name="ObjectShortName">[0][11:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

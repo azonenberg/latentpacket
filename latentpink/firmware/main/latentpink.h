@@ -40,6 +40,7 @@
 #include <microkvs/driver/TestStorageBank.h>
 
 #include <util/Logger.h>
+#include <util/StringBuffer.h>
 
 /*
 #include <staticnet-config.h>
@@ -59,6 +60,8 @@ extern Timer* g_logTimer;
 
 //includes fabric ports, management, and uplink
 #define NUM_PORTS 16
+#define UPLINK_PORT 14
+#define MGMT_PORT 15
 
 enum linkstate_t
 {
@@ -84,6 +87,8 @@ extern const char* g_linkSpeedNames[];
 extern const char* g_interfaceNames[];
 extern const char g_interfaceDescriptions[NUM_PORTS][64];
 
+extern uint16_t g_portVlans[NUM_PORTS];
+
 void InitLog(CharacterDevice* logdev, Timer* timer);
 void InitKVS(StorageBank* left, StorageBank* right, uint32_t logsize);
 void InitFPGAInterface();
@@ -91,6 +96,19 @@ void InitFPGA();
 void InitInterfaces();
 
 void DetectHardware();
+
+/**
+	@brief Reads a value from the configuration database, returning a default value if not found
+ */
+template<class T>
+T GetConfigValue(const char* name, T defaultValue)
+{
+	auto hlog = g_kvs->FindObject(name);
+	if(hlog)
+		return *reinterpret_cast<const T*>(g_kvs->MapObject(hlog));
+	else
+		return defaultValue;
+}
 
 #ifdef SIMULATION
 void OnShutdown();

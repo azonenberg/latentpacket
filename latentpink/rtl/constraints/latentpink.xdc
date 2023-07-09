@@ -216,6 +216,96 @@ set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list {buffe
           {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
           {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
           {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_vlan/sync_en/sync/dout0_reg} \
           mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
           mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
           mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
@@ -439,6 +529,96 @@ set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list {buf
           {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
           {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
           {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_vlan/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_tagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_tagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_untagged_allowed/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_untagged_allowed/sync_en/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_vlan/sync_ack/sync/dout0_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_vlan/sync_en/sync/dout0_reg} \
           mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout0_reg \
           mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
           mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout0_reg \
@@ -668,6 +848,96 @@ set_max_delay -from [get_clocks clk_312p5mhz_raw] -through [get_cells [list {buf
           {mgmt/bridge/qspi/genblk1[3].sync_dq/dout1_reg} \
           mgmt/bridge/qspi/sync_cs/dout1_reg \
           mgmt/bridge/qspi/sync_sck/dout1_reg \
+          {mgmt/regs/portsyncs[0].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[0].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[10].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[11].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[12].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[13].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[14].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[1].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[2].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[3].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[4].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[5].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[6].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[7].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[8].sync_rx_vlan/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_tagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_tagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_untagged_allowed/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_untagged_allowed/sync_en/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_vlan/sync_ack/sync/dout1_reg} \
+          {mgmt/regs/portsyncs[9].sync_rx_vlan/sync_en/sync/dout1_reg} \
           mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_ack/sync/dout1_reg \
           mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout1_reg \
           mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_ack/sync/dout1_reg \
@@ -1558,8 +1828,7 @@ set_property LOC SLICE_X107Y71 [get_cells {interfaces/port_g12/bridge/cdr/sample
 
 create_pblock pblock_rgmii
 add_cells_to_pblock [get_pblocks pblock_rgmii] [get_cells -quiet [list interfaces/port_mgmt0 mgmt/rx_fifo]]
-resize_pblock [get_pblocks pblock_rgmii] -add {SLICE_X88Y100:SLICE_X109Y149}
-resize_pblock [get_pblocks pblock_rgmii] -add {DSP48_X5Y40:DSP48_X5Y59}
+resize_pblock [get_pblocks pblock_rgmii] -add {SLICE_X102Y100:SLICE_X109Y149}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB18_X6Y40:RAMB18_X6Y59}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB36_X6Y20:RAMB36_X6Y29}
 set_property IS_SOFT FALSE [get_pblocks pblock_rgmii]
@@ -1570,7 +1839,7 @@ set_property IS_SOFT FALSE [get_pblocks pblock_rgmii]
 
 create_pblock pblock_qsgmii
 add_cells_to_pblock [get_pblocks pblock_qsgmii] [get_cells -quiet [list interfaces/port_g0_g11 {interfaces/qsgmii[0].quad} {interfaces/qsgmii[1].quad} {interfaces/qsgmii[2].quad}]]
-resize_pblock [get_pblocks pblock_qsgmii] -add {CLOCKREGION_X1Y3:CLOCKREGION_X1Y4}
+resize_pblock [get_pblocks pblock_qsgmii] -add {CLOCKREGION_X1Y3:CLOCKREGION_X1Y3}
 set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii]
 
 #######################################################################################################################
@@ -1578,10 +1847,10 @@ set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii]
 
 create_pblock pblock_10g
 add_cells_to_pblock [get_pblocks pblock_10g] [get_cells -quiet [list interfaces/port_xg0 interfaces/xg_transceiver]]
-resize_pblock [get_pblocks pblock_10g] -add {SLICE_X56Y170:SLICE_X101Y224}
-resize_pblock [get_pblocks pblock_10g] -add {DSP48_X3Y68:DSP48_X5Y89}
-resize_pblock [get_pblocks pblock_10g] -add {RAMB18_X3Y68:RAMB18_X5Y89}
-resize_pblock [get_pblocks pblock_10g] -add {RAMB36_X3Y34:RAMB36_X5Y44}
+resize_pblock [get_pblocks pblock_10g] -add {SLICE_X56Y189:SLICE_X101Y209}
+resize_pblock [get_pblocks pblock_10g] -add {DSP48_X3Y76:DSP48_X5Y83}
+resize_pblock [get_pblocks pblock_10g] -add {RAMB18_X3Y76:RAMB18_X5Y83}
+resize_pblock [get_pblocks pblock_10g] -add {RAMB36_X3Y38:RAMB36_X5Y41}
 set_property IS_SOFT FALSE [get_pblocks pblock_10g]
 
 #######################################################################################################################
@@ -1654,6 +1923,10 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 
 ########################################################################################################################
 # Debug clocking
+
+
+
+
 
 
 

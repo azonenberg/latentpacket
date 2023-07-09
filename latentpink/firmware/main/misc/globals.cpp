@@ -90,8 +90,8 @@ const char* g_interfaceNames[NUM_PORTS] =
 	"g11",
 	"g12",
 	"g13",
-	"mgmt0",
-	"xg0"
+	"xg0",
+	"mgmt0"
 };
 
 /**
@@ -113,8 +113,8 @@ const char g_interfaceDescriptions[NUM_PORTS][64] =
 	"Edge port (VSC8512)",
 	"Edge port (DP83867CS)",
 	"Edge port (DP83867CS)",
-	"Management (KSZ9031RNX)",
-	"SFP+ uplink"
+	"SFP+ uplink",
+	"Management (KSZ9031RNX)"
 };
 
 /**
@@ -127,3 +127,8 @@ const char* g_linkSpeedNames[] =
 	"1000",
 	"10G"
 };
+
+/**
+	@brief VLAN ID for each port
+ */
+uint16_t g_portVlans[NUM_PORTS] = {0};

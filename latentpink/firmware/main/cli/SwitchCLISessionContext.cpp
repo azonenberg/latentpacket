@@ -39,12 +39,14 @@ enum cmdid_t
 	CMD_ADDRESS,
 	CMD_END,
 	CMD_EXIT,
+	CMD_FLASH,
 	CMD_INTERFACE,
 	CMD_IP,
 	CMD_HOSTNAME,
 	CMD_SHOW,
 	CMD_STATUS,
 	CMD_VERSION,
+	CMD_VLAN,
 
 	//must be in order separately outside the alphabetical block
 	//so we can just add/subtract CMD_G0 to get an interface number
@@ -121,8 +123,18 @@ static const clikeyword_t g_showInterfaceCommands[] =
 
 static const clikeyword_t g_showCommands[] =
 {
+	{"flash",		CMD_FLASH,			nullptr,					"Display flash usage and log data"},
 	{"interface",	CMD_INTERFACE,		g_showInterfaceCommands,	"Display interface properties and stats"},
 	{"version",		CMD_VERSION,		nullptr,					"Show firmware / FPGA version"},
+	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "vlan"
+
+static const clikeyword_t g_vlanCommands[] =
+{
+	{"<1-4095>",	FREEFORM_TOKEN,		nullptr,	"VLAN number to assign"},
 	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
 };
 
@@ -138,7 +150,7 @@ static const clikeyword_t g_rootCommands[] =
 	{"ip",			CMD_IP,				g_ipCommands,			"Configure IP addresses"},
 	{"show",		CMD_SHOW,			g_showCommands,			"Print information"},
 
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
 };
 
 //Top level commands in interface mode
@@ -146,8 +158,9 @@ static const clikeyword_t g_interfaceRootCommands[] =
 {
 	{"end",			CMD_END,			nullptr,				"Return to normal mode"},
 	{"exit",		CMD_EXIT,			nullptr,				"Return to normal mode"},
-	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Configure interface properties"},
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Configure another interface"},
+	{"vlan",		CMD_VLAN,			g_vlanCommands,			"Configure interface VLAN"},
+	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,6 +225,10 @@ void SwitchCLISessionContext::OnExecuteInterface()
 		//TODO: some special ones too?
 		case CMD_SHOW:
 			OnShowCommand();
+			break;
+
+		case CMD_VLAN:
+			OnVlan();
 			break;
 
 		default:
@@ -282,6 +299,10 @@ void SwitchCLISessionContext::OnShowCommand()
 {
 	switch(m_command[1].m_commandID)
 	{
+		case CMD_FLASH:
+			OnShowFlash();
+			break;
+
 		case CMD_INTERFACE:
 			OnShowInterfaceCommand();
 			break;
@@ -310,26 +331,75 @@ void SwitchCLISessionContext::OnShowInterfaceCommand()
 	}
 }
 
+void SwitchCLISessionContext::OnShowFlash()
+{
+	//Print info about the flash memory in general
+	m_stream->Printf("Flash configuration storage is 2 banks of %d kB\n", g_kvs->GetBlockSize() / 1024);
+	if(g_kvs->IsLeftBankActive())
+		m_stream->Printf("    Active bank: Left\n");
+	else
+		m_stream->Printf("    Active bank: Right\n");
+	m_stream->Printf("    Log area:    %6d / %6d entries free (%d %%)\n",
+		g_kvs->GetFreeLogEntries(),
+		g_kvs->GetLogCapacity(),
+		g_kvs->GetFreeLogEntries()*100 / g_kvs->GetLogCapacity());
+	m_stream->Printf("    Data area:   %6d / %6d kB free      (%d %%)\n",
+		g_kvs->GetFreeDataSpace() / 1024,
+		g_kvs->GetDataCapacity() / 1024,
+		g_kvs->GetFreeDataSpace() * 100 / g_kvs->GetDataCapacity());
+
+	//Dump directory listing
+	const uint32_t nmax = 256;
+	KVSListEntry list[nmax];
+	uint32_t nfound = g_kvs->EnumObjects(list, nmax);
+	m_stream->Printf("    Objects:\n");
+	m_stream->Printf("        Key               Size  Revisions\n");
+	int size = 0;
+	for(uint32_t i=0; i<nfound; i++)
+	{
+		m_stream->Printf("        %-16s %5d  %d\n", list[i].key, list[i].size, list[i].revs);
+		size += list[i].size;
+	}
+	m_stream->Printf("    %d objects total (%d.%02d kB)\n",
+		nfound,
+		size/1024, (size % 1024) * 100 / 1024);
+}
+
 void SwitchCLISessionContext::OnShowInterfaceStatus()
 {
-	m_stream->Printf("-------------------------------------------------------------------------------------------------\n");
-	m_stream->Printf("Port     Name                             Status          Duplex    Speed                    Type\n");
-	m_stream->Printf("-------------------------------------------------------------------------------------------------\n");
+	m_stream->Printf("---------------------------------------------------------------------------------------------------------\n");
+	m_stream->Printf("Port     Name                             Status            Vlan     Duplex    Speed                 Type\n");
+	m_stream->Printf("---------------------------------------------------------------------------------------------------------\n");
 
 	//TODO: refresh interface status from hardware or something
 	for(int i=0; i<NUM_PORTS; i++)
 	{
 		const char* portType = "10/100/1000baseT";
-		if(i == NUM_PORTS-1)
+		if(i == UPLINK_PORT)
 			portType = "10Gbase-SR";
 
-		m_stream->Printf("%-5s    %-32s %-15s %-10s %4s    %20s\n",
-			g_interfaceNames[i],
-			g_interfaceDescriptions[i],
-			g_linkStateNames[g_linkState[i]],
-			"full",
-			g_linkSpeedNames[g_linkSpeed[i]],
-			portType);
+		if(i == MGMT_PORT)
+		{
+			m_stream->Printf("%-5s    %-32s %-15s %6s %10s  %7s %20s\n",
+				g_interfaceNames[i],
+				g_interfaceDescriptions[i],
+				g_linkStateNames[g_linkState[i]],
+				"(none)",
+				"full",
+				g_linkSpeedNames[g_linkSpeed[i]],
+				portType);
+		}
+		else
+		{
+			m_stream->Printf("%-5s    %-32s %-15s %6d %10s  %7s %20s\n",
+				g_interfaceNames[i],
+				g_interfaceDescriptions[i],
+				g_linkStateNames[g_linkState[i]],
+				g_portVlans[i],
+				"full",
+				g_linkSpeedNames[g_linkSpeed[i]],
+				portType);
+		}
 	}
 }
 
@@ -346,4 +416,30 @@ void SwitchCLISessionContext::OnShowVersion()
 	m_stream->Printf("Compiler: g++ %s\n", __VERSION__);
 	m_stream->Printf("CLI source code last modified: %s\n", __TIMESTAMP__);
 	#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "vlan"
+
+void SwitchCLISessionContext::OnVlan()
+{
+	//Validate
+	uint16_t vlanNum = atoi(m_command[1].m_text);
+	if( (vlanNum < 1) || (vlanNum > 4095) )
+	{
+		m_stream->Printf("Invalid VLAN number\n");
+		return;
+	}
+
+	//Update our local config and push to hardware
+	g_portVlans[m_activeInterface] = vlanNum;
+	g_fpga->BlockingWrite16(GetInterfaceBase() + REG_VLAN_NUM, vlanNum);
+
+	//Persist the change
+	char objname[KVS_NAMELEN+1];
+	StringBuffer sbuf(objname, sizeof(objname));
+	sbuf.Printf("%s.vlan", g_interfaceNames[m_activeInterface]);
+
+	if(!g_kvs->StoreObject(objname, (uint8_t*)&vlanNum, sizeof(vlanNum)))
+		m_stream->Printf("KVS write error\n");
 }

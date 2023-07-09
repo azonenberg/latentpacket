@@ -66,13 +66,16 @@ module ManagementRegisterInterface #(
 	input wire[NUM_PORTS-1:0]		port_rx_clk,
 	output vlan_t[NUM_PORTS-1:0]	port_rx_vlan,
 	output wire[NUM_PORTS-1:0]		port_rx_tagged_allowed,
-	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed
+	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed,
+
+	//Configuration registers in core clock domain
+	output vlan_t[NUM_PORTS-1:0]	port_vlan		= 0,
+	output logic[NUM_PORTS-1:0]		port_is_trunk	= 0
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Synchronizers for per-port configuration registers
 
-	vlan_t[NUM_PORTS-1:0]	port_vlan;
 	logic[NUM_PORTS-1:0]	port_vlan_updated	= 0;
 
 	logic[NUM_PORTS-1:0]	port_tagged_allowed		= 0;
@@ -176,6 +179,10 @@ module ManagementRegisterInterface #(
 											//[1] = inbound untagged traffic allowed
 											//[2] = tag outbound traffic to native vlan
 											//[3] = tag outbound traffic to other vlans
+											//[4] = port should be considered a trunk for forwarding decisions
+
+		//TODO
+
 		REG_IF_LAST
 	} ifoff_t;
 
@@ -281,7 +288,7 @@ module ManagementRegisterInterface #(
 					port_untagged_allowed[wr_port]	<= wr_data[1];
 					port_tagmode_updated[wr_port]	<= 1;
 
-					//TODO: TX vlan stuff
+					port_is_trunk[wr_port]			<= wr_data[4];
 				end
 
 			endcase

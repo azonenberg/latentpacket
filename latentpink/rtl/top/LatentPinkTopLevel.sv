@@ -495,6 +495,8 @@ module LatentPinkTopLevel(
 	// Forwarding engine: takes frames out of the buffer and makes them go places
 
 	vlan_t[NUM_PORTS-1:0]	port_vlan_fabric;
+	wire[NUM_PORTS-1:0]		port_is_trunk;
+
 	wire[NUM_PORTS-1:0]		port_trunk;
 	wire[NUM_PORTS-1:0]		port_space_avail;	//TODO: hook up to exit queues
 
@@ -514,7 +516,7 @@ module LatentPinkTopLevel(
 		.frame_data(frame_data),
 
 		.port_vlan(port_vlan_fabric),
-		.port_trunk(port_trunk),
+		.port_trunk(port_is_trunk),
 		.port_space_avail(port_space_avail),
 
 		.frame_port_wr(frame_port_wr),
@@ -525,9 +527,7 @@ module LatentPinkTopLevel(
 	//VIO to generate forwarding requests
 	vio_3 vio_bufout(
 		.clk(clk_ram_ctl),
-		.probe_out0(port_vlan_fabric),
-		.probe_out1(port_trunk),
-		.probe_out2(port_space_avail),
+		.probe_out0(port_space_avail),
 		.probe_in0(frame_valid),
 		.probe_in1(frame_last),
 		.probe_in2(frame_data),
@@ -589,7 +589,10 @@ module LatentPinkTopLevel(
 		.port_rx_clk(port_rx_clk),
 		.port_rx_vlan(port_rx_vlan),
 		.port_rx_tagged_allowed(port_rx_tagged_allowed),
-		.port_rx_untagged_allowed(port_rx_untagged_allowed)
+		.port_rx_untagged_allowed(port_rx_untagged_allowed),
+
+		.port_vlan(port_vlan_fabric),
+		.port_is_trunk(port_is_trunk)
 	);
 
 endmodule

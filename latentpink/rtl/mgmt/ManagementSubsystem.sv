@@ -60,7 +60,11 @@ module ManagementSubsystem #(
 	input wire[NUM_PORTS-1:0]		port_rx_clk,
 	output vlan_t[NUM_PORTS-1:0]	port_rx_vlan,
 	output wire[NUM_PORTS-1:0]		port_rx_tagged_allowed,
-	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed
+	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed,
+
+	//Configuration registers in core clock domain
+	output vlan_t[NUM_PORTS-1:0]	port_vlan,
+	output wire[NUM_PORTS-1:0]		port_is_trunk
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,6 +156,9 @@ module ManagementSubsystem #(
 		.die_serial(die_serial),
 		.idcode_valid(idcode_valid),
 		.idcode(idcode),
+
+		.port_vlan(port_vlan),
+		.port_is_trunk(port_is_trunk),
 
 		//Control registers (port RX clock domain)
 		.port_rx_clk(port_rx_clk),

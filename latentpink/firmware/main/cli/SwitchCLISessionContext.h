@@ -69,15 +69,21 @@ protected:
 
 	void OnInterfaceCommand();
 	void OnShowCommand();
+	void OnShowFlash();
 	void OnShowInterfaceCommand();
 	void OnShowInterfaceStatus();
 	void OnShowVersion();
+
+	void OnVlan();
 
 	//SSHOutputStream m_stream;
 	CLIOutputStream* m_stream;
 
 	///@brief The interface we're working with (if in config-interface mode)
 	uint32_t m_activeInterface;
+
+	uint32_t GetInterfaceBase()
+	{ return REG_INTERFACE_BASE + m_activeInterface*INTERFACE_STRIDE; }
 
 	///@brief Hostname (only used for display)
 	char m_hostname[33];

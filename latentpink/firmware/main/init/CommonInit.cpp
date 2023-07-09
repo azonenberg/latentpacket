@@ -44,6 +44,13 @@ void InitLog(CharacterDevice* logdev, Timer* timer)
 
 	g_log.Initialize(logdev, timer);
 	g_log("Logging ready\n");
+	g_log("LATENTPINK MCU firmware v0.1 by Andrew D. Zonenberg\n");
+	{
+		LogIndenter li(g_log);
+		g_log("This system is open hardware! Board design files and firmware/gateware source code are at:\n");
+		g_log("https://github.com/azonenberg/latentpacket\n");
+	}
+	g_log("Firmware compiled at %s on %s\n", __TIME__, __DATE__);
 }
 
 /**
@@ -109,12 +116,19 @@ void InitInterfaces()
 		g_linkState[i] = LINK_STATE_DOWN;
 		g_linkSpeed[i] = LINK_SPEED_1G;
 
-		//TODO: load saved config for each interface
-
-		//Set all ports to VLAN 2
-		g_fpga->BlockingWrite16(ifbase + REG_VLAN_NUM, 2);
+		//VLAN configuration (on everything but management interface)
+		if(i != MGMT_PORT)
+		{
+			char objname[KVS_NAMELEN+1] = {0};
+			StringBuffer sbuf(objname, sizeof(objname));
+			sbuf.Printf("%s.vlan", g_interfaceNames[i]);
+			g_portVlans[i] = GetConfigValue<uint16_t>(objname, 1);
+			g_fpga->BlockingWrite16(ifbase + REG_VLAN_NUM, g_portVlans[i]);
+		}
+		else
+			g_portVlans[i] = 0;
 	}
-	g_linkSpeed[NUM_PORTS-1] = LINK_SPEED_10G;
+	g_linkSpeed[UPLINK_PORT] = LINK_SPEED_10G;
 
 	//Push initial configuration to the FPGA
 }
