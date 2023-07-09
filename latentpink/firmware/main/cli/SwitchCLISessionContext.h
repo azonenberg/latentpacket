@@ -70,6 +70,7 @@ protected:
 	void OnInterfaceCommand();
 	void OnShowCommand();
 	void OnShowFlash();
+	void OnShowFlashDetail();
 	void OnShowInterfaceCommand();
 	void OnShowInterfaceStatus();
 	void OnShowVersion();

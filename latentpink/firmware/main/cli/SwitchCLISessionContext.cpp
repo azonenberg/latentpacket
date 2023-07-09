@@ -30,6 +30,7 @@
 #include "latentpink.h"
 #include <algorithm>
 #include "SwitchCLISessionContext.h"
+#include <ctype.h>
 
 static const char* hostname_objid = "hostname";
 
@@ -37,6 +38,7 @@ static const char* hostname_objid = "hostname";
 enum cmdid_t
 {
 	CMD_ADDRESS,
+	CMD_DETAIL,
 	CMD_END,
 	CMD_EXIT,
 	CMD_FLASH,
@@ -121,9 +123,22 @@ static const clikeyword_t g_showInterfaceCommands[] =
 	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
 };
 
+static const clikeyword_t g_showFlashDetailCommands[] =
+{
+	{"<objname>",	FREEFORM_TOKEN,		nullptr,	"Name of the flash object to display"},
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+static const clikeyword_t g_showFlashCommands[] =
+{
+	{"<cr>",		OPTIONAL_TOKEN,		nullptr,					""},
+	{"detail",		CMD_DETAIL,			g_showFlashDetailCommands,	"Show detailed flash object contents"},
+	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
+};
+
 static const clikeyword_t g_showCommands[] =
 {
-	{"flash",		CMD_FLASH,			nullptr,					"Display flash usage and log data"},
+	{"flash",		CMD_FLASH,			g_showFlashCommands,		"Display flash usage and log data"},
 	{"interface",	CMD_INTERFACE,		g_showInterfaceCommands,	"Display interface properties and stats"},
 	{"version",		CMD_VERSION,		nullptr,					"Show firmware / FPGA version"},
 	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
@@ -333,36 +348,96 @@ void SwitchCLISessionContext::OnShowInterfaceCommand()
 
 void SwitchCLISessionContext::OnShowFlash()
 {
-	//Print info about the flash memory in general
-	m_stream->Printf("Flash configuration storage is 2 banks of %d kB\n", g_kvs->GetBlockSize() / 1024);
-	if(g_kvs->IsLeftBankActive())
-		m_stream->Printf("    Active bank: Left\n");
-	else
-		m_stream->Printf("    Active bank: Right\n");
-	m_stream->Printf("    Log area:    %6d / %6d entries free (%d %%)\n",
-		g_kvs->GetFreeLogEntries(),
-		g_kvs->GetLogCapacity(),
-		g_kvs->GetFreeLogEntries()*100 / g_kvs->GetLogCapacity());
-	m_stream->Printf("    Data area:   %6d / %6d kB free      (%d %%)\n",
-		g_kvs->GetFreeDataSpace() / 1024,
-		g_kvs->GetDataCapacity() / 1024,
-		g_kvs->GetFreeDataSpace() * 100 / g_kvs->GetDataCapacity());
-
-	//Dump directory listing
-	const uint32_t nmax = 256;
-	KVSListEntry list[nmax];
-	uint32_t nfound = g_kvs->EnumObjects(list, nmax);
-	m_stream->Printf("    Objects:\n");
-	m_stream->Printf("        Key               Size  Revisions\n");
-	int size = 0;
-	for(uint32_t i=0; i<nfound; i++)
+	//No details requested? Show root dir listing
+	if(m_command[2].m_commandID == OPTIONAL_TOKEN)
 	{
-		m_stream->Printf("        %-16s %5d  %d\n", list[i].key, list[i].size, list[i].revs);
-		size += list[i].size;
+		//Print info about the flash memory in general
+		m_stream->Printf("Flash configuration storage is 2 banks of %d kB\n", g_kvs->GetBlockSize() / 1024);
+		if(g_kvs->IsLeftBankActive())
+			m_stream->Printf("    Active bank: Left\n");
+		else
+			m_stream->Printf("    Active bank: Right\n");
+		m_stream->Printf("    Log area:    %6d / %6d entries free (%d %%)\n",
+			g_kvs->GetFreeLogEntries(),
+			g_kvs->GetLogCapacity(),
+			g_kvs->GetFreeLogEntries()*100 / g_kvs->GetLogCapacity());
+		m_stream->Printf("    Data area:   %6d / %6d kB free      (%d %%)\n",
+			g_kvs->GetFreeDataSpace() / 1024,
+			g_kvs->GetDataCapacity() / 1024,
+			g_kvs->GetFreeDataSpace() * 100 / g_kvs->GetDataCapacity());
+
+		//Dump directory listing
+		const uint32_t nmax = 256;
+		KVSListEntry list[nmax];
+		uint32_t nfound = g_kvs->EnumObjects(list, nmax);
+		m_stream->Printf("    Objects:\n");
+		m_stream->Printf("        Key               Size  Revisions\n");
+		int size = 0;
+		for(uint32_t i=0; i<nfound; i++)
+		{
+			m_stream->Printf("        %-16s %5d  %d\n", list[i].key, list[i].size, list[i].revs);
+			size += list[i].size;
+		}
+		m_stream->Printf("    %d objects total (%d.%02d kB)\n",
+			nfound,
+			size/1024, (size % 1024) * 100 / 1024);
 	}
-	m_stream->Printf("    %d objects total (%d.%02d kB)\n",
-		nfound,
-		size/1024, (size % 1024) * 100 / 1024);
+
+	//Showing details of a single object
+	else
+	{
+		auto hlog = g_kvs->FindObject(m_command[3].m_text);
+		if(!hlog)
+		{
+			m_stream->Printf("Object not found\n");
+			return;
+		}
+
+		//TODO: show previous versions too?
+		m_stream->Printf("Object \"%s\":\n", m_command[3].m_text);
+		{
+			m_stream->Printf("    Start:  0x%08x\n", hlog->m_start);
+			m_stream->Printf("    Length: 0x%08x\n", hlog->m_len);
+			m_stream->Printf("    CRC32:  0x%08x\n", hlog->m_crc);
+		}
+
+		auto pdata = g_kvs->MapObject(hlog);
+
+		//TODO: make this a dedicated hexdump routine
+		const int linelen = 16;
+		for(int i=0; i<hlog->m_len; i += linelen)
+		{
+			m_stream->Printf("%04x   ", i);
+
+			//Print hex
+			for(int j=0; j<linelen; j++)
+			{
+				//Pad with spaces so we get good alignment on the end of the block
+				if(i+j >= hlog->m_len)
+					m_stream->Printf("   ");
+
+				else
+					m_stream->Printf("%02x ", pdata[i+j]);
+			}
+
+			m_stream->Printf("  ");
+
+			//Print ASCII
+			for(int j=0; j<linelen; j++)
+			{
+				//No padding needed here
+				if(i+j >= hlog->m_len)
+					break;
+
+				else if(isprint(pdata[i+j]))
+					m_stream->Printf("%c", pdata[i+j]);
+				else
+					m_stream->Printf(".");
+			}
+
+			m_stream->Printf("\n");
+		}
+	}
 }
 
 void SwitchCLISessionContext::OnShowInterfaceStatus()
