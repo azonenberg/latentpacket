@@ -104,31 +104,43 @@ void InitFPGA()
 
 /**
 	@brief Initialize all of our network interfaces
+
+	This includes boot-time init plus loading configuration
  */
 void InitInterfaces()
+{
+	for(uint32_t i=0; i<NUM_PORTS; i++)
+	{
+		//Mark each interface as down
+		g_linkState[i] = LINK_STATE_DOWN;
+
+		//Set default speed
+		if(i == UPLINK_PORT)
+			g_linkSpeed[i] = LINK_SPEED_10G;
+		else
+			g_linkSpeed[i] = LINK_SPEED_1G;
+	}
+
+	ConfigureInterfaces();
+}
+
+/**
+	@brief Loads interface configuration from the KVS and applies it
+ */
+void ConfigureInterfaces()
 {
 	for(uint32_t i=0; i<NUM_PORTS; i++)
 	{
 		//Base address of the interface
 		uint32_t ifbase = REG_INTERFACE_BASE + i*INTERFACE_STRIDE;
 
-		//Mark each interface as down
-		g_linkState[i] = LINK_STATE_DOWN;
-		g_linkSpeed[i] = LINK_SPEED_1G;
-
 		//VLAN configuration (on everything but management interface)
 		if(i != MGMT_PORT)
 		{
-			char objname[KVS_NAMELEN+1] = {0};
-			StringBuffer sbuf(objname, sizeof(objname));
-			sbuf.Printf("%s.vlan", g_interfaceNames[i]);
-			g_portVlans[i] = g_kvs->ReadObject<uint16_t>(objname, 1);
+			g_portVlans[i] = g_kvs->ReadObject<uint16_t>(1, "%s.vlan", g_interfaceNames[i]);
 			g_fpga->BlockingWrite16(ifbase + REG_VLAN_NUM, g_portVlans[i]);
 		}
 		else
 			g_portVlans[i] = 0;
 	}
-	g_linkSpeed[UPLINK_PORT] = LINK_SPEED_10G;
-
-	//Push initial configuration to the FPGA
 }

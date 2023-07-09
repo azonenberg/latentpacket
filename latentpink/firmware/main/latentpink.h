@@ -94,6 +94,7 @@ void InitKVS(StorageBank* left, StorageBank* right, uint32_t logsize);
 void InitFPGAInterface();
 void InitFPGA();
 void InitInterfaces();
+void ConfigureInterfaces();
 
 void DetectHardware();
 

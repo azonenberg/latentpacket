@@ -46,6 +46,7 @@ enum cmdid_t
 	CMD_INTERFACE,
 	CMD_IP,
 	CMD_HOSTNAME,
+	CMD_ROLLBACK,
 	CMD_SHOW,
 	CMD_STATUS,
 	CMD_VERSION,
@@ -165,6 +166,7 @@ static const clikeyword_t g_rootCommands[] =
 	{"hostname",	CMD_HOSTNAME,		g_hostnameCommands,		"Change the host name"},
 	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Configure interface properties"},
 	{"ip",			CMD_IP,				g_ipCommands,			"Configure IP addresses"},
+	{"rollback",	CMD_ROLLBACK,		nullptr,				"Revert all changes made since last commit"},
 	{"show",		CMD_SHOW,			g_showCommands,			"Print information"},
 
 	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
@@ -187,14 +189,7 @@ SwitchCLISessionContext::SwitchCLISessionContext()
 	: CLISessionContext(g_rootCommands)
 	, m_activeInterface(0)
 {
-	memset(m_hostname, 0, sizeof(m_hostname));
-
-	//Read hostname, set to default value if not found
-	auto hlog = g_kvs->FindObject(hostname_objid);
-	if(hlog)
-		strncpy(m_hostname, (const char*)g_kvs->MapObject(hlog), std::min((size_t)hlog->m_len, sizeof(m_hostname)-1));
-	else
-		strncpy(m_hostname, "switch", sizeof(m_hostname)-1);
+	LoadHostname();
 }
 
 void SwitchCLISessionContext::PrintPrompt()
@@ -204,6 +199,18 @@ void SwitchCLISessionContext::PrintPrompt()
 	else //if(m_rootCommands == g_rootCommands)
 		m_stream->Printf("%s@%s# ", m_username, m_hostname);
 	m_stream->Flush();
+}
+
+void SwitchCLISessionContext::LoadHostname()
+{
+	memset(m_hostname, 0, sizeof(m_hostname));
+
+	//Read hostname, set to default value if not found
+	auto hlog = g_kvs->FindObject(hostname_objid);
+	if(hlog)
+		strncpy(m_hostname, (const char*)g_kvs->MapObject(hlog), std::min((size_t)hlog->m_len, sizeof(m_hostname)-1));
+	else
+		strncpy(m_hostname, "switch", sizeof(m_hostname)-1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,9 +283,6 @@ void SwitchCLISessionContext::OnExecuteRoot()
 
 		case CMD_HOSTNAME:
 			strncpy(m_hostname, m_command[1].m_text, sizeof(m_hostname)-1);
-
-			if(!g_kvs->StoreObject(hostname_objid, (uint8_t*)m_hostname, strlen(m_hostname)))
-				m_stream->Printf("KVS write error\n");
 			break;
 
 		case CMD_INTERFACE:
@@ -290,6 +294,11 @@ void SwitchCLISessionContext::OnExecuteRoot()
 			m_stream.Printf("set ip\n");
 			break;
 		*/
+
+		case CMD_ROLLBACK:
+			OnRollback();
+			break;
+
 		case CMD_SHOW:
 			OnShowCommand();
 			break;
@@ -305,13 +314,33 @@ void SwitchCLISessionContext::OnExecuteRoot()
 
 void SwitchCLISessionContext::OnCommit()
 {
+	//Save interface configuration
 	for(int i=0; i<NUM_PORTS; i=i+1)
 	{
 		//VLAN number for everything but management
 		if(i != MGMT_PORT)
 		{
-			g_kvs->StoreObjectIfNecessary<uint16_t>(g_portVlans[i], 1, "%s.vlan", g_interfaceNames[i]);
+			if(!g_kvs->StoreObjectIfNecessary<uint16_t>(g_portVlans[i], 1, "%s.vlan", g_interfaceNames[i]))
+				m_stream->Printf("KVS write error\n");
 		}
+	}
+
+	//Check if we already have the same hostname stored
+	auto hlog = g_kvs->FindObject(hostname_objid);
+	bool needToStoreHostname = true;
+	if(hlog)
+	{
+		auto oldhost = (const char*)g_kvs->MapObject(hlog);
+		if( (strlen(m_hostname) == hlog->m_len) && (!strncmp(m_hostname, oldhost, hlog->m_len)) )
+			needToStoreHostname = false;
+
+	}
+
+	//if not found, store it
+	if(needToStoreHostname)
+	{
+		if(!g_kvs->StoreObject(hostname_objid, (uint8_t*)m_hostname, strlen(m_hostname)))
+			m_stream->Printf("KVS write error\n");
 	}
 }
 
@@ -326,6 +355,18 @@ void SwitchCLISessionContext::OnInterfaceCommand()
 		m_activeInterface = NUM_PORTS-1;
 
 	m_rootCommands = g_interfaceRootCommands;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "rollback"
+
+void SwitchCLISessionContext::OnRollback()
+{
+	//Load and apply interface configuration
+	ConfigureInterfaces();
+
+	//Load our hostname
+	LoadHostname();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

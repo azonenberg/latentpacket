@@ -63,11 +63,14 @@ public:
 	virtual void PrintPrompt();
 
 protected:
+	void LoadHostname();
+
 	virtual void OnExecute();
 	void OnExecuteRoot();
 	void OnExecuteInterface();
 
 	void OnCommit();
+	void OnRollback();
 
 	void OnInterfaceCommand();
 	void OnShowCommand();
