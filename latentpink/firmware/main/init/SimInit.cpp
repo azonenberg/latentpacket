@@ -58,3 +58,18 @@ void InitFPGAInterface()
 	static SimFPGAInterface iface;
 	g_fpga = &iface;
 }
+
+/**
+	@brief Initializes the Ethernet interface
+ */
+void InitEthernet()
+{
+	g_log("Initializing Ethernet management\n");
+
+	//Create the IP stack
+	static TapEthernetInterface iface("simtap");
+	g_ethIface = &iface;
+
+	//Set our MAC address to a hard coded constant
+	g_macAddress = {{ 0x02, 0xde, 0xad, 0xbe, 0xef, 0x41 }};
+}

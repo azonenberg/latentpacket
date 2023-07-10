@@ -144,3 +144,48 @@ void ConfigureInterfaces()
 			g_portVlans[i] = 0;
 	}
 }
+
+/**
+	@brief Set our IP address and initialize the IP stack
+ */
+void InitIP()
+{
+	g_log("Initializing management IPv4 interface\n");
+	LogIndenter li(g_log);
+
+	ConfigureIP();
+
+	//ARP cache (shared by all interfaces)
+	static ARPCache cache;
+
+	//Per-interface protocol stacks
+	static EthernetProtocol eth(*g_ethIface, g_macAddress);
+	static ARPProtocol arp(eth, g_ipConfig.m_address, cache);
+
+	//Global protocol stacks
+	static IPv4Protocol ipv4(eth, g_ipConfig, cache);
+	static ICMPv4Protocol icmpv4(ipv4);
+	//BridgeTCPProtocol tcp(&ipv4);
+
+	//Register protocol handlers with the lower layer
+	eth.UseARP(&arp);
+	eth.UseIPv4(&ipv4);
+	ipv4.UseICMPv4(&icmpv4);
+	//ipv4.UseTCP(&tcp);
+}
+
+/**
+	@brief Load our IP configuration from the KVS
+ */
+void ConfigureIP()
+{
+	IPv4Address defaultIP			= { .m_octets{192, 168,   1,   2} };
+	IPv4Address defaultNetmask		= { .m_octets{255, 255, 255,   0} };
+	IPv4Address defaultBroadcast	= { .m_octets{192, 168,   1, 255} };
+	IPv4Address defaultGateway		= { .m_octets{192, 168,   1,   1} };
+
+	g_ipConfig.m_address = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.address");
+	g_ipConfig.m_netmask = g_kvs->ReadObject<IPv4Address>(defaultNetmask, "ip.netmask");
+	g_ipConfig.m_broadcast = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.broadcast");
+	g_ipConfig.m_gateway = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.gateway");
+}

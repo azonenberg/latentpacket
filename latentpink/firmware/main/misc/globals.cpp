@@ -30,6 +30,11 @@
 #include "latentpink.h"
 
 /**
+	@brief Global Ethernet interface
+ */
+EthernetInterface* g_ethIface = nullptr;
+
+/**
 	@brief Global key-value store for persistent configuration
  */
 KVS* g_kvs = nullptr;
@@ -132,3 +137,13 @@ const char* g_linkSpeedNames[] =
 	@brief VLAN ID for each port
  */
 uint16_t g_portVlans[NUM_PORTS] = {0};
+
+/**
+	@brief Our MAC address
+ */
+MACAddress g_macAddress;
+
+/**
+	@brief Our IPv4 address
+ */
+IPv4Config g_ipConfig;

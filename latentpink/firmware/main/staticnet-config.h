@@ -27,89 +27,51 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef latentpink_h
-#define latentpink_h
+/**
+	@file
+	@brief Configuration file for staticnet on LATENTPINK
+ */
 
-#ifdef SIMULATION
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#endif
+#ifndef staticnet_config_h
+#define staticnet_config_h
 
-#include <microkvs/kvs/KVS.h>
-#ifdef SIMULATION
-#include <microkvs/driver/TestStorageBank.h>
-#endif
+///@brief Maximum size of an Ethernet frame (payload only, headers not included)
+#define ETHERNET_PAYLOAD_MTU 1500
 
-#include <util/Logger.h>
-#include <util/StringBuffer.h>
+///@brief Define this to zeroize all frame buffers between uses
+#define ZEROIZE_BUFFERS_BEFORE_USE
 
-#include <staticnet-config.h>
-#include <staticnet/stack/staticnet.h>
+///@brief Define this to enable performance counters
+#define STATICNET_PERFORMANCE_COUNTERS
 
-#ifdef SIMULATION
-#include <staticnet/drivers/tap/TapEthernetInterface.h>
-#endif
-/*
-#include "BridgeTCPProtocol.h"
-#include "BridgeCryptoEngine.h"
-*/
+///@brief Number of ways of associativity for the ARP cache
+#define ARP_CACHE_WAYS 4
 
-#include "misc/FPGAInterface.h"
+///@brief Number of lines per set in the ARP cache
+#define ARP_CACHE_LINES 256
 
-extern KVS* g_kvs;
-extern Logger g_log;
-extern FPGAInterface* g_fpga;
-extern Timer* g_logTimer;
-extern EthernetInterface* g_ethIface;
-extern MACAddress g_macAddress;
-extern IPv4Config g_ipConfig;
+///@brief Number of entries in the TCP socket table
+#define TCP_TABLE_WAYS 2
 
-//includes fabric ports, management, and uplink
-#define NUM_PORTS 16
-#define UPLINK_PORT 14
-#define MGMT_PORT 15
+///@brief Number of lines per set in the TCP socket table
+#define TCP_TABLE_LINES 16
 
-enum linkstate_t
-{
-	LINK_STATE_DOWN,			//no link partner or failure to link
-	LINK_STATE_UP,				//active
-	LINK_STATE_ADMIN_DOWN,		//user forced the port off
-	LINK_STATE_ERR_DISABLE,		//hardware failure or similar
-	LINK_STATE_TESTPATTERN		//sending test pattern
-};
+///@brief Maximum number of SSH connections supported
+#define SSH_TABLE_SIZE 2
 
-enum linkspeed_t
-{
-	LINK_SPEED_10M,
-	LINK_SPEED_100M,
-	LINK_SPEED_1G,
-	LINK_SPEED_10G
-};
+///@brief SSH socket RX buffer size
+#define SSH_RX_BUFFER_SIZE 2048
 
-extern linkstate_t g_linkState[NUM_PORTS];
-extern linkspeed_t g_linkSpeed[NUM_PORTS];
-extern const char* g_linkStateNames[];
-extern const char* g_linkSpeedNames[];
-extern const char* g_interfaceNames[];
-extern const char g_interfaceDescriptions[NUM_PORTS][64];
+///@brief CLI TX buffer size
+#define CLI_TX_BUFFER_SIZE 1024
 
-extern uint16_t g_portVlans[NUM_PORTS];
+///@brief Maximum length of a SSH username
+#define SSH_MAX_USERNAME	32
 
-void InitLog(CharacterDevice* logdev, Timer* timer);
-void InitKVS(StorageBank* left, StorageBank* right, uint32_t logsize);
-void InitFPGAInterface();
-void InitFPGA();
-void InitInterfaces();
-void ConfigureInterfaces();
-void InitEthernet();
-void InitIP();
-void ConfigureIP();
+///@brief Max length of a CLI username
+#define CLI_USERNAME_MAX SSH_MAX_USERNAME
 
-void DetectHardware();
-
-#ifdef SIMULATION
-void OnShutdown();
-#endif
+///@brief Maximum length of a SSH password
+#define SSH_MAX_PASSWORD	128
 
 #endif

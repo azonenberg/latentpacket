@@ -41,6 +41,25 @@
 TestStorageBank g_leftBank;
 TestStorageBank g_rightBank;
 
+/*
+//Set private key to a hard coded constant (from testdata/id_ed25519)
+uint8_t g_hostkeyPriv[32] =
+{
+	0xb2, 0xc8, 0x0c, 0x44, 0xb1, 0xad, 0x19, 0xb5,
+	0x7a, 0x66, 0x5e, 0xa1, 0x7c, 0x78, 0x8b, 0x7b,
+	0x4d, 0x20, 0xbf, 0x19, 0x49, 0x85, 0x97, 0x9e,
+	0xf2, 0x79, 0x3e, 0xdc, 0x83, 0xf4, 0xd1, 0xa7
+};
+
+uint8_t g_hostkeyPub[32] =
+{
+	0xf7, 0x45, 0xd2, 0x13, 0x13, 0x4b, 0x19, 0x97,
+	0xcf, 0xcf, 0x86, 0x98, 0xcc, 0x2b, 0x0c, 0xd2,
+	0xc0, 0x45, 0xb1, 0xc9, 0xd4, 0xba, 0x22, 0x9f,
+	0x08, 0x8c, 0x66, 0x90, 0xf2, 0x4b, 0xf4, 0xbf
+};
+*/
+
 void LoadKVS();
 
 int main(int argc, char* argv[])
@@ -83,6 +102,33 @@ int main(int argc, char* argv[])
 	InitFPGA();
 	InitInterfaces();
 
+	//Initialize our local Ethernet interface
+	InitEthernet();
+	InitIP();
+
+	//TODO: move all of this to static stuff in CommonInit
+
+	//ARP cache (shared by all interfaces)
+	ARPCache cache;
+
+	//Per-interface protocol stacks
+	EthernetProtocol eth(*g_ethIface, g_macAddress);
+	ARPProtocol arp(eth, g_ipConfig.m_address, cache);
+
+	//Global protocol stacks
+	IPv4Protocol ipv4(eth, g_ipConfig, cache);
+	ICMPv4Protocol icmpv4(ipv4);
+	//BridgeTCPProtocol tcp(&ipv4);
+
+	//Register protocol handlers with the lower layer
+	eth.UseARP(&arp);
+	eth.UseIPv4(&ipv4);
+	ipv4.UseICMPv4(&icmpv4);
+	//ipv4.UseTCP(&tcp);
+
+	//Set up SSH host keys
+	//CryptoEngine::SetHostKey(g_hostkeyPub, g_hostkeyPriv);
+
 	//Initialize the CLI
 	SwitchCLISessionContext context;
 	context.Initialize(&stream, "user");
@@ -92,13 +138,19 @@ int main(int argc, char* argv[])
 	timeval timeout;
 	while(true)
 	{
-		//Read next keystroke, or give up and time out after 250ms
 		fd_set set;
 		FD_ZERO(&set);
 		FD_SET(STDIN_FILENO, &set);
 		timeout.tv_sec = 0;
-		timeout.tv_usec = 250000;
-		if(1 == select(STDIN_FILENO+1, &set, nullptr, nullptr, &timeout))
+		timeout.tv_usec = 50000;
+
+		//Check for new Ethernet frames
+		auto frame = g_ethIface->GetRxFrame();
+		if(frame)
+			eth.OnRxFrame(frame);
+
+		//Read next keystroke, or give up and time out after 50ms
+		else if(1 == select(STDIN_FILENO+1, &set, nullptr, nullptr, &timeout))
 		{
 			char c;
 			read(STDIN_FILENO, &c, 1);
@@ -109,6 +161,7 @@ int main(int argc, char* argv[])
 		else
 			g_fpga->Nop();
 
+		//TODO: do we need this?
 		fflush(stdout);
 	}
 	return 0;
