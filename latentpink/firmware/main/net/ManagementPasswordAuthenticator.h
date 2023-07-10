@@ -27,22 +27,26 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef ManagementTCPProtocol_h
-#define ManagementTCPProtocol_h
+/**
+	@file
+	@brief Declaration of ManagementPasswordAuthenticator
+ */
+#ifndef ManagementPasswordAuthenticator_h
+#define ManagementPasswordAuthenticator_h
 
-#include "ManagementSSHTransportServer.h"
-
-class ManagementTCPProtocol : public TCPProtocol
+/**
+	@brief Base class for password authentication providers
+ */
+class ManagementPasswordAuthenticator : public SSHPasswordAuthenticator
 {
 public:
-	ManagementTCPProtocol(IPv4Protocol* ipv4);
-
-protected:
-	virtual bool IsPortOpen(uint16_t port);
-	virtual void OnConnectionAccepted(TCPTableEntry* state);
-	virtual bool OnRxData(TCPTableEntry* state, uint8_t* payload, uint16_t payloadLen);
-
-	ManagementSSHTransportServer m_server;
+	virtual bool TestLogin(
+		const char* username,
+		uint16_t username_len,
+		const char* password,
+		uint16_t password_len,
+		CryptoEngine* crypto
+		);
 };
 
 #endif

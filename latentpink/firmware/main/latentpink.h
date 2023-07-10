@@ -47,13 +47,12 @@
 #include <staticnet-config.h>
 #include <staticnet/stack/staticnet.h>
 
+#include "net/ManagementTCPProtocol.h"
+
 #ifdef SIMULATION
 #include <staticnet/drivers/tap/TapEthernetInterface.h>
+#include "target/sim/SimCryptoEngine.h"
 #endif
-/*
-#include "BridgeTCPProtocol.h"
-#include "BridgeCryptoEngine.h"
-*/
 
 #include "misc/FPGAInterface.h"
 

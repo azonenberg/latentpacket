@@ -274,11 +274,20 @@ void SwitchCLISessionContext::OnExecuteRoot()
 
 		case CMD_EXIT:
 			m_stream->Flush();
-			//m_stream.GetServer()->GracefulDisconnect(m_stream.GetSessionID(), m_stream.GetSocket());
-			#ifdef SIMULATION
-				OnShutdown();
-				exit(0);
-			#endif
+
+			//SSH session? Close the socket
+			if(m_stream == &m_sshstream)
+				m_sshstream.GetServer()->GracefulDisconnect(m_sshstream.GetSessionID(), m_sshstream.GetSocket());
+
+			//Local console? Nothing needed on real hardware
+			//but in simulation, we need to terminate
+			else
+			{
+				#ifdef SIMULATION
+					OnShutdown();
+					exit(0);
+				#endif
+			}
 			break;
 
 		case CMD_HOSTNAME:

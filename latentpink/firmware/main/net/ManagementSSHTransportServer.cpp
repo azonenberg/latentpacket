@@ -27,22 +27,49 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef ManagementTCPProtocol_h
-#define ManagementTCPProtocol_h
-
+#include "latentpink.h"
 #include "ManagementSSHTransportServer.h"
 
-class ManagementTCPProtocol : public TCPProtocol
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
+
+ManagementSSHTransportServer::ManagementSSHTransportServer(TCPProtocol& tcp)
+	: SSHTransportServer(tcp)
 {
-public:
-	ManagementTCPProtocol(IPv4Protocol* ipv4);
+	//Initialize crypto engines
+	for(size_t i=0; i<SSH_TABLE_SIZE; i++)
+	{
+		#ifdef SIMULATION
+			m_state[i].m_crypto = new SimCryptoEngine;
+		#else
+			#error STM32 crypto not yet implemented
+		#endif
+	}
 
-protected:
-	virtual bool IsPortOpen(uint16_t port);
-	virtual void OnConnectionAccepted(TCPTableEntry* state);
-	virtual bool OnRxData(TCPTableEntry* state, uint8_t* payload, uint16_t payloadLen);
+	UsePasswordAuthenticator(&m_auth);
+}
 
-	ManagementSSHTransportServer m_server;
-};
+ManagementSSHTransportServer::~ManagementSSHTransportServer()
+{
+	//Clean up crypto state
+	for(size_t i=0; i<SSH_TABLE_SIZE; i++)
+	{
+		delete m_state[i].m_crypto;
+		m_state[i].m_crypto = NULL;
+	}
+}
 
-#endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Run a trivial shell
+
+void ManagementSSHTransportServer::InitializeShell(int id, TCPTableEntry* socket)
+{
+	m_context[id].Initialize(id, socket, this, m_state[id].m_username);
+	m_context[id].PrintPrompt();
+}
+
+void ManagementSSHTransportServer::OnRxShellData(int id, TCPTableEntry* /*socket*/, char* data, uint16_t len)
+{
+	for(uint16_t i=0; i<len; i++)
+		m_context[id].OnKeystroke(data[i]);
+}

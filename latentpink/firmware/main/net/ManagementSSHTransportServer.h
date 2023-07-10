@@ -27,22 +27,33 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef ManagementTCPProtocol_h
-#define ManagementTCPProtocol_h
+/**
+	@file
+	@brief Declaration of ManagementSSHTransportServer
+ */
+#ifndef ManagementSSHTransportServer_h
+#define ManagementSSHTransportServer_h
 
-#include "ManagementSSHTransportServer.h"
+#include <staticnet/ssh/SSHTransportServer.h>
+#include "ManagementPasswordAuthenticator.h"
+#include "cli/SwitchCLISessionContext.h"
 
-class ManagementTCPProtocol : public TCPProtocol
+/**
+	@brief SSH server class for the bridge test
+ */
+class ManagementSSHTransportServer : public SSHTransportServer
 {
 public:
-	ManagementTCPProtocol(IPv4Protocol* ipv4);
+	ManagementSSHTransportServer(TCPProtocol& tcp);
+	virtual ~ManagementSSHTransportServer();
 
 protected:
-	virtual bool IsPortOpen(uint16_t port);
-	virtual void OnConnectionAccepted(TCPTableEntry* state);
-	virtual bool OnRxData(TCPTableEntry* state, uint8_t* payload, uint16_t payloadLen);
+	virtual void InitializeShell(int id, TCPTableEntry* socket);
+	virtual void OnRxShellData(int id, TCPTableEntry* socket, char* data, uint16_t len);
 
-	ManagementSSHTransportServer m_server;
+	ManagementPasswordAuthenticator m_auth;
+
+	SwitchCLISessionContext m_context[SSH_TABLE_SIZE];
 };
 
 #endif

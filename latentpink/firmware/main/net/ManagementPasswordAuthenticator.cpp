@@ -27,22 +27,28 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef ManagementTCPProtocol_h
-#define ManagementTCPProtocol_h
+#include "latentpink.h"
+#include "ManagementPasswordAuthenticator.h"
 
-#include "ManagementSSHTransportServer.h"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Main auth checks
 
-class ManagementTCPProtocol : public TCPProtocol
+/**
+	@brief Demo password check against hard-coded values for testing the SSH layer
+
+	A real implementation of this method should check a dynamic database of users and hashed passwords.
+ */
+bool ManagementPasswordAuthenticator::TestLogin(
+	const char* username,
+	uint16_t username_len,
+	const char* password,
+	uint16_t password_len,
+	CryptoEngine* /*crypto*/
+	)
 {
-public:
-	ManagementTCPProtocol(IPv4Protocol* ipv4);
-
-protected:
-	virtual bool IsPortOpen(uint16_t port);
-	virtual void OnConnectionAccepted(TCPTableEntry* state);
-	virtual bool OnRxData(TCPTableEntry* state, uint8_t* payload, uint16_t payloadLen);
-
-	ManagementSSHTransportServer m_server;
-};
-
-#endif
+	if(!SSHTransportServer::StringMatchWithLength("admin", username, username_len))
+		return false;
+	if(!SSHTransportServer::StringMatchWithLength("password", password, password_len))
+		return false;
+	return true;
+}

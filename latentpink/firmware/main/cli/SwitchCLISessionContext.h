@@ -34,21 +34,21 @@
 #ifndef SwitchCLISessionContext_h
 #define SwitchCLISessionContext_h
 
+#include "misc/FPGAInterface.h"
 #include <embedded-cli/CLIOutputStream.h>
 #include <embedded-cli/CLISessionContext.h>
-//#include <staticnet/cli/SSHOutputStream.h>
+#include <staticnet/cli/SSHOutputStream.h>
 
 class SwitchCLISessionContext : public CLISessionContext
 {
 public:
 	SwitchCLISessionContext();
 
-	/*void Initialize(int sessid, TCPTableEntry* socket, SSHTransportServer* server, const char* username)
+	void Initialize(int sessid, TCPTableEntry* socket, SSHTransportServer* server, const char* username)
 	{
-		m_stream.Initialize(sessid, socket, server);
-
-		CLISessionContext::Initialize(&m_stream, username);
-	}*/
+		m_sshstream.Initialize(sessid, socket, server);
+		Initialize(&m_sshstream, username);
+	}
 
 	//Generic init for non-SSH streams
 	void Initialize(CLIOutputStream* stream, const char* username)
@@ -82,7 +82,7 @@ protected:
 
 	void OnVlan();
 
-	//SSHOutputStream m_stream;
+	SSHOutputStream m_sshstream;
 	CLIOutputStream* m_stream;
 
 	///@brief The interface we're working with (if in config-interface mode)

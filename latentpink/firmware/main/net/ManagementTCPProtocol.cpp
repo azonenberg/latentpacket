@@ -35,7 +35,7 @@
 
 ManagementTCPProtocol::ManagementTCPProtocol(IPv4Protocol* ipv4)
 	: TCPProtocol(ipv4)
-	//, m_server(*this)
+	, m_server(*this)
 {
 }
 
@@ -50,15 +50,15 @@ bool ManagementTCPProtocol::IsPortOpen(uint16_t port)
 void ManagementTCPProtocol::OnConnectionAccepted(TCPTableEntry* state)
 {
 	//Tell the SSH server process to do its thing
-	//m_server.OnConnectionAccepted(state);
+	m_server.OnConnectionAccepted(state);
 }
 
 bool ManagementTCPProtocol::OnRxData(TCPTableEntry* state, uint8_t* payload, uint16_t payloadLen)
 {
 	//Discard anything not to port 22
-	//if(state->m_localPort != 22)
+	if(state->m_localPort != 22)
 		return true;
 
 	//Pass the incoming traffic off to the SSH server process
-	//return m_server.OnRxData(state, payload, payloadLen);
+	return m_server.OnRxData(state, payload, payloadLen);
 }

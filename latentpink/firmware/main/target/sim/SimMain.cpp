@@ -41,8 +41,7 @@
 TestStorageBank g_leftBank;
 TestStorageBank g_rightBank;
 
-/*
-//Set private key to a hard coded constant (from testdata/id_ed25519)
+//Set private key to a hard coded constant (from staticnet/testdata/id_ed25519)
 uint8_t g_hostkeyPriv[32] =
 {
 	0xb2, 0xc8, 0x0c, 0x44, 0xb1, 0xad, 0x19, 0xb5,
@@ -58,7 +57,6 @@ uint8_t g_hostkeyPub[32] =
 	0xc0, 0x45, 0xb1, 0xc9, 0xd4, 0xba, 0x22, 0x9f,
 	0x08, 0x8c, 0x66, 0x90, 0xf2, 0x4b, 0xf4, 0xbf
 };
-*/
 
 void LoadKVS();
 
@@ -107,7 +105,7 @@ int main(int argc, char* argv[])
 	InitIP();
 
 	//Set up SSH host keys
-	//CryptoEngine::SetHostKey(g_hostkeyPub, g_hostkeyPriv);
+	CryptoEngine::SetHostKey(g_hostkeyPub, g_hostkeyPriv);
 
 	//Initialize the CLI
 	SwitchCLISessionContext context;
