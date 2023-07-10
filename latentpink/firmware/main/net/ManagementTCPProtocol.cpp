@@ -28,127 +28,37 @@
 ***********************************************************************************************************************/
 
 #include "latentpink.h"
+#include "ManagementTCPProtocol.h"
 
-/**
-	@brief Global Ethernet interface
- */
-EthernetInterface* g_ethIface = nullptr;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
 
-/**
-	@brief Global key-value store for persistent configuration
- */
-KVS* g_kvs = nullptr;
-
-/**
-	@brief Logger for output stuff
- */
-Logger g_log;
-
-/**
-	@brief Timer used by logger
- */
-Timer* g_logTimer = nullptr;
-
-/**
-	@brief Interface to the FPGA
- */
-FPGAInterface* g_fpga = nullptr;
-
-/**
-	@brief State of each port
- */
-linkstate_t g_linkState[NUM_PORTS];
-
-/**
-	@brief Speed of each port
- */
-linkspeed_t g_linkSpeed[NUM_PORTS];
-
-/**
-	@brief Mapping of link state IDs to printable names
- */
-const char* g_linkStateNames[] =
+ManagementTCPProtocol::ManagementTCPProtocol(IPv4Protocol* ipv4)
+	: TCPProtocol(ipv4)
+	//, m_server(*this)
 {
-	"notconnect",
-	"connected",
-	"admindown",
-	"errdisable",
-	"testpattern"
-};
+}
 
-/**
-	@brief Hardware names for each port
- */
-const char* g_interfaceNames[NUM_PORTS] =
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Message handlers
+
+bool ManagementTCPProtocol::IsPortOpen(uint16_t port)
 {
-	"g0",
-	"g1",
-	"g2",
-	"g3",
-	"g4",
-	"g5",
-	"g6",
-	"g7",
-	"g8",
-	"g9",
-	"g10",
-	"g11",
-	"g12",
-	"g13",
-	"xg0",
-	"mgmt0"
-};
+	return (port == 22);
+}
 
-/**
-	@brief Pretty-printed names for each port
- */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
+void ManagementTCPProtocol::OnConnectionAccepted(TCPTableEntry* state)
 {
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (DP83867CS)",
-	"Edge port (DP83867CS)",
-	"SFP+ uplink",
-	"Management (KSZ9031RNX)"
-};
+	//Tell the SSH server process to do its thing
+	//m_server.OnConnectionAccepted(state);
+}
 
-/**
-	@brief Mapping of link speed IDs to printable names
- */
-const char* g_linkSpeedNames[] =
+bool ManagementTCPProtocol::OnRxData(TCPTableEntry* state, uint8_t* payload, uint16_t payloadLen)
 {
-	"10",
-	"100",
-	"1000",
-	"10G"
-};
+	//Discard anything not to port 22
+	//if(state->m_localPort != 22)
+		return true;
 
-/**
-	@brief VLAN ID for each port
- */
-uint16_t g_portVlans[NUM_PORTS] = {0};
-
-/**
-	@brief Our MAC address
- */
-MACAddress g_macAddress;
-
-/**
-	@brief Our IPv4 address
- */
-IPv4Config g_ipConfig;
-
-/**
-	@brief Ethernet protocol stack
- */
-EthernetProtocol* g_ethProtocol = nullptr;
+	//Pass the incoming traffic off to the SSH server process
+	//return m_server.OnRxData(state, payload, payloadLen);
+}

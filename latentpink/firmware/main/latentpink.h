@@ -64,6 +64,7 @@ extern Timer* g_logTimer;
 extern EthernetInterface* g_ethIface;
 extern MACAddress g_macAddress;
 extern IPv4Config g_ipConfig;
+extern EthernetProtocol* g_ethProtocol;
 
 //includes fabric ports, management, and uplink
 #define NUM_PORTS 16

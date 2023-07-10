@@ -20,7 +20,7 @@ sim:
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/init/SimInit.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/misc/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/cli/*.cpp || exit 1
-	#$(CXX) $(CXXFLAGS) -c $(SRCDIR)/net/*.cpp || exit 1
+	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/net/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/stm32-cpp/src/util/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/microkvs/kvs/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/microkvs/driver/TestStorageBank.cpp || exit 1
@@ -36,4 +36,4 @@ sim:
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/staticnet/net/ipv4/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/staticnet/net/tcp/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/staticnet/ssh/*.cpp || exit 1
-	$(CXX) $(CXXFLAGS) *.o -o simcli || exit 1
+	$(CXX) $(CXXFLAGS) *.o -lcrypto++ -o simcli || exit 1

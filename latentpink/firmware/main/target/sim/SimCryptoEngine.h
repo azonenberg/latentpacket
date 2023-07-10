@@ -25,130 +25,48 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE       *
 * POSSIBILITY OF SUCH DAMAGE.                                                                                          *
 *                                                                                                                      *
-***********************************************************************************************************************/
-
-#include "latentpink.h"
+**********************************************************************************************************************************************************************************************************************************************/
 
 /**
-	@brief Global Ethernet interface
+	@file
+	@brief Declaration of SimCryptoEngine
  */
-EthernetInterface* g_ethIface = nullptr;
+#ifndef SimCryptoEngine_h
+#define SimCryptoEngine_h
+
+#include <cryptopp/sha.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/gcm.h>
+#include <cryptopp/filters.h>
+
+#include <staticnet/crypt/CryptoEngine.h>
 
 /**
-	@brief Global key-value store for persistent configuration
+	@brief Crypto engine class for the bridge test
  */
-KVS* g_kvs = nullptr;
-
-/**
-	@brief Logger for output stuff
- */
-Logger g_log;
-
-/**
-	@brief Timer used by logger
- */
-Timer* g_logTimer = nullptr;
-
-/**
-	@brief Interface to the FPGA
- */
-FPGAInterface* g_fpga = nullptr;
-
-/**
-	@brief State of each port
- */
-linkstate_t g_linkState[NUM_PORTS];
-
-/**
-	@brief Speed of each port
- */
-linkspeed_t g_linkSpeed[NUM_PORTS];
-
-/**
-	@brief Mapping of link state IDs to printable names
- */
-const char* g_linkStateNames[] =
+class SimCryptoEngine : public CryptoEngine
 {
-	"notconnect",
-	"connected",
-	"admindown",
-	"errdisable",
-	"testpattern"
+public:
+	SimCryptoEngine();
+	virtual ~SimCryptoEngine();
+
+	virtual void GenerateRandom(uint8_t* buf, size_t len);
+	virtual void Clear();
+
+	virtual void SHA256_Init();
+	virtual void SHA256_Update(const uint8_t* data, uint16_t len);
+	virtual void SHA256_Final(uint8_t* digest);
+
+	virtual bool DecryptAndVerify(uint8_t* data, uint16_t len);
+	virtual void EncryptAndMAC(uint8_t* data, uint16_t len);
+
+protected:
+	FILE* m_fpRandom;
+
+	CryptoPP::SHA256 m_hash;
+
+	CryptoPP::GCM<CryptoPP::AES>::Decryption m_decryptor;
+	CryptoPP::GCM<CryptoPP::AES>::Encryption m_encryptor;
 };
 
-/**
-	@brief Hardware names for each port
- */
-const char* g_interfaceNames[NUM_PORTS] =
-{
-	"g0",
-	"g1",
-	"g2",
-	"g3",
-	"g4",
-	"g5",
-	"g6",
-	"g7",
-	"g8",
-	"g9",
-	"g10",
-	"g11",
-	"g12",
-	"g13",
-	"xg0",
-	"mgmt0"
-};
-
-/**
-	@brief Pretty-printed names for each port
- */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
-{
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (DP83867CS)",
-	"Edge port (DP83867CS)",
-	"SFP+ uplink",
-	"Management (KSZ9031RNX)"
-};
-
-/**
-	@brief Mapping of link speed IDs to printable names
- */
-const char* g_linkSpeedNames[] =
-{
-	"10",
-	"100",
-	"1000",
-	"10G"
-};
-
-/**
-	@brief VLAN ID for each port
- */
-uint16_t g_portVlans[NUM_PORTS] = {0};
-
-/**
-	@brief Our MAC address
- */
-MACAddress g_macAddress;
-
-/**
-	@brief Our IPv4 address
- */
-IPv4Config g_ipConfig;
-
-/**
-	@brief Ethernet protocol stack
- */
-EthernetProtocol* g_ethProtocol = nullptr;
+#endif

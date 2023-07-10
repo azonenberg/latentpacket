@@ -106,26 +106,6 @@ int main(int argc, char* argv[])
 	InitEthernet();
 	InitIP();
 
-	//TODO: move all of this to static stuff in CommonInit
-
-	//ARP cache (shared by all interfaces)
-	ARPCache cache;
-
-	//Per-interface protocol stacks
-	EthernetProtocol eth(*g_ethIface, g_macAddress);
-	ARPProtocol arp(eth, g_ipConfig.m_address, cache);
-
-	//Global protocol stacks
-	IPv4Protocol ipv4(eth, g_ipConfig, cache);
-	ICMPv4Protocol icmpv4(ipv4);
-	//BridgeTCPProtocol tcp(&ipv4);
-
-	//Register protocol handlers with the lower layer
-	eth.UseARP(&arp);
-	eth.UseIPv4(&ipv4);
-	ipv4.UseICMPv4(&icmpv4);
-	//ipv4.UseTCP(&tcp);
-
 	//Set up SSH host keys
 	//CryptoEngine::SetHostKey(g_hostkeyPub, g_hostkeyPriv);
 
@@ -147,7 +127,7 @@ int main(int argc, char* argv[])
 		//Check for new Ethernet frames
 		auto frame = g_ethIface->GetRxFrame();
 		if(frame)
-			eth.OnRxFrame(frame);
+			g_ethProtocol->OnRxFrame(frame);
 
 		//Read next keystroke, or give up and time out after 50ms
 		else if(1 == select(STDIN_FILENO+1, &set, nullptr, nullptr, &timeout))
