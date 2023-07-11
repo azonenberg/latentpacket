@@ -36,6 +36,9 @@
 ManagementSSHTransportServer::ManagementSSHTransportServer(TCPProtocol& tcp)
 	: SSHTransportServer(tcp)
 {
+	g_log("Initializing SSH server\n");
+	LogIndenter li(g_log);
+
 	//Initialize crypto engines
 	for(size_t i=0; i<SSH_TABLE_SIZE; i++)
 	{
@@ -46,6 +49,39 @@ ManagementSSHTransportServer::ManagementSSHTransportServer(TCPProtocol& tcp)
 		#endif
 	}
 
+	//Find the keys, generating if required
+	unsigned char pub[ECDSA_KEY_SIZE] = {0};
+	unsigned char priv[ECDSA_KEY_SIZE] = {0};
+
+	bool found = true;
+	if(!g_kvs->ReadObject("ssh.hostpub", pub, ECDSA_KEY_SIZE))
+		found = false;
+	if(!g_kvs->ReadObject("ssh.hostpriv", priv, ECDSA_KEY_SIZE))
+		found = false;
+
+	if(found)
+	{
+		g_log("Using existing SSH host key\n");
+		CryptoEngine::SetHostKey(pub, priv);
+	}
+
+	else
+	{
+		g_log("No SSH host key in flash, generating new key pair\n");
+		//STM32CryptoEngine tmp;
+		m_state[0].m_crypto->GenerateHostKey();
+
+		if(!g_kvs->StoreObject("ssh.hostpub", CryptoEngine::GetHostPublicKey(), ECDSA_KEY_SIZE))
+			g_log(Logger::ERROR, "Unable to store SSH host public key to flash\n");
+		if(!g_kvs->StoreObject("ssh.hostpriv", CryptoEngine::GetHostPrivateKey(), ECDSA_KEY_SIZE))
+			g_log(Logger::ERROR, "Unable to store SSH host private key to flash\n");
+	}
+
+	char buf[64] = {0};
+	m_state[0].m_crypto->GetHostKeyFingerprint(buf, sizeof(buf));
+	g_log("ED25519 key fingerprint is SHA256:%s.\n", buf);
+
+	//Set up authenticators
 	UsePasswordAuthenticator(&m_auth);
 }
 

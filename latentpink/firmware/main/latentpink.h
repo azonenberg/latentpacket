@@ -105,6 +105,7 @@ void ConfigureInterfaces();
 void InitEthernet();
 void InitIP();
 void ConfigureIP();
+void InitSSH();
 
 void DetectHardware();
 

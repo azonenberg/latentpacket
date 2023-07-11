@@ -3512,17 +3512,32 @@ add_cells_to_pblock [get_pblocks pblock_mgmt] [get_cells -quiet [list mgmt/info 
 resize_pblock [get_pblocks pblock_mgmt] -add {CLOCKREGION_X1Y2:CLOCKREGION_X1Y2}
 set_property IS_SOFT FALSE [get_pblocks pblock_mgmt]
 
+#######################################################################################################################
+# Floorplanning: x25519 crypto accelerator
+
+create_pblock pblock_crypto
+add_cells_to_pblock [get_pblocks pblock_crypto] [get_cells -quiet [list crypt25519]]
+resize_pblock [get_pblocks pblock_crypto] -add {SLICE_X44Y0:SLICE_X109Y49}
+resize_pblock [get_pblocks pblock_crypto] -add {DSP48_X2Y0:DSP48_X5Y19}
+resize_pblock [get_pblocks pblock_crypto] -add {RAMB18_X2Y0:RAMB18_X6Y19}
+resize_pblock [get_pblocks pblock_crypto] -add {RAMB36_X2Y0:RAMB36_X6Y9}
+set_property IS_SOFT FALSE [get_pblocks pblock_crypto]
+create_pblock pblock_crypto_vio
+add_cells_to_pblock [get_pblocks pblock_crypto_vio] [get_cells -quiet [list vio_crypt]]
+resize_pblock [get_pblocks pblock_crypto_vio] -add {SLICE_X36Y0:SLICE_X43Y49}
+set_property IS_SOFT FALSE [get_pblocks pblock_crypto_vio]
+
 ########################################################################################################################
 # I/O timing
 
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -min -add_delay 1.000 [get_ports {mgmt0_rxd[*]}]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -max -add_delay 3.000 [get_ports {mgmt0_rxd[*]}]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -min -add_delay 1.000 [get_ports {mgmt0_rxd[*]}]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -max -add_delay 3.000 [get_ports {mgmt0_rxd[*]}]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -min -add_delay 1.000 [get_ports mgmt0_rx_dv]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -max -add_delay 3.000 [get_ports mgmt0_rx_dv]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -min -add_delay 1.000 [get_ports mgmt0_rx_dv]
-set_input_delay -clock [get_clocks mgmt0_rx_clk] -max -add_delay 3.000 [get_ports mgmt0_rx_dv]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -min -add_delay 1.000 [get_ports {mgmt0_rxd[*]}]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -max -add_delay 3.000 [get_ports {mgmt0_rxd[*]}]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -min -add_delay 1.000 [get_ports {mgmt0_rxd[*]}]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -max -add_delay 3.000 [get_ports {mgmt0_rxd[*]}]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -min -add_delay 1.000 [get_ports mgmt0_rx_dv]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -clock_fall -max -add_delay 3.000 [get_ports mgmt0_rx_dv]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -min -add_delay 1.000 [get_ports mgmt0_rx_dv]
+#set_input_delay -clock [get_clocks mgmt0_rx_clk] -max -add_delay 3.000 [get_ports mgmt0_rx_dv]
 
 #set_output_delay -clock [get_clocks clk_125mhz_p] -clock_fall -min -add_delay -1.200 [get_ports {mgmt0_txd[*]}]
 #set_output_delay -clock [get_clocks clk_125mhz_p] -clock_fall -max -add_delay 1.200 [get_ports {mgmt0_txd[*]}]
@@ -3566,20 +3581,7 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 ########################################################################################################################
 # Debug clocking
 
-
-create_pblock pblock_crypto
-add_cells_to_pblock [get_pblocks pblock_crypto] [get_cells -quiet [list crypt25519]]
-resize_pblock [get_pblocks pblock_crypto] -add {SLICE_X44Y0:SLICE_X109Y49}
-resize_pblock [get_pblocks pblock_crypto] -add {DSP48_X2Y0:DSP48_X5Y19}
-resize_pblock [get_pblocks pblock_crypto] -add {RAMB18_X2Y0:RAMB18_X6Y19}
-resize_pblock [get_pblocks pblock_crypto] -add {RAMB36_X2Y0:RAMB36_X6Y9}
-set_property IS_SOFT FALSE [get_pblocks pblock_crypto]
-create_pblock pblock_crypto_vio
-add_cells_to_pblock [get_pblocks pblock_crypto_vio] [get_cells -quiet [list vio_crypt]]
-resize_pblock [get_pblocks pblock_crypto_vio] -add {SLICE_X36Y0:SLICE_X43Y49}
-set_property IS_SOFT FALSE [get_pblocks pblock_crypto_vio]
-
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
-connect_debug_port dbg_hub/clk [get_nets clk_312p5mhz]
+connect_debug_port dbg_hub/clk [get_nets clk_125mhz]
