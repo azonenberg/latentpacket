@@ -221,6 +221,8 @@ module LatentPinkTopLevel(
 	wire clk_625mhz_0;
 	wire clk_625mhz_90;
 
+	wire clk_crypt;
+
 	SerdesClocking clk_serdes(
 		.gtx_refclk_156m25_p(gtx_refclk_156m25_p),
 		.gtx_refclk_156m25_n(gtx_refclk_156m25_n),
@@ -264,6 +266,7 @@ module LatentPinkTopLevel(
 		.clk_ram_ctl(clk_ram_ctl),
 		.clk_ram_90(clk_ram_90),
 		.clk_sysinfo(clk_sysinfo),
+		.clk_crypt(clk_crypt),
 
 		.pll_ram_lock(pll_ram_lock)
 	);
@@ -593,6 +596,33 @@ module LatentPinkTopLevel(
 
 		.port_vlan(port_vlan_fabric),
 		.port_is_trunk(port_is_trunk)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)
+
+	wire		crypt_en;
+	wire[255:0]	crypt_work_in;
+	wire[255:0]	crypt_e;
+	wire		crypt_out_valid;
+	wire[255:0]	crypt_work_out;
+
+	X25519_ScalarMult crypt25519(
+		.clk(clk_crypt),
+		.en(crypt_en),
+		.work_in(crypt_work_in),
+		.e(crypt_e),
+		.out_valid(crypt_out_valid),
+		.work_out(crypt_work_out)
+	);
+
+	vio_2 vio_crypt(
+		.clk(clk_crypt),
+		.probe_out0(crypt_en),
+		.probe_out1(crypt_work_in),
+		.probe_out2(crypt_e),
+		.probe_in0(crypt_out_valid),
+		.probe_in1(crypt_work_out)
 	);
 
 endmodule

@@ -57,6 +57,7 @@ module ClockGeneration(
 	output wire			clk_ram_ctl,	//VCO/8 = 187.5 MHz
 	output wire			clk_ram_90,		//VCO/4 = 375 MHz
 	output wire			clk_sysinfo,	//VCO / 16 = 93.75 MHz
+	output wire			clk_crypt,		//VCO/6 = 250 MHz
 
 	output wire			pll_ram_lock
 );
@@ -180,6 +181,7 @@ module ClockGeneration(
 	wire	clk_ram_ctl_raw;
 	wire	clk_ram_90_raw;
 	wire	clk_sysinfo_raw;
+	wire	clk_crypt_raw;
 
 	PLLE2_BASE #(
 		.BANDWIDTH("OPTIMIZED"),
@@ -187,7 +189,7 @@ module ClockGeneration(
 		.CLKOUT1_DIVIDE(8),			//1500 MHz / 8 = 187.5 MHz
 		.CLKOUT2_DIVIDE(4),			//1500 MHz / 4 = 375 MHz
 		.CLKOUT3_DIVIDE(16),		//1500 MHz / 16 = 93.75 MHz
-		.CLKOUT4_DIVIDE(10),		//unused
+		.CLKOUT4_DIVIDE(6),			//1500 MHz / 6 = 250 MHz
 		.CLKOUT5_DIVIDE(10),		//unused
 
 		.CLKOUT0_PHASE(0),
@@ -220,7 +222,7 @@ module ClockGeneration(
 		.CLKOUT1(clk_ram_ctl_raw),
 		.CLKOUT2(clk_ram_90_raw),
 		.CLKOUT3(clk_sysinfo_raw),
-		.CLKOUT4(),
+		.CLKOUT4(clk_crypt_raw),
 		.CLKOUT5(),
 		.CLKFBOUT(ram_fbclk),
 		.LOCKED(pll_ram_lock)
@@ -244,6 +246,11 @@ module ClockGeneration(
 	BUFGCE buf_sysinfo(
 		.I(clk_sysinfo_raw),
 		.O(clk_sysinfo),
+		.CE(pll_ram_lock));
+
+	BUFGCE buf_crypt(
+		.I(clk_crypt_raw),
+		.O(clk_crypt),
 		.CE(pll_ram_lock));
 
 endmodule
