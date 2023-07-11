@@ -66,6 +66,8 @@ module ForwardingEngine #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MAC address table
 
+	//TODO: move this to a CDC FIFO
+
 	logic					mac_lookup_en		= 0;
 	vlan_t					mac_lookup_src_vlan	= 0;
 	macaddr_t				mac_lookup_src_mac	= 0;
@@ -210,6 +212,7 @@ module ForwardingEngine #(
 
 		//Pipeline source info so when a lookup completes, we know where it came from
 		//(This has to be after the arbitration)
+		//TODO: put this as a FIFO instead
 		mac_lookup_en_ff		<= mac_lookup_en;
 		mac_lookup_en_ff2		<= mac_lookup_en_ff;
 		mac_lookup_en_ff3		<= mac_lookup_en_ff2;

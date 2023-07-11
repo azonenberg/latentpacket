@@ -320,6 +320,21 @@ module MACAddressTable #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Pipeline read results for timing
+
+	logic[ASSOC_BITS-1:0]	lookup_way_ff		= 0;
+	logic					need_to_refresh_ff	= 0;
+	entry_t					lookup_rdata_ff[ASSOC_WAYS-1:0];
+
+	always_ff @(posedge clk) begin
+		lookup_way_ff			<= lookup_way_comb;
+		need_to_refresh_ff		<= need_to_refresh_comb;
+
+		for(integer i=0; i<ASSOC_WAYS; i=i+1)
+			lookup_rdata_ff[i]	<= lookup_rdata[i];
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Table refreshing
 
 	logic					refresh_wr_en	= 0;
@@ -333,12 +348,13 @@ module MACAddressTable #(
 
 		refresh_wr_en	<= 0;
 
-		if(need_to_refresh_comb) begin
+		//TODO: save address, don't recompute pointlessly
+		if(need_to_refresh_ff) begin
 			refresh_wr_en			<= 1;
-			refresh_wr_data			<= lookup_rdata[lookup_way_comb];
+			refresh_wr_data			<= lookup_rdata_ff[lookup_way_ff];
 			refresh_wr_data.gc_mark	<= 1;
-			refresh_wr_addr			<= CacheHash(lookup_rdata[lookup_way_comb].mac, lookup_rdata[lookup_way_comb].vlan);
-			refresh_wr_way			<= lookup_way_comb;
+			refresh_wr_addr			<= CacheHash(lookup_rdata_ff[lookup_way_ff].mac, lookup_rdata_ff[lookup_way_ff].vlan);
+			refresh_wr_way			<= lookup_way_ff;
 		end
 
 		if(refresh_wr_ack)
