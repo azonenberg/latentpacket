@@ -45,7 +45,9 @@ module SimulationManagementBridge(
 
 	output logic		wr_en	= 0,
 	output logic[15:0]	wr_addr	= 0,
-	output logic[7:0]	wr_data	= 0
+	output logic[7:0]	wr_data	= 0,
+
+	input wire			crypt_out_valid
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +72,7 @@ module SimulationManagementBridge(
 
 	logic	rd_pending	= 0;
 	logic	wr_pending	= 0;
+	logic	crypto_pending	= 0;
 
 	always_ff @(posedge clk) begin
 
@@ -94,20 +97,29 @@ module SimulationManagementBridge(
 		end
 
 		if(wr_pending) begin
-			$fscanf(hread, "%x", wr_data);
 
 			rcount		= rcount + 1;
 
 			if(rcount >= len)
 				wr_pending	<= 0;
 			else begin
+				$fscanf(hread, "%x", wr_data);
 				wr_en		<= 1;
 				wr_addr		<= wr_addr + 1;
 			end
 		end
 
+		//Done blocking on crypto operation
+		if(crypto_pending) begin
+			if(crypt_out_valid) begin
+				crypto_pending	<= 0;
+				$fdisplay(hwrite, "1");
+				$fflush(hwrite);
+			end
+		end
+
 		//Don't read commands if doing IO this cycle
-		if(rd_pending || wr_pending) begin
+		if(rd_pending || wr_pending || crypto_pending) begin
 		end
 
 		//Read command (nop, read, write, etc)
@@ -123,6 +135,10 @@ module SimulationManagementBridge(
 				rd_pending	<= 1;
 				rcount		= 0;
 
+			end
+
+			else if(op == "cryptb") begin
+				crypto_pending	<= 1;
 			end
 
 			//Begin a write request
