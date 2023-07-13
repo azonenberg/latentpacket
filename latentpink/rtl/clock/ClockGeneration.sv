@@ -145,7 +145,7 @@ module ClockGeneration(
 		.O(clk_125mhz),
 		.CE(pll_rgmii_lock));
 
-	BUFGCE buf_250mhz(
+	BUFHCE buf_250mhz(
 		.I(clk_250mhz_raw),
 		.O(clk_250mhz),
 		.CE(pll_rgmii_lock));

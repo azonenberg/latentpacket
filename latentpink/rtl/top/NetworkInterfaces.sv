@@ -717,7 +717,6 @@ module NetworkInterfaces(
 		.gt2_txpolarity_in(1'b0)	//no inversion
 	);
 
-	wire[2:0]	qsgmii_rx_clk_raw_bufmr;
 	wire[2:0]	qsgmii_rx_clk_mac;
 	for(genvar g=0; g<3; g=g+1) begin : qsgmii
 
