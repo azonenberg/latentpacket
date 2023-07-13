@@ -68,7 +68,6 @@ ManagementSSHTransportServer::ManagementSSHTransportServer(TCPProtocol& tcp)
 	else
 	{
 		g_log("No SSH host key in flash, generating new key pair\n");
-		//STM32CryptoEngine tmp;
 		m_state[0].m_crypto->GenerateHostKey();
 
 		if(!g_kvs->StoreObject("ssh.hostpub", CryptoEngine::GetHostPublicKey(), ECDSA_KEY_SIZE))

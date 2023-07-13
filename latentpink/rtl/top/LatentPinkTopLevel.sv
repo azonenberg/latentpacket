@@ -568,6 +568,24 @@ module LatentPinkTopLevel(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)
+
+	wire		crypt_en;
+	wire[255:0]	crypt_work_in;
+	wire[255:0]	crypt_e;
+	wire		crypt_out_valid;
+	wire[255:0]	crypt_work_out;
+
+	X25519_ScalarMult crypt25519(
+		.clk(clk_crypt),
+		.en(crypt_en),
+		.work_in(crypt_work_in),
+		.e(crypt_e),
+		.out_valid(crypt_out_valid),
+		.work_out(crypt_work_out)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Management subsystem
 
 	//Run core of management logic in the RAM control domain so that we need less synchronizers
@@ -595,34 +613,14 @@ module LatentPinkTopLevel(
 		.port_rx_untagged_allowed(port_rx_untagged_allowed),
 
 		.port_vlan(port_vlan_fabric),
-		.port_is_trunk(port_is_trunk)
-	);
+		.port_is_trunk(port_is_trunk),
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)
-
-	wire		crypt_en;
-	wire[255:0]	crypt_work_in;
-	wire[255:0]	crypt_e;
-	wire		crypt_out_valid;
-	wire[255:0]	crypt_work_out;
-
-	X25519_ScalarMult crypt25519(
-		.clk(clk_crypt),
-		.en(crypt_en),
-		.work_in(crypt_work_in),
-		.e(crypt_e),
-		.out_valid(crypt_out_valid),
-		.work_out(crypt_work_out)
-	);
-
-	vio_2 vio_crypt(
-		.clk(clk_crypt),
-		.probe_out0(crypt_en),
-		.probe_out1(crypt_work_in),
-		.probe_out2(crypt_e),
-		.probe_in0(crypt_out_valid),
-		.probe_in1(crypt_work_out)
+		.clk_crypt(clk_crypt),
+		.crypt_en(crypt_en),
+		.crypt_work_in(crypt_work_in),
+		.crypt_e(crypt_e),
+		.crypt_out_valid(crypt_out_valid),
+		.crypt_work_out(crypt_work_out)
 	);
 
 endmodule

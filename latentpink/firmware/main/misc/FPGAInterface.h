@@ -39,12 +39,27 @@ public:
 	virtual void Nop()
 	{};
 
+	#ifdef SIMULATION
+	/**
+		@brief Advance simulation time until the crypto engine has finished
+	 */
+	virtual void CryptoEngineBlock()
+	{}
+	#endif
+
 	virtual void BlockingRead(uint32_t insn, uint8_t* data, uint32_t len) = 0;
 	virtual void BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len) = 0;
 
 	uint32_t BlockingRead32(uint32_t insn)
 	{
 		uint32_t data;
+		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
+		return data;
+	}
+
+	uint8_t BlockingRead8(uint32_t insn)
+	{
+		uint8_t data;
 		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
 		return data;
 	}
@@ -67,6 +82,7 @@ enum regid_t
 	REG_FPGA_IDCODE		= 0x0000,
 	REG_FPGA_SERIAL		= 0x0004,
 
+	REG_CRYPT_BASE		= 0x3800,
 	REG_INTERFACE_BASE	= 0x4000
 };
 
@@ -79,6 +95,14 @@ enum ifregid_t
 {
 	REG_VLAN_NUM		= 0x0000,
 	REG_TAG_MODE		= 0x0002
+};
+
+enum cryptreg_t
+{
+	REG_WORK			= 0x0000,
+	REG_E				= 0x0020,
+	REG_CRYPT_STATUS	= 0x0040,
+	REG_WORK_OUT		= 0x0060
 };
 
 #endif

@@ -105,3 +105,14 @@ void SimFPGAInterface::BlockingWrite(uint32_t insn, const uint8_t* data, uint32_
 		fprintf(m_fpWrite, "%x\n", data[i]);
 	fflush(m_fpWrite);
 }
+
+void SimFPGAInterface::CryptoEngineBlock()
+{
+	//send the request
+	fprintf(m_fpWrite, "cryptb\n");
+	fflush(m_fpWrite);
+
+	//wait until we get a reply
+	unsigned int ignored;
+	fscanf(m_fpRead, "%x", &ignored);
+}

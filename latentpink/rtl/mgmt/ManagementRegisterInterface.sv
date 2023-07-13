@@ -70,7 +70,64 @@ module ManagementRegisterInterface #(
 
 	//Configuration registers in core clock domain
 	output vlan_t[NUM_PORTS-1:0]	port_vlan		= 0,
-	output logic[NUM_PORTS-1:0]		port_is_trunk	= 0
+	output logic[NUM_PORTS-1:0]		port_is_trunk	= 0,
+
+	//Configuration registers in crypto clock domain
+	input wire						clk_crypt,
+	output logic					crypt_en = 0,
+	output wire[255:0]				crypt_work_in,
+	output wire[255:0]				crypt_e,
+	input wire						crypt_out_valid,
+	input wire[255:0]				crypt_work_out
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Synchronizers for crypto stuff
+
+	logic			crypt_in_updated	= 0;
+	logic[255:0]	crypt_work_in_mgmt	= 0;
+	logic[255:0]	crypt_e_mgmt		= 0;
+
+	//Ignore toggles on updated_b for first few clocks after reset
+	//seems sync glitches, at least in sim?
+	wire			crypt_en_sync;
+	logic[3:0]		rst_count 			= 1;
+	always_ff @(posedge clk_crypt) begin
+		if(rst_count)
+			rst_count	<= rst_count + 1;
+		else
+			crypt_en	<= crypt_en_sync;
+	end
+
+	RegisterSynchronizer #(
+		.WIDTH(512)
+	) sync_crypt_inputs (
+		.clk_a(clk),
+		.en_a(crypt_in_updated),
+		.ack_a(),
+		.reg_a({crypt_work_in_mgmt, crypt_e_mgmt}),
+
+		.clk_b(clk_crypt),
+		.updated_b(crypt_en_sync),
+		.reset_b(1'b0),
+		.reg_b({crypt_work_in, crypt_e})
+	);
+
+	wire			crypt_out_updated;
+	wire[255:0]		crypt_work_out_mgmt;
+
+	RegisterSynchronizer #(
+		.WIDTH(256)
+	) sync_crypt_outputs (
+		.clk_a(clk_crypt),
+		.en_a(crypt_out_valid),
+		.ack_a(),
+		.reg_a(crypt_work_out),
+
+		.clk_b(clk),
+		.updated_b(crypt_out_updated),
+		.reset_b(1'b0),
+		.reg_b(crypt_work_out_mgmt)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,6 +216,9 @@ module ManagementRegisterInterface #(
 		REG_FPGA_SERIAL_6	= 16'h000a,
 		REG_FPGA_SERIAL_7	= 16'h000b,
 
+		//Crypto accelerator
+		REG_CRYPT_BASE		= 16'h3800,
+
 		//Per port configuration starts here
 		REG_INTERFACE_BASE	= 16'h4000,
 
@@ -186,14 +246,24 @@ module ManagementRegisterInterface #(
 		REG_IF_LAST
 	} ifoff_t;
 
+	//Register offsets within crypto block
+	typedef enum logic[15:0]
+	{
+		REG_WORK			= 16'h0000,
+		REG_E				= 16'h0020,
+		REG_CRYPT_STATUS	= 16'h0040,
+		REG_WORK_OUT		= 16'h0060
+	} cryptoff_t;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Address decoding and muxing logic
 
-	logic		reading	= 0;
+	logic 					reading			= 0;
+	logic					crypto_active	= 0;
 
 	//Split interface config into port number and register ID
-	localparam PORT_BITS 	= 4;
-	localparam REGID_BITS	= 10;
+	localparam PORT_BITS 				= 4;
+	localparam REGID_BITS				= 10;
 	logic[PORT_BITS-1:0]	rd_port		= 0;
 	logic[REGID_BITS-1:0]	rd_regid	= 0;
 
@@ -205,10 +275,15 @@ module ManagementRegisterInterface #(
 		rd_valid				<= 0;
 		port_vlan_updated		<= 0;
 		port_tagmode_updated	<= 0;
+		crypt_in_updated		<= 0;
 
 		//Start a new read
 		if(rd_en)
 			reading	<= 1;
+
+		//Finish a crypto operation
+		if(crypt_out_updated)
+			crypto_active		<= 0;
 
 		//Continue a read
 		if(rd_en || reading) begin
@@ -242,28 +317,46 @@ module ManagementRegisterInterface #(
 
 			end
 
-			//Main register decoder
-			case(rd_addr)
+			//Crypto registers are decoded separately
+			if(rd_addr >= REG_CRYPT_BASE) begin
 
-				REG_FPGA_IDCODE:	rd_data <= idcode[3*8 +: 8];
-				REG_FPGA_IDCODE_1:	rd_data <= idcode[2*8 +: 8];
-				REG_FPGA_IDCODE_2:	rd_data <= idcode[1*8 +: 8];
-				REG_FPGA_IDCODE_3:	rd_data <= idcode[0*8 +: 8];
+				if(rd_addr[7:0] == REG_CRYPT_STATUS)
+					rd_data	<= {7'b0, crypto_active};
+				else if(rd_addr[7:0] >= REG_WORK_OUT)
+					rd_data <= crypt_work_out_mgmt[rd_addr[4:0]*8 +: 8];
 
-				REG_FPGA_SERIAL:	rd_data <= die_serial[7*8 +: 8];
-				REG_FPGA_SERIAL_1:	rd_data <= die_serial[6*8 +: 8];
-				REG_FPGA_SERIAL_2:	rd_data <= die_serial[5*8 +: 8];
-				REG_FPGA_SERIAL_3:	rd_data <= die_serial[4*8 +: 8];
-				REG_FPGA_SERIAL_4:	rd_data <= die_serial[3*8 +: 8];
-				REG_FPGA_SERIAL_5:	rd_data <= die_serial[2*8 +: 8];
-				REG_FPGA_SERIAL_6:	rd_data <= die_serial[1*8 +: 8];
-				REG_FPGA_SERIAL_7:	rd_data <= die_serial[0*8 +: 8];
-
-				default: begin
+				//unmapped address
+				else
 					rd_data	<= 0;
-				end
 
-			endcase
+			end
+
+			//Main register decoder
+			else begin
+
+				case(rd_addr)
+
+					REG_FPGA_IDCODE:	rd_data <= idcode[3*8 +: 8];
+					REG_FPGA_IDCODE_1:	rd_data <= idcode[2*8 +: 8];
+					REG_FPGA_IDCODE_2:	rd_data <= idcode[1*8 +: 8];
+					REG_FPGA_IDCODE_3:	rd_data <= idcode[0*8 +: 8];
+
+					REG_FPGA_SERIAL:	rd_data <= die_serial[7*8 +: 8];
+					REG_FPGA_SERIAL_1:	rd_data <= die_serial[6*8 +: 8];
+					REG_FPGA_SERIAL_2:	rd_data <= die_serial[5*8 +: 8];
+					REG_FPGA_SERIAL_3:	rd_data <= die_serial[4*8 +: 8];
+					REG_FPGA_SERIAL_4:	rd_data <= die_serial[3*8 +: 8];
+					REG_FPGA_SERIAL_5:	rd_data <= die_serial[2*8 +: 8];
+					REG_FPGA_SERIAL_6:	rd_data <= die_serial[1*8 +: 8];
+					REG_FPGA_SERIAL_7:	rd_data <= die_serial[0*8 +: 8];
+
+					default: begin
+						rd_data	<= 0;
+					end
+
+				endcase
+
+			end
 
 		end
 
@@ -274,24 +367,50 @@ module ManagementRegisterInterface #(
 			wr_port	= wr_addr[REGID_BITS +: PORT_BITS];
 			wr_regid = wr_addr[0 +: REGID_BITS];
 
-			//Note that multi byte registers are little endian for easier access from ARM (and x86 simulation) hosts
-			case(wr_regid)
+			//Interface registers are decoded separately
+			if(wr_addr >= REG_INTERFACE_BASE) begin
 
-				REG_VLAN_NUM:	port_vlan[wr_port][7:0]	<= wr_data;
-				REG_VLAN_NUM_1: begin
-					port_vlan[wr_port][11:8]	<= wr_data[3:0];
-					port_vlan_updated[wr_port]	<= 1;
+				//Note that multi byte registers are little endian for easier access from ARM (and x86 simulation) hosts
+				case(wr_regid)
+
+					REG_VLAN_NUM:	port_vlan[wr_port][7:0]	<= wr_data;
+					REG_VLAN_NUM_1: begin
+						port_vlan[wr_port][11:8]	<= wr_data[3:0];
+						port_vlan_updated[wr_port]	<= 1;
+					end
+
+					REG_TAG_MODE: begin
+						port_tagged_allowed[wr_port]	<= wr_data[0];
+						port_untagged_allowed[wr_port]	<= wr_data[1];
+						port_tagmode_updated[wr_port]	<= 1;
+
+						port_is_trunk[wr_port]			<= wr_data[4];
+					end
+
+				endcase
+
+			end
+
+			//Crypto accelerator registers are decoded separately
+			else if(wr_addr >= REG_CRYPT_BASE) begin
+
+				//E register
+				if(wr_addr[7:0] >= REG_E) begin
+					crypt_e_mgmt[wr_addr[4:0]*8 +: 8]	<= wr_data;
+
+					if(wr_addr[4:0] == 5'h1f) begin
+						crypt_in_updated	<= 1;
+						crypto_active		<= 1;
+					end
+
 				end
 
-				REG_TAG_MODE: begin
-					port_tagged_allowed[wr_port]	<= wr_data[0];
-					port_untagged_allowed[wr_port]	<= wr_data[1];
-					port_tagmode_updated[wr_port]	<= 1;
-
-					port_is_trunk[wr_port]			<= wr_data[4];
+				//work_in register
+				else /*if(wr_addr[7:0] >= REG_WORK)*/ begin
+					crypt_work_in_mgmt[wr_addr[4:0]*8 +: 8]	<= wr_data;
 				end
 
-			endcase
+			end
 
 		end
 

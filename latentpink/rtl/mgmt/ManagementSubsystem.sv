@@ -64,7 +64,15 @@ module ManagementSubsystem #(
 
 	//Configuration registers in core clock domain
 	output vlan_t[NUM_PORTS-1:0]	port_vlan,
-	output wire[NUM_PORTS-1:0]		port_is_trunk
+	output wire[NUM_PORTS-1:0]		port_is_trunk,
+
+	//Configuration registers in crypto clock domain
+	input wire						clk_crypt,
+	output wire						crypt_en,
+	output wire[255:0]				crypt_work_in,
+	output wire[255:0]				crypt_e,
+	input wire						crypt_out_valid,
+	input wire[255:0]				crypt_work_out
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +172,14 @@ module ManagementSubsystem #(
 		.port_rx_clk(port_rx_clk),
 		.port_rx_vlan(port_rx_vlan),
 		.port_rx_tagged_allowed(port_rx_tagged_allowed),
-		.port_rx_untagged_allowed(port_rx_untagged_allowed)
+		.port_rx_untagged_allowed(port_rx_untagged_allowed),
+
+		//Control registers (crypto clock domain)
+		.clk_crypt(clk_crypt),
+		.crypt_work_in(crypt_work_in),
+		.crypt_e(crypt_e),
+		.crypt_out_valid(crypt_out_valid),
+		.crypt_work_out(crypt_work_out)
 	);
 
 endmodule

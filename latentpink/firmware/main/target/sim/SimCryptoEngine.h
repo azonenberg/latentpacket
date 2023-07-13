@@ -60,6 +60,8 @@ public:
 	virtual bool DecryptAndVerify(uint8_t* data, uint16_t len);
 	virtual void EncryptAndMAC(uint8_t* data, uint16_t len);
 
+	virtual void SharedSecret(uint8_t* sharedSecret, uint8_t* clientPublicKey);
+
 protected:
 	FILE* m_fpRandom;
 

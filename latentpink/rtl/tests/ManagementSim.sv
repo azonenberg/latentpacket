@@ -60,6 +60,7 @@ module ManagementSim();
 	wire clk_ram;
 	wire clk_ram_ctl;
 	wire clk_ram_90;
+	wire clk_crypt;
 
 	wire pll_ram_lock;
 
@@ -79,6 +80,7 @@ module ManagementSim();
 		.clk_ram(clk_ram),
 		.clk_ram_ctl(clk_ram_ctl),
 		.clk_ram_90(clk_ram_90),
+		.clk_crypt(clk_crypt),
 
 		.pll_ram_lock(pll_ram_lock)
 	);
@@ -108,6 +110,24 @@ module ManagementSim();
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Crypto accelerator
+
+	wire		crypt_en;
+	wire[255:0]	crypt_work_in;
+	wire[255:0]	crypt_e;
+	wire		crypt_out_valid;
+	wire[255:0]	crypt_work_out;
+
+	X25519_ScalarMult crypt25519(
+		.clk(clk_crypt),
+		.en(crypt_en),
+		.work_in(crypt_work_in),
+		.e(crypt_e),
+		.out_valid(crypt_out_valid),
+		.work_out(crypt_work_out)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// The management interface
 
 	wire		mgmt_rd_en;
@@ -134,7 +154,9 @@ module ManagementSim();
 
 		.wr_en(mgmt_wr_en),
 		.wr_addr(mgmt_wr_addr),
-		.wr_data(mgmt_wr_data)
+		.wr_data(mgmt_wr_data),
+
+		.crypt_out_valid(crypt_out_valid)
 	);
 
 	ManagementRegisterInterface iface(
@@ -155,7 +177,14 @@ module ManagementSim();
 		.idcode(idcode),
 
 		.port_rx_vlan(),
-		.port_rx_clk(port_rx_clk)
+		.port_rx_clk(port_rx_clk),
+
+		.clk_crypt(clk_crypt),
+		.crypt_en(crypt_en),
+		.crypt_work_in(crypt_work_in),
+		.crypt_e(crypt_e),
+		.crypt_out_valid(crypt_out_valid),
+		.crypt_work_out(crypt_work_out)
 	);
 
 endmodule

@@ -115,7 +115,7 @@ bool SimCryptoEngine::DecryptAndVerify(uint8_t* data, uint16_t len)
 		//Check the MAC
 		if(!df.GetLastResult())
 		{
-			printf("Verification failed\n");
+			g_log("Verification failed\n");
 			return false;
 		}
 
@@ -178,4 +178,93 @@ void SimCryptoEngine::EncryptAndMAC(uint8_t* data, uint16_t len)
 		else
 			break;
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accelerated crypto
+
+void SimCryptoEngine::SharedSecret(uint8_t* sharedSecret, uint8_t* clientPublicKey)
+{
+	g_log("SharedSecret()\n");
+	g_log("ephemeralkeyPriv = \n");
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		m_ephemeralkeyPriv[0], m_ephemeralkeyPriv[1], m_ephemeralkeyPriv[2], m_ephemeralkeyPriv[3],
+		m_ephemeralkeyPriv[4], m_ephemeralkeyPriv[5], m_ephemeralkeyPriv[6], m_ephemeralkeyPriv[7],
+		m_ephemeralkeyPriv[8], m_ephemeralkeyPriv[9], m_ephemeralkeyPriv[10], m_ephemeralkeyPriv[11],
+		m_ephemeralkeyPriv[12], m_ephemeralkeyPriv[13], m_ephemeralkeyPriv[14], m_ephemeralkeyPriv[15]);
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		m_ephemeralkeyPriv[16], m_ephemeralkeyPriv[17], m_ephemeralkeyPriv[18], m_ephemeralkeyPriv[19],
+		m_ephemeralkeyPriv[20], m_ephemeralkeyPriv[21], m_ephemeralkeyPriv[22], m_ephemeralkeyPriv[23],
+		m_ephemeralkeyPriv[24], m_ephemeralkeyPriv[25], m_ephemeralkeyPriv[26], m_ephemeralkeyPriv[27],
+		m_ephemeralkeyPriv[28], m_ephemeralkeyPriv[29], m_ephemeralkeyPriv[30], m_ephemeralkeyPriv[31]);
+
+	g_log("clientPublicKey = \n");
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		clientPublicKey[0], clientPublicKey[1], clientPublicKey[2], clientPublicKey[3],
+		clientPublicKey[4], clientPublicKey[5], clientPublicKey[6], clientPublicKey[7],
+		clientPublicKey[8], clientPublicKey[9], clientPublicKey[10], clientPublicKey[11],
+		clientPublicKey[12], clientPublicKey[13], clientPublicKey[14], clientPublicKey[15]);
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		clientPublicKey[16], clientPublicKey[17], clientPublicKey[18], clientPublicKey[19],
+		clientPublicKey[20], clientPublicKey[21], clientPublicKey[22], clientPublicKey[23],
+		clientPublicKey[24], clientPublicKey[25], clientPublicKey[26], clientPublicKey[27],
+		clientPublicKey[28], clientPublicKey[29], clientPublicKey[30], clientPublicKey[31]);
+
+	crypto_scalarmult(sharedSecret, m_ephemeralkeyPriv, clientPublicKey);
+
+	g_log("sharedSecret = \n");
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		sharedSecret[0], sharedSecret[1], sharedSecret[2], sharedSecret[3],
+		sharedSecret[4], sharedSecret[5], sharedSecret[6], sharedSecret[7],
+		sharedSecret[8], sharedSecret[9], sharedSecret[10], sharedSecret[11],
+		sharedSecret[12], sharedSecret[13], sharedSecret[14], sharedSecret[15]);
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		sharedSecret[16], sharedSecret[17], sharedSecret[18], sharedSecret[19],
+		sharedSecret[20], sharedSecret[21], sharedSecret[22], sharedSecret[23],
+		sharedSecret[24], sharedSecret[25], sharedSecret[26], sharedSecret[27],
+		sharedSecret[28], sharedSecret[29], sharedSecret[30], sharedSecret[31]);
+
+	//Ask the FPGA to do the crypto operation
+	unsigned char e[ECDH_KEY_SIZE];
+	e[0] &= 248;
+	e[31] &= 127;
+	e[31] |= 64;
+	memcpy(e, m_ephemeralkeyPriv, ECDH_KEY_SIZE);
+	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_WORK, clientPublicKey, ECDH_KEY_SIZE);
+	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_E, e, ECDH_KEY_SIZE);
+
+	//Read initial status
+	auto status = g_fpga->BlockingRead8(REG_CRYPT_BASE + REG_CRYPT_STATUS);
+	g_log("Initial crypt status: %02x\n", status);
+
+	//Advance simulation time until it finishes without having to lock step
+	g_fpga->CryptoEngineBlock();
+	g_log("crypto engine block finished\n");
+
+	//Read status again
+	while(status != 0)
+	{
+		status = g_fpga->BlockingRead8(REG_CRYPT_BASE + REG_CRYPT_STATUS);
+		g_log("Final crypt status: %02x\n", status);
+	}
+
+	//Read output
+	uint8_t fpgaSharedSecret[ECDH_KEY_SIZE] = {0};
+	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, fpgaSharedSecret, ECDH_KEY_SIZE);
+		g_log("fpgaSharedSecret = \n");
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		fpgaSharedSecret[0], fpgaSharedSecret[1], fpgaSharedSecret[2], fpgaSharedSecret[3],
+		fpgaSharedSecret[4], fpgaSharedSecret[5], fpgaSharedSecret[6], fpgaSharedSecret[7],
+		fpgaSharedSecret[8], fpgaSharedSecret[9], fpgaSharedSecret[10], fpgaSharedSecret[11],
+		fpgaSharedSecret[12], fpgaSharedSecret[13], fpgaSharedSecret[14], fpgaSharedSecret[15]);
+	g_log("    %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+		fpgaSharedSecret[16], fpgaSharedSecret[17], fpgaSharedSecret[18], fpgaSharedSecret[19],
+		fpgaSharedSecret[20], fpgaSharedSecret[21], fpgaSharedSecret[22], fpgaSharedSecret[23],
+		fpgaSharedSecret[24], fpgaSharedSecret[25], fpgaSharedSecret[26], fpgaSharedSecret[27],
+		fpgaSharedSecret[28], fpgaSharedSecret[29], fpgaSharedSecret[30], fpgaSharedSecret[31]);
+
+	if(!memcmp(fpgaSharedSecret, sharedSecret, ECDH_KEY_SIZE))
+		g_log("OK: Calculated shared secrets match\n");
+	else
+		g_log("FAIL: Calculated shared secrets do not match\n");
 }
