@@ -325,11 +325,12 @@ module IngressFifo #(
 		assign wdata.src_vlan	= port_mem_vlan[g];
 		assign wdata.len		= port_frame_bytelen[g];
 
+		//Add extra cycle of pipeline latency here because metadata is used on timing critical control paths
 		SingleClockFifo #(
 			.WIDTH($bits(packetmeta_t)),
 			.DEPTH(META_FIFO_SIZE),
 			.USE_BLOCK(1),
-			.OUT_REG(1)
+			.OUT_REG(2)
 		 ) fifo (
 			.clk(clk_ram_ctl),
 			.wr(port_frame_done[g]),
@@ -422,6 +423,7 @@ module IngressFifo #(
 	// Readout logic
 
 	logic[PTR_BITS-1:0] 		fifo_rd_ptr[NUM_PORTS-1:0];
+	logic[NUM_PORTS-1:0]		metafifo_rd_ff		= 0;
 	logic[NUM_PORTS-1:0]		metafifo_rd_valid	= 0;
 
 	initial begin
@@ -461,8 +463,10 @@ module IngressFifo #(
 
 	always_ff @(posedge clk_ram_ctl) begin
 
+		//Pipeline two cycle read latency for metadata FIFO to improve setup timing
 		metafifo_rd			<= 0;
-		metafifo_rd_valid	<= metafifo_rd;
+		metafifo_rd_ff		<= metafifo_rd;
+		metafifo_rd_valid	<= metafifo_rd_ff;
 
 		prefetch_rd_en		<= 0;
 

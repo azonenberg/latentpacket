@@ -43,22 +43,24 @@ module ClockGeneration(
 	//PLL A: 1250 MHz VCO (x10)
 	output wire			clk_125mhz,			//1x RGMII
 	output wire			clk_250mhz,			//2x RGMII
+	output wire			pll_rgmii_lock,
+
+	//PLL B: 1250 MHz VCO (x10), but in a different region than A so it can drive SGMII stuff specificially
 	output wire			clk_312p5mhz,		//SGMII oversampling clock, divided
 	output wire			clk_400mhz,			//IODELAY calibration for SGMII
 	output wire			clk_625mhz_0,		//SGMII oversampling clock, 0 degree phase
 	output wire			clk_625mhz_90,		//SGMII oversampling clock, 90 degree phase
+	output wire			pll_sgmii_lock,
 
-	output wire			pll_main_lock,
-
-	//PLL B: 1500 MHz VCO (x12)
+	//PLL C: 1500 MHz VCO (x12)
 	//RAM needs minimum of 375 MHz clock to achieve target BW, but we may tweak this
 	//FPGA and RAM are nominally good out to 450
 	output wire			clk_ram,		//VCO/4 = 375 MHz
 	output wire			clk_ram_ctl,	//VCO/8 = 187.5 MHz
 	output wire			clk_ram_90,		//VCO/4 = 375 MHz
 	output wire			clk_sysinfo,	//VCO / 16 = 93.75 MHz
-	output wire			clk_crypt,		//VCO/6 = 250 MHz
-
+	output wire			clk_crypt,		//VCO / 6 = 250 MHz
+										//300 MHz fails timing, can we do 275 somehow? probably not worth it
 	output wire			pll_ram_lock
 );
 
@@ -78,10 +80,83 @@ module ClockGeneration(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Main PLL and clock buffers for it
 
-	wire	main_fbclk;
+	wire	rgmii_fbclk;
 
 	wire	clk_125mhz_raw;
 	wire	clk_250mhz_raw;
+
+	MMCME2_BASE #(
+		.BANDWIDTH("OPTIMIZED"),
+		.CLKOUT0_DIVIDE_F(10),
+		.CLKOUT1_DIVIDE(10),
+		.CLKOUT2_DIVIDE(10),
+		.CLKOUT3_DIVIDE(10),
+		.CLKOUT4_DIVIDE(5),			//1250 MHz / 5 = 250 MHz
+		.CLKOUT5_DIVIDE(10),		//1250 MHz / 10 = 125 MHz
+		.CLKOUT6_DIVIDE(4),
+
+		.CLKOUT0_PHASE(0),
+		.CLKOUT1_PHASE(0),
+		.CLKOUT2_PHASE(90),
+		.CLKOUT3_PHASE(0),
+		.CLKOUT4_PHASE(0),
+		.CLKOUT5_PHASE(0),
+		.CLKOUT6_PHASE(0),
+
+		.CLKOUT0_DUTY_CYCLE(0.5),
+		.CLKOUT1_DUTY_CYCLE(0.5),
+		.CLKOUT2_DUTY_CYCLE(0.5),
+		.CLKOUT3_DUTY_CYCLE(0.5),
+		.CLKOUT4_DUTY_CYCLE(0.5),
+		.CLKOUT5_DUTY_CYCLE(0.5),
+		.CLKOUT6_DUTY_CYCLE(0.5),
+
+		.CLKFBOUT_MULT_F(10),		//125 MHz * 10 = 1250 MHz VCO
+		.DIVCLK_DIVIDE(1),
+		.CLKFBOUT_PHASE(0),
+
+		.CLKIN1_PERIOD(8),			//125 MHz input
+		.STARTUP_WAIT("FALSE"),
+		.CLKOUT4_CASCADE("FALSE")
+
+	) rgmii_mmcm (
+		.CLKIN1(sysclk_in),
+		.CLKFBIN(rgmii_fbclk),
+		.RST(1'b0),
+		.PWRDWN(1'b0),
+		.CLKOUT0(),
+		.CLKOUT0B(),
+		.CLKOUT1(),
+		.CLKOUT1B(),
+		.CLKOUT2(),
+		.CLKOUT2B(),
+		.CLKOUT3(),
+		.CLKOUT3B(),
+		.CLKOUT4(clk_250mhz_raw),
+		.CLKOUT5(clk_125mhz_raw),
+		.CLKOUT6(),
+		.CLKFBOUT(rgmii_fbclk),
+		.CLKFBOUTB(),
+		.LOCKED(pll_rgmii_lock)
+	);
+
+	BUFGCE buf_125mhz(
+		.I(clk_125mhz_raw),
+		.O(clk_125mhz),
+		.CE(pll_rgmii_lock));
+
+	BUFGCE buf_250mhz(
+		.I(clk_250mhz_raw),
+		.O(clk_250mhz),
+		.CE(pll_rgmii_lock));
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SGMII PLL and clock buffers for it
+
+	//Only drives BUFH's in the local area
+
+	wire	sgmii_fbclk;
+
 	wire	clk_312p5mhz_raw;
 	wire	clk_400mhz_raw;
 	wire	clk_625mhz_0_raw;
@@ -93,8 +168,8 @@ module ClockGeneration(
 		.CLKOUT1_DIVIDE(2),			//1250 MHz / 2 = 625 MHz
 		.CLKOUT2_DIVIDE(2),			//1250 MHz / 2 = 625 MHz
 		.CLKOUT3_DIVIDE(4),			//unused
-		.CLKOUT4_DIVIDE(5),			//1250 MHz / 5 = 250 MHz
-		.CLKOUT5_DIVIDE(10),		//1250 MHz / 10 = 125 MHz
+		.CLKOUT4_DIVIDE(10),
+		.CLKOUT5_DIVIDE(10),
 		.CLKOUT6_DIVIDE(4),			//1250 MHz / 4 = 312.5 MHz
 
 		.CLKOUT0_PHASE(0),
@@ -121,9 +196,9 @@ module ClockGeneration(
 		.STARTUP_WAIT("FALSE"),
 		.CLKOUT4_CASCADE("FALSE")
 
-	) main_mmcm (
+	) sgmii_mmcm (
 		.CLKIN1(sysclk_in),
-		.CLKFBIN(main_fbclk),
+		.CLKFBIN(sgmii_fbclk),
 		.RST(1'b0),
 		.PWRDWN(1'b0),
 		.CLKOUT0(clk_400mhz_raw),
@@ -134,43 +209,33 @@ module ClockGeneration(
 		.CLKOUT2B(),
 		.CLKOUT3(),
 		.CLKOUT3B(),
-		.CLKOUT4(clk_250mhz_raw),
-		.CLKOUT5(clk_125mhz_raw),
+		.CLKOUT4(),
+		.CLKOUT5(),
 		.CLKOUT6(clk_312p5mhz_raw),
-		.CLKFBOUT(main_fbclk),
+		.CLKFBOUT(sgmii_fbclk),
 		.CLKFBOUTB(),
-		.LOCKED(pll_main_lock)
+		.LOCKED(pll_sgmii_lock)
 	);
 
-	BUFGCE buf_125mhz(
-		.I(clk_125mhz_raw),
-		.O(clk_125mhz),
-		.CE(pll_main_lock));
-
-	BUFGCE buf_250mhz(
-		.I(clk_250mhz_raw),
-		.O(clk_250mhz),
-		.CE(pll_main_lock));
-
-	BUFGCE buf_400mhz(
+	BUFHCE buf_400mhz(
 		.I(clk_400mhz_raw),
 		.O(clk_400mhz),
-		.CE(pll_main_lock));
+		.CE(pll_sgmii_lock));
 
 	BUFGCE buf_312p5mhz(
 		.I(clk_312p5mhz_raw),
 		.O(clk_312p5mhz),
-		.CE(pll_main_lock));
+		.CE(pll_sgmii_lock));
 
-	BUFGCE buf_625mhz_0(
+	BUFHCE buf_625mhz_0(
 		.I(clk_625mhz_0_raw),
 		.O(clk_625mhz_0),
-		.CE(pll_main_lock));
+		.CE(pll_sgmii_lock));
 
-	BUFGCE buf_625mhz_90(
+	BUFHCE buf_625mhz_90(
 		.I(clk_625mhz_90_raw),
 		.O(clk_625mhz_90),
-		.CE(pll_main_lock));
+		.CE(pll_sgmii_lock));
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// RAM PLL

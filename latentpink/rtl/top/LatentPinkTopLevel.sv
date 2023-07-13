@@ -240,7 +240,8 @@ module LatentPinkTopLevel(
 		.qpll_clkout_10g3125(qpll_clkout_10g3125)
 	);
 
-	wire pll_main_lock;
+	wire pll_rgmii_lock;
+	wire pll_sgmii_lock;
 
 	wire clk_ram;
 	wire clk_ram_ctl;
@@ -255,12 +256,13 @@ module LatentPinkTopLevel(
 
 		.clk_125mhz(clk_125mhz),
 		.clk_250mhz(clk_250mhz),
+		.pll_rgmii_lock(pll_rgmii_lock),
+
 		.clk_312p5mhz(clk_312p5mhz),
 		.clk_400mhz(clk_400mhz),
 		.clk_625mhz_0(clk_625mhz_0),
 		.clk_625mhz_90(clk_625mhz_90),
-
-		.pll_main_lock(pll_main_lock),
+		.pll_sgmii_lock(pll_sgmii_lock),
 
 		.clk_ram(clk_ram),
 		.clk_ram_ctl(clk_ram_ctl),
@@ -325,7 +327,7 @@ module LatentPinkTopLevel(
 		.clk_400mhz(clk_400mhz),
 		.clk_625mhz_0(clk_625mhz_0),
 		.clk_625mhz_90(clk_625mhz_90),
-		.pll_main_lock(pll_main_lock),
+		.pll_rgmii_lock(pll_rgmii_lock),
 
 		//QPLL stuff
 		.qpll_lock(qpll_lock),

@@ -331,6 +331,14 @@ module ManagementRegisterInterface #(
 
 			end
 
+			//Interface registers are decoded separately
+			else if(rd_addr >= REG_INTERFACE_BASE) begin
+
+				//TODO: actually implement readback
+				rd_data	<= 0;
+
+			end
+
 			//Main register decoder
 			else begin
 

@@ -54,7 +54,7 @@ module IngressCDC(
 	output logic				mem_frame_ready		= 0,
 	output logic[10:0]			mem_frame_bytelen	= 0,
 	output logic				mem_valid			= 0,
-	output logic[127:0]			mem_data			= 0,
+	output wire[127:0]			mem_data,
 	output logic				mem_frame_done		= 0,
 	output logic[11:0]			mem_frame_vlan		= 0,
 	input wire					mem_frame_start
@@ -220,8 +220,6 @@ module IngressCDC(
 	logic			fifo_pop_packet		= 0;
 	logic[9:0]		fifo_pop_wordsize	= 0;
 
-	wire[127:0]		fifo_rd_data;
-
 	//Needs to be big enough to store a couple of packets at 128 bit width
 	//Minimum sane size for 2x BRAM is 128 x 512 = 8 kB = 5.46 max sized frames
 	CrossClockPacketFifo #(
@@ -243,7 +241,7 @@ module IngressCDC(
 		.rd_pop_single(),
 		.rd_pop_packet(fifo_pop_packet),
 		.rd_packet_size(fifo_pop_wordsize),
-		.rd_data(fifo_rd_data),
+		.rd_data(mem_data),
 		.rd_size(),
 		.rd_reset(!fifo_rd_reset_n)
 	);
@@ -296,7 +294,6 @@ module IngressCDC(
 
 		mem_valid		= 0;
 		last_read		= 0;
-		mem_data		= fifo_rd_data;
 
 		//Pop a frame if we're not already popping one and there's something to read
 		header_rd_en 	= !pop_active && !header_rd_en_ff && !header_rd_empty;

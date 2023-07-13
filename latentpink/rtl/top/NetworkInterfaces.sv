@@ -50,7 +50,7 @@ module NetworkInterfaces(
 	input wire					clk_625mhz_0,
 	input wire					clk_625mhz_90,
 
-	input wire					pll_main_lock,
+	input wire					pll_rgmii_lock,
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SERDES clocking
@@ -515,7 +515,7 @@ module NetworkInterfaces(
 
 		.gt0_dmonitorout_out(),
 		.gt0_eyescanreset_in(1'b0),
-		.gt0_rxuserrdy_in(pll_main_lock),
+		.gt0_rxuserrdy_in(pll_rgmii_lock),
 		.gt0_eyescandataerror_out(),
 		.gt0_eyescantrigger_in(1'b0),
 
@@ -547,7 +547,7 @@ module NetworkInterfaces(
 		.gt0_rxresetdone_out(),
 
 		.gt0_gttxreset_in(1'b0),
-		.gt0_txuserrdy_in(pll_main_lock),
+		.gt0_txuserrdy_in(pll_rgmii_lock),
 		.gt0_txchardispmode_in(qsgmii_tx_force_disparity_negative[0]),
 		.gt0_txchardispval_in(4'b0),
 
@@ -589,7 +589,7 @@ module NetworkInterfaces(
 
 		.gt1_dmonitorout_out(),
 		.gt1_eyescanreset_in(1'b0),
-		.gt1_rxuserrdy_in(pll_main_lock),
+		.gt1_rxuserrdy_in(pll_rgmii_lock),
 		.gt1_eyescandataerror_out(),
 		.gt1_eyescantrigger_in(1'b0),
 
@@ -621,7 +621,7 @@ module NetworkInterfaces(
 		.gt1_rxresetdone_out(),
 
 		.gt1_gttxreset_in(1'b0),
-		.gt1_txuserrdy_in(pll_main_lock),
+		.gt1_txuserrdy_in(pll_rgmii_lock),
 		.gt1_txchardispmode_in(qsgmii_tx_force_disparity_negative[1]),
 		.gt1_txchardispval_in(4'b0),
 
@@ -663,7 +663,7 @@ module NetworkInterfaces(
 
 		.gt2_dmonitorout_out(),
 		.gt2_eyescanreset_in(1'b0),
-		.gt2_rxuserrdy_in(pll_main_lock),
+		.gt2_rxuserrdy_in(pll_rgmii_lock),
 		.gt2_eyescandataerror_out(),
 		.gt2_eyescantrigger_in(1'b0),
 
@@ -695,7 +695,7 @@ module NetworkInterfaces(
 		.gt2_rxresetdone_out(),
 
 		.gt2_gttxreset_in(1'b0),
-		.gt2_txuserrdy_in(pll_main_lock),
+		.gt2_txuserrdy_in(pll_rgmii_lock),
 		.gt2_txchardispmode_in(qsgmii_tx_force_disparity_negative[2]),
 		.gt2_txchardispval_in(4'b0),
 
@@ -717,14 +717,26 @@ module NetworkInterfaces(
 		.gt2_txpolarity_in(1'b0)	//no inversion
 	);
 
+	wire[2:0]	qsgmii_rx_clk_raw_bufmr;
+	wire[2:0]	qsgmii_rx_clk_mac;
 	for(genvar g=0; g<3; g=g+1) begin : qsgmii
 
-		//RX can use a BUFH since we transition away from that domain quickly
-		//But for now, we place that logic in another clock region so stick with a BUFG?
-		BUFG clkbuf_rx(
+		//RX can use a regional buffer since we transition away from that domain quickly
+		//Transition into two separate regional clocks and hope we get them sufficiently deskewed in placement??
+
+		//For now, use a global buffer for the CDC block so we can put it south of the GTs in CLOCKREGION_X1Y2.
+		//This will change in LATENTRED when we no longer have SGMII logic at the very bottom in CLOCKREGION_X1Y1.
+		//we will then be able to use a second BUFH and put all of the CDC buffers in CLOCKREGION_X0Y4 and X0Y3.
+		BUFGCE clkbuf_rx_cdc(
 			.I(qsgmii_rx_clk_raw[g]),
-			.O(qsgmii_rx_clk[g])
-		);
+			.O(qsgmii_rx_clk[g]),
+			.CE(1'b1));
+		assign qsgmii_rx_clk_mac[g] = qsgmii_rx_clk[g];
+		/*BUFHCE clkbuf_rx_mac(
+			.I(qsgmii_rx_clk_raw[g]),
+			.O(qsgmii_rx_clk_mac[g]),
+			.CE(1'b1));*/
+
 
 		//TX clock is used for more stuff
 		BUFG clkbuf_tx(
@@ -733,7 +745,7 @@ module NetworkInterfaces(
 		);
 
 		QSGMIIMACWrapper quad(
-			.rx_clk(qsgmii_rx_clk[g]),
+			.rx_clk(qsgmii_rx_clk_mac[g]),
 			.rx_data_valid(qsgmii_rx_aligned[g]),
 			.rx_data_is_ctl(qsgmii_rx_data_is_ctl[g]),
 			.rx_data(qsgmii_rx_data_out[g]),
