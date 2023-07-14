@@ -222,17 +222,19 @@ module ClockGeneration(
 		.O(clk_400mhz),
 		.CE(pll_sgmii_lock));
 
+	//All three of these need to be the same buffer type
+	//TODO: try to get everything to fit in one clock region so we can use 3x BUFH?
 	BUFGCE buf_312p5mhz(
 		.I(clk_312p5mhz_raw),
 		.O(clk_312p5mhz),
 		.CE(pll_sgmii_lock));
 
-	BUFHCE buf_625mhz_0(
+	BUFGCE buf_625mhz_0(
 		.I(clk_625mhz_0_raw),
 		.O(clk_625mhz_0),
 		.CE(pll_sgmii_lock));
 
-	BUFHCE buf_625mhz_90(
+	BUFGCE buf_625mhz_90(
 		.I(clk_625mhz_90_raw),
 		.O(clk_625mhz_90),
 		.CE(pll_sgmii_lock));

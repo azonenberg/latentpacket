@@ -466,8 +466,8 @@ create_generated_clock -name qdr_k_p -source [get_pins buffer/qdr/ram_clk_oddr/C
 create_clock -period 6.400 -name gtx_refclk_156m25_p -waveform {0.000 3.200} [get_ports gtx_refclk_156m25_p]
 create_clock -period 5.000 -name gtx_refclk_200m_p -waveform {0.000 2.500} [get_ports gtx_refclk_200m_p]
 
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets interfaces/sgmii_rxclk0]
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets interfaces/sgmii_rxclk1]
+#set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets interfaces/sgmii_rxclk0]
+#set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets interfaces/sgmii_rxclk1]
 
 ########################################################################################################################
 # CDC
@@ -726,6 +726,10 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_c
 # SGMII clock PLL should be in close proximity to the SGMII logic since that's the highest frequency,
 # tightest timing stuff
 set_property LOC MMCME2_ADV_X1Y1 [get_cells clk_system/sgmii_mmcm]
+
+# Floorplan the BUFH for some reason becasuse this isn't assigned to the right spot automatically??
+# (seems CLOCK_REGION cannot be applied to 7 series BUFH's?)
+set_property LOC BUFHCE_X1Y12 [get_cells clk_system/buf_400mhz]
 
 # RGMII clock PLL goes above it
 set_property LOC MMCME2_ADV_X1Y2 [get_cells clk_system/rgmii_mmcm]
