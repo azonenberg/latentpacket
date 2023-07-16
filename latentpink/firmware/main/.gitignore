@@ -1,3 +1,5 @@
 output
 kvs-left.bin
 kvs-right.bin
+firmware.bin
+firmware.elf

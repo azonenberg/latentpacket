@@ -34,7 +34,19 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#else
+#include <peripheral/Flash.h>
+#include <peripheral/GPIO.h>
+#include <peripheral/I2C.h>
+#include <peripheral/OctoSPI.h>
+#include <peripheral/OctoSPIManager.h>
+#include <peripheral/Power.h>
+#include <peripheral/RCC.h>
+#include <peripheral/SPI.h>
+#include <peripheral/Timer.h>
+#include <peripheral/UART.h>
 #endif
+
 
 #include <microkvs/kvs/KVS.h>
 #ifdef SIMULATION
