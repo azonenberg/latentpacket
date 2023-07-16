@@ -1,6 +1,6 @@
 SRCDIR=$(CURDIR)
 ROOTDIR=$(CURDIR)/../../../
-CXXFLAGS=-g -O0 --std=c++17 -mcpu=cortex-m0plus -DSTM32L031 -fno-exceptions -fno-rtti -g --specs=nano.specs \
+CXXFLAGS=-g -O2 --std=c++17 -mcpu=cortex-m0plus -DSTM32L031 -fno-exceptions -fno-rtti -g --specs=nano.specs \
 	-I$(ROOTDIR) \
 	-I$(SRCDIR) \
 	-I$(ROOTDIR)/stm32-cpp/devices/inc \
@@ -17,12 +17,10 @@ all:
 	cd build
 	$(CXX) $(ROOTDIR)/stm32-cpp/src/cpu/*.S -c $(CXXFLAGS) || exit 1
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/*.cpp || exit 1
-	#$(CXX) $(ROOTDIR)/stm32-cpp/src/cli/*.cpp -c $(CXXFLAGS) || exit 1
 	$(CXX) $(ROOTDIR)/stm32-cpp/src/newlib-stubs/*.cpp -c $(CXXFLAGS) || exit 1
 	$(CXX) $(ROOTDIR)/stm32-cpp/src/peripheral/*.cpp -c $(CXXFLAGS) || exit 1
 	$(CXX) $(ROOTDIR)/stm32-cpp/src/util/*.cpp -c $(CXXFLAGS) || exit 1
 	$(CXX) $(ROOTDIR)/stm32-cpp/devices/src/stm32l031.cpp -c $(CXXFLAGS) || exit 1
-	#$(CXX) $(CXXFLAGS) -c $(ROOTDIR)/embedded-cli/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) *.o -Wl,-T $(ROOTDIR)/stm32-cpp/devices/link/stm32l031.ld -o ../firmware.elf
 	cd ..
 	arm-none-eabi-objcopy -O binary --only-section=.text --only-section=.data firmware.elf firmware.bin

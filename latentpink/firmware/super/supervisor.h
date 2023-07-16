@@ -27,30 +27,22 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef sshcli_h
-#define sshcli_h
+#ifndef supervisor_h
+#define supervisor_h
 
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <stm32.h>
 
-//#include <peripheral/Flash.h>
 #include <peripheral/GPIO.h>
 #include <peripheral/RCC.h>
 #include <peripheral/Timer.h>
 #include <peripheral/UART.h>
 #include <util/Logger.h>
 #include <util/FIFO.h>
-//#include <cli/UARTOutputStream.h>
 
-//#include "SnifferCLISessionContext.h"
-
-extern UART* g_cliUART;
+extern UART* g_uart;
 extern Logger g_log;
-//extern UARTOutputStream g_uartStream;
-
-//extern char g_hostname[33];
-//extern SnifferCLISessionContext g_uartCliContext;
 
 #endif

@@ -30,20 +30,25 @@
 #include "supervisor.h"
 
 //UART console
-UART* g_cliUART = NULL;
+UART* g_uart = NULL;
 Logger g_log;
-/*
-UARTOutputStream g_uartStream;
-SnifferCLISessionContext g_uartCliContext;
-*/
+
 Timer* g_logTimer;
 
 void InitClocks();
 void InitUART();
 void InitLog();
-//void DetectHardware();
-void InitKVS();
-//void InitCLI();
+void DetectHardware();
+
+void StartRail(GPIOPin& en, GPIOPin& pgood, uint32_t timeout, const char* name);
+void PanicShutdown();
+
+GPIOPin* g_en_12v0 = nullptr;
+GPIOPin* g_en_1v0 = nullptr;
+GPIOPin* g_en_1v2 = nullptr;
+GPIOPin* g_en_1v8 = nullptr;
+
+GPIOPin* g_fail_led = nullptr;
 
 int main()
 {
@@ -57,61 +62,102 @@ int main()
 	InitClocks();
 	InitUART();
 	InitLog();
-	/*
 	DetectHardware();
-	InitCLI();
-	*/
 
-	//Turn on the GPIO LED B8
+	//Initalize our GPIOs and make sure all rails are off
 	GPIOPin gpio_led(&GPIOB, 8, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_12v0(&GPIOA, 12, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_1v0(&GPIOA, 5, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_1v2(&GPIOB, 1, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_1v8(&GPIOA, 4, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin pgood_1v0(&GPIOA, 6, GPIOPin::MODE_INPUT, 0, false);
+	GPIOPin pgood_1v2(&GPIOA, 7, GPIOPin::MODE_INPUT, 0, false);
+	GPIOPin pgood_1v8(&GPIOA, 9, GPIOPin::MODE_INPUT, 0, false);
+	GPIOPin fail_led(&GPIOC, 15, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	gpio_led = 0;
+	en_12v0 = 0;
+	en_1v0 = 0;
+	en_1v2 = 0;
+	en_1v8 = 0;
+
+	//Save pointers to all the rails for use in other functions
+	g_en_12v0 = &en_12v0;
+	g_en_1v0 = &en_1v0;
+	g_en_1v2 = &en_1v2;
+	g_en_1v8 = &en_1v8;
+	g_fail_led = &fail_led;
+
+	//Wait 5 seconds in case something goes wrong during first power up
+	g_log("5 second delay\n");
+	g_logTimer->Sleep(50000);
+
+	//Turn on the GPIO LED
 	gpio_led = 1;
 
-	g_log("hai world\n");
+	//Before we can bring up anything else, the 12V rail has to come up
+	//12V ramp rate is slew rate controlled to about 2 kV/sec, so should take 0.5 ms to come up
+	//Give it 5 ms to be safe (plus extra delay from UART messages)
+	//(we don't have any sensing on this rail so we have to just hope it came up)
+	g_log("Turning on 12V0\n");
+	en_12v0 = 1;
+	g_logTimer->Sleep(50);
 
-	/*
+	//Now turn on the rest of the core DC-DC's
+	StartRail(en_1v0, pgood_1v0, 30, "1V0");
+	StartRail(en_1v2, pgood_1v2, 50, "1V2");
+	StartRail(en_1v8, pgood_1v8, 50, "1V8");
 
-	//Enable interrupts only after all setup work is done
-	EnableInterrupts();
+	//Everything started up if we get here
+	g_log("All good\n");
 
-	//Show the initial prompt
-	g_uartCliContext.PrintPrompt();
-
-	uint32_t nextAgingTick = 0;
-
+	//Blink at 1 Hz (500ms per toggle)
 	while(1)
 	{
-		//Poll for UART input
-		if(g_cliUART->HasInput())
-			g_uartCliContext.OnKeystroke(g_cliUART->BlockingRead());
-
-		//Check for aging on stuff once a second
-		if(g_logTimer->GetCount() > nextAgingTick)
-		{
-			//g_ethStack->OnAgingTick();
-			nextAgingTick = g_logTimer->GetCount() + 10000;
-		}
-	}
-	*/
-
-	//DEBUG: blink the LED
-	volatile int foo = 0;
-	while(1)
-	{
-		for(int i=0; i<100000; i++)
-			foo++;
-
 		gpio_led = 1;
-
-		for(int i=0; i<100000; i++)
-			foo++;
+		g_logTimer->Sleep(5000);
 
 		gpio_led = 0;
+		g_logTimer->Sleep(5000);
 	}
 
-	while(1)
-	{}
-
 	return 0;
+}
+
+/**
+	@brief Shuts down all rails in reverse order but without any sequencing delays
+ */
+void PanicShutdown()
+{
+	g_en_1v8->Set(false);
+	g_en_1v2->Set(false);
+	g_en_1v0->Set(false);
+	g_en_12v0->Set(false);
+}
+
+/**
+	@brief Turns on a single power rail, checking for failure
+ */
+void StartRail(GPIOPin& en, GPIOPin& pgood, uint32_t timeout, const char* name)
+{
+	g_log("Turning on %s\n", name);
+
+	en = 1;
+	for(uint32_t i=0; i<timeout; i++)
+	{
+		if(pgood)
+			return;
+		g_logTimer->Sleep(1);
+	}
+	if(!pgood)
+	{
+		PanicShutdown();
+
+		g_fail_led->Set(1);
+		g_log(Logger::ERROR, "Rail %s failed to come up\n", name);
+
+		while(1)
+		{}
+	}
 }
 
 void InitClocks()
@@ -135,7 +181,7 @@ void InitUART()
 
 	//USART2 is on APB1 (16MHz), so we need a divisor of 138.88, round to 139
 	static UART uart(&USART2, 139);
-	g_cliUART = &uart;
+	g_uart = &uart;
 
 	/*
 	//Enable the UART RX interrupt
@@ -152,13 +198,13 @@ void InitLog()
 {
 	//APB1 is 32 MHz
 	//Divide down to get 10 kHz ticks
-	static Timer logtim(&TIMER2, Timer::FEATURE_GENERAL_PURPOSE, 3200);
+	static Timer logtim(&TIMER2, Timer::FEATURE_GENERAL_PURPOSE_16BIT, 3200);
 	g_logTimer = &logtim;
 
-	g_log.Initialize(g_cliUART, &logtim);
+	g_log.Initialize(g_uart, &logtim);
 	g_log("UART logging ready\n");
 }
-/*
+
 void DetectHardware()
 {
 	g_log("Identifying hardware\n");
@@ -167,7 +213,8 @@ void DetectHardware()
 	uint16_t rev = DBGMCU.IDCODE >> 16;
 	uint16_t device = DBGMCU.IDCODE & 0xfff;
 
-	if(device == 0x483)
+	//Category 2
+	if(device == 0x425)
 	{
 		//Look up the stepping number
 		const char* srev = NULL;
@@ -177,98 +224,40 @@ void DetectHardware()
 				srev = "A";
 				break;
 
-			case 0x1001:
-				srev = "Z";
+			case 0x2000:
+				srev = "B";
+				break;
+
+			case 0x2008:
+				srev = "Y";
+				break;
+
+			case 0x2018:
+				srev = "X";
 				break;
 
 			default:
 				srev = "(unknown)";
 		}
 
-		uint8_t pkg = SYSCFG.PKGR;
-		const char* package = "";
-		switch(pkg)
-		{
-			case 0:
-				package = "VQFPN68 (industrial)";
-				break;
-			case 1:
-				package = "LQFP100/TFBGA100 (legacy)";
-				break;
-			case 2:
-				package = "LQFP100 (industrial)";
-				break;
-			case 3:
-				package = "TFBGA100 (industrial)";
-				break;
-			case 4:
-				package = "WLCSP115 (industrial)";
-				break;
-			case 5:
-				package = "LQFP144 (legacy)";
-				break;
-			case 6:
-				package = "UFBGA144 (legacy)";
-				break;
-			case 7:
-				package = "LQFP144 (industrial)";
-				break;
-			case 8:
-				package = "UFBGA169 (industrial)";
-				break;
-			case 9:
-				package = "UFBGA176+25 (industrial)";
-				break;
-			case 10:
-				package = "LQFP176 (industrial)";
-				break;
-			default:
-				package = "unknown package";
-				break;
-		}
-
-		g_log("STM32%c%c%c%c stepping %s, %s\n",
-			(L_ID >> 24) & 0xff,
-			(L_ID >> 16) & 0xff,
-			(L_ID >> 8) & 0xff,
-			(L_ID >> 0) & 0xff,
-			srev,
-			package
-			);
-		g_log("564 kB total SRAM, 128 kB DTCM, up to 256 kB ITCM, 4 kB backup SRAM\n");
+		g_log("STM32L031/041 stepping %s\n", srev);
+		g_log("8 kB total SRAM, 1 kB EEPROM, 20 byte backup SRAM\n");
 		g_log("%d kB Flash\n", F_ID);
 
-		//U_ID fields documented in 45.1 of STM32 programming manual
-		uint16_t waferX = U_ID[0] >> 16;
-		uint16_t waferY = U_ID[0] & 0xffff;
-		uint8_t waferNum = U_ID[1] & 0xff;
+		uint8_t waferNum = (U_ID[0] >> 24) & 0xff;
 		char waferLot[8] =
 		{
+			static_cast<char>((U_ID[0] >> 16) & 0xff),
+			static_cast<char>((U_ID[0] >> 8) & 0xff),
+			static_cast<char>((U_ID[0] >> 0) & 0xff),
 			static_cast<char>((U_ID[1] >> 24) & 0xff),
 			static_cast<char>((U_ID[1] >> 16) & 0xff),
 			static_cast<char>((U_ID[1] >> 8) & 0xff),
-			static_cast<char>((U_ID[2] >> 24) & 0xff),
-			static_cast<char>((U_ID[2] >> 16) & 0xff),
-			static_cast<char>((U_ID[2] >> 8) & 0xff),
-			static_cast<char>((U_ID[2] >> 0) & 0xff),
+			static_cast<char>((U_ID[1] >> 0) & 0xff),
 			'\0'
 		};
-		g_log("Lot %s, wafer %d, die (%d, %d)\n", waferLot, waferNum, waferX, waferY);
+		g_log("Lot %s, wafer %d, unique ID 0x%08x\n", waferLot, waferNum, U_ID[3]);
 	}
 	else
 		g_log(Logger::WARNING, "Unknown device (0x%06x)\n", device);
 }
-*/
-
-/*
-void InitCLI()
-{
-	g_log("Initializing CLI\n");
-
-	//Initialize the CLI on the console UART interface
-	g_uartStream.Initialize(g_cliUART);
-	g_uartCliContext.Initialize(&g_uartStream, "admin");
-
-	//g_log("IP address not configured, defaulting to 192.168.1.42\n");
-}
-*/

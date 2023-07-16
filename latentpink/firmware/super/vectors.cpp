@@ -105,7 +105,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 
 void defaultISR()
 {
-	//g_cliUART->PrintString("Unused interrupt vector called\n");
+	g_uart->PrintString("Unused interrupt vector called\n");
 	while(1)
 	{}
 }
@@ -115,14 +115,13 @@ void defaultISR()
 
 void NMI_Handler()
 {
-	//g_cliUART->PrintString("NMI\n");
+	g_uart->PrintString("NMI\n");
 	while(1)
 	{}
 }
 
 void HardFault_Handler()
 {
-	/*
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
 	msp += 12;	//locals/alignment
@@ -135,48 +134,48 @@ void HardFault_Handler()
 	uint32_t pc = msp[6];
 	uint32_t xpsr = msp[7];
 
-	g_cliUART->Printf("Hard fault\n");
-	g_cliUART->Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
-	g_cliUART->Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
-	g_cliUART->Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
-	g_cliUART->Printf("    CFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed28));
-	g_cliUART->Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
-	g_cliUART->Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
-	g_cliUART->Printf("    MSP   = %08x\n", msp);
-	g_cliUART->Printf("    r0    = %08x\n", r0);
-	g_cliUART->Printf("    r1    = %08x\n", r1);
-	g_cliUART->Printf("    r2    = %08x\n", r2);
-	g_cliUART->Printf("    r3    = %08x\n", r3);
-	g_cliUART->Printf("    r12   = %08x\n", r12);
-	g_cliUART->Printf("    lr    = %08x\n", lr);
-	g_cliUART->Printf("    pc    = %08x\n", pc);
-	g_cliUART->Printf("    xpsr  = %08x\n", xpsr);
+	g_uart->Printf("Hard fault\n");
+	g_uart->Printf("    HFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed2C));
+	g_uart->Printf("    MMFAR = %08x\n", *(volatile uint32_t*)(0xe000ed34));
+	g_uart->Printf("    BFAR  = %08x\n", *(volatile uint32_t*)(0xe000ed38));
+	g_uart->Printf("    CFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed28));
+	g_uart->Printf("    UFSR  = %08x\n", *(volatile uint16_t*)(0xe000ed2a));
+	g_uart->Printf("    DFSR  = %08x\n", *(volatile uint32_t*)(0xe000ed30));
+	g_uart->Printf("    MSP   = %08x\n", msp);
+	g_uart->Printf("    r0    = %08x\n", r0);
+	g_uart->Printf("    r1    = %08x\n", r1);
+	g_uart->Printf("    r2    = %08x\n", r2);
+	g_uart->Printf("    r3    = %08x\n", r3);
+	g_uart->Printf("    r12   = %08x\n", r12);
+	g_uart->Printf("    lr    = %08x\n", lr);
+	g_uart->Printf("    pc    = %08x\n", pc);
+	g_uart->Printf("    xpsr  = %08x\n", xpsr);
 
-	g_cliUART->Printf("    Stack:\n");
+	g_uart->Printf("    Stack:\n");
 	for(int i=0; i<16; i++)
-		g_cliUART->Printf("        %08x\n", msp[i]);
-	*/
+		g_uart->Printf("        %08x\n", msp[i]);
+
 	while(1)
 	{}
 }
 
 void BusFault_Handler()
 {
-	//g_cliUART->PrintString("Bus fault\n");
+	g_uart->PrintString("Bus fault\n");
 	while(1)
 	{}
 }
 
 void UsageFault_Handler()
 {
-	//g_cliUART->PrintString("Usage fault\n");
+	g_uart->PrintString("Usage fault\n");
 	while(1)
 	{}
 }
 
 void MMUFault_Handler()
 {
-	//g_cliUART->PrintString("MMU fault\n");
+	g_uart->PrintString("MMU fault\n");
 	while(1)
 	{}
 }
@@ -190,6 +189,6 @@ void __attribute__((isr)) UART4_Handler()
 		return;
 
 	//rx data? Shove it in the fifo
-	g_cliUART->OnIRQRxData(UART4.RDR);
+	g_uart->OnIRQRxData(UART4.RDR);
 }
 */
