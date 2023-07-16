@@ -41,14 +41,22 @@ void InitLog();
 void DetectHardware();
 
 void StartRail(GPIOPin& en, GPIOPin& pgood, uint32_t timeout, const char* name);
+void StartSubRail(GPIOPin& en, GPIOPin& pgood, uint32_t timeout, const char* name);
+void MonitorRail(GPIOPin& pgood, const char* name);
 void PanicShutdown();
 
 GPIOPin* g_en_12v0 = nullptr;
 GPIOPin* g_en_1v0 = nullptr;
 GPIOPin* g_en_1v2 = nullptr;
 GPIOPin* g_en_1v8 = nullptr;
+GPIOPin* g_en_1v8_io = nullptr;
+GPIOPin* g_en_vtt = nullptr;
+GPIOPin* g_en_2v5 = nullptr;
+GPIOPin* g_en_3v3 = nullptr;
 
 GPIOPin* g_fail_led = nullptr;
+GPIOPin* g_pwr_ok_led = nullptr;
+GPIOPin* g_all_ok_led = nullptr;
 
 int main()
 {
@@ -70,22 +78,48 @@ int main()
 	GPIOPin en_1v0(&GPIOA, 5, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin en_1v2(&GPIOB, 1, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin en_1v8(&GPIOA, 4, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_1v8_io(&GPIOB, 3, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_vtt(&GPIOA, 11, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_2v5(&GPIOA, 2, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin en_3v3(&GPIOA, 1, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin pgood_1v0(&GPIOA, 6, GPIOPin::MODE_INPUT, 0, false);
 	GPIOPin pgood_1v2(&GPIOA, 7, GPIOPin::MODE_INPUT, 0, false);
 	GPIOPin pgood_1v8(&GPIOA, 9, GPIOPin::MODE_INPUT, 0, false);
+	GPIOPin pgood_2v5(&GPIOA, 10, GPIOPin::MODE_INPUT, 0, false);
+	GPIOPin pgood_3v3(&GPIOA, 8, GPIOPin::MODE_INPUT, 0, false);
 	GPIOPin fail_led(&GPIOC, 15, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
-	gpio_led = 0;
+	GPIOPin pwr_ok_led(&GPIOA, 0, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin all_ok_led(&GPIOC, 14, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+
+	GPIOPin mcu_rst_n(&GPIOB, 0, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin fpga_rst_n(&GPIOA, 3, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+
 	en_12v0 = 0;
 	en_1v0 = 0;
 	en_1v2 = 0;
 	en_1v8 = 0;
+	en_1v8_io = 0;
+	en_vtt = 0;
+	en_2v5 = 0;
+	en_3v3 = 0;
+	gpio_led = 0;
+	all_ok_led = 0;
+	pwr_ok_led = 0;
+	mcu_rst_n = 0;
+	fpga_rst_n = 0;
 
 	//Save pointers to all the rails for use in other functions
 	g_en_12v0 = &en_12v0;
 	g_en_1v0 = &en_1v0;
 	g_en_1v2 = &en_1v2;
 	g_en_1v8 = &en_1v8;
+	g_en_1v8_io = &en_1v8_io;
+	g_en_vtt = &en_vtt;
+	g_en_2v5 = &en_2v5;
+	g_en_3v3 = &en_3v3;
 	g_fail_led = &fail_led;
+	g_pwr_ok_led = &pwr_ok_led;
+	g_all_ok_led = &all_ok_led;
 
 	//Wait 5 seconds in case something goes wrong during first power up
 	g_log("5 second delay\n");
@@ -102,36 +136,82 @@ int main()
 	en_12v0 = 1;
 	g_logTimer->Sleep(50);
 
-	//Now turn on the rest of the core DC-DC's
-	StartRail(en_1v0, pgood_1v0, 30, "1V0");
+	//Now turn on the core DC-DC's, giving them each 5ms to come up
+	StartRail(en_1v0, pgood_1v0, 50, "1V0");
 	StartRail(en_1v2, pgood_1v2, 50, "1V2");
+
+	//We really SHOULD start 1V8 then 3V3, but then U18 will have PVIN > AVIN and bad things will happen
+	//to Vref / Vtt. This will be fixed in LATENTRED by running the LP2996 off 3V3_SB instead of 3V3.
+	StartRail(en_3v3, pgood_3v3, 50, "3V3");
+
+	//We then need to start 1V8 right away (within Tvcco2vccaux) to avoid damage to the FPGA!
 	StartRail(en_1v8, pgood_1v8, 50, "1V8");
 
-	//Everything started up if we get here
-	g_log("All good\n");
+	//1V8_IO and Vref/Vtt have no PGOOD feedback.
+	//If it overcurrents, they will probably drag down the main 1V8 rail so check for faults over the next 10ms
+	StartSubRail(en_1v8_io, pgood_1v8, 100, "1V8_IO");
+	StartSubRail(en_vtt, pgood_1v8, 100, "Vtt + Vref");
 
-	//Blink at 1 Hz (500ms per toggle)
+	//Finally, we can turn on 2V5
+	StartRail(en_2v5, pgood_2v5, 50, "2V5");
+
+	//All power rails came up if we get here
+	g_log("Power is good, releasing resets\n");
+	pwr_ok_led = 1;
+	mcu_rst_n = 1;
+	fpga_rst_n = 1;
+
+	//Everything started up if we get here
+	//TODO: wait for heartbeat from MCU and FPGA DONE to go high
+	g_log("All good\n");
+	all_ok_led = 1;
+
+	//Poll inputs and check to see if anything ever went out of spec
+	//TODO: support warm reset and/or hard power cycle on request
 	while(1)
 	{
-		gpio_led = 1;
-		g_logTimer->Sleep(5000);
-
-		gpio_led = 0;
-		g_logTimer->Sleep(5000);
+		MonitorRail(pgood_3v3, "3V3");
+		MonitorRail(pgood_2v5, "2V5");
+		MonitorRail(pgood_1v8, "1V8");
+		MonitorRail(pgood_1v2, "1V2");
+		MonitorRail(pgood_1v0, "1V0");
 	}
 
 	return 0;
 }
 
 /**
-	@brief Shuts down all rails in reverse order but without any sequencing delays
+	@brief Polls a power rail and look for signs of trouble
+ */
+void MonitorRail(GPIOPin& pgood, const char* name)
+{
+	if(!pgood)
+	{
+		PanicShutdown();
+		g_log(Logger::ERROR, "PGOOD for rail %s went low, triggering panic shutdown\n", name);
+
+		while(1)
+		{}
+	}
+}
+
+/**
+	@brief Shuts down all rails in reverse order but without any added sequencing delays
  */
 void PanicShutdown()
 {
+	g_en_2v5->Set(false);
+	g_en_vtt->Set(false);
+	g_en_1v8_io->Set(false);
 	g_en_1v8->Set(false);
+	g_en_3v3->Set(false);
 	g_en_1v2->Set(false);
 	g_en_1v0->Set(false);
 	g_en_12v0->Set(false);
+
+	g_fail_led->Set(1);
+	g_pwr_ok_led->Set(0);
+	g_all_ok_led->Set(0);
 }
 
 /**
@@ -152,11 +232,34 @@ void StartRail(GPIOPin& en, GPIOPin& pgood, uint32_t timeout, const char* name)
 	{
 		PanicShutdown();
 
-		g_fail_led->Set(1);
 		g_log(Logger::ERROR, "Rail %s failed to come up\n", name);
 
 		while(1)
 		{}
+	}
+}
+
+/**
+	@brief Turns on a sub-rail switched or regulated from a parent rail, but lacking its own PGOOD output
+ */
+void StartSubRail(GPIOPin& en, GPIOPin& pgood, uint32_t timeout, const char* name)
+{
+	//These rails have no PGOOD feedback.
+	//If it overcurrents, it will probably drag down the parent rail so check for faults over a fixed time window
+	g_log("Turning on %s\n", name);
+	en = 1;
+	for(uint32_t i=0; i<timeout; i++)
+	{
+		if(!pgood)
+		{
+			PanicShutdown();
+
+			g_log(Logger::ERROR, "Rail %s failed to come up\n", name);
+
+			while(1)
+			{}
+		}
+		g_logTimer->Sleep(1);
 	}
 }
 
