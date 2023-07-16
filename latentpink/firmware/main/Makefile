@@ -14,6 +14,7 @@ CXX=g++
 sim: CXXFLAGS += -DSIMULATION -DHAVE_TIM -lrt
 
 sim:
+	mkdir -p output/sim
 	cd output/sim
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/target/sim/*.cpp || exit 1
 	$(CXX) $(CXXFLAGS) -c $(SRCDIR)/init/CommonInit.cpp || exit 1
