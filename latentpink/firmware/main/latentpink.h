@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #else
+#include "stm32.h"
 #include <peripheral/Flash.h>
 #include <peripheral/GPIO.h>
 #include <peripheral/I2C.h>
@@ -77,6 +78,10 @@ extern MACAddress g_macAddress;
 extern IPv4Config g_ipConfig;
 extern EthernetProtocol* g_ethProtocol;
 
+#ifndef SIMULATION
+extern UART* g_cliUART;
+#endif
+
 //includes fabric ports, management, and uplink
 #define NUM_PORTS 16
 #define UPLINK_PORT 14
@@ -107,6 +112,12 @@ extern const char* g_interfaceNames[];
 extern const char g_interfaceDescriptions[NUM_PORTS][64];
 
 extern uint16_t g_portVlans[NUM_PORTS];
+
+#ifndef SIMULATION
+void InitClocks();
+void InitUART();
+void InitTimer();
+#endif
 
 void InitLog(CharacterDevice* logdev, Timer* timer);
 void InitKVS(StorageBank* left, StorageBank* right, uint32_t logsize);

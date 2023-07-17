@@ -316,7 +316,6 @@ void MMUFault_Handler()
 
 void __attribute__((isr)) UART4_Handler()
 {
-	/*
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
 	if(0 == (UART4.ISR & USART_ISR_RXNE))
@@ -324,5 +323,4 @@ void __attribute__((isr)) UART4_Handler()
 
 	//rx data? Shove it in the fifo
 	g_cliUART->OnIRQRxData(UART4.RDR);
-	*/
 }
