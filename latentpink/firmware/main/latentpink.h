@@ -134,6 +134,9 @@ uint16_t GetFPGAVCCINT();
 uint16_t GetFPGAVCCAUX();
 uint16_t GetFPGAVCCBRAM();
 
+void MemoryTest();
+bool DoMemoryTest(uint32_t seed);
+
 extern const char* g_tempSensorNames[4];
 extern uint8_t g_tempSensorAddrs[4];
 #endif

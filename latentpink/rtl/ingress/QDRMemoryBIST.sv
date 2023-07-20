@@ -29,121 +29,187 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-/**
-	@file
-	@author	Andrew D. Zonenberg
-	@brief	Quad SPI interface
- */
-module ManagementBridge(
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// System clocks
-
+module QDRMemoryBIST(
 	input wire			clk,
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Bus to MCU
+	output logic		ram_rd_en		= 0,
+	output logic[17:0]	ram_rd_addr		= 0,
+	input wire			ram_rd_valid,
+	input wire[143:0]	ram_rd_data,
 
-	input wire			qspi_sck,
-	input wire			qspi_cs_n,
-	inout wire[3:0]		qspi_dq,
-	output logic		irq = 0,
+	output logic		ram_wr_en		= 0,
+	output logic[17:0]	ram_wr_addr		= 0,
+	output wire[143:0]	ram_wr_data,
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Bus to ManagementRegisterInterface
-
-	output logic		rd_en,
-	output logic[15:0]	rd_addr	= 0,
-
-	input wire			rd_valid,
-	input wire[7:0]		rd_data,
-
-	output wire			wr_en,
-	output logic[15:0]	wr_addr	= 0,
-	output wire[7:0]	wr_data
-
-	);
+	input wire			start,
+	input wire[31:0]	seed,
+	output logic		done = 0,
+	output logic		fail = 0,
+	output logic[17:0]	fail_addr = 0
+);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI interface
+	// PRBS generators
 
-	wire		start;
-	wire		insn_valid;
-	wire[15:0]	insn;
-	logic		rd_mode		= 0;
-	wire		rd_ready;
+	wire[143:0]	prbs_out;
+	logic		prbs_update;
 
-	wire		rd_en_raw;
+	assign		ram_wr_data = prbs_out;
 
-	QSPIDeviceInterface #(
-		.INSN_BYTES(2)
-	) qspi (
+	wire		prbs_init;
+
+	for(genvar g=0; g<4; g=g+1) begin
+
+		PRBS31 #(
+			.WIDTH(36)
+		) prbs_block(
+			.clk(clk),
+			.update(prbs_update),
+			.init(prbs_init),
+			.seed(seed + g),
+			.dout(prbs_out[g*36 +: 36])
+		);
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Test controller
+
+	enum logic[2:0]
+	{
+		STATE_IDLE		 	= 0,
+		STATE_FILL		 	= 1,
+		STATE_READ_START	= 2,
+		STATE_READ			= 3,
+		STATE_READ_LAST		= 4
+	} state = STATE_IDLE;
+
+	assign prbs_init = start || (state == STATE_READ_START);
+
+	logic		first = 0;
+	logic[3:0]	match;
+
+	wire[17:0]	readback_addr;
+	logic[17:0]	readback_addr_ff	= 0;
+
+	logic[3:0]	match_ff			= 0;
+	logic		rd_valid_ff			= 0;
+	logic		rd_ok;
+
+	SingleClockShiftRegisterFifo #(
+		.WIDTH(18),
+		.DEPTH(32),
+		.OUT_REG(0),
+		.USE_BLOCK(0)
+	) addr_fifo (
 		.clk(clk),
-		.sck(qspi_sck),
-		.cs_n(qspi_cs_n),
-		.dq(qspi_dq),
-
-		.start(start),
-		.insn_valid(insn_valid),
-		.insn(insn),
-		.wr_valid(wr_en),
-		.wr_data(wr_data),
-
-		.rd_mode(rd_mode),
-		.rd_ready(rd_en_raw),
-		.rd_valid(rd_valid),
-		.rd_data(rd_data)
+		.wr(ram_rd_en),
+		.din(ram_rd_addr),
+		.rd(ram_rd_valid),
+		.dout(readback_addr),
+		.overflow(),
+		.underflow(),
+		.empty(),
+		.full(),
+		.rsize(),
+		.wsize(),
+		.reset(first)
 	);
 
 	always_comb begin
-		rd_en	= rd_en_raw && !insn[15];
-	end
+		prbs_update	= 0;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Address counting
+		//Write path
+		if(state == STATE_FILL)
+			prbs_update	= 1;
 
-	logic[15:0]	rd_addr_ff	= 0;
-	logic[15:0]	wr_addr_ff	= 0;
-	logic		first		= 0;
+		//Read path
+		if(ram_rd_valid || state == STATE_READ_START)
+			prbs_update	= 1;
 
-	always_comb begin
-
-		//Default to passthrough
-		rd_addr			= rd_addr_ff;
-		wr_addr			= wr_addr_ff;
-
-		//Increment if reading/writing
-		if(rd_en)
-			rd_addr		= rd_addr_ff + 1;
-		if(wr_en && !first)
-			wr_addr		= wr_addr_ff + 1;
-
-		//Start a new transaction
-		if(insn_valid) begin
-			rd_addr		= {1'b0, insn[14:0]};
-			wr_addr		= {1'b0, insn[14:0]};
-		end
+		//Check results
+		for(integer i=0; i<4; i=i+1)
+			match[i] = (ram_wr_data[i*36 +: 36] == ram_rd_data[i*36 +: 36]);
+		rd_ok = (match_ff == 4'hf);
 
 	end
+
+	localparam LAST 		= 18'h3ffff;
+	localparam ALMOST_LAST	= LAST - 1;
 
 	always_ff @(posedge clk) begin
 
-		wr_addr_ff		<= wr_addr;
-		rd_addr_ff		<= rd_addr;
+		ram_rd_en				<= 0;
+		ram_wr_en				<= 0;
 
-		//Process instruction
-		//MSB of opcode is read flag (0=read, 1=write)
-		if(insn_valid)
-			rd_mode		<= !insn[15];
+		readback_addr_ff		<= readback_addr;
+		match_ff				<= match;
+		rd_valid_ff				<= ram_rd_valid;
 
-		//Reset anything we need on CS# falling edge
-		if(start) begin
-			rd_mode		<= 0;
-			first		<= 1;
+		//Check results
+		if(rd_valid_ff) begin
+			if(!rd_ok) begin
+				fail			<= 1;
+				if(!fail)
+					fail_addr	<= readback_addr_ff;
+			end
 		end
 
-		if(wr_en)
-			first		<= 0;
+		case(state)
+
+			STATE_IDLE: begin
+
+				if(start) begin
+					state		<= STATE_FILL;
+					first		<= 1;
+					done		<= 0;
+					fail		<= 0;
+					fail_addr	<= 0;
+					ram_wr_addr	<= LAST;
+				end
+
+			end //STATE_IDLE
+
+			STATE_FILL: begin
+				first			<= 0;
+
+				//Done?
+				if( (ram_wr_addr == ALMOST_LAST) && !first)
+					state		<= STATE_READ_START;
+
+				//Fill next address
+				ram_wr_en		<= 1;
+				ram_wr_addr		<= ram_wr_addr + 1;
+
+			end	//STATE_FILL
+
+			STATE_READ_START: begin
+				state			<= STATE_READ;
+				first			<= 1;
+				ram_rd_addr		<= LAST;
+			end	//STATE_READ_START
+
+			STATE_READ: begin
+
+				first			<= 0;
+
+				//Done?
+				if( (ram_rd_addr == ALMOST_LAST) && !first)
+					state		<= STATE_READ_LAST;
+
+				//Read next address
+				ram_rd_en		<= 1;
+				ram_rd_addr		<= ram_rd_addr + 1;
+
+			end	//STATE_READ
+
+			STATE_READ_LAST: begin
+				if(rd_valid_ff && (readback_addr_ff == LAST) ) begin
+					done		<= 1;
+					state		<= STATE_IDLE;
+				end
+			end
+
+		endcase
 
 	end
 

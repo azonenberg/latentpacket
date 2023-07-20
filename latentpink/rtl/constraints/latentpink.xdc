@@ -474,19 +474,20 @@ create_clock -period 5.000 -name gtx_refclk_200m_p -waveform {0.000 2.500} [get_
 
 
 set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *storage_reg*] -to [get_cells -hierarchical *portb_dout_raw_reg*] 2.500
-set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *dout0_reg*] -to [get_cells -hierarchical *dout1_reg*] 2.500
+set _xlnx_shared_i0 [get_cells -hierarchical *dout0_reg*]
+set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i0 -to [get_cells -hierarchical *dout1_reg*] 2.500
 
-set _xlnx_shared_i0 [get_cells -hierarchical *reg_a_ff*]
-set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_312p5mhz*] 2.500
-set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i0 -to [get_clocks *clk_125mhz_raw*] 2.500
+set _xlnx_shared_i1 [get_cells -hierarchical *reg_a_ff*]
+set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_312p5mhz*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i1 -to [get_clocks *clk_125mhz_raw*] 2.500
 
 set_max_delay -from [get_cells -hierarchical *samples_*_2x*] -to [get_cells -hierarchical *samples_*_sync*] 2.000
 
+set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_crypt_raw*] 2.500
+set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_ram_ctl_raw*] 2.500
+
 set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_crypt_raw*] 2.500
 set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_ram_ctl_raw*] 2.500
-
-set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_crypt_raw*] 2.500
-set_max_delay -from [get_clocks *clk_crypt_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_ram_ctl_raw*] 2.500
 
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks clk_qcapture_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_qcapture_raw] -group [get_clocks clk_ram_ctl_raw]
@@ -536,7 +537,7 @@ set_property ASYNC_REG true [get_cells {buffer/infifo/cdcs[10].cdc/sync_rst/rst_
 set_property ASYNC_REG true [get_cells {buffer/infifo/cdcs[14].cdc/sync_rst/ff_0_reg}]
 set_property ASYNC_REG true [get_cells {buffer/infifo/cdcs[14].cdc/sync_rst/rst_out_n_reg}]
 
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/sync_fifo_rst/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells {mgmt/rx_fifo/sync_fifo_rst/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg}] -to [get_clocks clk_312p5mhz_raw] 2.500
 
 set_clock_groups -asynchronous -group [get_clocks mgmt0_rx_clk] -group [get_clocks clk_ram_ctl_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks mgmt0_rx_clk]
@@ -561,7 +562,7 @@ set_property LOC MMCME2_ADV_X1Y2 [get_cells clk_system/rgmii_mmcm]
 
 # We don't need dedicated routing for the 125 MHz system clock input,
 # since nothing is synchronous to it
-set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets clk_system/sysclk_in]
+#set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets clk_system/sysclk_in]
 
 ########################################################################################################################
 # Floorplanning: RAM
@@ -752,6 +753,8 @@ set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 create_pblock pblock_prefetch
 resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X0Y100:SLICE_X23Y124}
 resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X0Y40:DSP48_X1Y49}
@@ -774,11 +777,25 @@ add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd]]
 # Floorplanning: QSPI management
 
 create_pblock pblock_qspi
-add_cells_to_pblock [get_pblocks pblock_qspi] [get_cells -quiet [list mgmt/bridge/qspi]]
+add_cells_to_pblock [get_pblocks pblock_qspi] [get_cells -quiet [list mgmt/bridge]]
 resize_pblock [get_pblocks pblock_qspi] -add {SLICE_X0Y200:SLICE_X7Y224}
 set_property IS_SOFT FALSE [get_pblocks pblock_qspi]
 create_pblock pblock_mgmt
-add_cells_to_pblock [get_pblocks pblock_mgmt] [get_cells -quiet [list mgmt/bridge/GND mgmt/bridge/VCC mgmt/bridge/rd_mode_reg mgmt/info mgmt/regs]]
+add_cells_to_pblock [get_pblocks pblock_mgmt] [get_cells -quiet [list \
+          mgmt/info \
+          {mgmt/mgmt_rd_data_ff_reg[0]} \
+          {mgmt/mgmt_rd_data_ff_reg[1]} \
+          {mgmt/mgmt_rd_data_ff_reg[2]} \
+          {mgmt/mgmt_rd_data_ff_reg[3]} \
+          {mgmt/mgmt_rd_data_ff_reg[4]} \
+          {mgmt/mgmt_rd_data_ff_reg[5]} \
+          {mgmt/mgmt_rd_data_ff_reg[6]} \
+          {mgmt/mgmt_rd_data_ff_reg[7]} \
+          mgmt/mgmt_rd_valid_ff_reg \
+          mgmt/regs \
+          mgmt/sensors \
+          mgmt/tach0 \
+          mgmt/tach1]]
 resize_pblock [get_pblocks pblock_mgmt] -add {SLICE_X36Y75:SLICE_X55Y174}
 resize_pblock [get_pblocks pblock_mgmt] -add {DSP48_X2Y30:DSP48_X2Y69}
 resize_pblock [get_pblocks pblock_mgmt] -add {RAMB18_X2Y30:RAMB18_X2Y69}
@@ -891,10 +908,12 @@ add_cells_to_pblock [get_pblocks pblock_qsgmii_cdc2] [get_cells -quiet [list {bu
 
 
 
+
+set_property PULLUP true [get_ports {fan_tach[1]}]
+set_property PULLUP true [get_ports {fan_tach[0]}]
+
+
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
 connect_debug_port dbg_hub/clk [get_nets clk_125mhz]
-
-set_property PULLUP true [get_ports {fan_tach[1]}]
-set_property PULLUP true [get_ports {fan_tach[0]}]

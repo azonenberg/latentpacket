@@ -324,9 +324,9 @@ void InitSensors()
 	{
 		auto rpm = GetFanRPM(i);
 		if(rpm == 0)
-			g_log(Logger::ERROR, "Fan %d: STOPPED\n", i, rpm);
+			g_log(Logger::ERROR, "Fan %d:                                 STOPPED\n", i, rpm);
 		else
-			g_log("Fan %d: %d RPM\n", i, rpm);
+			g_log("Fan %d:                                 %d RPM\n", i, rpm);
 	}
 
 	//Bring up each temp sensor
@@ -357,9 +357,74 @@ void InitSensors()
 
 	//Read FPGA voltage sensors
 	int volt = GetFPGAVCCINT();
-	g_log("FPGA VCCINT:  %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+	g_log("FPGA VCCINT:                           %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
 	volt = GetFPGAVCCBRAM();
-	g_log("FPGA VCCBRAM: %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+	g_log("FPGA VCCBRAM:                          %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
 	volt = GetFPGAVCCAUX();
-	g_log("FPGA VCCAUX:  %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+	g_log("FPGA VCCAUX:                           %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+}
+
+/**
+	@brief Test external SRAM
+ */
+void MemoryTest()
+{
+	g_log("Testing packet buffer SRAM\n");
+	LogIndenter li(g_log);
+
+	//Enter test mode
+	g_fpga->BlockingWrite32(REG_MBIST, 0x80000000);
+
+	uint32_t seeds[3] =
+	{
+		0xdeadbeef,
+		0xfeedface,
+		0xbaadf00d
+	};
+
+	bool fail = false;
+	for(uint32_t i=0; i<3; i++)
+	{
+		if(!DoMemoryTest(seeds[i]))
+		{
+			fail = true;
+			break;
+		}
+	}
+
+	if(!fail)
+		g_log("SRAM test passed\n");
+
+	//Done, back to normal mode
+	g_fpga->BlockingWrite32(REG_MBIST, 0x00000000);
+}
+
+/**
+	@brief Run a single pass of the MBIST
+ */
+bool DoMemoryTest(uint32_t seed)
+{
+	//Set seed
+	g_fpga->BlockingWrite32(REG_MBIST_SEED, seed);
+
+	//Start the test
+	g_fpga->BlockingWrite32(REG_MBIST, 0xc0000000);
+
+	//Poll until test completes
+	while(true)
+	{
+		uint32_t stat = g_fpga->BlockingRead32(REG_MBIST);
+		if(stat & 0x20000000)
+			break;
+	}
+
+	//Read test results
+	uint32_t stat = g_fpga->BlockingRead32(REG_MBIST);
+	if(stat & 0x10000000)
+	{
+		g_log(Logger::ERROR, "SRAM test failed at address 0x%08x\n", (stat & 0x3FFFF ));
+		return false;
+	}
+
+	return true;
 }

@@ -55,7 +55,7 @@ void DeviceFPGAInterface::BlockingRead(uint32_t insn, uint8_t* data, uint32_t le
 
 void DeviceFPGAInterface::BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len)
 {
-	g_qspi->BlockingWrite(insn, 0, data, len);
+	g_qspi->BlockingWrite(insn | 0x8000, 0, data, len);
 }
 
 void DeviceFPGAInterface::CryptoEngineBlock()

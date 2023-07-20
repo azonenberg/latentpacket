@@ -166,7 +166,7 @@ module LatentPinkTopLevel(
 	// RAM
 
 	//C/A bus
-	/*output wire			qdr_k_p,
+	output wire			qdr_k_p,
 	output wire			qdr_k_n,
 	output wire			qdr_wps_n,
 	output wire			qdr_rps_n,
@@ -180,7 +180,7 @@ module LatentPinkTopLevel(
 	input wire			qdr_cq_p,
 	input wire			qdr_cq_n,
 	input wire			qdr_qvld,
-	input wire[35:0]	qdr_q,*/
+	input wire[35:0]	qdr_q,
 
 	//SSTL I2C lulz
 	output wire			i2c_derp_scl_host,
@@ -270,14 +270,6 @@ module LatentPinkTopLevel(
 		.clk_crypt(clk_crypt),
 
 		.pll_ram_lock(pll_ram_lock)
-	);
-
-	//DEBUG: report PLL lock status
-	vio_4 vio(
-		.clk(clk_125mhz),
-		.probe_in0(pll_rgmii_lock),
-		.probe_in1(pll_sgmii_lock),
-		.probe_in2(pll_ram_lock)
 	);
 
 	/*
@@ -459,14 +451,21 @@ module LatentPinkTopLevel(
 	wire[NUM_PORTS-1:0]				forward_en;
 	wire							frame_last;
 	wire							frame_valid;
-	wire[127:0]						frame_data;
+	wire[127:0]						frame_data;*/
+
+	wire		mbist_start;
+	wire[31:0]	mbist_seed;
+	wire		mbist_done;
+	wire		mbist_fail;
+	wire[17:0]	mbist_fail_addr;
+	wire		mbist_select;
 
 	PacketBuffering #(
 		.NUM_PORTS(NUM_PORTS)
 	) buffer (
 
 		.port_rx_clk(port_rx_clk),
-		.port_link_up(
+		/*.port_link_up(
 		{
 			xg0_link_up,
 			g13_link_up,
@@ -479,7 +478,7 @@ module LatentPinkTopLevel(
 			g13_rx_bus,
 			g12_rx_bus,
 			qsgmii_mac_rx_bus
-		}),
+		}),*/
 
 		.port_vlan(port_rx_vlan),
 		.tagged_allowed(port_rx_tagged_allowed),
@@ -501,16 +500,23 @@ module LatentPinkTopLevel(
 		.qdr_cq_p(qdr_cq_p),
 		.qdr_cq_n(qdr_cq_n),
 
-		.fabric_state(fabric_state),
+		/*.fabric_state(fabric_state),
 		.forward_en(forward_en),
 		.frame_valid(frame_valid),
 		.frame_last(frame_last),
-		.frame_data(frame_data)
+		.frame_data(frame_data),*/
+
+		.mbist_start(mbist_start),
+		.mbist_seed(mbist_seed),
+		.mbist_done(mbist_done),
+		.mbist_fail(mbist_fail),
+		.mbist_fail_addr(mbist_fail_addr),
+		.mbist_select(mbist_select)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Forwarding engine: takes frames out of the buffer and makes them go places
-	*/
+
 	vlan_t[NUM_PORTS-1:0]	port_vlan_fabric;
 	wire[NUM_PORTS-1:0]		port_is_trunk;
 	/*
@@ -630,6 +636,12 @@ module LatentPinkTopLevel(
 
 		.port_vlan(port_vlan_fabric),
 		.port_is_trunk(port_is_trunk),
+		.mbist_start(mbist_start),
+		.mbist_seed(mbist_seed),
+		.mbist_done(mbist_done),
+		.mbist_fail(mbist_fail),
+		.mbist_fail_addr(mbist_fail_addr),
+		.mbist_select(mbist_select),
 
 		.clk_crypt(clk_crypt),
 		.crypt_en(crypt_en),

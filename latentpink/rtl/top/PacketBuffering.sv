@@ -78,7 +78,15 @@ module PacketBuffering #(
 	input wire[NUM_PORTS-1:0]				forward_en,
 	output wire								frame_valid,
 	output wire								frame_last,
-	output wire[127:0]						frame_data
+	output wire[127:0]						frame_data,
+
+	//MBIST controls
+	input wire								mbist_select,
+	input wire								mbist_start,
+	input wire[31:0]						mbist_seed,
+	output wire								mbist_done,
+	output wire								mbist_fail,
+	output wire[17:0]						mbist_fail_addr
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +135,7 @@ module PacketBuffering #(
 		.qdr_qclk_p(qdr_cq_p),
 		.qdr_qclk_n(qdr_cq_n)
 	);
-
+	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FIFO logic
 
@@ -156,6 +164,30 @@ module PacketBuffering #(
 		.frame_valid(frame_valid),
 		.frame_last(frame_last),
 		.frame_data(frame_data)
+	);
+	*/
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Memory tester
+
+	//TODO: BIST muxes so we can share with IngressFifo
+
+	QDRMemoryBIST bist(
+		.clk(clk_ram_ctl),
+
+		.ram_rd_en(ram_rd_en),
+		.ram_rd_addr(ram_rd_addr),
+		.ram_rd_valid(ram_rd_valid),
+		.ram_rd_data(ram_rd_data),
+		.ram_wr_en(ram_wr_en),
+		.ram_wr_addr(ram_wr_addr),
+		.ram_wr_data(ram_wr_data),
+
+		.start(mbist_start),
+		.seed(mbist_seed),
+		.done(mbist_done),
+		.fail(mbist_fail),
+		.fail_addr(mbist_fail_addr)
 	);
 
 endmodule

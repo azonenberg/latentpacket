@@ -74,6 +74,9 @@ public:
 	void BlockingWrite16(uint32_t insn, uint16_t data)
 	{ BlockingWrite(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data)); }
 
+	void BlockingWrite32(uint32_t insn, uint32_t data)
+	{ BlockingWrite(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data)); }
+
 };
 
 //must match regid_t in ManagementRegisterInterface.sv
@@ -87,6 +90,9 @@ enum regid_t
 	REG_VOLT_CORE		= 0x0016,
 	REG_VOLT_RAM		= 0x0018,
 	REG_VOLT_AUX		= 0x001a,
+
+	REG_MBIST			= 0x0040,
+	REG_MBIST_SEED		= 0x0044,
 
 	REG_CRYPT_BASE		= 0x3800,
 	REG_INTERFACE_BASE	= 0x4000

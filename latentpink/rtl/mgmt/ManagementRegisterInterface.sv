@@ -77,6 +77,12 @@ module ManagementRegisterInterface #(
 	input wire[15:0]				volt_core,
 	input wire[15:0]				volt_ram,
 	input wire[15:0]				volt_aux,
+	output logic					mbist_start	= 0,
+	output logic[31:0]				mbist_seed	= 0,
+	input wire						mbist_done,
+	input wire						mbist_fail,
+	input wire[17:0]				mbist_fail_addr,
+	output logic					mbist_select = 0,
 
 	//Configuration registers in crypto clock domain
 	input wire						clk_crypt,
@@ -236,6 +242,18 @@ module ManagementRegisterInterface #(
 		REG_VOLT_AUX		= 16'h001a,
 		REG_VOLT_AUX_1		= 16'h001b,
 
+		//RAM BIST
+		REG_MBIST			= 16'h0040,		//31 = test enable flag (RW)
+		REG_MBIST_1			= 16'h0041,		//30 = test start flag (W)
+		REG_MBIST_2			= 16'h0042,		//29 = done flag (R)
+		REG_MBIST_3			= 16'h0043,		//28 = fail flag (R)
+											//17:0 = fail address (R)
+
+		REG_MBIST_SEED		= 16'h0044,
+		REG_MBIST_SEED_1	= 16'h0045,
+		REG_MBIST_SEED_2	= 16'h0046,
+		REG_MBIST_SEED_3	= 16'h0047,
+
 		//Crypto accelerator
 		REG_CRYPT_BASE		= 16'h3800,
 
@@ -296,6 +314,8 @@ module ManagementRegisterInterface #(
 		port_vlan_updated		<= 0;
 		port_tagmode_updated	<= 0;
 		crypt_in_updated		<= 0;
+
+		mbist_start				<= 0;
 
 		//Start a new read
 		if(rd_en)
@@ -392,6 +412,11 @@ module ManagementRegisterInterface #(
 					REG_VOLT_AUX:		rd_data	<= volt_aux[7:0];
 					REG_VOLT_AUX_1:		rd_data	<= volt_aux[15:8];
 
+					REG_MBIST:			rd_data	<= mbist_fail_addr[7:0];
+					REG_MBIST_1:		rd_data	<= mbist_fail_addr[15:8];
+					REG_MBIST_2:		rd_data	<= { 6'b0, mbist_fail_addr[17:15] };
+					REG_MBIST_3:		rd_data	<= { mbist_select, 1'b0, mbist_done, mbist_fail, 4'b0 };
+
 					default: begin
 						rd_data	<= 0;
 					end
@@ -417,8 +442,8 @@ module ManagementRegisterInterface #(
 
 					REG_VLAN_NUM:	port_vlan[wr_port][7:0]	<= wr_data;
 					REG_VLAN_NUM_1: begin
-						port_vlan[wr_port][11:8]	<= wr_data[3:0];
-						port_vlan_updated[wr_port]	<= 1;
+						port_vlan[wr_port][11:8]		<= wr_data[3:0];
+						port_vlan_updated[wr_port]		<= 1;
 					end
 
 					REG_TAG_MODE: begin
@@ -441,8 +466,8 @@ module ManagementRegisterInterface #(
 					crypt_e_mgmt[wr_addr[4:0]*8 +: 8]	<= wr_data;
 
 					if(wr_addr[4:0] == 5'h1f) begin
-						crypt_in_updated	<= 1;
-						crypto_active		<= 1;
+						crypt_in_updated				<= 1;
+						crypto_active					<= 1;
 					end
 
 				end
@@ -451,6 +476,25 @@ module ManagementRegisterInterface #(
 				else /*if(wr_addr[7:0] >= REG_WORK)*/ begin
 					crypt_work_in_mgmt[wr_addr[4:0]*8 +: 8]	<= wr_data;
 				end
+
+			end
+
+			else begin
+
+				case(wr_addr[7:0])
+
+					//Memory BIST control
+					REG_MBIST_3: begin
+						mbist_select	<= wr_data[7];
+						mbist_start		<= wr_data[6];
+					end
+
+					REG_MBIST_SEED:		mbist_seed[7:0] <= wr_data;
+					REG_MBIST_SEED_1:	mbist_seed[15:8] <= wr_data;
+					REG_MBIST_SEED_2:	mbist_seed[23:16] <= wr_data;
+					REG_MBIST_SEED_3:	mbist_seed[31:24] <= wr_data;
+
+				endcase
 
 			end
 

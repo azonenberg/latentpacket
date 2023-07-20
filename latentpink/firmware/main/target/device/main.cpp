@@ -70,6 +70,9 @@ int main()
 	//Bring up sensors
 	InitSensors();
 
+	//Test the external RAM
+	MemoryTest();
+
 	//InitCLI();
 	//InitEthernet();
 	//InitSSH();
