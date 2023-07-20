@@ -474,20 +474,19 @@ create_clock -period 5.000 -name gtx_refclk_200m_p -waveform {0.000 2.500} [get_
 
 
 set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *storage_reg*] -to [get_cells -hierarchical *portb_dout_raw_reg*] 2.500
-set _xlnx_shared_i0 [get_cells -hierarchical *dout0_reg*]
-set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i0 -to [get_cells -hierarchical *dout1_reg*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *dout0_reg*] -to [get_cells -hierarchical *dout1_reg*] 2.500
 
-set _xlnx_shared_i1 [get_cells -hierarchical *reg_a_ff*]
-set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_312p5mhz*] 2.500
-set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i1 -to [get_clocks *clk_125mhz_raw*] 2.500
+set _xlnx_shared_i0 [get_cells -hierarchical *reg_a_ff*]
+set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_312p5mhz*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz*] -through $_xlnx_shared_i0 -to [get_clocks *clk_125mhz_raw*] 2.500
 
 set_max_delay -from [get_cells -hierarchical *samples_*_2x*] -to [get_cells -hierarchical *samples_*_sync*] 2.000
 
-set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_crypt_raw*] 2.500
-set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_ram_ctl_raw*] 2.500
-
 set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_crypt_raw*] 2.500
 set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_ram_ctl_raw*] 2.500
+
+set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_crypt_raw*] 2.500
+set_max_delay -from [get_clocks *clk_crypt_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_ram_ctl_raw*] 2.500
 
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks clk_qcapture_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_qcapture_raw] -group [get_clocks clk_ram_ctl_raw]
@@ -537,181 +536,7 @@ set_property ASYNC_REG true [get_cells {buffer/infifo/cdcs[10].cdc/sync_rst/rst_
 set_property ASYNC_REG true [get_cells {buffer/infifo/cdcs[14].cdc/sync_rst/ff_0_reg}]
 set_property ASYNC_REG true [get_cells {buffer/infifo/cdcs[14].cdc/sync_rst/rst_out_n_reg}]
 
-set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/sync_fifo_rst/dout0_reg \
-          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg \
-          {buffer/infifo/cdcs[0].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[0].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg \
-          {buffer/infifo/cdcs[10].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[10].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[11].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[11].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[12].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[12].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[13].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[13].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[14].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[14].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[1].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[1].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[2].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[2].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[3].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[3].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[4].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[4].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[5].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[5].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[6].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[6].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[7].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[7].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[2].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[8].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[8].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_head/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[9].cdc/data_fifo/sync_tail/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {buffer/infifo/cdcs[9].cdc/header_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          buffer/qdr/fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          buffer/qdr/fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          buffer/qdr/fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          buffer/qdr/fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          interfaces/port_g12/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          interfaces/port_g12/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          interfaces/port_g12/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          interfaces/port_g12/bridge/sync_perf/sync_en/sync/dout0_reg \
-          interfaces/port_g12/bridge/sync_rst_stat/dout0_reg \
-          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          interfaces/port_g12/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg \
-          interfaces/port_g13/bridge/pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg \
-          interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg \
-          interfaces/port_g13/bridge/pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg \
-          interfaces/port_g13/bridge/sync_perf/sync_ack/sync/dout0_reg \
-          interfaces/port_g13/bridge/sync_perf/sync_en/sync/dout0_reg \
-          interfaces/port_g13/bridge/sync_rst_stat/dout0_reg \
-          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          interfaces/port_g13/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          {interfaces/qsgmii[1].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          interfaces/port_mgmt0/mac/sync_link_speed/sync_en/sync/dout0_reg \
-          {interfaces/qsgmii[1].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          interfaces/port_mgmt0/rgmii_bridge/sync_link_speed/sync_en/sync/dout0_reg \
-          {interfaces/qsgmii[1].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[1].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[1].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[2].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[2].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[3].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[0].quad/lanes[3].pcs/rx_fifo/sync_wr_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[2].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[0].mac/sync_link_speed/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_ack/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_rd_ptr/sync_en/sync/dout0_reg} \
-          {interfaces/qsgmii[1].quad/lanes[0].pcs/rx_fifo/sync_wr_ptr/sync_ack/sync/dout0_reg}]] -to [get_clocks clk_312p5mhz_raw] 2.500
+set_max_delay -from [get_clocks clk_125mhz_raw] -through [get_cells [list mgmt/rx_fifo/sync_fifo_rst/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_tail/sync_en/sync/dout0_reg mgmt/rx_fifo/rx_cdc_fifo/sync_head/sync_en/sync/dout0_reg]] -to [get_clocks clk_312p5mhz_raw] 2.500
 
 set_clock_groups -asynchronous -group [get_clocks mgmt0_rx_clk] -group [get_clocks clk_ram_ctl_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks mgmt0_rx_clk]
@@ -742,22 +567,22 @@ set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets clk_system/sysclk_in]
 # Floorplanning: RAM
 
 create_pblock pblock_ram
-add_cells_to_pblock [get_pblocks pblock_ram] [get_cells -quiet [list buffer/infifo/decc_hi buffer/infifo/decc_lo buffer/infifo/ecc_hi buffer/infifo/ecc_lo]]
 resize_pblock [get_pblocks pblock_ram] -add {SLICE_X0Y50:SLICE_X23Y199}
 resize_pblock [get_pblocks pblock_ram] -add {DSP48_X0Y20:DSP48_X1Y79}
 resize_pblock [get_pblocks pblock_ram] -add {RAMB18_X0Y20:RAMB18_X1Y79}
 resize_pblock [get_pblocks pblock_ram] -add {RAMB36_X0Y10:RAMB36_X1Y39}
+add_cells_to_pblock [get_pblocks pblock_ram] [get_cells -quiet [list buffer/infifo/decc_hi buffer/infifo/decc_lo buffer/infifo/ecc_hi buffer/infifo/ecc_lo]]
 
 ########################################################################################################################
 # Floorplanning: SGMII g13
 
 create_pblock pblock_sgmii
-add_cells_to_pblock [get_pblocks pblock_sgmii] [get_cells -quiet [list interfaces/port_g12 interfaces/port_g13]]
 resize_pblock [get_pblocks pblock_sgmii] -add {SLICE_X92Y50:SLICE_X109Y99}
 resize_pblock [get_pblocks pblock_sgmii] -add {DSP48_X5Y20:DSP48_X5Y39}
 resize_pblock [get_pblocks pblock_sgmii] -add {RAMB18_X6Y20:RAMB18_X6Y39}
 resize_pblock [get_pblocks pblock_sgmii] -add {RAMB36_X6Y10:RAMB36_X6Y19}
 set_property IS_SOFT FALSE [get_pblocks pblock_sgmii]
+add_cells_to_pblock [get_pblocks pblock_sgmii] [get_cells -quiet [list interfaces/port_g12 interfaces/port_g13]]
 
 set_property LOC SLICE_X109Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[0]}]
 set_property LOC SLICE_X109Y84 [get_cells {interfaces/port_g13/bridge/cdr/samples_hi_reg[1]}]
@@ -878,7 +703,7 @@ set_property LOC SLICE_X107Y71 [get_cells {interfaces/port_g12/bridge/cdr/sample
 # Floorplanning: RGMII mgmt0
 
 create_pblock pblock_rgmii
-add_cells_to_pblock [get_pblocks pblock_rgmii] [get_cells -quiet [list interfaces/port_mgmt0 mgmt/rx_fifo]]
+add_cells_to_pblock [get_pblocks pblock_rgmii] [get_cells -quiet [list mgmt/rx_fifo]]
 resize_pblock [get_pblocks pblock_rgmii] -add {SLICE_X102Y100:SLICE_X109Y149}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB18_X6Y40:RAMB18_X6Y59}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB36_X6Y20:RAMB36_X6Y29}
@@ -889,49 +714,34 @@ set_property IS_SOFT FALSE [get_pblocks pblock_rgmii]
 # Floorplanning: QSGMII
 
 create_pblock pblock_qsgmii
-add_cells_to_pblock [get_pblocks pblock_qsgmii] [get_cells -quiet [list interfaces/port_g0_g11 {interfaces/qsgmii[0].quad} {interfaces/qsgmii[1].quad} {interfaces/qsgmii[2].quad}]]
 resize_pblock [get_pblocks pblock_qsgmii] -add {SLICE_X36Y150:SLICE_X101Y199}
 resize_pblock [get_pblocks pblock_qsgmii] -add {DSP48_X2Y60:DSP48_X5Y79}
 resize_pblock [get_pblocks pblock_qsgmii] -add {RAMB18_X2Y60:RAMB18_X5Y79}
 resize_pblock [get_pblocks pblock_qsgmii] -add {RAMB36_X2Y30:RAMB36_X5Y39}
 set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii]
+add_cells_to_pblock [get_pblocks pblock_qsgmii] [get_cells -quiet [list interfaces/port_g0_g11 {interfaces/qsgmii[0].quad} {interfaces/qsgmii[1].quad} {interfaces/qsgmii[2].quad}]]
 
 #######################################################################################################################
 # Floorplanning: SFP+ xg0
 
 create_pblock pblock_10g
-add_cells_to_pblock [get_pblocks pblock_10g] [get_cells -quiet [list interfaces/port_xg0 interfaces/xg_transceiver]]
 resize_pblock [get_pblocks pblock_10g] -add {SLICE_X36Y175:SLICE_X101Y209}
 resize_pblock [get_pblocks pblock_10g] -add {DSP48_X2Y70:DSP48_X5Y83}
 resize_pblock [get_pblocks pblock_10g] -add {RAMB18_X2Y70:RAMB18_X5Y83}
 resize_pblock [get_pblocks pblock_10g] -add {RAMB36_X2Y35:RAMB36_X5Y41}
 set_property IS_SOFT FALSE [get_pblocks pblock_10g]
+add_cells_to_pblock [get_pblocks pblock_10g] [get_cells -quiet [list interfaces/port_xg0 interfaces/xg_transceiver]]
 
 #######################################################################################################################
 # Floorplanning: metadata FIFO
 
 create_pblock pblock_metafifo
-add_cells_to_pblock [get_pblocks pblock_metafifo] [get_cells -quiet [list \
-          {buffer/infifo/metafifo[0].fifo} \
-          {buffer/infifo/metafifo[10].fifo} \
-          {buffer/infifo/metafifo[11].fifo} \
-          {buffer/infifo/metafifo[12].fifo} \
-          {buffer/infifo/metafifo[13].fifo} \
-          {buffer/infifo/metafifo[14].fifo} \
-          {buffer/infifo/metafifo[1].fifo} \
-          {buffer/infifo/metafifo[2].fifo} \
-          {buffer/infifo/metafifo[3].fifo} \
-          {buffer/infifo/metafifo[4].fifo} \
-          {buffer/infifo/metafifo[5].fifo} \
-          {buffer/infifo/metafifo[6].fifo} \
-          {buffer/infifo/metafifo[7].fifo} \
-          {buffer/infifo/metafifo[8].fifo} \
-          {buffer/infifo/metafifo[9].fifo}]]
 resize_pblock [get_pblocks pblock_metafifo] -add {SLICE_X0Y100:SLICE_X23Y224}
 resize_pblock [get_pblocks pblock_metafifo] -add {DSP48_X0Y40:DSP48_X1Y89}
 resize_pblock [get_pblocks pblock_metafifo] -add {RAMB18_X0Y40:RAMB18_X1Y89}
 resize_pblock [get_pblocks pblock_metafifo] -add {RAMB36_X0Y20:RAMB36_X1Y44}
 set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
+add_cells_to_pblock [get_pblocks pblock_metafifo] [get_cells -quiet [list {buffer/infifo/metafifo[0].fifo} {buffer/infifo/metafifo[10].fifo} {buffer/infifo/metafifo[11].fifo} {buffer/infifo/metafifo[12].fifo} {buffer/infifo/metafifo[13].fifo} {buffer/infifo/metafifo[14].fifo} {buffer/infifo/metafifo[1].fifo} {buffer/infifo/metafifo[2].fifo} {buffer/infifo/metafifo[3].fifo} {buffer/infifo/metafifo[4].fifo} {buffer/infifo/metafifo[5].fifo} {buffer/infifo/metafifo[6].fifo} {buffer/infifo/metafifo[7].fifo} {buffer/infifo/metafifo[8].fifo} {buffer/infifo/metafifo[9].fifo}]]
 
 #######################################################################################################################
 # Floorplanning: prefetcher
@@ -941,23 +751,24 @@ set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 create_pblock pblock_prefetch
-add_cells_to_pblock [get_pblocks pblock_prefetch] [get_cells -quiet [list buffer/infifo/prefetch_fifo buffer/infifo/tagfifo]]
 resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X0Y100:SLICE_X23Y124}
 resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X0Y40:DSP48_X1Y49}
 resize_pblock [get_pblocks pblock_prefetch] -add {RAMB18_X0Y40:RAMB18_X1Y49}
 resize_pblock [get_pblocks pblock_prefetch] -add {RAMB36_X0Y20:RAMB36_X1Y24}
+add_cells_to_pblock [get_pblocks pblock_prefetch] [get_cells -quiet [list buffer/infifo/prefetch_fifo buffer/infifo/tagfifo]]
 
 #######################################################################################################################
 # Floorplanning: MAC address table
 
 create_pblock pblock_mactable
-add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd]]
 resize_pblock [get_pblocks pblock_mactable] -add {SLICE_X0Y45:SLICE_X55Y99}
 resize_pblock [get_pblocks pblock_mactable] -add {DSP48_X0Y18:DSP48_X2Y39}
 resize_pblock [get_pblocks pblock_mactable] -add {RAMB18_X0Y18:RAMB18_X2Y39}
 resize_pblock [get_pblocks pblock_mactable] -add {RAMB36_X0Y9:RAMB36_X2Y19}
 set_property IS_SOFT FALSE [get_pblocks pblock_mactable]
+add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd]]
 
 #######################################################################################################################
 # Floorplanning: QSPI management
@@ -967,130 +778,7 @@ add_cells_to_pblock [get_pblocks pblock_qspi] [get_cells -quiet [list mgmt/bridg
 resize_pblock [get_pblocks pblock_qspi] -add {SLICE_X0Y200:SLICE_X7Y224}
 set_property IS_SOFT FALSE [get_pblocks pblock_qspi]
 create_pblock pblock_mgmt
-add_cells_to_pblock [get_pblocks pblock_mgmt] [get_cells -quiet [list \
-          mgmt/bridge/GND \
-          mgmt/bridge/VCC \
-          {mgmt/bridge/port_is_trunk[0]_i_2} \
-          {mgmt/bridge/port_is_trunk[10]_i_2} \
-          {mgmt/bridge/port_is_trunk[11]_i_2} \
-          {mgmt/bridge/port_is_trunk[12]_i_2} \
-          {mgmt/bridge/port_is_trunk[13]_i_2} \
-          {mgmt/bridge/port_is_trunk[14]_i_2} \
-          {mgmt/bridge/port_is_trunk[14]_i_3} \
-          {mgmt/bridge/port_is_trunk[1]_i_2} \
-          {mgmt/bridge/port_is_trunk[2]_i_2} \
-          {mgmt/bridge/port_is_trunk[3]_i_2} \
-          {mgmt/bridge/port_is_trunk[4]_i_2} \
-          {mgmt/bridge/port_is_trunk[5]_i_2} \
-          {mgmt/bridge/port_is_trunk[6]_i_2} \
-          {mgmt/bridge/port_is_trunk[7]_i_2} \
-          {mgmt/bridge/port_is_trunk[8]_i_2} \
-          {mgmt/bridge/port_is_trunk[9]_i_2} \
-          {mgmt/bridge/port_tagmode_updated[0]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[10]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[11]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[12]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[13]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[14]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[1]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[2]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[3]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[4]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[5]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[6]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[7]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[8]_i_1} \
-          {mgmt/bridge/port_tagmode_updated[9]_i_1} \
-          {mgmt/bridge/port_vlan[10][11]_i_2} \
-          {mgmt/bridge/port_vlan[11][11]_i_2} \
-          {mgmt/bridge/port_vlan[13][11]_i_2} \
-          {mgmt/bridge/port_vlan[14][11]_i_2} \
-          {mgmt/bridge/port_vlan[14][11]_i_3} \
-          {mgmt/bridge/port_vlan[14][11]_i_4} \
-          {mgmt/bridge/port_vlan[14][11]_i_5} \
-          {mgmt/bridge/port_vlan[14][7]_i_2} \
-          {mgmt/bridge/port_vlan[5][11]_i_2} \
-          {mgmt/bridge/port_vlan[7][11]_i_2} \
-          {mgmt/bridge/port_vlan_updated[0]_i_1} \
-          {mgmt/bridge/port_vlan_updated[10]_i_1} \
-          {mgmt/bridge/port_vlan_updated[11]_i_1} \
-          {mgmt/bridge/port_vlan_updated[12]_i_1} \
-          {mgmt/bridge/port_vlan_updated[13]_i_1} \
-          {mgmt/bridge/port_vlan_updated[14]_i_2} \
-          {mgmt/bridge/port_vlan_updated[1]_i_1} \
-          {mgmt/bridge/port_vlan_updated[2]_i_1} \
-          {mgmt/bridge/port_vlan_updated[3]_i_1} \
-          {mgmt/bridge/port_vlan_updated[4]_i_1} \
-          {mgmt/bridge/port_vlan_updated[5]_i_1} \
-          {mgmt/bridge/port_vlan_updated[6]_i_1} \
-          {mgmt/bridge/port_vlan_updated[7]_i_1} \
-          {mgmt/bridge/port_vlan_updated[8]_i_1} \
-          {mgmt/bridge/port_vlan_updated[9]_i_1} \
-          {mgmt/bridge/rd_addr_reg[0]} \
-          {mgmt/bridge/rd_addr_reg[10]} \
-          {mgmt/bridge/rd_addr_reg[11]} \
-          {mgmt/bridge/rd_addr_reg[12]} \
-          {mgmt/bridge/rd_addr_reg[13]} \
-          {mgmt/bridge/rd_addr_reg[14]} \
-          {mgmt/bridge/rd_addr_reg[15]} \
-          {mgmt/bridge/rd_addr_reg[1]} \
-          {mgmt/bridge/rd_addr_reg[2]} \
-          {mgmt/bridge/rd_addr_reg[3]} \
-          {mgmt/bridge/rd_addr_reg[4]} \
-          {mgmt/bridge/rd_addr_reg[5]} \
-          {mgmt/bridge/rd_addr_reg[6]} \
-          {mgmt/bridge/rd_addr_reg[7]} \
-          {mgmt/bridge/rd_addr_reg[8]} \
-          {mgmt/bridge/rd_addr_reg[9]} \
-          {mgmt/bridge/rd_data[0]_i_3} \
-          {mgmt/bridge/rd_data[1]_i_3} \
-          {mgmt/bridge/rd_data[2]_i_3} \
-          {mgmt/bridge/rd_data[3]_i_3} \
-          {mgmt/bridge/rd_data[4]_i_3} \
-          {mgmt/bridge/rd_data[5]_i_3} \
-          {mgmt/bridge/rd_data[6]_i_3} \
-          {mgmt/bridge/rd_data[7]_i_12} \
-          {mgmt/bridge/rd_data[7]_i_13} \
-          {mgmt/bridge/rd_data[7]_i_14} \
-          {mgmt/bridge/rd_data[7]_i_15} \
-          {mgmt/bridge/rd_data[7]_i_3} \
-          {mgmt/bridge/rd_data[7]_i_5} \
-          {mgmt/bridge/rd_data[7]_i_9} \
-          {mgmt/bridge/rd_data_reg[0]_i_1} \
-          {mgmt/bridge/rd_data_reg[1]_i_1} \
-          {mgmt/bridge/rd_data_reg[2]_i_1} \
-          {mgmt/bridge/rd_data_reg[3]_i_1} \
-          {mgmt/bridge/rd_data_reg[4]_i_1} \
-          {mgmt/bridge/rd_data_reg[5]_i_1} \
-          {mgmt/bridge/rd_data_reg[6]_i_1} \
-          {mgmt/bridge/rd_data_reg[7]_i_2} \
-          mgmt/bridge/rd_mode_reg \
-          mgmt/bridge/reading_i_2 \
-          mgmt/bridge/reading_i_3 \
-          mgmt/bridge/reading_i_4 \
-          mgmt/bridge/reading_i_5 \
-          mgmt/bridge/reading_i_6 \
-          mgmt/bridge/reading_i_7 \
-          mgmt/bridge/reading_i_8 \
-          mgmt/bridge/reading_i_9 \
-          {mgmt/bridge/wr_addr_reg[0]} \
-          {mgmt/bridge/wr_addr_reg[10]} \
-          {mgmt/bridge/wr_addr_reg[11]} \
-          {mgmt/bridge/wr_addr_reg[12]} \
-          {mgmt/bridge/wr_addr_reg[13]} \
-          {mgmt/bridge/wr_addr_reg[14]} \
-          {mgmt/bridge/wr_addr_reg[15]} \
-          {mgmt/bridge/wr_addr_reg[1]} \
-          {mgmt/bridge/wr_addr_reg[2]} \
-          {mgmt/bridge/wr_addr_reg[3]} \
-          {mgmt/bridge/wr_addr_reg[4]} \
-          {mgmt/bridge/wr_addr_reg[5]} \
-          {mgmt/bridge/wr_addr_reg[6]} \
-          {mgmt/bridge/wr_addr_reg[7]} \
-          {mgmt/bridge/wr_addr_reg[8]} \
-          {mgmt/bridge/wr_addr_reg[9]} \
-          mgmt/info \
-          mgmt/regs]]
+add_cells_to_pblock [get_pblocks pblock_mgmt] [get_cells -quiet [list mgmt/bridge/GND mgmt/bridge/VCC mgmt/bridge/rd_mode_reg mgmt/info mgmt/regs]]
 resize_pblock [get_pblocks pblock_mgmt] -add {SLICE_X36Y75:SLICE_X55Y174}
 resize_pblock [get_pblocks pblock_mgmt] -add {DSP48_X2Y30:DSP48_X2Y69}
 resize_pblock [get_pblocks pblock_mgmt] -add {RAMB18_X2Y30:RAMB18_X2Y69}
@@ -1170,42 +858,30 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 
 
 create_pblock pblock_sgmii_cdc
-add_cells_to_pblock [get_pblocks pblock_sgmii_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[12].cdc} {buffer/infifo/cdcs[13].cdc}]]
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {SLICE_X56Y100:SLICE_X73Y124}
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {DSP48_X3Y40:DSP48_X3Y49}
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB18_X3Y40:RAMB18_X3Y49}
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB36_X3Y20:RAMB36_X3Y24}
 set_property IS_SOFT FALSE [get_pblocks pblock_sgmii_cdc]
+add_cells_to_pblock [get_pblocks pblock_sgmii_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[12].cdc} {buffer/infifo/cdcs[13].cdc}]]
 
 
 
 
 
 create_pblock pblock_xg0_cdc
-add_cells_to_pblock [get_pblocks pblock_xg0_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[14].cdc}]]
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {SLICE_X20Y150:SLICE_X101Y199}
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {DSP48_X1Y60:DSP48_X5Y79}
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB18_X1Y60:RAMB18_X5Y79}
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB36_X1Y30:RAMB36_X5Y39}
 set_property IS_SOFT FALSE [get_pblocks pblock_xg0_cdc]
+add_cells_to_pblock [get_pblocks pblock_xg0_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[14].cdc}]]
 
 
 create_pblock pblock_qsgmii_cdc2
-add_cells_to_pblock [get_pblocks pblock_qsgmii_cdc2] [get_cells -quiet [list \
-          {buffer/infifo/cdcs[0].cdc} \
-          {buffer/infifo/cdcs[10].cdc} \
-          {buffer/infifo/cdcs[11].cdc} \
-          {buffer/infifo/cdcs[1].cdc} \
-          {buffer/infifo/cdcs[2].cdc} \
-          {buffer/infifo/cdcs[3].cdc} \
-          {buffer/infifo/cdcs[4].cdc} \
-          {buffer/infifo/cdcs[5].cdc} \
-          {buffer/infifo/cdcs[6].cdc} \
-          {buffer/infifo/cdcs[7].cdc} \
-          {buffer/infifo/cdcs[8].cdc} \
-          {buffer/infifo/cdcs[9].cdc}]]
 resize_pblock [get_pblocks pblock_qsgmii_cdc2] -add {CLOCKREGION_X0Y3:CLOCKREGION_X1Y3}
 set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii_cdc2]
+add_cells_to_pblock [get_pblocks pblock_qsgmii_cdc2] [get_cells -quiet [list {buffer/infifo/cdcs[0].cdc} {buffer/infifo/cdcs[10].cdc} {buffer/infifo/cdcs[11].cdc} {buffer/infifo/cdcs[1].cdc} {buffer/infifo/cdcs[2].cdc} {buffer/infifo/cdcs[3].cdc} {buffer/infifo/cdcs[4].cdc} {buffer/infifo/cdcs[5].cdc} {buffer/infifo/cdcs[6].cdc} {buffer/infifo/cdcs[7].cdc} {buffer/infifo/cdcs[8].cdc} {buffer/infifo/cdcs[9].cdc}]]
 
 
 
@@ -1219,3 +895,6 @@ set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
 connect_debug_port dbg_hub/clk [get_nets clk_125mhz]
+
+set_property PULLUP true [get_ports {fan_tach[1]}]
+set_property PULLUP true [get_ports {fan_tach[0]}]

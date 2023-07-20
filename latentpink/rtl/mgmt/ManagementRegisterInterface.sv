@@ -71,6 +71,12 @@ module ManagementRegisterInterface #(
 	//Configuration registers in core clock domain
 	output vlan_t[NUM_PORTS-1:0]	port_vlan		= 0,
 	output logic[NUM_PORTS-1:0]		port_is_trunk	= 0,
+	input wire[15:0]				fan0_rpm,
+	input wire[15:0]				fan1_rpm,
+	input wire[15:0]				die_temp,
+	input wire[15:0]				volt_core,
+	input wire[15:0]				volt_ram,
+	input wire[15:0]				volt_aux,
 
 	//Configuration registers in crypto clock domain
 	input wire						clk_crypt,
@@ -216,6 +222,20 @@ module ManagementRegisterInterface #(
 		REG_FPGA_SERIAL_6	= 16'h000a,
 		REG_FPGA_SERIAL_7	= 16'h000b,
 
+		//Sensors
+		REG_FAN0_RPM		= 16'h0010,
+		REG_FAN0_RPM_1		= 16'h0011,
+		REG_FAN1_RPM		= 16'h0012,
+		REG_FAN1_RPM_1		= 16'h0013,
+		REG_DIE_TEMP		= 16'h0014,
+		REG_DIE_TEMP_1		= 16'h0015,
+		REG_VOLT_CORE		= 16'h0016,
+		REG_VOLT_CORE_1		= 16'h0017,
+		REG_VOLT_RAM		= 16'h0018,
+		REG_VOLT_RAM_1		= 16'h0019,
+		REG_VOLT_AUX		= 16'h001a,
+		REG_VOLT_AUX_1		= 16'h001b,
+
 		//Crypto accelerator
 		REG_CRYPT_BASE		= 16'h3800,
 
@@ -357,6 +377,20 @@ module ManagementRegisterInterface #(
 					REG_FPGA_SERIAL_5:	rd_data <= die_serial[2*8 +: 8];
 					REG_FPGA_SERIAL_6:	rd_data <= die_serial[1*8 +: 8];
 					REG_FPGA_SERIAL_7:	rd_data <= die_serial[0*8 +: 8];
+
+					REG_FAN0_RPM:		rd_data	<= fan0_rpm[7:0];
+					REG_FAN0_RPM_1:		rd_data	<= fan0_rpm[15:8];
+					REG_FAN1_RPM:		rd_data	<= fan1_rpm[7:0];
+					REG_FAN1_RPM_1:		rd_data	<= fan1_rpm[15:8];
+
+					REG_DIE_TEMP:		rd_data	<= die_temp[7:0];
+					REG_DIE_TEMP_1:		rd_data	<= die_temp[15:8];
+					REG_VOLT_CORE:		rd_data	<= volt_core[7:0];
+					REG_VOLT_CORE_1:	rd_data	<= volt_core[15:8];
+					REG_VOLT_RAM:		rd_data	<= volt_ram[7:0];
+					REG_VOLT_RAM_1:		rd_data	<= volt_ram[15:8];
+					REG_VOLT_AUX:		rd_data	<= volt_aux[7:0];
+					REG_VOLT_AUX_1:		rd_data	<= volt_aux[15:8];
 
 					default: begin
 						rd_data	<= 0;

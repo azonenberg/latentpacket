@@ -30,35 +30,6 @@
 #include "latentpink.h"
 #include <microkvs/driver/STM32StorageBank.h>
 
-//UART console
-UART* g_cliUART = NULL;
-/*
-UARTOutputStream g_uartStream;
-SnifferCLISessionContext g_uartCliContext;
-
-//I2C bus to EEPROM
-I2C* g_i2c;
-
-//QSPI interface to FPGA
-OctoSPI* g_qspi;
-
-//Ethernet stuff
-MACAddress g_macAddress;
-IPv4Config g_ipConfig;
-*/
-/*
-//KVS
-void InitI2C();
-void InitEEPROM();
-void InitQSPI();
-void InitCLI();
-void InitFPGA();
-*/
-/*
-void InitEthernet();
-bool TestEthernet(uint32_t num_frames);
-void InitSSH();
-*/
 int main()
 {
 	//Initialize power (must be the very first thing done after reset)
@@ -88,66 +59,82 @@ int main()
 	static STM32StorageBank right(reinterpret_cast<uint8_t*>(0x080e0000), 0x20000);
 	InitKVS(&left, &right, 1024);
 
-	/*
-	InitI2C();
-	InitEEPROM();
+	//Set up the quad SPI and connect to the FPGA
 	InitQSPI();
 	InitFPGA();
-	InitCLI();
-	*/
-	/*
-	InitEthernet();
-	InitSSH();
-	*/
 
-	g_log("hai world\n");
+	//Get our MAC address
+	InitI2C();
+	InitEEPROM();
 
-	//Set up the GPIO LEDs and turn them on
+	//Bring up sensors
+	InitSensors();
+
+	//InitCLI();
+	//InitEthernet();
+	//InitSSH();
+
+	//Begin initializing fabric ports
+	InitInterfaces();
+
+	//Initialize our local Ethernet interface
+	//InitEthernet();
+	//InitIP();
+
+	//Set up the GPIO LEDs and turn them off
 	GPIOPin led0(&GPIOC, 4, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin led1(&GPIOA, 6, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin led2(&GPIOE, 10, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin led3(&GPIOE, 9, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
-	led0 = 1;
-	led1 = 1;
-	led2 = 1;
-	led3 = 1;
-	/*
+	led0 = 0;
+	led1 = 0;
+	led2 = 0;
+	led3 = 0;
+
+	//Create a CLI stream for the UART
+	UARTOutputStream uartStream;
+	uartStream.Initialize(g_cliUART);
+
+	//Initialize the CLI for the UART
+	SwitchCLISessionContext uartContext;
+	uartContext.Initialize(&uartStream, "user");
+
 	//Enable interrupts only after all setup work is done
 	EnableInterrupts();
 
 	//Show the initial prompt
-	g_uartCliContext.PrintPrompt();
-	*/
+	uartContext.PrintPrompt();
+
 	/*
 	//Main event loop
 	int nextRxFrame = 0;
 	uint32_t numRxFrames = 0;
 	uint32_t numRxBad = 0;
-	*/
 	uint32_t nextAgingTick = 0;
+	*/
 
 	while(1)
 	{
-		/*
 		//Wait for an interrupt
 		//asm("wfi");
-
+		/*
 		//Poll for Ethernet frames
 		auto frame = g_eth->GetRxFrame();
 		if(frame != NULL)
 			g_ethStack->OnRxFrame(frame);
 		*/
-		/*
+
 		//Poll for UART input
 		if(g_cliUART->HasInput())
-			g_uartCliContext.OnKeystroke(g_cliUART->BlockingRead());
-
+			uartContext.OnKeystroke(g_cliUART->BlockingRead());
+		/*
 		//Check for aging on stuff once a second
 		if(g_logTimer->GetCount() > nextAgingTick)
 		{
 			//g_ethStack->OnAgingTick();
 			nextAgingTick = g_logTimer->GetCount() + 10000;
-		}*/
+		}
+		*/
 	}
 
 	return 0;
@@ -163,101 +150,6 @@ void InitCLI()
 	g_uartCliContext.Initialize(&g_uartStream, "admin");
 
 	//g_log("IP address not configured, defaulting to 192.168.1.42\n");
-}
-
-void InitI2C()
-{
-	g_log("Initializing I2C interface\n");
-
-	static GPIOPin i2c_scl(&GPIOD, 12, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 4, true);
-	static GPIOPin i2c_sda(&GPIOD, 13, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 4, true);
-
-	//Default kernel clock for I2C4 is pclk4 (68.75 MHz for our current config)
-	//Prescale by 16 to get 4.29 MHz
-	//Divide by 24 after that to get 179 kHz
-	static I2C i2c(&I2C4, 16, 12);
-	g_i2c = &i2c;
-}
-
-void InitEEPROM()
-{
-	g_log("Initializing MAC address EEPROM\n");
-
-	//Extended memory block for MAC address data isn't in the normal 0xa* memory address space
-	//uint8_t main_addr = 0xa0;
-	uint8_t ext_addr = 0xb0;
-
-	//Pointers within extended memory block
-	uint8_t serial_offset = 0x80;
-	uint8_t mac_offset = 0x9a;
-
-	//Read MAC address
-	g_i2c->BlockingWrite8(ext_addr, mac_offset);
-	g_i2c->BlockingRead(ext_addr, &g_macAddress[0], sizeof(g_macAddress));
-
-	//Read serial number
-	const int serial_len = 16;
-	uint8_t serial[serial_len] = {0};
-	g_i2c->BlockingWrite8(ext_addr, serial_offset);
-	g_i2c->BlockingRead(ext_addr, serial, serial_len);
-
-	{
-		LogIndenter li(g_log);
-		g_log("MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
-			g_macAddress[0], g_macAddress[1], g_macAddress[2], g_macAddress[3], g_macAddress[4], g_macAddress[5]);
-
-		g_log("Serial number: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n",
-			serial[0], serial[1], serial[2], serial[3], serial[4], serial[5], serial[6], serial[7],
-			serial[8], serial[9], serial[10], serial[11], serial[12], serial[13], serial[14], serial[15]);
-	}
-}
-
-void InitQSPI()
-{
-	g_log("Initializing QSPI interface\n");
-
-	//Configure the I/O manager
-	OctoSPIManager::ConfigureMux(false);
-	OctoSPIManager::ConfigurePort(
-		1,							//Configuring port 1
-		false,						//DQ[7:4] disabled
-		OctoSPIManager::C1_HIGH,
-		true,						//DQ[3:0] enabled
-		OctoSPIManager::C1_LOW,		//DQ[3:0] from OCTOSPI1 DQ[3:0]
-		true,						//CS# enabled
-		OctoSPIManager::PORT_1,		//CS# from OCTOSPI1
-		false,						//DQS disabled
-		OctoSPIManager::PORT_1,
-		true,						//Clock enabled
-		OctoSPIManager::PORT_1);	//Clock from OCTOSPI1
-
-	//Configure the I/O pins
-	static GPIOPin qspi_cs_n(&GPIOE, 11, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 11);
-	static GPIOPin qspi_sck(&GPIOB, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
-	static GPIOPin qspi_dq0(&GPIOA, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 6);
-	static GPIOPin qspi_dq1(&GPIOB, 0, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 4);
-	static GPIOPin qspi_dq2(&GPIOC, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
-	static GPIOPin qspi_dq3(&GPIOA, 1, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
-
-	//Clock divider value
-	//Default is for AHB3 bus clock to be used as kernel clock (275 MHz for us)
-	//With 3.3V Vdd, we can go up to 140 MHz.
-	//Dividing by 4 gives 68.75 MHz and a transfer rate of 275 Mbps.
-	uint8_t prescale = 4;
-
-	//Configure the OCTOSPI itself
-	static OctoSPI qspi(&OCTOSPI1, 0x02000000, prescale);
-	qspi.SetDoubleRateMode(false);
-	qspi.SetInstructionMode(OctoSPI::MODE_QUAD, 2);
-	qspi.SetAddressMode(OctoSPI::MODE_NONE);
-	qspi.SetAltBytesMode(OctoSPI::MODE_NONE);
-	qspi.SetDataMode(OctoSPI::MODE_QUAD);
-	qspi.SetDummyCycleCount(1);
-	qspi.SetDQSEnable(false);
-	qspi.SetDeselectTime(1);
-	qspi.SetSampleDelay(true);
-
-	g_qspi = &qspi;
 }
 
 void InitFPGA()
@@ -337,7 +229,6 @@ void InitFPGA()
 	g_log("Serial: %02x%02x%02x%02x%02x%02x%02x%02x\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 }
 
-/*
 void InitEthernet()
 {
 	g_log("Initializing Ethernet\n");
@@ -491,72 +382,5 @@ void InitSSH()
 	STM32CryptoEngine tmp;
 	tmp.GetHostKeyFingerprint(buf, sizeof(buf));
 	g_log("ED25519 key fingerprint is SHA256:%s.\n", buf);
-}
-
-bool TestEthernet(uint32_t num_frames)
-{
-	g_log("Testing %d frames\n", num_frames);
-	LogIndenter li(g_log);
-
-	g_log("Putting FPGA in test mode\n");
-	*g_spiCS = 0;
-	g_spi->BlockingWrite(REG_RX_DISABLE);
-	g_spi->WaitForWrites();
-	*g_spiCS = 1;
-
-	const int timeout = 50;
-
-	for(uint32_t i=0; i<num_frames; i++)
-	{
-		//Ask for the frame
-		*g_spiCS = 0;
-		g_spi->BlockingWrite(REG_SEND_TEST);
-		g_spi->WaitForWrites();
-		*g_spiCS = 1;
-
-		//Get current time
-		auto tim = g_logTimer->GetCount();
-
-		while(true)
-		{
-			//Check for a frame
-			auto frame = g_eth->GetRxFrame();
-			if(frame != NULL)
-			{
-				if(frame->Length() != 64)
-				{
-					g_log(Logger::ERROR, "Bad length on frame %d (%d bytes, expected 64)\n", i, frame->Length());
-					return false;
-				}
-
-				g_eth->ReleaseRxFrame(frame);
-				break;
-			}
-
-			//If we see a CRC error in the counters but the frame didn't get DMA'd, it's still a fail
-			if(EMAC.MMCRFCECR != 0)
-			{
-				g_log(Logger::ERROR, "Bad CRC on frame %d (reported by counters)\n", i);
-				break;
-				return false;
-			}
-
-			//Time out if it's been too long
-			auto delta = g_logTimer->GetCount() - tim;
-			if(delta >= timeout)
-			{
-				g_log(Logger::ERROR, "Timed out after %d ms waiting for frame %d\n", timeout / 10, i);
-				return false;
-			}
-		}
-	}
-
-	g_log("Test successful, enabling RX path in FPGA\n");
-
-	*g_spiCS = 0;
-	g_spi->BlockingWrite(REG_RX_ENABLE);
-	g_spi->WaitForWrites();
-	*g_spiCS = 1;
-	return true;
 }
 */

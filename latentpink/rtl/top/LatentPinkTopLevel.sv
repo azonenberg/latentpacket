@@ -53,10 +53,10 @@ module LatentPinkTopLevel(
 	// 10G SFP+
 
 	//SFP+ interface (polarity inverted on both legs)
-	output wire			sfp_tx_p,
+	/*output wire			sfp_tx_p,
 	output wire			sfp_tx_n,
 	input wire			sfp_rx_p,
-	input wire			sfp_rx_n,
+	input wire			sfp_rx_n,*/
 
 	output wire[1:0]	sfp_led,
 
@@ -70,12 +70,12 @@ module LatentPinkTopLevel(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//QSGMII PHY
-
+/*
 	//QSGMII interface (polarity inverted on RX2)
 	output wire[2:0]	qsgmii_tx_p,
 	output wire[2:0]	qsgmii_tx_n,
 	input wire[2:0]		qsgmii_rx_p,
-	input wire[2:0]		qsgmii_rx_n,
+	input wire[2:0]		qsgmii_rx_n,*/
 
 	input wire			vsc_fast_status,
 	input wire			vsc_mdint,
@@ -111,7 +111,7 @@ module LatentPinkTopLevel(
 	output wire			g12_rst_n,
 	input wire			g12_int_n,
 	input wire[1:0]		g12_gpio,
-
+/*
 	output wire			g12_sgmii_tx_p,
 	output wire			g12_sgmii_tx_n,
 
@@ -119,15 +119,14 @@ module LatentPinkTopLevel(
 	input wire			g12_sgmii_rx_n,
 
 	input wire			g12_sgmii_rxclk_p,
-	input wire			g12_sgmii_rxclk_n,
-
+	input wire			g12_sgmii_rxclk_n,*/
 
 	input wire[2:0]		g13_led_p_1v8,
 	output wire[2:0]	g13_led_p_3v3,
 	output wire			g13_rst_n,
 	input wire			g13_int_n,
 	input wire[1:0]		g13_gpio,
-
+/*
 	output wire			g13_sgmii_tx_p,		//polarity inverted
 	output wire			g13_sgmii_tx_n,
 
@@ -135,7 +134,7 @@ module LatentPinkTopLevel(
 	input wire			g13_sgmii_rx_n,
 
 	input wire			g13_sgmii_rxclk_p,	//polarity inverted
-	input wire			g13_sgmii_rxclk_n,
+	input wire			g13_sgmii_rxclk_n,*/
 
 	output wire			dp_mdc,
 	inout wire			dp_mdio,
@@ -167,7 +166,7 @@ module LatentPinkTopLevel(
 	// RAM
 
 	//C/A bus
-	output wire			qdr_k_p,
+	/*output wire			qdr_k_p,
 	output wire			qdr_k_n,
 	output wire			qdr_wps_n,
 	output wire			qdr_rps_n,
@@ -181,7 +180,7 @@ module LatentPinkTopLevel(
 	input wire			qdr_cq_p,
 	input wire			qdr_cq_n,
 	input wire			qdr_qvld,
-	input wire[35:0]	qdr_q,
+	input wire[35:0]	qdr_q,*/
 
 	//SSTL I2C lulz
 	output wire			i2c_derp_scl_host,
@@ -199,8 +198,8 @@ module LatentPinkTopLevel(
 	assign g12_led_p_3v3 = g12_led_p_1v8;
 	assign g13_led_p_3v3 = g13_led_p_1v8;
 
-	//TODO: pulse stretching
-	assign sfp_led = 2'b11;
+	//TODO: pulse stretching and link detection
+	assign sfp_led = 2'b00;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Clocking
@@ -273,6 +272,15 @@ module LatentPinkTopLevel(
 		.pll_ram_lock(pll_ram_lock)
 	);
 
+	//DEBUG: report PLL lock status
+	vio_4 vio(
+		.clk(clk_125mhz),
+		.probe_in0(pll_rgmii_lock),
+		.probe_in1(pll_sgmii_lock),
+		.probe_in2(pll_ram_lock)
+	);
+
+	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Network ports
 
@@ -310,14 +318,17 @@ module LatentPinkTopLevel(
 	lspeed_t							g13_link_speed;
 	SGMIIPerformanceCounters			g13_sgmii_perf;
 	GigabitMacPerformanceCounters		g13_mac_perf;
-
+	*/
 	wire								mgmt0_rx_clk_buf;
+	//DEBUG
+	assign mgmt0_rx_clk_buf = mgmt0_rx_clk;
+
 	EthernetRxBus						mgmt0_rx_bus;
 	EthernetTxBus						mgmt0_tx_bus;
 	wire								mgmt0_tx_ready;
 	wire								mgmt0_link_up;
 	lspeed_t							mgmt0_link_speed;
-
+	/*
 	NetworkInterfaces interfaces(
 
 		//Top level clocks
@@ -413,7 +424,7 @@ module LatentPinkTopLevel(
 		//DEBUG
 		.gpio_led(gpio_led)
 	);
-
+	*/
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer inbound packets
 
@@ -423,7 +434,8 @@ module LatentPinkTopLevel(
 	wire[NUM_PORTS-1:0]		port_rx_untagged_allowed;
 
 	wire[NUM_PORTS-1:0]		port_rx_clk;
-
+	assign port_rx_clk = 0;	//tie off since not yet implemented
+	/*
 	assign port_rx_clk =
 	{
 		xg0_mac_rx_clk,		//xg0 serdes clock
@@ -498,10 +510,10 @@ module LatentPinkTopLevel(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Forwarding engine: takes frames out of the buffer and makes them go places
-
+	*/
 	vlan_t[NUM_PORTS-1:0]	port_vlan_fabric;
 	wire[NUM_PORTS-1:0]		port_is_trunk;
-
+	/*
 	wire[NUM_PORTS-1:0]		port_trunk;
 	wire[NUM_PORTS-1:0]		port_space_avail;	//TODO: hook up to exit queues
 
@@ -568,7 +580,7 @@ module LatentPinkTopLevel(
 		end
 
 	end
-
+	*/
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)
 
@@ -608,6 +620,8 @@ module LatentPinkTopLevel(
 		.mgmt0_tx_ready(mgmt0_tx_ready),
 		.mgmt0_link_up(mgmt0_link_up),
 		.mgmt0_link_speed(mgmt0_link_speed),
+
+		.fan_tach(fan_tach),
 
 		.port_rx_clk(port_rx_clk),
 		.port_rx_vlan(port_rx_vlan),

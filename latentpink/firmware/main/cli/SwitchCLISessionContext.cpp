@@ -475,13 +475,13 @@ void SwitchCLISessionContext::OnShowFlash()
 		auto pdata = g_kvs->MapObject(hlog);
 
 		//TODO: make this a dedicated hexdump routine
-		const int linelen = 16;
-		for(int i=0; i<hlog->m_len; i += linelen)
+		const uint32_t linelen = 16;
+		for(uint32_t i=0; i<hlog->m_len; i += linelen)
 		{
 			m_stream->Printf("%04x   ", i);
 
 			//Print hex
-			for(int j=0; j<linelen; j++)
+			for(uint32_t j=0; j<linelen; j++)
 			{
 				//Pad with spaces so we get good alignment on the end of the block
 				if(i+j >= hlog->m_len)
@@ -494,7 +494,7 @@ void SwitchCLISessionContext::OnShowFlash()
 			m_stream->Printf("  ");
 
 			//Print ASCII
-			for(int j=0; j<linelen; j++)
+			for(uint32_t j=0; j<linelen; j++)
 			{
 				//No padding needed here
 				if(i+j >= hlog->m_len)

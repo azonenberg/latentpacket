@@ -34,6 +34,7 @@
  */
 
 #include "latentpink.h"
+#include "target/device/DeviceFPGAInterface.h"
 
 void InitClocks()
 {
@@ -198,4 +199,167 @@ void DetectHardware()
 	}
 	else
 		g_log(Logger::WARNING, "Unknown device (0x%06x)\n", device);
+}
+
+
+void InitQSPI()
+{
+	g_log("Initializing QSPI interface\n");
+
+	//Configure the I/O manager
+	OctoSPIManager::ConfigureMux(false);
+	OctoSPIManager::ConfigurePort(
+		1,							//Configuring port 1
+		false,						//DQ[7:4] disabled
+		OctoSPIManager::C1_HIGH,
+		true,						//DQ[3:0] enabled
+		OctoSPIManager::C1_LOW,		//DQ[3:0] from OCTOSPI1 DQ[3:0]
+		true,						//CS# enabled
+		OctoSPIManager::PORT_1,		//CS# from OCTOSPI1
+		false,						//DQS disabled
+		OctoSPIManager::PORT_1,
+		true,						//Clock enabled
+		OctoSPIManager::PORT_1);	//Clock from OCTOSPI1
+
+	//Configure the I/O pins
+	static GPIOPin qspi_cs_n(&GPIOE, 11, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 11);
+	static GPIOPin qspi_sck(&GPIOB, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
+	static GPIOPin qspi_dq0(&GPIOA, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 6);
+	static GPIOPin qspi_dq1(&GPIOB, 0, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 4);
+	static GPIOPin qspi_dq2(&GPIOC, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
+	static GPIOPin qspi_dq3(&GPIOA, 1, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
+
+	//Clock divider value
+	//Default is for AHB3 bus clock to be used as kernel clock (256 MHz for us)
+	//With 3.3V Vdd, we can go up to 140 MHz.
+	//Dividing by 4 gives 64 MHz and a transfer rate of 256 Mbps.
+	//FPGA currently requires <= 46.875 MHz due to the RX oversampling used
+	//Dividing by 6 gives 42.666 MHz and a transfer rate of 170.66 Mbps
+	uint8_t prescale = 6;
+
+	//Configure the OCTOSPI itself
+	static OctoSPI qspi(&OCTOSPI1, 0x02000000, prescale);
+	qspi.SetDoubleRateMode(false);
+	qspi.SetInstructionMode(OctoSPI::MODE_QUAD, 2);
+	qspi.SetAddressMode(OctoSPI::MODE_NONE);
+	qspi.SetAltBytesMode(OctoSPI::MODE_NONE);
+	qspi.SetDataMode(OctoSPI::MODE_QUAD);
+	qspi.SetDummyCycleCount(1);
+	qspi.SetDQSEnable(false);
+	qspi.SetDeselectTime(1);
+	qspi.SetSampleDelay(false);
+
+	g_qspi = &qspi;
+
+	static DeviceFPGAInterface fpga;
+	g_fpga = &fpga;
+}
+
+void InitI2C()
+{
+	g_log("Initializing I2C interfaces\n");
+
+	static GPIOPin mac_i2c_scl(&GPIOB, 8, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 6, true);
+	static GPIOPin mac_i2c_sda(&GPIOB, 9, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 6, true);
+
+	//Default kernel clock for I2C4 is pclk4 (64 MHz for our current config)
+	//Prescale by 16 to get 4 MHz
+	//Divide by 40 after that to get 100 kHz
+	static I2C mac_i2c(&I2C4, 16, 40);
+	g_macI2C = &mac_i2c;
+
+	static GPIOPin temp_i2c_scl(&GPIOB, 6, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 4, true);
+	static GPIOPin temp_i2c_sda(&GPIOB, 7, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 4, true);
+
+	//Default kernel clock for I2C4 is APB1 clock (64 MHz for our current config)
+	//Prescale by 16 to get 4 MHz
+	//Divide by 40 after that to get 100 kHz
+	static I2C temp_i2c(&I2C1, 16, 40);
+	g_tempI2C = &temp_i2c;
+}
+
+void InitEEPROM()
+{
+	g_log("Initializing MAC address EEPROM\n");
+
+	//Extended memory block for MAC address data isn't in the normal 0xa* memory address space
+	//uint8_t main_addr = 0xa0;
+	uint8_t ext_addr = 0xb0;
+
+	//Pointers within extended memory block
+	uint8_t serial_offset = 0x80;
+	uint8_t mac_offset = 0x9a;
+
+	//Read MAC address
+	g_macI2C->BlockingWrite8(ext_addr, mac_offset);
+	g_macI2C->BlockingRead(ext_addr, &g_macAddress[0], sizeof(g_macAddress));
+
+	//Read serial number
+	const int serial_len = 16;
+	uint8_t serial[serial_len] = {0};
+	g_macI2C->BlockingWrite8(ext_addr, serial_offset);
+	g_macI2C->BlockingRead(ext_addr, serial, serial_len);
+
+	{
+		LogIndenter li(g_log);
+		g_log("MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+			g_macAddress[0], g_macAddress[1], g_macAddress[2], g_macAddress[3], g_macAddress[4], g_macAddress[5]);
+
+		g_log("EEPROM serial number: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n",
+			serial[0], serial[1], serial[2], serial[3], serial[4], serial[5], serial[6], serial[7],
+			serial[8], serial[9], serial[10], serial[11], serial[12], serial[13], serial[14], serial[15]);
+	}
+}
+
+/**
+	@brief Initialize sensors and log starting values for each
+ */
+void InitSensors()
+{
+	g_log("Initializing sensors\n");
+	LogIndenter li(g_log);
+
+	//Read fans
+	for(uint8_t i=0; i<2; i++)
+	{
+		auto rpm = GetFanRPM(i);
+		if(rpm == 0)
+			g_log(Logger::ERROR, "Fan %d: STOPPED\n", i, rpm);
+		else
+			g_log("Fan %d: %d RPM\n", i, rpm);
+	}
+
+	//Bring up each temp sensor
+	for(uint8_t i=0; i<4; i++)
+	{
+		auto addr = g_tempSensorAddrs[i];
+
+		//Set mode to max resolution
+		uint8_t cmd[3] = {0x01, 0x60, 0x00};
+		if(!g_tempI2C->BlockingWrite(addr, cmd, sizeof(cmd)))
+		{
+			g_log(Logger::ERROR, "Failed to initialize I2C temp sensor at 0x%02x\n", addr);
+			continue;
+		}
+
+		//Print value
+		auto temp = ReadThermalSensor(addr);
+		g_log("Temp 0x%02x (%25s): %d.%02d C\n",
+			addr,
+			g_tempSensorNames[i],
+			(temp >> 8),
+			static_cast<int>(((temp & 0xff) / 256.0) * 100));
+	}
+
+	//Read FPGA temperature
+	auto temp = GetFPGATemperature();
+	g_log("FPGA die temperature:                  %d.%02d C\n", (temp >> 8), static_cast<int>(((temp & 0xff) / 256.0) * 100));
+
+	//Read FPGA voltage sensors
+	int volt = GetFPGAVCCINT();
+	g_log("FPGA VCCINT:  %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+	volt = GetFPGAVCCBRAM();
+	g_log("FPGA VCCBRAM: %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+	volt = GetFPGAVCCAUX();
+	g_log("FPGA VCCAUX:  %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
 }

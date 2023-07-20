@@ -88,7 +88,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 	defaultISR,				//irq17 DMA1_Stream6
 	defaultISR,				//irq18 ADC
 	defaultISR,				//irq19 FDCAN1_IT0
-	defaultISR,				//irq20 FDCAN2_IT0
+	defaultISR,				//irq20 FQuick AccessDCAN2_IT0
 	defaultISR,				//irq21 FDCAN1_IT1
 	defaultISR,				//irq22 FDCAN2_IT1
 	defaultISR,				//irq23 EXTI9_5
@@ -238,7 +238,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 
 void defaultISR()
 {
-	//g_cliUART->PrintString("Unused interrupt vector called\n");
+	g_cliUART->PrintString("Unused interrupt vector called\n");
 	while(1)
 	{}
 }
@@ -248,14 +248,13 @@ void defaultISR()
 
 void NMI_Handler()
 {
-	//g_cliUART->PrintString("NMI\n");
+	g_cliUART->PrintString("NMI\n");
 	while(1)
 	{}
 }
 
 void HardFault_Handler()
 {
-	/*
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
 	msp += 12;	//locals/alignment
@@ -288,28 +287,28 @@ void HardFault_Handler()
 	g_cliUART->Printf("    Stack:\n");
 	for(int i=0; i<16; i++)
 		g_cliUART->Printf("        %08x\n", msp[i]);
-	*/
+
 	while(1)
 	{}
 }
 
 void BusFault_Handler()
 {
-	//g_cliUART->PrintString("Bus fault\n");
+	g_cliUART->PrintString("Bus fault\n");
 	while(1)
 	{}
 }
 
 void UsageFault_Handler()
 {
-	//g_cliUART->PrintString("Usage fault\n");
+	g_cliUART->PrintString("Usage fault\n");
 	while(1)
 	{}
 }
 
 void MMUFault_Handler()
 {
-	//g_cliUART->PrintString("MMU fault\n");
+	g_cliUART->PrintString("MMU fault\n");
 	while(1)
 	{}
 }

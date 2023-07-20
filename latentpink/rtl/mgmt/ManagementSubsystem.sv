@@ -47,6 +47,7 @@ module ManagementSubsystem #(
 	inout wire[3:0]					qspi_dq,
 	output wire						irq,
 
+	//Management network bus
 	input wire						mgmt0_rx_clk,
 	input wire						mgmt0_tx_clk,
 
@@ -55,6 +56,9 @@ module ManagementSubsystem #(
 	input wire						mgmt0_tx_ready,
 	input wire						mgmt0_link_up,
 	input wire lspeed_t				mgmt0_link_speed,
+
+	//Tachometers for fans
+	input wire[1:0]					fan_tach,
 
 	//Configuration registers in port RX clock domains
 	input wire[NUM_PORTS-1:0]		port_rx_clk,
@@ -74,6 +78,26 @@ module ManagementSubsystem #(
 	input wire						crypt_out_valid,
 	input wire[255:0]				crypt_work_out
 );
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Tachometer
+
+	wire[15:0] fan0_rpm;
+	wire[15:0] fan1_rpm;
+
+	Tachometer #(
+		.REFCLK_HZ(187500000)
+	) tach0 (
+		.clk(sys_clk),
+		.tach(fan_tach[0]),
+		.rpm(fan0_rpm));
+
+	Tachometer #(
+		.REFCLK_HZ(187500000)
+	) tach1 (
+		.clk(sys_clk),
+		.tach(fan_tach[1]),
+		.rpm(fan1_rpm));
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FIFO for storing incoming Ethernet frames
@@ -139,10 +163,63 @@ module ManagementSubsystem #(
 		.idcode_valid(idcode_valid)
 	);
 
-	//TODO: XADC so we can read PTV sensors etc?
+	wire[15:0]	die_temp;
+	wire[15:0]	volt_core;
+	wire[15:0]	volt_ram;
+	wire[15:0]	volt_aux;
+
+	OnDieSensors_7series #(
+		.EXT_IN_ENABLE(16'h0)
+	) sensors (
+		.clk(sys_clk),
+		.vin_p(),
+		.vin_n(),
+		.die_temp(die_temp),
+		.volt_core(volt_core),
+		.volt_ram(volt_ram),
+		.volt_aux(volt_aux),
+		.sensors_update(),
+
+		.ext_in(),
+		.ext_update(),
+		.die_temp_native()
+	);
+
+	vio_2 vio_sensors(
+		.clk(sys_clk),
+		.probe_in0(die_temp),
+		.probe_in1(volt_core),
+		.probe_in2(volt_ram),
+		.probe_in3(volt_aux)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Register interface
+
+	ila_0 ila(
+		.clk(sys_clk),
+		.probe0(bridge.start),
+		.probe1(bridge.insn_valid),
+		.probe2(bridge.insn),
+		.probe3(bridge.rd_mode),
+		.probe4(bridge.rd_en),
+		.probe5(bridge.rd_valid),
+		.probe6(bridge.rd_data),
+		.probe7(mgmt_rd_en),
+		.probe8(mgmt_rd_addr),
+		.probe9(mgmt_rd_valid),
+		.probe10(mgmt_rd_data),
+		.probe11(mgmt_wr_en),
+		.probe12(mgmt_wr_addr),
+		.probe13(mgmt_wr_data),
+		.probe14(idcode_valid),
+		.probe15(idcode),
+
+		.probe16(qspi_sck),
+		.probe17(qspi_cs_n),
+		.probe18(bridge.qspi.dq_in),
+		.probe19(bridge.qspi.dq_out)
+	);
 
 	ManagementRegisterInterface #(
 		.NUM_PORTS(NUM_PORTS)
@@ -159,14 +236,21 @@ module ManagementSubsystem #(
 		.wr_addr(mgmt_wr_addr),
 		.wr_data(mgmt_wr_data),
 
-		//Control registers (core clock domain)
+		//Control registers (device info clock domain)
 		.die_serial_valid(die_serial_valid),
 		.die_serial(die_serial),
 		.idcode_valid(idcode_valid),
 		.idcode(idcode),
 
+		//Control registers (core clock domain)
+		.fan0_rpm(fan0_rpm),
+		.fan1_rpm(fan1_rpm),
 		.port_vlan(port_vlan),
 		.port_is_trunk(port_is_trunk),
+		.die_temp(die_temp),
+		.volt_core(volt_core),
+		.volt_ram(volt_ram),
+		.volt_aux(volt_aux),
 
 		//Control registers (port RX clock domain)
 		.port_rx_clk(port_rx_clk),

@@ -96,27 +96,42 @@ module ManagementBridge(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Address counting
 
+	logic[15:0]	rd_addr_ff	= 0;
+	logic[15:0]	wr_addr_ff	= 0;
+
+	always_comb begin
+
+		//Default to passthrough
+		rd_addr			= rd_addr_ff;
+		wr_addr			= wr_addr_ff;
+
+		//Increment if reading/writing
+		if(rd_en)
+			rd_addr		= rd_addr_ff + 1;
+		if(wr_en)
+			wr_addr		= wr_addr_ff + 1;
+
+		//Start a new transaction
+		if(insn_valid) begin
+			rd_addr		= {1'b0, insn[14:0]};
+			wr_addr		= {1'b0, insn[14:0]};
+		end
+
+	end
+
 	always_ff @(posedge clk) begin
 
-		if(rd_en)
-			rd_addr		<= rd_addr + 1;
-		if(wr_en)
-			wr_addr		<= wr_addr + 1;
+		wr_addr_ff	<= wr_addr;
+		rd_addr_ff	<= rd_addr;
 
 		//Process instruction
-		if(insn_valid) begin
-
-			//MSB of opcode is read flag (0=read, 1=write)
+		//MSB of opcode is read flag (0=read, 1=write)
+		if(insn_valid)
 			rd_mode		<= !insn[15];
-			rd_addr		<= {1'b0, insn[14:0]};
-			wr_addr		<= {1'b0, insn[14:0]};
-
-		end
 
 		//Reset anything we need on CS# falling edge
-		if(start) begin
+		if(start)
 			rd_mode		<= 0;
-		end
 
 	end
 

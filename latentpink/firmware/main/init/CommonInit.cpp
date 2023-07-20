@@ -80,8 +80,8 @@ void InitFPGA()
 
 	//Wait 500ms to make sure the FPGA is booted
 	//TODO: more formal handshake
-	g_log("Waiting for boot\n");
-	g_logTimer->Sleep(5000);
+	//g_log("Waiting for boot\n");
+	//g_logTimer->Sleep(5000);
 
 	//Read the FPGA IDCODE and serial number
 	uint8_t buf[8];

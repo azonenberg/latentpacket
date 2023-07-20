@@ -28,173 +28,36 @@
 ***********************************************************************************************************************/
 
 #include "latentpink.h"
+#include "DeviceFPGAInterface.h"
 
-/**
-	@brief Global Ethernet interface
- */
-EthernetInterface* g_ethIface = nullptr;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
 
-/**
-	@brief Global key-value store for persistent configuration
- */
-KVS* g_kvs = nullptr;
-
-/**
-	@brief Logger for output stuff
- */
-Logger g_log;
-
-/**
-	@brief Timer used by logger
- */
-Timer* g_logTimer = nullptr;
-
-/**
-	@brief Interface to the FPGA
- */
-FPGAInterface* g_fpga = nullptr;
-
-/**
-	@brief State of each port
- */
-linkstate_t g_linkState[NUM_PORTS];
-
-/**
-	@brief Speed of each port
- */
-linkspeed_t g_linkSpeed[NUM_PORTS];
-
-/**
-	@brief Mapping of link state IDs to printable names
- */
-const char* g_linkStateNames[] =
+DeviceFPGAInterface::DeviceFPGAInterface()
 {
-	"notconnect",
-	"connected",
-	"admindown",
-	"errdisable",
-	"testpattern"
-};
+}
 
-/**
-	@brief Hardware names for each port
- */
-const char* g_interfaceNames[NUM_PORTS] =
+DeviceFPGAInterface::~DeviceFPGAInterface()
 {
-	"g0",
-	"g1",
-	"g2",
-	"g3",
-	"g4",
-	"g5",
-	"g6",
-	"g7",
-	"g8",
-	"g9",
-	"g10",
-	"g11",
-	"g12",
-	"g13",
-	"xg0",
-	"mgmt0"
-};
+}
 
-/**
-	@brief Pretty-printed names for each port
- */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Data I/O
+
+void DeviceFPGAInterface::Nop()
 {
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (DP83867CS)",
-	"Edge port (DP83867CS)",
-	"SFP+ uplink",
-	"Management (KSZ9031RNX)"
-};
+}
 
-/**
-	@brief Mapping of link speed IDs to printable names
- */
-const char* g_linkSpeedNames[] =
+void DeviceFPGAInterface::BlockingRead(uint32_t insn, uint8_t* data, uint32_t len)
 {
-	"10",
-	"100",
-	"1000",
-	"10G"
-};
+	g_qspi->BlockingRead(insn, 0, data, len);
+}
 
-/**
-	@brief VLAN ID for each port
- */
-uint16_t g_portVlans[NUM_PORTS] = {0};
-
-/**
-	@brief Our MAC address
- */
-MACAddress g_macAddress;
-
-/**
-	@brief Our IPv4 address
- */
-IPv4Config g_ipConfig;
-
-/**
-	@brief Ethernet protocol stack
- */
-EthernetProtocol* g_ethProtocol = nullptr;
-
-#ifndef SIMULATION
-
-/**
-	@brief QSPI interface to FPGA
- */
-OctoSPI* g_qspi = nullptr;
-
-/**
-	@brief UART console
- */
-UART* g_cliUART = nullptr;
-
-/**
-	@brief I2C bus to MAC address EEPROM
- */
-I2C* g_macI2C = nullptr;
-
-/**
-	@brief I2C bus to thermal sensors
- */
-I2C* g_tempI2C = nullptr;
-
-/**
-	@brief Names for each temp sensors
- */
-uint8_t g_tempSensorAddrs[4] =
+void DeviceFPGAInterface::BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len)
 {
-	0x90,
-	0x92,
-	0x94,
-	0x96
-};
+	g_qspi->BlockingWrite(insn, 0, data, len);
+}
 
-/**
-	@brief Names for each temp sensor
- */
-const char* g_tempSensorNames[4] =
+void DeviceFPGAInterface::CryptoEngineBlock()
 {
-	"MCU, 3V3 regulator",
-	"RGMII PHY, 1V2 regulator",
-	"SGMII PHYs",
-	"QDR-II+, SFP+"
-};
-
-#endif	//ifndef SIMULATION
+}

@@ -46,6 +46,7 @@
 #include <peripheral/SPI.h>
 #include <peripheral/Timer.h>
 #include <peripheral/UART.h>
+#include <cli/UARTOutputStream.h>
 #endif
 
 
@@ -80,6 +81,9 @@ extern EthernetProtocol* g_ethProtocol;
 
 #ifndef SIMULATION
 extern UART* g_cliUART;
+extern OctoSPI* g_qspi;
+extern I2C* g_macI2C;
+extern I2C* g_tempI2C;
 #endif
 
 //includes fabric ports, management, and uplink
@@ -117,6 +121,21 @@ extern uint16_t g_portVlans[NUM_PORTS];
 void InitClocks();
 void InitUART();
 void InitTimer();
+void InitQSPI();
+void InitFPGA();
+void InitI2C();
+void InitEEPROM();
+void InitSensors();
+
+uint16_t ReadThermalSensor(uint8_t addr);
+uint16_t GetFanRPM(uint8_t channel);
+uint16_t GetFPGATemperature();
+uint16_t GetFPGAVCCINT();
+uint16_t GetFPGAVCCAUX();
+uint16_t GetFPGAVCCBRAM();
+
+extern const char* g_tempSensorNames[4];
+extern uint8_t g_tempSensorAddrs[4];
 #endif
 
 void InitLog(CharacterDevice* logdev, Timer* timer);

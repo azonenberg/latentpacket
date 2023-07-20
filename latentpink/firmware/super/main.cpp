@@ -58,6 +58,11 @@ GPIOPin* g_fail_led = nullptr;
 GPIOPin* g_pwr_ok_led = nullptr;
 GPIOPin* g_all_ok_led = nullptr;
 
+bool g_fpgaUp = false;
+GPIOPin* g_fpga_done = nullptr;
+
+void PollFPGA();
+
 int main()
 {
 	//Copy .data from flash to SRAM (for some reason the default newlib startup won't do this??)
@@ -91,8 +96,9 @@ int main()
 	GPIOPin pwr_ok_led(&GPIOA, 0, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin all_ok_led(&GPIOC, 14, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 
+	GPIOPin fpga_done(&GPIOB, 2, GPIOPin::MODE_INPUT, 0, false);
 	GPIOPin mcu_rst_n(&GPIOB, 0, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
-	GPIOPin fpga_rst_n(&GPIOA, 3, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
+	GPIOPin fpga_rst_n(&GPIOA, 3, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW, 0, true);
 
 	en_12v0 = 0;
 	en_1v0 = 0;
@@ -120,6 +126,7 @@ int main()
 	g_fail_led = &fail_led;
 	g_pwr_ok_led = &pwr_ok_led;
 	g_all_ok_led = &all_ok_led;
+	g_fpga_done = &fpga_done;
 
 	//Wait 5 seconds in case something goes wrong during first power up
 	g_log("5 second delay\n");
@@ -162,14 +169,17 @@ int main()
 	fpga_rst_n = 1;
 
 	//Everything started up if we get here
-	//TODO: wait for heartbeat from MCU and FPGA DONE to go high
-	g_log("All good\n");
-	all_ok_led = 1;
+	//TODO: wait for heartbeat from MCU too
 
 	//Poll inputs and check to see if anything ever went out of spec
 	//TODO: support warm reset and/or hard power cycle on request
 	while(1)
 	{
+		//Check for overflows on our log message timer
+		g_log.UpdateOffset(60000);
+
+		PollFPGA();
+
 		MonitorRail(pgood_3v3, "3V3");
 		MonitorRail(pgood_2v5, "2V5");
 		MonitorRail(pgood_1v8, "1V8");
@@ -178,6 +188,25 @@ int main()
 	}
 
 	return 0;
+}
+
+void PollFPGA()
+{
+	bool done = g_fpga_done->Get();
+
+	if(done && !g_fpgaUp)
+	{
+		g_all_ok_led->Set(true);
+		g_log("FPGA is up\n");
+		g_fpgaUp = true;
+	}
+
+	else if(!done && g_fpgaUp)
+	{
+		g_all_ok_led->Set(false);
+		g_log("FPGA is down\n");
+		g_fpgaUp = false;
+	}
 }
 
 /**
@@ -359,7 +388,7 @@ void DetectHardware()
 			static_cast<char>((U_ID[1] >> 0) & 0xff),
 			'\0'
 		};
-		g_log("Lot %s, wafer %d, unique ID 0x%08x\n", waferLot, waferNum, U_ID[3]);
+		g_log("Lot %s, wafer %d, unique ID 0x%08x\n", waferLot, waferNum, U_ID[2]);
 	}
 	else
 		g_log(Logger::WARNING, "Unknown device (0x%06x)\n", device);

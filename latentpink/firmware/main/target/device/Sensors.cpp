@@ -30,171 +30,70 @@
 #include "latentpink.h"
 
 /**
-	@brief Global Ethernet interface
+	@brief Read a temperature sensor at the given I2C address and return the temperature (in 8.8 fixed point format)
  */
-EthernetInterface* g_ethIface = nullptr;
-
-/**
-	@brief Global key-value store for persistent configuration
- */
-KVS* g_kvs = nullptr;
-
-/**
-	@brief Logger for output stuff
- */
-Logger g_log;
-
-/**
-	@brief Timer used by logger
- */
-Timer* g_logTimer = nullptr;
-
-/**
-	@brief Interface to the FPGA
- */
-FPGAInterface* g_fpga = nullptr;
-
-/**
-	@brief State of each port
- */
-linkstate_t g_linkState[NUM_PORTS];
-
-/**
-	@brief Speed of each port
- */
-linkspeed_t g_linkSpeed[NUM_PORTS];
-
-/**
-	@brief Mapping of link state IDs to printable names
- */
-const char* g_linkStateNames[] =
+uint16_t ReadThermalSensor(uint8_t addr)
 {
-	"notconnect",
-	"connected",
-	"admindown",
-	"errdisable",
-	"testpattern"
-};
+	if(!g_tempI2C->BlockingWrite8(addr, 0x00))
+		return 0xff;
+	uint16_t reply;
+	if(!g_tempI2C->BlockingRead16(addr, reply))
+		return 0xff;
+
+	/*
+	int degInt = (reply >> 8);
+	int degFrac = ((reply & 0xff) / 256.0) * 100;
+	g_log("Temp sensor 0x%02x: %04x (%d.%02d C)\n", addr, reply, degInt, degFrac);
+	*/
+	return reply;
+}
 
 /**
-	@brief Hardware names for each port
+	@brief Reads the RPM of the requested fan
  */
-const char* g_interfaceNames[NUM_PORTS] =
+uint16_t GetFanRPM(uint8_t channel)
 {
-	"g0",
-	"g1",
-	"g2",
-	"g3",
-	"g4",
-	"g5",
-	"g6",
-	"g7",
-	"g8",
-	"g9",
-	"g10",
-	"g11",
-	"g12",
-	"g13",
-	"xg0",
-	"mgmt0"
-};
+	switch(channel)
+	{
+		case 0:
+			return g_fpga->BlockingRead16(REG_FAN0_RPM);
+
+		case 1:
+			return g_fpga->BlockingRead16(REG_FAN1_RPM);
+
+		default:
+			return 0;
+	}
+}
 
 /**
-	@brief Pretty-printed names for each port
+	@brief Gets the temperature of the FPGA (in 8.8 fixed point format)
  */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
+uint16_t GetFPGATemperature()
 {
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (DP83867CS)",
-	"Edge port (DP83867CS)",
-	"SFP+ uplink",
-	"Management (KSZ9031RNX)"
-};
+	return g_fpga->BlockingRead16(REG_DIE_TEMP);
+}
 
 /**
-	@brief Mapping of link speed IDs to printable names
+	@brief Gets the VCCINT voltage of the FPGA (in 8.8 fixed point format)
  */
-const char* g_linkSpeedNames[] =
+uint16_t GetFPGAVCCINT()
 {
-	"10",
-	"100",
-	"1000",
-	"10G"
-};
+	return g_fpga->BlockingRead16(REG_VOLT_CORE);
+}
 
 /**
-	@brief VLAN ID for each port
+	@brief Gets the VCCBRAM voltage of the FPGA (in 8.8 fixed point format)
  */
-uint16_t g_portVlans[NUM_PORTS] = {0};
-
-/**
-	@brief Our MAC address
- */
-MACAddress g_macAddress;
-
-/**
-	@brief Our IPv4 address
- */
-IPv4Config g_ipConfig;
-
-/**
-	@brief Ethernet protocol stack
- */
-EthernetProtocol* g_ethProtocol = nullptr;
-
-#ifndef SIMULATION
-
-/**
-	@brief QSPI interface to FPGA
- */
-OctoSPI* g_qspi = nullptr;
-
-/**
-	@brief UART console
- */
-UART* g_cliUART = nullptr;
-
-/**
-	@brief I2C bus to MAC address EEPROM
- */
-I2C* g_macI2C = nullptr;
-
-/**
-	@brief I2C bus to thermal sensors
- */
-I2C* g_tempI2C = nullptr;
-
-/**
-	@brief Names for each temp sensors
- */
-uint8_t g_tempSensorAddrs[4] =
+uint16_t GetFPGAVCCBRAM()
 {
-	0x90,
-	0x92,
-	0x94,
-	0x96
-};
+	return g_fpga->BlockingRead16(REG_VOLT_RAM);
+}
 
 /**
-	@brief Names for each temp sensor
+	@brief Gets the VCCAUX voltage of the FPGA (in 8.8 fixed point format)
  */
-const char* g_tempSensorNames[4] =
+uint16_t GetFPGAVCCAUX()
 {
-	"MCU, 3V3 regulator",
-	"RGMII PHY, 1V2 regulator",
-	"SGMII PHYs",
-	"QDR-II+, SFP+"
-};
-
-#endif	//ifndef SIMULATION
+	return g_fpga->BlockingRead16(REG_VOLT_AUX);
+}
