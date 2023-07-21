@@ -95,6 +95,8 @@ module NetworkInterfaces(
 	output wire					mgmt0_tx_en,
 	output wire[3:0]			mgmt0_txd,
 
+	output logic				mgmt0_rst_n = 0,
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII PHYs
 
@@ -164,6 +166,19 @@ module NetworkInterfaces(
 	//DEBUG placeholder
 	output wire[3:0] 								gpio_led
 );
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// PHY reset counter
+
+	//Bring up the PHY after a little while
+	logic[15:0] eth_rst_count = 1;
+	always_ff @(posedge clk_125mhz) begin
+		if(eth_rst_count == 0) begin
+			mgmt0_rst_n		<= 1;
+		end
+		else
+			eth_rst_count	<= eth_rst_count + 1'h1;
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// I/O delay calibration for SGMII
@@ -293,7 +308,7 @@ module NetworkInterfaces(
 			sgmii_led[1] <= !sgmii_led[1];
 	end
 	*/
-	assign gpio_led[3:0] = 4'h5;
+	assign gpio_led[3:0] = 4'h0;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 10G SFP+ uplink (xg0)
@@ -843,7 +858,7 @@ module NetworkInterfaces(
 
 		.rx_error()	//ignore, just look at perf counters to see when we get errors
 	);
-
+	*/
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// RGMII PHY for mgmt0
 
@@ -870,6 +885,11 @@ module NetworkInterfaces(
 		.link_up(mgmt0_link_up),
 		.link_speed(mgmt0_link_speed)
 		);
-	*/
+
+	ila_0 ila(
+		.clk(mgmt0_rx_clk),
+		.probe0(mgmt0_rx_bus),
+		.probe1(mgmt0_link_up)
+	);
 
 endmodule

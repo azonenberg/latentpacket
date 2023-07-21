@@ -364,6 +364,7 @@ module LatentPinkTopLevel(
 		.mgmt0_tx_clk(mgmt0_tx_clk),
 		.mgmt0_tx_en(mgmt0_tx_en),
 		.mgmt0_txd(mgmt0_txd),
+		.mgmt0_rst_n(mgmt0_rst_n),
 		/*
 		.g12_sgmii_tx_p(g12_sgmii_tx_p),
 		.g12_sgmii_tx_n(g12_sgmii_tx_n),
@@ -631,6 +632,9 @@ module LatentPinkTopLevel(
 		.mgmt0_link_up(mgmt0_link_up),
 		.mgmt0_link_speed(mgmt0_link_speed),
 
+		.mgmt0_mdio(mgmt0_mdio),
+		.mgmt0_mdc(mgmt0_mdc),
+
 		.fan_tach(fan_tach),
 
 		.port_rx_clk(port_rx_clk),
@@ -655,11 +659,5 @@ module LatentPinkTopLevel(
 		.crypt_work_out(crypt_work_out)
 	);
 
-
-	ila_0 ila(
-		.clk(xg0_mac_rx_clk),
-		.probe0(xg0_mac_rx_bus),
-		.probe1(xg0_link_up)
-	);
 
 endmodule

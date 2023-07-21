@@ -57,6 +57,9 @@ module ManagementSubsystem #(
 	input wire						mgmt0_link_up,
 	input wire lspeed_t				mgmt0_link_speed,
 
+	inout wire						mgmt0_mdio,
+	output wire						mgmt0_mdc,
+
 	//Tachometers for fans
 	input wire[1:0]					fan_tach,
 
@@ -84,6 +87,46 @@ module ManagementSubsystem #(
 	input wire						crypt_out_valid,
 	input wire[255:0]				crypt_work_out
 );
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MDIO transceivers
+
+	wire	mgmt0_mdio_tx_data;
+	wire	mgmt0_mdio_tx_en;
+	wire	mgmt0_mdio_rx_data;
+
+	BidirectionalBuffer mgmt0_mdio_obuf(
+		.fabric_in(mgmt0_mdio_rx_data),
+		.fabric_out(mgmt0_mdio_tx_data),
+		.pad(mgmt0_mdio),
+		.oe(mgmt0_mdio_tx_en)
+	);
+
+	wire		mgmt0_mdio_busy;
+	wire[4:0]	mgmt0_phy_reg_addr;
+	wire[15:0]	mgmt0_phy_wr_data;
+	wire[15:0]	mgmt0_phy_rd_data;
+	wire		mgmt0_phy_reg_wr;
+	wire		mgmt0_phy_reg_rd;
+
+	EthernetMDIOTransceiver #(
+		.CLK_DIV(75)
+	)  mgmt0_mdio_txvr (
+		.clk(sys_clk),
+		.phy_md_addr(5'b00000),
+
+		.mdio_tx_data(mgmt0_mdio_tx_data),
+		.mdio_tx_en(mgmt0_mdio_tx_en),
+		.mdio_rx_data(mgmt0_mdio_rx_data),
+		.mdc(mgmt0_mdc),
+
+		.mgmt_busy_fwd(mgmt0_mdio_busy),
+		.phy_reg_addr(mgmt0_phy_reg_addr),
+		.phy_wr_data(mgmt0_phy_wr_data),
+		.phy_rd_data(mgmt0_phy_rd_data),
+		.phy_reg_wr(mgmt0_phy_reg_wr),
+		.phy_reg_rd(mgmt0_phy_reg_rd)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Tachometer
@@ -208,36 +251,6 @@ module ManagementSubsystem #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Register interface
-	/*
-	ila_0 ila(
-		.clk(sys_clk),
-		.probe0(bridge.start),
-		.probe1(bridge.insn_valid),
-		.probe2(bridge.insn),
-		.probe3(bridge.rd_mode),
-		.probe4(bridge.rd_en),
-		.probe5(bridge.rd_valid),
-		.probe6(bridge.rd_data),
-		.probe7(mgmt_rd_en),
-		.probe8(mgmt_rd_addr),
-		.probe9(mgmt_rd_valid),
-		.probe10(mgmt_rd_data),
-		.probe11(mgmt_wr_en),
-		.probe12(mgmt_wr_addr),
-		.probe13(mgmt_wr_data),
-		.probe14(idcode_valid),
-		.probe15(idcode),
-		.probe16(qspi_sck),
-		.probe17(qspi_cs_n),
-		.probe18(bridge.qspi.dq_in),
-		.probe19(bridge.qspi.dq_out),
-
-		.probe20(mbist_start),
-		.probe21(mbist_select),
-		.probe22(mbist_done),
-		.probe23(mbist_seed),
-		.probe24(bridge.rd_en_raw)
-	);*/
 
 	ManagementRegisterInterface #(
 		.NUM_PORTS(NUM_PORTS)
@@ -289,5 +302,32 @@ module ManagementSubsystem #(
 		.crypt_out_valid(crypt_out_valid),
 		.crypt_work_out(crypt_work_out)
 	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug VIO
+
+	wire	wr_req;
+	wire	rd_req;
+
+	logic	wr_req_ff	= 0;
+	logic	rd_req_ff	= 0;
+
+	vio_2 mdio_vio(
+		.clk(sys_clk),
+		.probe_in0(mgmt0_mdio_busy),
+		.probe_in1(mgmt0_phy_rd_data),
+		.probe_out0(mgmt0_phy_reg_addr),
+		.probe_out1(mgmt0_phy_wr_data),
+		.probe_out2(wr_req),
+		.probe_out3(rd_req)
+	);
+
+	always_ff @(posedge sys_clk) begin
+		wr_req_ff	<= wr_req;
+		rd_req_ff	<= rd_req;
+	end
+
+	assign mgmt0_phy_reg_wr = wr_req && !wr_req_ff;
+	assign mgmt0_phy_reg_rd = rd_req && !rd_req_ff;
 
 endmodule
