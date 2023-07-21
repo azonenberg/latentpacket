@@ -448,6 +448,7 @@ module NetworkInterfaces(
 		.remote_fault(xg0_remote_fault)
 	);
 
+	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QSGMII interfaces (g0-g11)
 
@@ -734,10 +735,10 @@ module NetworkInterfaces(
 			.O(qsgmii_rx_clk[g]),
 			.CE(1'b1));
 		assign qsgmii_rx_clk_mac[g] = qsgmii_rx_clk[g];
-		/*BUFHCE clkbuf_rx_mac(
-			.I(qsgmii_rx_clk_raw[g]),
-			.O(qsgmii_rx_clk_mac[g]),
-			.CE(1'b1));*/
+		//BUFHCE clkbuf_rx_mac(
+		//	.I(qsgmii_rx_clk_raw[g]),
+		//	.O(qsgmii_rx_clk_mac[g]),
+		//	.CE(1'b1));
 
 
 		//TX clock is used for more stuff
@@ -869,6 +870,6 @@ module NetworkInterfaces(
 		.link_up(mgmt0_link_up),
 		.link_speed(mgmt0_link_speed)
 		);
-
+	*/
 
 endmodule

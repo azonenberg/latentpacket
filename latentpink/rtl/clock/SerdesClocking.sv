@@ -76,10 +76,6 @@ module SerdesClocking(
 
 	GTXE2_COMMON #(
 
-		//Multiply the 156.25 MHz refclk up by 66 to get 10.3125 GHz
-		.QPLL_REFCLK_DIV(1),
-		.QPLL_FBDIV(66),
-
 		//Magic numbers from transceivers wizard for 156.25 -> 10.3125
 		.BIAS_CFG                               (64'h0000040000001000),
 		.COMMON_CFG                             (32'h00000000),
@@ -90,11 +86,13 @@ module SerdesClocking(
 		.QPLL_CP                                (10'b0000011111),
 		.QPLL_CP_MONITOR_EN                     (1'b0),
 		.QPLL_DMONITOR_SEL                      (1'b0),
+		.QPLL_FBDIV                             (10'b0101000000),
 		.QPLL_FBDIV_MONITOR_EN                  (1'b0),
 		.QPLL_FBDIV_RATIO                       (1'b0),
 		.QPLL_INIT_CFG                          (24'h000006),
 		.QPLL_LOCK_CFG                          (16'h21E8),
-		.QPLL_LPF                               (4'b1111)
+		.QPLL_LPF                               (4'b1111),
+		.QPLL_REFCLK_DIV                        (1)
 	) qpll (
 		.DRPADDR(8'b0),
 		.DRPCLK(clk_125mhz),

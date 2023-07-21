@@ -451,6 +451,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports sfp_rx_los]
 set_property IOSTANDARD DIFF_SSTL18_I [get_ports qdr_cq_p]
 set_property IOSTANDARD DIFF_SSTL18_I [get_ports qdr_k_p]
 
+set_property PULLUP true [get_ports {fan_tach[1]}]
+set_property PULLUP true [get_ports {fan_tach[0]}]
+
 ########################################################################################################################
 # External clock inputs
 
@@ -471,7 +474,6 @@ create_clock -period 5.000 -name gtx_refclk_200m_p -waveform {0.000 2.500} [get_
 
 ########################################################################################################################
 # CDC
-
 
 set_max_delay -from [get_clocks *clk_312p5mhz*] -through [get_cells -hierarchical *storage_reg*] -to [get_cells -hierarchical *portb_dout_raw_reg*] 2.500
 set _xlnx_shared_i0 [get_cells -hierarchical *dout0_reg*]
@@ -545,6 +547,27 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_c
 ########################################################################################################################
 # Floorplanning: input FIFO
 
+create_pblock pblock_sgmii_cdc
+resize_pblock [get_pblocks pblock_sgmii_cdc] -add {SLICE_X56Y100:SLICE_X73Y124}
+resize_pblock [get_pblocks pblock_sgmii_cdc] -add {DSP48_X3Y40:DSP48_X3Y49}
+resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB18_X3Y40:RAMB18_X3Y49}
+resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB36_X3Y20:RAMB36_X3Y24}
+set_property IS_SOFT FALSE [get_pblocks pblock_sgmii_cdc]
+add_cells_to_pblock [get_pblocks pblock_sgmii_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[12].cdc} {buffer/infifo/cdcs[13].cdc}]]
+
+create_pblock pblock_xg0_cdc
+resize_pblock [get_pblocks pblock_xg0_cdc] -add {SLICE_X20Y150:SLICE_X101Y199}
+resize_pblock [get_pblocks pblock_xg0_cdc] -add {DSP48_X1Y60:DSP48_X5Y79}
+resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB18_X1Y60:RAMB18_X5Y79}
+resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB36_X1Y30:RAMB36_X5Y39}
+set_property IS_SOFT FALSE [get_pblocks pblock_xg0_cdc]
+add_cells_to_pblock [get_pblocks pblock_xg0_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[14].cdc}]]
+
+
+create_pblock pblock_qsgmii_cdc2
+resize_pblock [get_pblocks pblock_qsgmii_cdc2] -add {CLOCKREGION_X0Y3:CLOCKREGION_X1Y3}
+set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii_cdc2]
+add_cells_to_pblock [get_pblocks pblock_qsgmii_cdc2] [get_cells -quiet [list {buffer/infifo/cdcs[0].cdc} {buffer/infifo/cdcs[10].cdc} {buffer/infifo/cdcs[11].cdc} {buffer/infifo/cdcs[1].cdc} {buffer/infifo/cdcs[2].cdc} {buffer/infifo/cdcs[3].cdc} {buffer/infifo/cdcs[4].cdc} {buffer/infifo/cdcs[5].cdc} {buffer/infifo/cdcs[6].cdc} {buffer/infifo/cdcs[7].cdc} {buffer/infifo/cdcs[8].cdc} {buffer/infifo/cdcs[9].cdc}]]
 
 ########################################################################################################################
 # Floorplanning: clock synthesis blocks
@@ -866,52 +889,6 @@ set_property CONFIG_VOLTAGE 1.8 [current_design]
 
 ########################################################################################################################
 # Debug clocking
-
-
-
-
-
-
-
-
-create_pblock pblock_sgmii_cdc
-resize_pblock [get_pblocks pblock_sgmii_cdc] -add {SLICE_X56Y100:SLICE_X73Y124}
-resize_pblock [get_pblocks pblock_sgmii_cdc] -add {DSP48_X3Y40:DSP48_X3Y49}
-resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB18_X3Y40:RAMB18_X3Y49}
-resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB36_X3Y20:RAMB36_X3Y24}
-set_property IS_SOFT FALSE [get_pblocks pblock_sgmii_cdc]
-add_cells_to_pblock [get_pblocks pblock_sgmii_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[12].cdc} {buffer/infifo/cdcs[13].cdc}]]
-
-
-
-
-
-create_pblock pblock_xg0_cdc
-resize_pblock [get_pblocks pblock_xg0_cdc] -add {SLICE_X20Y150:SLICE_X101Y199}
-resize_pblock [get_pblocks pblock_xg0_cdc] -add {DSP48_X1Y60:DSP48_X5Y79}
-resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB18_X1Y60:RAMB18_X5Y79}
-resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB36_X1Y30:RAMB36_X5Y39}
-set_property IS_SOFT FALSE [get_pblocks pblock_xg0_cdc]
-add_cells_to_pblock [get_pblocks pblock_xg0_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[14].cdc}]]
-
-
-create_pblock pblock_qsgmii_cdc2
-resize_pblock [get_pblocks pblock_qsgmii_cdc2] -add {CLOCKREGION_X0Y3:CLOCKREGION_X1Y3}
-set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii_cdc2]
-add_cells_to_pblock [get_pblocks pblock_qsgmii_cdc2] [get_cells -quiet [list {buffer/infifo/cdcs[0].cdc} {buffer/infifo/cdcs[10].cdc} {buffer/infifo/cdcs[11].cdc} {buffer/infifo/cdcs[1].cdc} {buffer/infifo/cdcs[2].cdc} {buffer/infifo/cdcs[3].cdc} {buffer/infifo/cdcs[4].cdc} {buffer/infifo/cdcs[5].cdc} {buffer/infifo/cdcs[6].cdc} {buffer/infifo/cdcs[7].cdc} {buffer/infifo/cdcs[8].cdc} {buffer/infifo/cdcs[9].cdc}]]
-
-
-
-
-
-
-
-
-
-
-set_property PULLUP true [get_ports {fan_tach[1]}]
-set_property PULLUP true [get_ports {fan_tach[0]}]
-
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]

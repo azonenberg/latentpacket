@@ -78,12 +78,18 @@ extern EthernetInterface* g_ethIface;
 extern MACAddress g_macAddress;
 extern IPv4Config g_ipConfig;
 extern EthernetProtocol* g_ethProtocol;
+extern GPIOPin* g_sfpModAbsPin;
+extern GPIOPin* g_sfpTxDisablePin;
+extern GPIOPin* g_sfpTxFaultPin;
+extern bool g_sfpPresent;
+extern bool g_sfpFaulted;
 
 #ifndef SIMULATION
 extern UART* g_cliUART;
 extern OctoSPI* g_qspi;
 extern I2C* g_macI2C;
 extern I2C* g_tempI2C;
+extern I2C* g_sfpI2C;
 #endif
 
 //includes fabric ports, management, and uplink
@@ -126,6 +132,8 @@ void InitFPGA();
 void InitI2C();
 void InitEEPROM();
 void InitSensors();
+void InitSFP();
+void PollSFP();
 
 uint16_t ReadThermalSensor(uint8_t addr);
 uint16_t GetFanRPM(uint8_t channel);

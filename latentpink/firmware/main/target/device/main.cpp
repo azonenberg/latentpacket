@@ -79,6 +79,7 @@ int main()
 
 	//Begin initializing fabric ports
 	InitInterfaces();
+	InitSFP();
 
 	//Initialize our local Ethernet interface
 	//InitEthernet();
@@ -120,6 +121,10 @@ int main()
 	{
 		//Wait for an interrupt
 		//asm("wfi");
+
+		//Check if we had an optic inserted or removed
+		PollSFP();
+
 		/*
 		//Poll for Ethernet frames
 		auto frame = g_eth->GetRxFrame();

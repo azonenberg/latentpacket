@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -27,204 +29,54 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "latentpink.h"
+module PulseStretcher(
+	input wire		clk,
+	input wire		pulse,
+	output logic	stretched = 0
+);
 
-/**
-	@brief Global Ethernet interface
- */
-EthernetInterface* g_ethIface = nullptr;
+	//assume 156.25 MHz clock for now
+	//~4 Hz pulse rate so ~125ms between toggles
+	//so 19531250 cycles. 2^24 is close enouhh for this purpose and is a nice round number
 
-/**
-	@brief Global key-value store for persistent configuration
- */
-KVS* g_kvs = nullptr;
+	logic[23:0] count 			= 0;
+	logic		togglePending	= 0;
 
-/**
-	@brief Logger for output stuff
- */
-Logger g_log;
+	always_ff @(posedge clk) begin
 
-/**
-	@brief Timer used by logger
- */
-Timer* g_logTimer = nullptr;
+		if(pulse) begin
 
-/**
-	@brief Interface to the FPGA
- */
-FPGAInterface* g_fpga = nullptr;
+			//Stretched output off? Turn it on and start the timer
+			if(!stretched) begin
+				stretched		<= 1;
+				count			<= 1;
+			end
 
-/**
-	@brief State of each port
- */
-linkstate_t g_linkState[NUM_PORTS];
+			//It's on, note that we saw another toggle
+			else
+				togglePending	<= 1;
 
-/**
-	@brief Speed of each port
- */
-linkspeed_t g_linkSpeed[NUM_PORTS];
+		end
 
-/**
-	@brief Mapping of link state IDs to printable names
- */
-const char* g_linkStateNames[] =
-{
-	"notconnect",
-	"connected",
-	"admindown",
-	"errdisable",
-	"testpattern"
-};
+		if(count) begin
+			count <= count + 1;
 
-/**
-	@brief Hardware names for each port
- */
-const char* g_interfaceNames[NUM_PORTS] =
-{
-	"g0",
-	"g1",
-	"g2",
-	"g3",
-	"g4",
-	"g5",
-	"g6",
-	"g7",
-	"g8",
-	"g9",
-	"g10",
-	"g11",
-	"g12",
-	"g13",
-	"xg0",
-	"mgmt0"
-};
+			//Timer ran out!
+			if(count == 24'hffffff) begin
+				togglePending	<= 0;
 
-/**
-	@brief Pretty-printed names for each port
- */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
-{
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (DP83867CS)",
-	"Edge port (DP83867CS)",
-	"SFP+ uplink",
-	"Management (KSZ9031RNX)"
-};
+				//If LED was on, turn it off regardless
+				if(stretched)
+					stretched	<= 0;
 
-/**
-	@brief Mapping of link speed IDs to printable names
- */
-const char* g_linkSpeedNames[] =
-{
-	"10",
-	"100",
-	"1000",
-	"10G"
-};
+				//If off, turn it on if we had another toggle show up during the dead time
+				else if(togglePending) begin
+					stretched	<= 1;
+					count		<= 1;
+				end
 
-/**
-	@brief VLAN ID for each port
- */
-uint16_t g_portVlans[NUM_PORTS] = {0};
+			end
+		end
+	end
 
-/**
-	@brief Our MAC address
- */
-MACAddress g_macAddress;
-
-/**
-	@brief Our IPv4 address
- */
-IPv4Config g_ipConfig;
-
-/**
-	@brief Ethernet protocol stack
- */
-EthernetProtocol* g_ethProtocol = nullptr;
-
-#ifndef SIMULATION
-
-/**
-	@brief QSPI interface to FPGA
- */
-OctoSPI* g_qspi = nullptr;
-
-/**
-	@brief UART console
- */
-UART* g_cliUART = nullptr;
-
-/**
-	@brief I2C bus to MAC address EEPROM
- */
-I2C* g_macI2C = nullptr;
-
-/**
-	@brief I2C bus to thermal sensors
- */
-I2C* g_tempI2C = nullptr;
-
-/**
-	@brief I2C bus to SFP+
- */
-I2C* g_sfpI2C = nullptr;
-
-/**
-	@brief Names for each temp sensors
- */
-uint8_t g_tempSensorAddrs[4] =
-{
-	0x90,
-	0x92,
-	0x94,
-	0x96
-};
-
-/**
-	@brief Names for each temp sensor
- */
-const char* g_tempSensorNames[4] =
-{
-	"MCU, 3V3 regulator",
-	"RGMII PHY, 1V2 regulator",
-	"SGMII PHYs",
-	"QDR-II+, SFP+"
-};
-
-/**
-	@brief SFP+ MOD_ABS pin
- */
-GPIOPin* g_sfpModAbsPin = nullptr;
-
-/**
-	@brief SFP+ TX_DISABLE pin
- */
-GPIOPin* g_sfpTxDisablePin = nullptr;
-
-/**
-	@brief SFP+ TX_FAULT pin
- */
-GPIOPin* g_sfpTxFaultPin = nullptr;
-
-/**
-	@brief Flag indicating if the SFP+ optic in xg0 is present
- */
-bool g_sfpPresent = false;
-
-/**
-	@brief Flag indicating if the SFP+ optic in xg0 has a laser fault
- */
-bool g_sfpFaulted = false;
-
-#endif	//ifndef SIMULATION
+endmodule

@@ -53,10 +53,10 @@ module LatentPinkTopLevel(
 	// 10G SFP+
 
 	//SFP+ interface (polarity inverted on both legs)
-	/*output wire			sfp_tx_p,
+	output wire			sfp_tx_p,
 	output wire			sfp_tx_n,
 	input wire			sfp_rx_p,
-	input wire			sfp_rx_n,*/
+	input wire			sfp_rx_n,
 
 	output wire[1:0]	sfp_led,
 
@@ -198,9 +198,6 @@ module LatentPinkTopLevel(
 	assign g12_led_p_3v3 = g12_led_p_1v8;
 	assign g13_led_p_3v3 = g13_led_p_1v8;
 
-	//TODO: pulse stretching and link detection
-	assign sfp_led = 2'b00;
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Clocking
 
@@ -272,7 +269,7 @@ module LatentPinkTopLevel(
 		.pll_ram_lock(pll_ram_lock)
 	);
 
-	/*
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Network ports
 
@@ -310,17 +307,25 @@ module LatentPinkTopLevel(
 	lspeed_t							g13_link_speed;
 	SGMIIPerformanceCounters			g13_sgmii_perf;
 	GigabitMacPerformanceCounters		g13_mac_perf;
-	*/
+
 	wire								mgmt0_rx_clk_buf;
-	//DEBUG
-	assign mgmt0_rx_clk_buf = mgmt0_rx_clk;
 
 	EthernetRxBus						mgmt0_rx_bus;
 	EthernetTxBus						mgmt0_tx_bus;
 	wire								mgmt0_tx_ready;
 	wire								mgmt0_link_up;
 	lspeed_t							mgmt0_link_speed;
-	/*
+
+	assign								sfp_led[0]	= xg0_link_up;
+
+	//Detect 10G link activity
+	//TODO: transmit activity too (need CDC shift)
+	PulseStretcher stretcher(
+		.clk(xg0_mac_rx_clk),
+		.pulse(xg0_mac_rx_bus.start),
+		.stretched(sfp_led[1])
+	);
+
 	NetworkInterfaces interfaces(
 
 		//Top level clocks
@@ -347,19 +352,19 @@ module LatentPinkTopLevel(
 		.sfp_rx_n(sfp_rx_n),
 
 		.sfp_rx_los(sfp_rx_los),
-
+		/*
 		.qsgmii_tx_p(qsgmii_tx_p),
 		.qsgmii_tx_n(qsgmii_tx_n),
 		.qsgmii_rx_p(qsgmii_rx_p),
 		.qsgmii_rx_n(qsgmii_rx_n),
-
+		*/
 		.mgmt0_rx_clk(mgmt0_rx_clk),
 		.mgmt0_rx_dv(mgmt0_rx_dv),
 		.mgmt0_rxd(mgmt0_rxd),
 		.mgmt0_tx_clk(mgmt0_tx_clk),
 		.mgmt0_tx_en(mgmt0_tx_en),
 		.mgmt0_txd(mgmt0_txd),
-
+		/*
 		.g12_sgmii_tx_p(g12_sgmii_tx_p),
 		.g12_sgmii_tx_n(g12_sgmii_tx_n),
 		.g12_sgmii_rx_p(g12_sgmii_rx_p),
@@ -373,6 +378,7 @@ module LatentPinkTopLevel(
 		.g13_sgmii_rx_n(g13_sgmii_rx_n),
 		.g13_sgmii_rxclk_p(g13_sgmii_rxclk_p),
 		.g13_sgmii_rxclk_n(g13_sgmii_rxclk_n),
+		*/
 
 		//MAC buses
 		.xg0_mac_rx_clk(xg0_mac_rx_clk),
@@ -416,7 +422,7 @@ module LatentPinkTopLevel(
 		//DEBUG
 		.gpio_led(gpio_led)
 	);
-	*/
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Buffer inbound packets
 
@@ -426,8 +432,6 @@ module LatentPinkTopLevel(
 	wire[NUM_PORTS-1:0]		port_rx_untagged_allowed;
 
 	wire[NUM_PORTS-1:0]		port_rx_clk;
-	assign port_rx_clk = 0;	//tie off since not yet implemented
-	/*
 	assign port_rx_clk =
 	{
 		xg0_mac_rx_clk,		//xg0 serdes clock
@@ -451,7 +455,7 @@ module LatentPinkTopLevel(
 	wire[NUM_PORTS-1:0]				forward_en;
 	wire							frame_last;
 	wire							frame_valid;
-	wire[127:0]						frame_data;*/
+	wire[127:0]						frame_data;
 
 	wire		mbist_start;
 	wire[31:0]	mbist_seed;
@@ -465,7 +469,7 @@ module LatentPinkTopLevel(
 	) buffer (
 
 		.port_rx_clk(port_rx_clk),
-		/*.port_link_up(
+		.port_link_up(
 		{
 			xg0_link_up,
 			g13_link_up,
@@ -478,7 +482,7 @@ module LatentPinkTopLevel(
 			g13_rx_bus,
 			g12_rx_bus,
 			qsgmii_mac_rx_bus
-		}),*/
+		}),
 
 		.port_vlan(port_rx_vlan),
 		.tagged_allowed(port_rx_tagged_allowed),
@@ -560,12 +564,12 @@ module LatentPinkTopLevel(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// VIOs to tie off not-yet-used transmit ports
-
+	*/
 	vio_1 vio_xg_tx(
 		.clk(xg0_mac_tx_clk),
 		.probe_in0(1'b0),
 		.probe_out0(xg0_mac_tx_bus));
-
+	/*
 	vio_1 vio_g12_tx(
 		.clk(clk_125mhz),
 		.probe_in0(g12_tx_ready),
@@ -649,6 +653,13 @@ module LatentPinkTopLevel(
 		.crypt_e(crypt_e),
 		.crypt_out_valid(crypt_out_valid),
 		.crypt_work_out(crypt_work_out)
+	);
+
+
+	ila_0 ila(
+		.clk(xg0_mac_rx_clk),
+		.probe0(xg0_mac_rx_bus),
+		.probe1(xg0_link_up)
 	);
 
 endmodule
