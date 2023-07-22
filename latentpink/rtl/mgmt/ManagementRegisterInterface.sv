@@ -83,6 +83,27 @@ module ManagementRegisterInterface #(
 	input wire						mbist_fail,
 	input wire[17:0]				mbist_fail_addr,
 	output logic					mbist_select = 0,
+	input wire						mgmt0_mdio_busy,
+	output logic[4:0]				mgmt0_phy_reg_addr = 0,
+	output logic[15:0]				mgmt0_phy_wr_data = 0,
+	input wire[15:0]				mgmt0_phy_rd_data,
+	output logic					mgmt0_phy_reg_wr = 0,
+	output logic					mgmt0_phy_reg_rd = 0,
+	output logic[4:0]				mgmt0_phy_md_addr = 0,
+	input wire						dp_mdio_busy,
+	output logic[4:0]				dp_phy_reg_addr = 0,
+	output logic[15:0]				dp_phy_wr_data = 0,
+	input wire[15:0]				dp_phy_rd_data,
+	output logic					dp_phy_reg_wr = 0,
+	output logic					dp_phy_reg_rd = 0,
+	output logic[4:0]				dp_phy_md_addr = 0,
+	input wire						vsc_mdio_busy,
+	output logic[4:0]				vsc_phy_reg_addr = 0,
+	output logic[15:0]				vsc_phy_wr_data = 0,
+	input wire[15:0]				vsc_phy_rd_data,
+	output logic					vsc_phy_reg_wr = 0,
+	output logic					vsc_phy_reg_rd = 0,
+	output logic[4:0]				vsc_phy_md_addr = 0,
 
 	//Configuration registers in crypto clock domain
 	input wire						clk_crypt,
@@ -242,6 +263,9 @@ module ManagementRegisterInterface #(
 		REG_VOLT_AUX		= 16'h001a,
 		REG_VOLT_AUX_1		= 16'h001b,
 
+		//Reasons for an IRQ
+		REG_IRQ_STAT		= 16'h0020,		//TODO: put stuff here
+
 		//RAM BIST
 		REG_MBIST			= 16'h0040,		//31 = test enable flag (RW)
 		REG_MBIST_1			= 16'h0041,		//30 = test start flag (W)
@@ -253,6 +277,24 @@ module ManagementRegisterInterface #(
 		REG_MBIST_SEED_1	= 16'h0045,
 		REG_MBIST_SEED_2	= 16'h0046,
 		REG_MBIST_SEED_3	= 16'h0047,
+
+		//MDIO controllers
+		REG_MGMT0_MDIO		= 16'h0048,		//31    = busy flag (R)
+		REG_MGMT0_MDIO_1	= 16'h0049,		//30    = write enable (W)
+		REG_MGMT0_MDIO_2	= 16'h004a,		//29    = read enable (W)
+		REG_MGMT0_MDIO_3	= 16'h004b,		//25:21 = phy addr (W)
+											//20:16 = register addr (W)
+											//15:0	= register data (RW)
+
+		REG_DP_MDIO			= 16'h004c,
+		REG_DP_MDIO_1		= 16'h004d,
+		REG_DP_MDIO_2		= 16'h004e,
+		REG_DP_MDIO_3		= 16'h004f,
+
+		REG_VSC_MDIO		= 16'h0050,
+		REG_VSC_MDIO_1		= 16'h0051,
+		REG_VSC_MDIO_2		= 16'h0052,
+		REG_VSC_MDIO_3		= 16'h0053,
 
 		//Crypto accelerator
 		REG_CRYPT_BASE		= 16'h3800,
@@ -310,12 +352,18 @@ module ManagementRegisterInterface #(
 
 	always_ff @(posedge clk) begin
 
+		//Clear single cycle flags
 		rd_valid				<= 0;
 		port_vlan_updated		<= 0;
 		port_tagmode_updated	<= 0;
 		crypt_in_updated		<= 0;
-
 		mbist_start				<= 0;
+		mgmt0_phy_reg_wr		<= 0;
+		mgmt0_phy_reg_rd		<= 0;
+		dp_phy_reg_wr			<= 0;
+		dp_phy_reg_rd			<= 0;
+		vsc_phy_reg_wr			<= 0;
+		vsc_phy_reg_rd			<= 0;
 
 		//Start a new read
 		if(rd_en)
@@ -417,6 +465,21 @@ module ManagementRegisterInterface #(
 					REG_MBIST_2:		rd_data	<= { 6'b0, mbist_fail_addr[17:15] };
 					REG_MBIST_3:		rd_data	<= { mbist_select, 1'b0, mbist_done, mbist_fail, 4'b0 };
 
+					REG_MGMT0_MDIO:		rd_data	<= mgmt0_phy_rd_data[7:0];
+					REG_MGMT0_MDIO_1:	rd_data	<= mgmt0_phy_rd_data[15:8];
+					REG_MGMT0_MDIO_2:	rd_data	<= 0;
+					REG_MGMT0_MDIO_3:	rd_data <= {mgmt0_mdio_busy, 7'b0};
+
+					REG_DP_MDIO:		rd_data	<= dp_phy_rd_data[7:0];
+					REG_DP_MDIO_1:		rd_data	<= dp_phy_rd_data[15:8];
+					REG_DP_MDIO_2:		rd_data	<= 0;
+					REG_DP_MDIO_3:		rd_data <= {dp_mdio_busy, 7'b0};
+
+					REG_VSC_MDIO:		rd_data	<= vsc_phy_rd_data[7:0];
+					REG_VSC_MDIO_1:		rd_data	<= vsc_phy_rd_data[15:8];
+					REG_VSC_MDIO_2:		rd_data	<= 0;
+					REG_VSC_MDIO_3:		rd_data <= {vsc_mdio_busy, 7'b0};
+
 					default: begin
 						rd_data	<= 0;
 					end
@@ -485,14 +548,50 @@ module ManagementRegisterInterface #(
 
 					//Memory BIST control
 					REG_MBIST_3: begin
-						mbist_select	<= wr_data[7];
-						mbist_start		<= wr_data[6];
+						mbist_select			<= wr_data[7];
+						mbist_start				<= wr_data[6];
 					end
 
-					REG_MBIST_SEED:		mbist_seed[7:0] <= wr_data;
-					REG_MBIST_SEED_1:	mbist_seed[15:8] <= wr_data;
-					REG_MBIST_SEED_2:	mbist_seed[23:16] <= wr_data;
-					REG_MBIST_SEED_3:	mbist_seed[31:24] <= wr_data;
+					REG_MBIST_SEED:		mbist_seed[7:0]			<= wr_data;
+					REG_MBIST_SEED_1:	mbist_seed[15:8]		<= wr_data;
+					REG_MBIST_SEED_2:	mbist_seed[23:16]		<= wr_data;
+					REG_MBIST_SEED_3:	mbist_seed[31:24]		<= wr_data;
+
+					REG_MGMT0_MDIO:		mgmt0_phy_wr_data[7:0]	<= wr_data;
+					REG_MGMT0_MDIO_1:	mgmt0_phy_wr_data[15:8]	<= wr_data;
+					REG_MGMT0_MDIO_2: begin
+						mgmt0_phy_reg_addr		<= wr_data[4:0];
+						mgmt0_phy_md_addr[3:0]	<= wr_data[7:5];
+					end
+					REG_MGMT0_MDIO_3: begin
+						mgmt0_phy_md_addr[4]	<= wr_data[0];
+						mgmt0_phy_reg_rd		<= wr_data[5];
+						mgmt0_phy_reg_wr		<= wr_data[6];
+					end
+
+					REG_DP_MDIO:	dp_phy_wr_data[7:0]			<= wr_data;
+					REG_DP_MDIO_1:	dp_phy_wr_data[15:8]		<= wr_data;
+					REG_DP_MDIO_2: begin
+						dp_phy_reg_addr			<= wr_data[4:0];
+						dp_phy_md_addr[3:0]		<= wr_data[7:5];
+					end
+					REG_DP_MDIO_3: begin
+						dp_phy_md_addr[4]		<= wr_data[0];
+						dp_phy_reg_rd			<= wr_data[5];
+						dp_phy_reg_wr			<= wr_data[6];
+					end
+
+					REG_VSC_MDIO:	vsc_phy_wr_data[7:0]		<= wr_data;
+					REG_VSC_MDIO_1:	vsc_phy_wr_data[15:8]		<= wr_data;
+					REG_VSC_MDIO_2: begin
+						vsc_phy_reg_addr		<= wr_data[4:0];
+						vsc_phy_md_addr[3:0]	<= wr_data[7:5];
+					end
+					REG_VSC_MDIO_3: begin
+						vsc_phy_md_addr[4]		<= wr_data[0];
+						vsc_phy_reg_rd			<= wr_data[5];
+						vsc_phy_reg_wr			<= wr_data[6];
+					end
 
 				endcase
 

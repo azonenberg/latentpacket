@@ -664,3 +664,86 @@ void TrimSpaces(char* str)
 		p --;
 	}
 }
+
+/**
+	@brief Initializes the management PHY
+ */
+void InitManagementPHY()
+{
+	g_log("Initializing management PHY\n");
+	LogIndenter li(g_log);
+
+	//Read the PHY ID
+	auto phyid1 = ManagementPHYRead(REG_PHY_ID_1);
+	auto phyid2 = ManagementPHYRead(REG_PHY_ID_2);
+
+	if( (phyid1 == 0x22) && ( (phyid2 >> 4) == 0x162))
+		g_log("PHY ID   = %04x %04x (KSZ9031RNX rev %d)\n", phyid1, phyid2, phyid2 & 0xf);
+	else
+		g_log("PHY ID   = %04x %04x (unknown)\n", phyid1, phyid2);
+}
+
+/**
+	@brief Initializes the SGMII PHYs
+ */
+void InitSGMIIPHYs()
+{
+	g_log("Initializing SGMII PHYs\n");
+	LogIndenter li(g_log);
+
+	for(int i=0; i<2; i++)
+	{
+		uint8_t phyaddr = i;
+		//g_log("PHY %d\n", i);
+		//LogIndenter li2(g_log);
+
+		//Read the PHY ID
+		auto phyid1 = SGMIIPHYRead(phyaddr, REG_PHY_ID_1);
+		auto phyid2 = SGMIIPHYRead(phyaddr, REG_PHY_ID_2);
+
+		if( (phyid1 == 0x2000) && ( (phyid2 >> 4) == 0xa23))
+			g_log("PHY ID %d = %04x %04x (DP83867 rev %d)\n", i, phyid1, phyid2, phyid2 & 0xf);
+		else
+			g_log("PHY ID %d = %04x %04x (unknown)\n", i, phyid1, phyid2);
+	}
+
+	//Turn on mirror mode for g13 PHY
+	SGMIIPHYExtendedWrite(1, REG_DP83867_CFG4, 0x1031);
+}
+
+/**
+	@brief Initializes the QSGMII PHY
+ */
+void InitQSGMIIPHY()
+{
+	g_log("Initializing QSGMII PHY\n");
+	LogIndenter li(g_log);
+
+	//Wake up PHY while holding it in reset, wait for 5ms
+	static GPIOPin vsc_powerdown(&GPIOH, 14, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW, 0, true);
+	static GPIOPin vsc_rst_n(&GPIOH, 15, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW, 0, true);
+
+	//Hold PHY in powerdown mode
+	vsc_powerdown = 1;
+
+	//vsc_powerdown = 0;
+	//vsc_rst_n = 0;
+	//g_logTimer->Sleep(50);
+	/*
+	//Clear reset and wait another 125ms before configuring it
+	vsc_rst_n = 1;
+	g_logTimer->Sleep(1250);
+
+	for(int i=0; i<12; i++)
+	{
+		uint8_t phyaddr = i;
+		//g_log("PHY %d\n", i);
+		//LogIndenter li2(g_log);
+
+		//Read the PHY ID
+		auto phyid1 = QSGMIIPHYRead(phyaddr, REG_PHY_ID_1);
+		auto phyid2 = QSGMIIPHYRead(phyaddr, REG_PHY_ID_2);
+
+		g_log("PHY ID %d = %04x %04x\n", i, phyid1, phyid2);
+	}*/
+}

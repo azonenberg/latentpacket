@@ -144,6 +144,13 @@ void ConfigureInterfaces()
 		else
 			g_portVlans[i] = 0;
 	}
+
+	//Push changes to hardware
+	#ifndef SIMULATION
+	InitManagementPHY();
+	InitSGMIIPHYs();
+	InitQSGMIIPHY();
+	#endif
 }
 
 /**

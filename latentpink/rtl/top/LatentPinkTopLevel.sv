@@ -111,7 +111,7 @@ module LatentPinkTopLevel(
 	output wire			g12_rst_n,
 	input wire			g12_int_n,
 	input wire[1:0]		g12_gpio,
-/*
+
 	output wire			g12_sgmii_tx_p,
 	output wire			g12_sgmii_tx_n,
 
@@ -119,14 +119,14 @@ module LatentPinkTopLevel(
 	input wire			g12_sgmii_rx_n,
 
 	input wire			g12_sgmii_rxclk_p,
-	input wire			g12_sgmii_rxclk_n,*/
+	input wire			g12_sgmii_rxclk_n,
 
 	input wire[2:0]		g13_led_p_1v8,
 	output wire[2:0]	g13_led_p_3v3,
 	output wire			g13_rst_n,
 	input wire			g13_int_n,
 	input wire[1:0]		g13_gpio,
-/*
+
 	output wire			g13_sgmii_tx_p,		//polarity inverted
 	output wire			g13_sgmii_tx_n,
 
@@ -134,7 +134,7 @@ module LatentPinkTopLevel(
 	input wire			g13_sgmii_rx_n,
 
 	input wire			g13_sgmii_rxclk_p,	//polarity inverted
-	input wire			g13_sgmii_rxclk_n,*/
+	input wire			g13_sgmii_rxclk_n,
 
 	output wire			dp_mdc,
 	inout wire			dp_mdio,
@@ -188,6 +188,11 @@ module LatentPinkTopLevel(
 	input wire			i2c_derp_scl_device,
 	inout wire			i2c_derp_sda_device
 );
+
+	//DEBUG: put MDIO clock on PMOD bus
+	assign pmod_dq[7:2] = 0;
+	assign pmod_dq[0] = dp_mdc;
+	assign pmod_dq[1] = g12_rst_n;
 
 	localparam NUM_PORTS = 15;
 
@@ -365,7 +370,8 @@ module LatentPinkTopLevel(
 		.mgmt0_tx_en(mgmt0_tx_en),
 		.mgmt0_txd(mgmt0_txd),
 		.mgmt0_rst_n(mgmt0_rst_n),
-		/*
+
+		.g12_rst_n(g12_rst_n),
 		.g12_sgmii_tx_p(g12_sgmii_tx_p),
 		.g12_sgmii_tx_n(g12_sgmii_tx_n),
 		.g12_sgmii_rx_p(g12_sgmii_rx_p),
@@ -373,13 +379,13 @@ module LatentPinkTopLevel(
 		.g12_sgmii_rxclk_p(g12_sgmii_rxclk_p),
 		.g12_sgmii_rxclk_n(g12_sgmii_rxclk_n),
 
+		.g13_rst_n(g13_rst_n),
 		.g13_sgmii_tx_p(g13_sgmii_tx_p),
 		.g13_sgmii_tx_n(g13_sgmii_tx_n),
 		.g13_sgmii_rx_p(g13_sgmii_rx_p),
 		.g13_sgmii_rx_n(g13_sgmii_rx_n),
 		.g13_sgmii_rxclk_p(g13_sgmii_rxclk_p),
 		.g13_sgmii_rxclk_n(g13_sgmii_rxclk_n),
-		*/
 
 		//MAC buses
 		.xg0_mac_rx_clk(xg0_mac_rx_clk),
@@ -634,6 +640,15 @@ module LatentPinkTopLevel(
 
 		.mgmt0_mdio(mgmt0_mdio),
 		.mgmt0_mdc(mgmt0_mdc),
+		.dp_mdio(dp_mdio),
+		.dp_mdc(dp_mdc),
+		.g12_int_n(g12_int_n),
+		.g12_gpio(g12_gpio),
+		.g13_int_n(g13_int_n),
+		.g13_gpio(g13_gpio),
+		.vsc_mdc(vsc_mdc),
+		.vsc_mdio(vsc_mdio),
+		.vsc_mdio_oe(vsc_mdio_oe),
 
 		.fan_tach(fan_tach),
 

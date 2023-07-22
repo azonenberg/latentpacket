@@ -27,97 +27,117 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef fpgainterface_h
-#define fpgainterface_h
+/**
+	@file
+	@author	Andrew D. Zonenberg
+	@brief	PHY control code
+ */
 
-class FPGAInterface
+#include "latentpink.h"
+
+/**
+	@brief Reads a register from the management PHY
+ */
+uint16_t ManagementPHYRead(uint8_t regid)
 {
-public:
-	virtual ~FPGAInterface()
-	{}
+	//Request the read
+	g_fpga->BlockingWrite32(REG_MGMT0_MDIO, (regid << 16) | 0x20000000);
 
-	virtual void Nop()
-	{};
-
-	#ifdef SIMULATION
-	/**
-		@brief Advance simulation time until the crypto engine has finished
-	 */
-	virtual void CryptoEngineBlock()
-	{}
-	#endif
-
-	virtual void BlockingRead(uint32_t insn, uint8_t* data, uint32_t len) = 0;
-	virtual void BlockingWrite(uint32_t insn, const uint8_t* data, uint32_t len) = 0;
-
-	uint32_t BlockingRead32(uint32_t insn)
+	//Poll until busy flag is cleared
+	while(true)
 	{
-		uint32_t data;
-		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
-		return data;
+		auto reply = g_fpga->BlockingRead32(REG_MGMT0_MDIO);
+		if( (reply & 0x80000000) == 0)
+			return reply & 0xffff;
 	}
+}
 
-	uint8_t BlockingRead8(uint32_t insn)
+void ManagementPHYWrite(uint8_t regid, uint16_t regval)
+{
+	//Request the write
+	g_fpga->BlockingWrite32(REG_MGMT0_MDIO, (regid << 16) | 0x40000000 | regval );
+
+	//Poll until busy flag is cleared
+	while(true)
 	{
-		uint8_t data;
-		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
-		return data;
+		auto reply = g_fpga->BlockingRead32(REG_MGMT0_MDIO);
+		if( (reply & 0x80000000) == 0)
+			return;
 	}
+}
 
-	uint16_t BlockingRead16(uint32_t insn)
+/**
+	@brief Reads a register from a DP83867
+ */
+uint16_t SGMIIPHYRead(uint8_t phyid, uint8_t regid)
+{
+	//Request the read
+	g_fpga->BlockingWrite32(REG_DP_MDIO, (phyid << 21) | (regid << 16) | 0x20000000);
+
+	//Poll until busy flag is cleared
+	while(true)
 	{
-		uint16_t data;
-		BlockingRead(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data));
-		return data;
+		auto reply = g_fpga->BlockingRead32(REG_DP_MDIO);
+		if( (reply & 0x80000000) == 0)
+			return reply & 0xffff;
 	}
+}
 
-	void BlockingWrite16(uint32_t insn, uint16_t data)
-	{ BlockingWrite(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data)); }
-
-	void BlockingWrite32(uint32_t insn, uint32_t data)
-	{ BlockingWrite(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data)); }
-
-};
-
-//must match regid_t in ManagementRegisterInterface.sv
-enum regid_t
+/**
+	@brief Writes a register to a DP83867
+ */
+void SGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval)
 {
-	REG_FPGA_IDCODE		= 0x0000,
-	REG_FPGA_SERIAL		= 0x0004,
-	REG_FAN0_RPM		= 0x0010,
-	REG_FAN1_RPM		= 0x0012,
-	REG_DIE_TEMP		= 0x0014,
-	REG_VOLT_CORE		= 0x0016,
-	REG_VOLT_RAM		= 0x0018,
-	REG_VOLT_AUX		= 0x001a,
+	//Request the write
+	g_fpga->BlockingWrite32(REG_DP_MDIO, (phyid << 21) | (regid << 16) | 0x40000000 | regval );
 
-	REG_MBIST			= 0x0040,
-	REG_MBIST_SEED		= 0x0044,
-	REG_MGMT0_MDIO		= 0x0048,
-	REG_DP_MDIO			= 0x004c,
-	REG_VSC_MDIO		= 0x0050,
+	//Poll until busy flag is cleared
+	while(true)
+	{
+		auto reply = g_fpga->BlockingRead32(REG_DP_MDIO);
+		if( (reply & 0x80000000) == 0)
+			return;
+	}
+}
 
-	REG_CRYPT_BASE		= 0x3800,
-	REG_INTERFACE_BASE	= 0x4000
-};
-
-enum regconsts
+/**
+	@brief Writes an extended register to a DP83867
+ */
+void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval)
 {
-	INTERFACE_STRIDE	= 0x0400
-};
+	SGMIIPHYWrite(phyid, REG_PHY_REGCR, 0x1f);		//set address, DEVAD = 5'b11111
+	SGMIIPHYWrite(phyid, REG_PHY_ADDAR, regid);
+	SGMIIPHYWrite(phyid, REG_PHY_REGCR, 0x401f);	//data, no post inc, DEVAD = 5'b11111
+	SGMIIPHYWrite(phyid, REG_PHY_ADDAR, regval);
+}
 
-enum ifregid_t
+/**
+	@brief Reads a register from the management PHY
+ */
+uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid)
 {
-	REG_VLAN_NUM		= 0x0000,
-	REG_TAG_MODE		= 0x0002
-};
+	//Request the read
+	g_fpga->BlockingWrite32(REG_VSC_MDIO, (phyid << 21) | (regid << 16) | 0x20000000);
 
-enum cryptreg_t
+	//Poll until busy flag is cleared
+	while(true)
+	{
+		auto reply = g_fpga->BlockingRead32(REG_VSC_MDIO);
+		if( (reply & 0x80000000) == 0)
+			return reply & 0xffff;
+	}
+}
+
+void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval)
 {
-	REG_WORK			= 0x0000,
-	REG_E				= 0x0020,
-	REG_CRYPT_STATUS	= 0x0040,
-	REG_WORK_OUT		= 0x0060
-};
+	//Request the write
+	g_fpga->BlockingWrite32(REG_VSC_MDIO, (phyid << 21) | (regid << 16) | 0x40000000 | regval );
 
-#endif
+	//Poll until busy flag is cleared
+	while(true)
+	{
+		auto reply = g_fpga->BlockingRead32(REG_VSC_MDIO);
+		if( (reply & 0x80000000) == 0)
+			return;
+	}
+}

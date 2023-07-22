@@ -100,6 +100,8 @@ module NetworkInterfaces(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII PHYs
 
+	output logic				g12_rst_n	= 0,
+
 	output wire					g12_sgmii_tx_p,
 	output wire					g12_sgmii_tx_n,
 
@@ -108,6 +110,8 @@ module NetworkInterfaces(
 
 	input wire					g12_sgmii_rxclk_p,
 	input wire					g12_sgmii_rxclk_n,
+
+	output logic				g13_rst_n	= 0,
 
 	output wire					g13_sgmii_tx_p,		//polarity inverted
 	output wire					g13_sgmii_tx_n,
@@ -170,11 +174,15 @@ module NetworkInterfaces(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// PHY reset counter
 
-	//Bring up the PHY after a little while
-	logic[15:0] eth_rst_count = 1;
+	//Bring up the PHYs after a little while
+	//Need to hold SGMII PHYs in reset for a pretty long time, because the SGMII pins are used as straps
+	//so we need enough time for the resistors to discharge the coupling caps to get correct strap behavior
+	logic[18:0] eth_rst_count = 1;
 	always_ff @(posedge clk_125mhz) begin
 		if(eth_rst_count == 0) begin
 			mgmt0_rst_n		<= 1;
+			g12_rst_n		<= 1;
+			g13_rst_n		<= 1;
 		end
 		else
 			eth_rst_count	<= eth_rst_count + 1'h1;
@@ -185,16 +193,20 @@ module NetworkInterfaces(
 
 	IODelayCalibration iocal(.refclk(clk_400mhz));
 
-	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dummy logic to use SGMII RX clock
 
 	wire	sgmii_rxclk0;
 	wire	sgmii_rxclk1;
 
+	//force input buffers to be kept even if no loads, so terminators are active
+	(* keep = "true" *)
 	IBUFDS #(.DIFF_TERM("TRUE")) ibuf_sgmii0(.I(g12_sgmii_rxclk_p), .IB(g12_sgmii_rxclk_n), .O(sgmii_rxclk0));
+
+	(* keep = "true" *)
 	IBUFDS #(.DIFF_TERM("TRUE")) ibuf_sgmii1(.I(g13_sgmii_rxclk_p), .IB(g13_sgmii_rxclk_n), .O(sgmii_rxclk1));
 
+	/*
 	wire led_clk0;
 	wire led_clk1;
 
@@ -785,14 +797,14 @@ module NetworkInterfaces(
 		);
 
 	end
-
+	*/
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII interfaces (g12, g13)
 
 	`include "SGMIIToGMIIBridge.svh"
 
 	wire							g12_rst_stat;
-	assign g12_rst_stat = 0;
+	//assign g12_rst_stat = 0;
 
 	SGMIIMACWrapper #(
 		.RX_INVERT(0),
@@ -826,7 +838,7 @@ module NetworkInterfaces(
 	);
 
 	wire							g13_rst_stat;
-	assign g13_rst_stat = 0;
+	//assign g13_rst_stat = 0;
 
 	SGMIIMACWrapper #(
 		.RX_INVERT(1),
@@ -858,7 +870,7 @@ module NetworkInterfaces(
 
 		.rx_error()	//ignore, just look at perf counters to see when we get errors
 	);
-	*/
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// RGMII PHY for mgmt0
 
@@ -886,10 +898,43 @@ module NetworkInterfaces(
 		.link_speed(mgmt0_link_speed)
 		);
 
-	ila_0 ila(
+	ila_0 ila_mgmt0(
 		.clk(mgmt0_rx_clk),
 		.probe0(mgmt0_rx_bus),
 		.probe1(mgmt0_link_up)
+	);
+
+	ila_0 ila_g12(
+		.clk(clk_125mhz),
+		.probe0(g12_rx_bus),
+		.probe1(g12_link_up)
+	);
+
+	ila_0 ila_g13(
+		.clk(clk_125mhz),
+		.probe0(g13_rx_bus),
+		.probe1(g13_link_up)
+	);
+
+	SGMIIPerformanceCounters g12_sgmii_perf_ff = 0;
+	SGMIIPerformanceCounters g13_sgmii_perf_ff = 0;
+	logic	g12_link_up_ff = 0;
+	logic	g13_link_up_ff = 0;
+	always_ff @(posedge clk_125mhz) begin
+		g12_sgmii_perf_ff	<= g12_sgmii_perf;
+		g12_link_up_ff		<= g12_link_up;
+		g13_sgmii_perf_ff	<= g13_sgmii_perf;
+		g13_link_up_ff		<= g13_link_up;
+	end
+
+	vio_4 vio_perf(
+		.clk(clk_125mhz),
+		.probe_in0(g12_sgmii_perf_ff),
+		.probe_in1(g12_link_up),
+		.probe_in2(g13_sgmii_perf_ff),
+		.probe_in3(g13_link_up),
+		.probe_out0(g12_rst_stat),
+		.probe_out1(g13_rst_stat)
 	);
 
 endmodule

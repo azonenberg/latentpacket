@@ -60,6 +60,17 @@ module ManagementSubsystem #(
 	inout wire						mgmt0_mdio,
 	output wire						mgmt0_mdc,
 
+	inout wire						dp_mdio,
+	output wire						dp_mdc,
+	input wire						g12_int_n,
+	input wire[1:0]					g12_gpio,
+	input wire						g13_int_n,
+	input wire[1:0]					g13_gpio,
+
+	output wire						vsc_mdc,
+	inout wire						vsc_mdio,
+	output wire						vsc_mdio_oe,
+
 	//Tachometers for fans
 	input wire[1:0]					fan_tach,
 
@@ -91,9 +102,9 @@ module ManagementSubsystem #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MDIO transceivers
 
-	wire	mgmt0_mdio_tx_data;
-	wire	mgmt0_mdio_tx_en;
-	wire	mgmt0_mdio_rx_data;
+	wire		mgmt0_mdio_tx_data;
+	wire		mgmt0_mdio_tx_en;
+	wire		mgmt0_mdio_rx_data;
 
 	BidirectionalBuffer mgmt0_mdio_obuf(
 		.fabric_in(mgmt0_mdio_rx_data),
@@ -108,12 +119,16 @@ module ManagementSubsystem #(
 	wire[15:0]	mgmt0_phy_rd_data;
 	wire		mgmt0_phy_reg_wr;
 	wire		mgmt0_phy_reg_rd;
+	wire[4:0]	mgmt0_phy_md_addr;
 
+	//Prevent any logic from the rest of this module from being optimized into the bridge
+	//(because it's placed way off in the corner of the die near the QSPI IOBs)
+	(* keep_hierarchy = "yes" *)
 	EthernetMDIOTransceiver #(
 		.CLK_DIV(75)
 	)  mgmt0_mdio_txvr (
 		.clk(sys_clk),
-		.phy_md_addr(5'b00000),
+		.phy_md_addr(mgmt0_phy_md_addr),
 
 		.mdio_tx_data(mgmt0_mdio_tx_data),
 		.mdio_tx_en(mgmt0_mdio_tx_en),
@@ -126,6 +141,109 @@ module ManagementSubsystem #(
 		.phy_rd_data(mgmt0_phy_rd_data),
 		.phy_reg_wr(mgmt0_phy_reg_wr),
 		.phy_reg_rd(mgmt0_phy_reg_rd)
+	);
+
+	wire		dp_mdio_tx_data;
+	wire		dp_mdio_tx_en;
+	wire		dp_mdio_rx_data;
+
+	BidirectionalBuffer dp_mdio_obuf(
+		.fabric_in(dp_mdio_rx_data),
+		.fabric_out(dp_mdio_tx_data),
+		.pad(dp_mdio),
+		.oe(dp_mdio_tx_en)
+	);
+
+	wire		dp_mdio_busy;
+	wire[4:0]	dp_phy_reg_addr;
+	wire[15:0]	dp_phy_wr_data;
+	wire[15:0]	dp_phy_rd_data;
+	wire		dp_phy_reg_wr;
+	wire		dp_phy_reg_rd;
+	wire[4:0]	dp_phy_md_addr;
+
+	wire		dp_mdc_raw;
+
+	(* keep_hierarchy = "yes" *)
+	EthernetMDIOTransceiver #(
+		.CLK_DIV(75)
+	)  dp_mdio_txvr (
+		.clk(sys_clk),
+		.phy_md_addr(dp_phy_md_addr),
+
+		.mdio_tx_data(dp_mdio_tx_data),
+		.mdio_tx_en(dp_mdio_tx_en),
+		.mdio_rx_data(dp_mdio_rx_data),
+		.mdc(dp_mdc_raw),
+
+		.mgmt_busy_fwd(dp_mdio_busy),
+		.phy_reg_addr(dp_phy_reg_addr),
+		.phy_wr_data(dp_phy_wr_data),
+		.phy_rd_data(dp_phy_rd_data),
+		.phy_reg_wr(dp_phy_reg_wr),
+		.phy_reg_rd(dp_phy_reg_rd)
+	);
+
+	//Ungate MDC after a while
+	logic mdc_ce = 0;
+	logic[19:0] gate_count = 1;
+	always_ff @(posedge sys_clk) begin
+		if(gate_count == 0)
+			mdc_ce	<= 1;
+		else
+			gate_count	<= gate_count + 1'h1;
+	end
+	assign dp_mdc = dp_mdc_raw & mdc_ce;
+
+	ila_1 ila_dpmdio(
+		.clk(sys_clk),
+		.probe0(dp_mdio_tx_data),
+		.probe1(dp_mdio_tx_en),
+		.probe2(dp_mdio_rx_data),
+		.probe3(dp_mdc)
+	);
+
+	wire		vsc_mdio_tx_data;
+	wire		vsc_mdio_tx_en;
+	wire		vsc_mdio_rx_data;
+
+	assign vsc_mdio_oe = vsc_mdio_tx_en;
+
+	BidirectionalBuffer vsc_mdio_obuf(
+		.fabric_in(vsc_mdio_rx_data),
+		.fabric_out(vsc_mdio_tx_data),
+		.pad(vsc_mdio),
+		.oe(vsc_mdio_tx_en)
+	);
+
+	wire		vsc_mdio_busy;
+	wire[4:0]	vsc_phy_reg_addr;
+	wire[15:0]	vsc_phy_wr_data;
+	wire[15:0]	vsc_phy_rd_data;
+	wire		vsc_phy_reg_wr;
+	wire		vsc_phy_reg_rd;
+	wire[4:0]	vsc_phy_md_addr;
+
+	//Prevent any logic from the rest of this module from being optimized into the bridge
+	//(because it's placed way off in the corner of the die near the QSPI IOBs)
+	(* keep_hierarchy = "yes" *)
+	EthernetMDIOTransceiver #(
+		.CLK_DIV(75)
+	)  vsc_mdio_txvr (
+		.clk(sys_clk),
+		.phy_md_addr(vsc_phy_md_addr),
+
+		.mdio_tx_data(vsc_mdio_tx_data),
+		.mdio_tx_en(vsc_mdio_tx_en),
+		.mdio_rx_data(vsc_mdio_rx_data),
+		.mdc(vsc_mdc),
+
+		.mgmt_busy_fwd(vsc_mdio_busy),
+		.phy_reg_addr(vsc_phy_reg_addr),
+		.phy_wr_data(vsc_phy_wr_data),
+		.phy_rd_data(vsc_phy_rd_data),
+		.phy_reg_wr(vsc_phy_reg_wr),
+		.phy_reg_rd(vsc_phy_reg_rd)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,6 +406,27 @@ module ManagementSubsystem #(
 		.mbist_fail(mbist_fail),
 		.mbist_fail_addr(mbist_fail_addr),
 		.mbist_select(mbist_select),
+		.mgmt0_mdio_busy(mgmt0_mdio_busy),
+		.mgmt0_phy_reg_addr(mgmt0_phy_reg_addr),
+		.mgmt0_phy_wr_data(mgmt0_phy_wr_data),
+		.mgmt0_phy_rd_data(mgmt0_phy_rd_data),
+		.mgmt0_phy_reg_wr(mgmt0_phy_reg_wr),
+		.mgmt0_phy_reg_rd(mgmt0_phy_reg_rd),
+		.mgmt0_phy_md_addr(mgmt0_phy_md_addr),
+		.dp_mdio_busy(dp_mdio_busy),
+		.dp_phy_reg_addr(dp_phy_reg_addr),
+		.dp_phy_wr_data(dp_phy_wr_data),
+		.dp_phy_rd_data(dp_phy_rd_data),
+		.dp_phy_reg_wr(dp_phy_reg_wr),
+		.dp_phy_reg_rd(dp_phy_reg_rd),
+		.dp_phy_md_addr(dp_phy_md_addr),
+		.vsc_mdio_busy(vsc_mdio_busy),
+		.vsc_phy_reg_addr(vsc_phy_reg_addr),
+		.vsc_phy_wr_data(vsc_phy_wr_data),
+		.vsc_phy_rd_data(vsc_phy_rd_data),
+		.vsc_phy_reg_wr(vsc_phy_reg_wr),
+		.vsc_phy_reg_rd(vsc_phy_reg_rd),
+		.vsc_phy_md_addr(vsc_phy_md_addr),
 
 		//Control registers (port RX clock domain)
 		.port_rx_clk(port_rx_clk),
@@ -304,30 +443,15 @@ module ManagementSubsystem #(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug VIO
+	// TODO: interrupt logic
 
-	wire	wr_req;
-	wire	rd_req;
-
-	logic	wr_req_ff	= 0;
-	logic	rd_req_ff	= 0;
-
-	vio_2 mdio_vio(
+	//We need to NOT optimize out the GPIOs so the pulldowns remain functional
+	vio_2 vio_irq(
 		.clk(sys_clk),
-		.probe_in0(mgmt0_mdio_busy),
-		.probe_in1(mgmt0_phy_rd_data),
-		.probe_out0(mgmt0_phy_reg_addr),
-		.probe_out1(mgmt0_phy_wr_data),
-		.probe_out2(wr_req),
-		.probe_out3(rd_req)
+		.probe_in0(g12_int_n),
+		.probe_in1(g13_int_n),
+		.probe_in2(g12_gpio),
+		.probe_in3(g13_gpio)
 	);
-
-	always_ff @(posedge sys_clk) begin
-		wr_req_ff	<= wr_req;
-		rd_req_ff	<= rd_req;
-	end
-
-	assign mgmt0_phy_reg_wr = wr_req && !wr_req_ff;
-	assign mgmt0_phy_reg_rd = rd_req && !rd_req_ff;
 
 endmodule

@@ -151,16 +151,17 @@ int main()
 	//to Vref / Vtt. This will be fixed in LATENTRED by running the LP2996 off 3V3_SB instead of 3V3.
 	StartRail(en_3v3, pgood_3v3, 50, "3V3");
 
-	//We then need to start 1V8 right away (within Tvcco2vccaux) to avoid damage to the FPGA!
+	//DP83867 requires 2.5 analog up before 1.8 analog (no requirement for analog vs vccio rail)
+	StartRail(en_2v5, pgood_2v5, 50, "2V5");
+
+	//We then need to start 1V8 right away (within Tvcco2vccaux of starting 3V3) to avoid damage to the FPGA!
+	//1.8V must be stable within 25ms of 2.5V ramping up
 	StartRail(en_1v8, pgood_1v8, 50, "1V8");
 
 	//1V8_IO and Vref/Vtt have no PGOOD feedback.
 	//If it overcurrents, they will probably drag down the main 1V8 rail so check for faults over the next 10ms
 	StartSubRail(en_1v8_io, pgood_1v8, 100, "1V8_IO");
 	StartSubRail(en_vtt, pgood_1v8, 100, "Vtt + Vref");
-
-	//Finally, we can turn on 2V5
-	StartRail(en_2v5, pgood_2v5, 50, "2V5");
 
 	//All power rails came up if we get here
 	g_log("Power is good, releasing resets\n");

@@ -134,6 +134,9 @@ void InitEEPROM();
 void InitSensors();
 void InitSFP();
 void PollSFP();
+void InitManagementPHY();
+void InitSGMIIPHYs();
+void InitQSGMIIPHY();
 
 uint16_t ReadThermalSensor(uint8_t addr);
 uint16_t GetFanRPM(uint8_t channel);
@@ -141,6 +144,16 @@ uint16_t GetFPGATemperature();
 uint16_t GetFPGAVCCINT();
 uint16_t GetFPGAVCCAUX();
 uint16_t GetFPGAVCCBRAM();
+
+uint16_t ManagementPHYRead(uint8_t regid);
+void ManagementPHYWrite(uint8_t regid, uint16_t regval);
+
+uint16_t SGMIIPHYRead(uint8_t phyid, uint8_t regid);
+void SGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
+void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval);
+
+uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid);
+void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
 
 void MemoryTest();
 bool DoMemoryTest(uint32_t seed);
@@ -165,5 +178,18 @@ void DetectHardware();
 #ifdef SIMULATION
 void OnShutdown();
 #endif
+
+enum mdioreg_t
+{
+	REG_BASIC_CONTROL	= 0x0,
+	REG_BASIC_STATUS	= 0x1,
+	REG_PHY_ID_1		= 0x2,
+	REG_PHY_ID_2		= 0x3,
+
+	REG_PHY_REGCR		= 0x0d,
+	REG_PHY_ADDAR		= 0x0e,
+
+	REG_DP83867_CFG4	= 0x0031
+};
 
 #endif
