@@ -363,7 +363,6 @@ module ManagementRegisterInterface #(
 
 	logic 					reading					= 0;
 	logic					crypto_active			= 0;
-	logic					rxheader_rd_empty_ff	= 0;
 
 	//Split interface config into port number and register ID
 	localparam PORT_BITS 				= 4;
@@ -394,8 +393,6 @@ module ManagementRegisterInterface #(
 		txfifo_wr_en			<= 0;
 		txfifo_wr_commit		<= 0;
 
-		rxheader_rd_empty_ff	<= rxheader_rd_empty;
-
 		//Start a new read
 		if(rd_en)
 			reading	<= 1;
@@ -404,8 +401,8 @@ module ManagementRegisterInterface #(
 		if(crypt_out_updated)
 			crypto_active		<= 0;
 
-		//Set interrupt line
-		if(rxheader_rd_empty_ff && !rxheader_rd_empty)
+		//Set interrupt line if something's changed
+		if(!rxheader_rd_empty)
 			irq					<= 1;
 
 		//Continue a read
@@ -519,12 +516,8 @@ module ManagementRegisterInterface #(
 					REG_VOLT_AUX:		rd_data	<= volt_aux[7:0];
 					REG_VOLT_AUX_1:		rd_data	<= volt_aux[15:8];
 
-					//clear IRQ line when status register is read
 					REG_FPGA_IRQSTAT:	rd_data	<= {7'b0, !rxheader_rd_empty };
-					REG_FPGA_IRQSTAT_1: begin
-						rd_data <= 8'b0;
-						irq		<= 0;
-					end
+					REG_FPGA_IRQSTAT_1: rd_data <= 8'b0;
 
 					REG_EMAC_RXLEN:		rd_data <= rxheader_rd_data[7:0];
 					REG_EMAC_RXLEN_1: begin
@@ -698,7 +691,7 @@ module ManagementRegisterInterface #(
 		.probe5(rxfifo_rd_en),
 		.probe6(rxheader_rd_en),
 		.probe7(rxheader_rd_empty),
-		.probe8(rxheader_rd_empty_ff),
+		.probe8(mgmt0_phy_reg_wr),
 		.probe9(rxheader_rd_data),
 
 		.probe10(rxfifo_rd_pop_single),

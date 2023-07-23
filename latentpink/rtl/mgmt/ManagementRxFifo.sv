@@ -162,4 +162,17 @@ module ManagementRxFifo(
 
 	end
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug ILAs
+
+	ila_3 ila(
+		.clk(sys_clk),
+		.probe0(rxheader_rd_en),
+		.probe1(rxheader_rd_empty),
+		.probe2(rxheader_rd_data),
+		.probe3(rxfifo_rd_en),
+		.probe4(rxfifo_rd_pop_single),
+		.probe5(rxfifo_rd_data)
+	);
+
 endmodule
