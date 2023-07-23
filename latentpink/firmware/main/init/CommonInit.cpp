@@ -188,13 +188,26 @@ void InitIP()
  */
 void ConfigureIP()
 {
+	/*
 	IPv4Address defaultIP			= { .m_octets{192, 168,   1,   2} };
 	IPv4Address defaultNetmask		= { .m_octets{255, 255, 255,   0} };
 	IPv4Address defaultBroadcast	= { .m_octets{192, 168,   1, 255} };
 	IPv4Address defaultGateway		= { .m_octets{192, 168,   1,   1} };
+	*/
+
+	IPv4Address defaultIP			= { .m_octets{10, 2,   6,   42} };
+	IPv4Address defaultNetmask		= { .m_octets{255, 255, 255,   0} };
+	IPv4Address defaultBroadcast	= { .m_octets{10, 2,   6, 255} };
+	IPv4Address defaultGateway		= { .m_octets{10, 2,   6,   1} };
 
 	g_ipConfig.m_address = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.address");
 	g_ipConfig.m_netmask = g_kvs->ReadObject<IPv4Address>(defaultNetmask, "ip.netmask");
-	g_ipConfig.m_broadcast = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.broadcast");
-	g_ipConfig.m_gateway = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.gateway");
+	g_ipConfig.m_broadcast = g_kvs->ReadObject<IPv4Address>(defaultBroadcast, "ip.broadcast");
+	g_ipConfig.m_gateway = g_kvs->ReadObject<IPv4Address>(defaultGateway, "ip.gateway");
+
+	g_log("Our IP address is %d.%d.%d.%d\n",
+		g_ipConfig.m_address.m_octets[0],
+		g_ipConfig.m_address.m_octets[1],
+		g_ipConfig.m_address.m_octets[2],
+		g_ipConfig.m_address.m_octets[3]);
 }

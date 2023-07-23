@@ -42,20 +42,21 @@ module ManagementRxFifo(
 	input wire					mgmt0_rx_clk,
 
 	input wire EthernetRxBus	mgmt0_rx_bus,
-	input wire					mgmt0_link_up
+	input wire					mgmt0_link_up,
+
+	input wire					rxfifo_rd_en,
+	input wire					rxfifo_rd_pop_single,
+	output wire[31:0]			rxfifo_rd_data,
+	input wire					rxheader_rd_en,
+	output wire					rxheader_rd_empty,
+	output wire[10:0]			rxheader_rd_data
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Main FIFO and push logic
 
 	logic		rxfifo_wr_en		= 0;
-	logic[34:0]	rxfifo_wr_data		= 0;
-
-	wire		rxfifo_rd_en;
-	wire		rxfifo_rd_pop_single;
-	wire[2:0]	rxfifo_rd_bytes_valid;
-	wire[31:0]	rxfifo_rd_data;
-	wire[10:0]	rxfifo_rd_size;
+	logic[31:0]	rxfifo_wr_data		= 0;
 
 	wire		wr_reset;
 	assign		wr_reset = !mgmt0_link_up;
@@ -69,18 +70,20 @@ module ManagementRxFifo(
 		.dout(rd_reset)
 	);
 
-	//An all-zero word indicates packet boundaries
+	wire[10:0]	rxfifo_wr_size;
+	logic		rxfifo_wr_drop;
+
 	CrossClockPacketFifo #(
-		.WIDTH(35),		//3 bytes valid + 32 data
+		.WIDTH(32),
 		.DEPTH(1024)	//at least 2 packets worth
 	) rx_cdc_fifo (
 		.wr_clk(mgmt0_rx_clk),
 		.wr_en(rxfifo_wr_en),
 		.wr_data(rxfifo_wr_data),
 		.wr_reset(wr_reset),
-		.wr_size(),
+		.wr_size(rxfifo_wr_size),
 		.wr_commit(mgmt0_rx_bus.commit),
-		.wr_rollback(mgmt0_rx_bus.drop),
+		.wr_rollback(rxfifo_wr_drop),
 
 		.rd_clk(sys_clk),
 		.rd_en(rxfifo_rd_en),
@@ -88,39 +91,75 @@ module ManagementRxFifo(
 		.rd_pop_single(rxfifo_rd_pop_single),
 		.rd_pop_packet(1'b0),
 		.rd_packet_size(10'h0),
-		.rd_data( {rxfifo_rd_bytes_valid, rxfifo_rd_data} ),
-		.rd_size(rxfifo_rd_size),
+		.rd_data(rxfifo_rd_data),
+		.rd_size(),
 		.rd_reset(rd_reset)
 	);
 
 	//PUSH SIDE
-	always_comb begin
+	logic dropping = 0;
+	logic[10:0] framelen = 0;
+
+	wire		header_wfull;
+
+	CrossClockFifo #(
+		.WIDTH(11),
+		.DEPTH(32),
+		.USE_BLOCK(0),
+		.OUT_REG(0)
+	) rx_framelen_fifo (
+		.wr_clk(mgmt0_rx_clk),
+		.wr_en(mgmt0_rx_bus.commit && !dropping),
+		.wr_data(framelen),
+		.wr_size(),
+		.wr_full(header_wfull),
+		.wr_overflow(),
+		.wr_reset(1'b0),
+
+		.rd_clk(sys_clk),
+		.rd_en(rxheader_rd_en),
+		.rd_data(rxheader_rd_data),
+		.rd_size(),
+		.rd_empty(rxheader_rd_empty),
+		.rd_underflow(),
+		.rd_reset(1'b0)
+	);
+
+	always_ff @(posedge mgmt0_rx_clk) begin
+
+		rxfifo_wr_drop		<= 0;
+
+		if(mgmt0_rx_bus.drop) begin
+			rxfifo_wr_drop	<= 1;
+			dropping		<= 1;
+		end
 
 		//Frame delimiter
 		if(mgmt0_rx_bus.start) begin
-			rxfifo_wr_en	<= 1;
-			rxfifo_wr_data	<= 35'h0;
+
+			//Not enough space for a full sized frame? Give up
+			if( (rxfifo_wr_size < 375) || header_wfull )
+				dropping	<= 1;
+
+			//Nope, start a new frame
+			else
+				framelen	<= 0;
+
+		end
+
+		//If we hit max length frame or run out of space, drop the frame
+		else if( (rxfifo_wr_size < 2) || (framelen > 1500) ) begin
+			rxfifo_wr_drop	<= 1;
+			dropping		<= 1;
 		end
 
 		//Nope, push data as needed
-		else begin
+		else if(!dropping) begin
 			rxfifo_wr_en	<= mgmt0_rx_bus.data_valid;
-			rxfifo_wr_data	<= { mgmt0_rx_bus.bytes_valid, mgmt0_rx_bus.data };
+			rxfifo_wr_data	<= mgmt0_rx_bus.data;
+			framelen		<= framelen + mgmt0_rx_bus.bytes_valid;
 		end
 
 	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Pop logic
-
-	//DEBUG: toss a VIO on here to control the read and write stuff
-	vio_0 vio(
-		.clk(sys_clk),
-		.probe_out0(rxfifo_rd_en),
-		.probe_out1(rxfifo_rd_pop_single),
-		.probe_in0(rxfifo_rd_bytes_valid),
-		.probe_in1(rxfifo_rd_data),
-		.probe_in2(rxfifo_rd_size)
-		);
 
 endmodule

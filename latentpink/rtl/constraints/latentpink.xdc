@@ -577,7 +577,6 @@ set_property LOC IDELAYCTRL_X1Y1 [get_cells interfaces/iocal/delay_control_block
 # Floorplanning: RGMII mgmt0
 
 create_pblock pblock_rgmii
-add_cells_to_pblock [get_pblocks pblock_rgmii] [get_cells -quiet [list mgmt/rx_fifo]]
 resize_pblock [get_pblocks pblock_rgmii] -add {SLICE_X102Y100:SLICE_X109Y149}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB18_X6Y40:RAMB18_X6Y59}
 resize_pblock [get_pblocks pblock_rgmii] -add {RAMB36_X6Y20:RAMB36_X6Y29}
@@ -618,6 +617,8 @@ set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
 #######################################################################################################################
 # Floorplanning: prefetcher
 
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
@@ -794,6 +795,13 @@ set_property SLEW SLOW [get_ports g13_rst_n]
 set_property SLEW SLOW [get_ports g12_rst_n]
 set_property DRIVE 6 [get_ports mgmt0_rst_n]
 set_property SLEW SLOW [get_ports mgmt0_rst_n]
+
+set_property DRIVE 4 [get_ports mcu_irq]
+set_property DRIVE 8 [get_ports {mcu_dq[3]}]
+set_property DRIVE 8 [get_ports {mcu_dq[2]}]
+set_property DRIVE 8 [get_ports {mcu_dq[1]}]
+set_property DRIVE 8 [get_ports {mcu_dq[0]}]
+
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

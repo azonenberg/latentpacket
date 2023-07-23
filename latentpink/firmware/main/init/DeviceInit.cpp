@@ -36,6 +36,7 @@
 #include "latentpink.h"
 #include <ctype.h>
 #include "target/device/DeviceFPGAInterface.h"
+#include "target/device/QSPIEthernetInterface.h"
 
 void TrimSpaces(char* str);
 
@@ -54,7 +55,7 @@ void InitClocks()
 		4,		//64/4 = 16 MHz at the PFD
 		32,		//16 * 32 = 512 MHz at the VCO
 		1,		//div P (primary output 512 MHz)
-		32,		//div Q (not used for now)
+		8,		//div Q (64 MHz kernel clock)
 		32,		//div R (not used for now),
 		RCCHelper::CLOCK_SOURCE_HSI
 	);
@@ -68,6 +69,11 @@ void InitClocks()
 		4,		//APB3 = 64 MHz
 		4		//APB4 = 64 MHz
 	);
+
+	//RNG clock should be >= HCLK/32
+	//AHB2 HCLK is 256 MHz so min 8 MHz
+	//Select PLL1 Q clock (64 MHz)
+	RCC.D2CCIP2R = (RCC.D2CCIP2R & ~0x300) | (0x100);
 
 	//Select PLL1 as system clock source
 	RCCHelper::SelectSystemClockFromPLL1();
@@ -746,4 +752,17 @@ void InitQSGMIIPHY()
 
 		g_log("PHY ID %d = %04x %04x\n", i, phyid1, phyid2);
 	}*/
+}
+
+
+/**
+	@brief Initializes the Ethernet interface
+ */
+void InitEthernet()
+{
+	g_log("Initializing Ethernet management\n");
+
+	//Create the Ethernet interface
+	static QSPIEthernetInterface iface;
+	g_ethIface = &iface;
 }

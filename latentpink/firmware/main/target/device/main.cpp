@@ -73,17 +73,13 @@ int main()
 	//Test the external RAM
 	MemoryTest();
 
-	//InitCLI();
-	//InitEthernet();
-	//InitSSH();
-
 	//Begin initializing fabric ports
 	InitInterfaces();
 	InitSFP();
 
-	//Initialize our local Ethernet interface
-	//InitEthernet();
-	//InitIP();
+	//Initialize our local Ethernet interface and TCP/IP stack
+	InitEthernet();
+	InitIP();
 
 	//Set up the GPIO LEDs and turn them off
 	GPIOPin led0(&GPIOC, 4, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
@@ -117,20 +113,20 @@ int main()
 	uint32_t nextAgingTick = 0;
 	*/
 
+	GPIOPin irq(&GPIOA, 0, GPIOPin::MODE_INPUT, GPIOPin::SLEW_SLOW);
+	irq.SetPullMode(GPIOPin::PULL_DOWN);
+
 	while(1)
 	{
 		//Wait for an interrupt
 		//asm("wfi");
 
+		//Check if anything happened on the FPGA
+		if(irq)
+			PollFPGA();
+
 		//Check if we had an optic inserted or removed
 		PollSFP();
-
-		/*
-		//Poll for Ethernet frames
-		auto frame = g_eth->GetRxFrame();
-		if(frame != NULL)
-			g_ethStack->OnRxFrame(frame);
-		*/
 
 		//Poll for UART input
 		if(g_cliUART->HasInput())
@@ -146,6 +142,23 @@ int main()
 	}
 
 	return 0;
+}
+
+/**
+	@brief Reads the FPGA status register to see why it sent us an IRQ
+ */
+void PollFPGA()
+{
+	uint16_t fpgastat = g_fpga->BlockingRead16(REG_FPGA_IRQSTAT);
+	//g_log("FPGA poll: IRQ stat = %04x\n", fpgastat);
+
+	//New Ethernet frame ready?
+	if(fpgastat & 1)
+	{
+		auto frame = g_ethIface->GetRxFrame();
+		if(frame != NULL)
+			g_ethProtocol->OnRxFrame(frame);
+	}
 }
 
 /*
@@ -352,43 +365,5 @@ void InitEthernet()
 
 	//Save the stack so we can use it later
 	g_ethStack = &eth;
-}
-
-void InitSSH()
-{
-	g_log("Initializing SSH server\n");
-	LogIndenter li(g_log);
-
-	unsigned char pub[ECDSA_KEY_SIZE] = {0};
-	unsigned char priv[ECDSA_KEY_SIZE] = {0};
-
-	bool found = true;
-	if(!g_kvs->ReadObject("ssh.hostpub", pub, ECDSA_KEY_SIZE))
-		found = false;
-	if(!g_kvs->ReadObject("ssh.hostpriv", priv, ECDSA_KEY_SIZE))
-		found = false;
-
-	if(found)
-	{
-		g_log("Using existing SSH host key\n");
-		CryptoEngine::SetHostKey(pub, priv);
-	}
-
-	else
-	{
-		g_log("No SSH host key in flash, generating new key pair\n");
-		STM32CryptoEngine tmp;
-		tmp.GenerateHostKey();
-
-		if(!g_kvs->StoreObject("ssh.hostpub", CryptoEngine::GetHostPublicKey(), ECDSA_KEY_SIZE))
-			g_log(Logger::ERROR, "Unable to store SSH host public key to flash\n");
-		if(!g_kvs->StoreObject("ssh.hostpriv", CryptoEngine::GetHostPrivateKey(), ECDSA_KEY_SIZE))
-			g_log(Logger::ERROR, "Unable to store SSH host private key to flash\n");
-	}
-
-	char buf[64] = {0};
-	STM32CryptoEngine tmp;
-	tmp.GetHostKeyFingerprint(buf, sizeof(buf));
-	g_log("ED25519 key fingerprint is SHA256:%s.\n", buf);
 }
 */

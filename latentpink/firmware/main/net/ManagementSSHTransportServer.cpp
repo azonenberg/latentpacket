@@ -45,8 +45,7 @@ ManagementSSHTransportServer::ManagementSSHTransportServer(TCPProtocol& tcp)
 		#ifdef SIMULATION
 			m_state[i].m_crypto = new SimCryptoEngine;
 		#else
-			//#error STM32 crypto not yet implemented
-			#warning STM32 crypto not yet implemented
+			m_state[i].m_crypto = &m_engine;
 		#endif
 	}
 

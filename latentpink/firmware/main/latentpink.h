@@ -137,6 +137,7 @@ void PollSFP();
 void InitManagementPHY();
 void InitSGMIIPHYs();
 void InitQSGMIIPHY();
+void PollFPGA();
 
 uint16_t ReadThermalSensor(uint8_t addr);
 uint16_t GetFanRPM(uint8_t channel);

@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -29,121 +27,95 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-/**
-	@file
-	@author	Andrew D. Zonenberg
-	@brief	Quad SPI interface
- */
-module ManagementBridge(
+#include "latentpink.h"
+#include "QSPIEthernetInterface.h"
+#include <peripheral/RCC.h>
+#include <ctype.h>
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// System clocks
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Construction / destruction
 
-	input wire			clk,
+QSPIEthernetInterface::QSPIEthernetInterface()
+{
+	for(int i=0; i<QSPI_TX_BUFCOUNT; i++)
+		m_txFreeList.Push(&m_txBuffers[i]);
+	for(int i=0; i<QSPI_RX_BUFCOUNT; i++)
+		m_rxFreeList.Push(&m_rxBuffers[i]);
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Bus to MCU
+	//TODO: Reset FPGA side buffers etc?
+}
 
-	input wire			qspi_sck,
-	input wire			qspi_cs_n,
-	inout wire[3:0]		qspi_dq,
+QSPIEthernetInterface::~QSPIEthernetInterface()
+{
+	//nothing here
+}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Bus to ManagementRegisterInterface
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Transmit path
 
-	output logic		rd_en,
-	output logic[15:0]	rd_addr	= 0,
+EthernetFrame* QSPIEthernetInterface::GetTxFrame()
+{
+	g_log("Outbound frame requested\n");
 
-	input wire			rd_valid,
-	input wire[7:0]		rd_data,
+	if(m_txFreeList.IsEmpty())
+		return nullptr;
 
-	output wire			wr_en,
-	output logic[15:0]	wr_addr	= 0,
-	output wire[7:0]	wr_data
+	else
+		return m_txFreeList.Pop();
+}
 
-	);
+void QSPIEthernetInterface::SendTxFrame(EthernetFrame* frame)
+{
+	g_log("Send of %d byte frame requested\n", frame->Length());
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI interface
+	//TODO: actually send it
 
-	wire		start;
-	wire		insn_valid;
-	wire[15:0]	insn;
-	logic		rd_mode		= 0;
-	wire		rd_ready;
+	//TODO: DMA optimizations
 
-	wire		rd_en_raw;
+	//Done, put on free list
+	m_txFreeList.Push(frame);
+}
 
-	QSPIDeviceInterface #(
-		.INSN_BYTES(2)
-	) qspi (
-		.clk(clk),
-		.sck(qspi_sck),
-		.cs_n(qspi_cs_n),
-		.dq(qspi_dq),
+void QSPIEthernetInterface::CancelTxFrame(EthernetFrame* frame)
+{
+	//Return it to the free list
+	m_txFreeList.Push(frame);
+}
 
-		.start(start),
-		.insn_valid(insn_valid),
-		.insn(insn),
-		.wr_valid(wr_en),
-		.wr_data(wr_data),
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Receive path
 
-		.rd_mode(rd_mode),
-		.rd_ready(rd_en_raw),
-		.rd_valid(rd_valid),
-		.rd_data(rd_data)
-	);
+EthernetFrame* QSPIEthernetInterface::GetRxFrame()
+{
+	//Read and sanity check length
+	uint16_t len = g_fpga->BlockingRead16(REG_EMAC_RXLEN);
+	if(len > 1500)
+	{
+		g_log(Logger::ERROR, "Got a %d byte long frame (max size 1500, FPGA should not have done this)\n", (int)len);
+		return nullptr;
+	}
 
-	always_comb begin
-		rd_en	= rd_en_raw && !insn[15];
-	end
+	//Make sure we have somewhere to put the frame
+	if(m_rxFreeList.IsEmpty())
+	{
+		g_log("Frame dropped due to lack of buffers\n");
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Address counting
+		//Read and discard the frame
+		static uint8_t rxbuf[1500] = {0};
+		g_fpga->BlockingRead(REG_EMAC_BUFFER, rxbuf, len);
+		return nullptr;
+	}
 
-	logic[15:0]	rd_addr_ff	= 0;
-	logic[15:0]	wr_addr_ff	= 0;
-	logic		first		= 0;
+	//Read it
+	auto frame = m_rxFreeList.Pop();
+	frame->SetLength(len);
+	g_fpga->BlockingRead(REG_EMAC_BUFFER, frame->RawData(), len);
 
-	always_comb begin
+	g_log("Got %d byte frame\n", (int)len);
+	return frame;
+}
 
-		//Default to passthrough
-		rd_addr			= rd_addr_ff;
-		wr_addr			= wr_addr_ff;
-
-		//Increment if reading/writing
-		if(rd_en)
-			rd_addr		= rd_addr_ff + 1;
-		if(wr_en && !first)
-			wr_addr		= wr_addr_ff + 1;
-
-		//Start a new transaction
-		if(insn_valid) begin
-			rd_addr		= {1'b0, insn[14:0]};
-			wr_addr		= {1'b0, insn[14:0]};
-		end
-
-	end
-
-	always_ff @(posedge clk) begin
-
-		wr_addr_ff		<= wr_addr;
-		rd_addr_ff		<= rd_addr;
-
-		//Process instruction
-		//MSB of opcode is read flag (0=read, 1=write)
-		if(insn_valid)
-			rd_mode		<= !insn[15];
-
-		//Reset anything we need on CS# falling edge
-		if(start) begin
-			rd_mode		<= 0;
-			first		<= 1;
-		end
-
-		if(wr_en)
-			first		<= 0;
-
-	end
-
-endmodule
+void QSPIEthernetInterface::ReleaseRxFrame(EthernetFrame* frame)
+{
+	m_rxFreeList.Push(frame);
+}

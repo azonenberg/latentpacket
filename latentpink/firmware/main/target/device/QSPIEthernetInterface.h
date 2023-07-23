@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * LATENTPACKET v0.1                                                                                                    *
@@ -31,119 +29,47 @@
 
 /**
 	@file
-	@author	Andrew D. Zonenberg
-	@brief	Quad SPI interface
+	@brief Declaration of QSPIEthernetInterface
  */
-module ManagementBridge(
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// System clocks
+#ifndef QSPIEthernetInterface_h
+#define QSPIEthernetInterface_h
 
-	input wire			clk,
+#include <stm32.h>
+#include <util/FIFO.h>
+#include <staticnet/drivers/base/EthernetInterface.h>
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Bus to MCU
+#define QSPI_RX_BUFCOUNT 4
+#define QSPI_TX_BUFCOUNT 4
 
-	input wire			qspi_sck,
-	input wire			qspi_cs_n,
-	inout wire[3:0]		qspi_dq,
+/**
+	@brief Ethernet driver using FPGA based MAC attached voer quad SPI
+ */
+class QSPIEthernetInterface : public EthernetInterface
+{
+public:
+	QSPIEthernetInterface();
+	virtual ~QSPIEthernetInterface();
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Bus to ManagementRegisterInterface
+	virtual EthernetFrame* GetTxFrame();
+	virtual void SendTxFrame(EthernetFrame* frame);
+	virtual void CancelTxFrame(EthernetFrame* frame);
+	virtual EthernetFrame* GetRxFrame();
+	virtual void ReleaseRxFrame(EthernetFrame* frame);
 
-	output logic		rd_en,
-	output logic[15:0]	rd_addr	= 0,
+protected:
 
-	input wire			rd_valid,
-	input wire[7:0]		rd_data,
+	///@brief RX packet buffers
+	EthernetFrame m_rxBuffers[QSPI_RX_BUFCOUNT];
 
-	output wire			wr_en,
-	output logic[15:0]	wr_addr	= 0,
-	output wire[7:0]	wr_data
+	///@brief FIFO of RX buffers available for use
+	FIFO<EthernetFrame*, QSPI_RX_BUFCOUNT> m_rxFreeList;
 
-	);
+	///@brief TX packet buffers
+	EthernetFrame m_txBuffers[QSPI_TX_BUFCOUNT];
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QSPI interface
+	///@brief FIFO of TX buffers available for use
+	FIFO<EthernetFrame*, QSPI_TX_BUFCOUNT> m_txFreeList;
+};
 
-	wire		start;
-	wire		insn_valid;
-	wire[15:0]	insn;
-	logic		rd_mode		= 0;
-	wire		rd_ready;
-
-	wire		rd_en_raw;
-
-	QSPIDeviceInterface #(
-		.INSN_BYTES(2)
-	) qspi (
-		.clk(clk),
-		.sck(qspi_sck),
-		.cs_n(qspi_cs_n),
-		.dq(qspi_dq),
-
-		.start(start),
-		.insn_valid(insn_valid),
-		.insn(insn),
-		.wr_valid(wr_en),
-		.wr_data(wr_data),
-
-		.rd_mode(rd_mode),
-		.rd_ready(rd_en_raw),
-		.rd_valid(rd_valid),
-		.rd_data(rd_data)
-	);
-
-	always_comb begin
-		rd_en	= rd_en_raw && !insn[15];
-	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Address counting
-
-	logic[15:0]	rd_addr_ff	= 0;
-	logic[15:0]	wr_addr_ff	= 0;
-	logic		first		= 0;
-
-	always_comb begin
-
-		//Default to passthrough
-		rd_addr			= rd_addr_ff;
-		wr_addr			= wr_addr_ff;
-
-		//Increment if reading/writing
-		if(rd_en)
-			rd_addr		= rd_addr_ff + 1;
-		if(wr_en && !first)
-			wr_addr		= wr_addr_ff + 1;
-
-		//Start a new transaction
-		if(insn_valid) begin
-			rd_addr		= {1'b0, insn[14:0]};
-			wr_addr		= {1'b0, insn[14:0]};
-		end
-
-	end
-
-	always_ff @(posedge clk) begin
-
-		wr_addr_ff		<= wr_addr;
-		rd_addr_ff		<= rd_addr;
-
-		//Process instruction
-		//MSB of opcode is read flag (0=read, 1=write)
-		if(insn_valid)
-			rd_mode		<= !insn[15];
-
-		//Reset anything we need on CS# falling edge
-		if(start) begin
-			rd_mode		<= 0;
-			first		<= 1;
-		end
-
-		if(wr_en)
-			first		<= 0;
-
-	end
-
-endmodule
+#endif

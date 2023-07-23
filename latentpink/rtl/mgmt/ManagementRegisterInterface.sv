@@ -45,6 +45,8 @@ module ManagementRegisterInterface #(
 	//Core clock for the management domain
 	input wire						clk,
 
+	output logic					irq			= 0,
+
 	//Data bus from QSPI interface or simulation bridge
 	input wire						rd_en,
 	input wire[15:0]				rd_addr,
@@ -104,6 +106,12 @@ module ManagementRegisterInterface #(
 	output logic					vsc_phy_reg_wr = 0,
 	output logic					vsc_phy_reg_rd = 0,
 	output logic[4:0]				vsc_phy_md_addr = 0,
+	output logic					rxfifo_rd_en = 0,
+	output logic					rxfifo_rd_pop_single = 0,
+	input wire[31:0]				rxfifo_rd_data,
+	output logic					rxheader_rd_en = 0,
+	input wire						rxheader_rd_empty,
+	input wire[10:0]				rxheader_rd_data,
 
 	//Configuration registers in crypto clock domain
 	input wire						clk_crypt,
@@ -264,7 +272,13 @@ module ManagementRegisterInterface #(
 		REG_VOLT_AUX_1		= 16'h001b,
 
 		//Reasons for an IRQ
-		REG_IRQ_STAT		= 16'h0020,		//TODO: put stuff here
+		REG_FPGA_IRQSTAT	= 16'h0020,		//
+		REG_FPGA_IRQSTAT_1	= 16'h0021,		//
+											// 0 = RX Ethernet frame ready
+
+		//Ethernet MAC
+		REG_EMAC_RXLEN		= 16'h0024,
+		REG_EMAC_RXLEN_1	= 16'h0025,
 
 		//RAM BIST
 		REG_MBIST			= 16'h0040,		//31 = test enable flag (RW)
@@ -295,6 +309,11 @@ module ManagementRegisterInterface #(
 		REG_VSC_MDIO_1		= 16'h0051,
 		REG_VSC_MDIO_2		= 16'h0052,
 		REG_VSC_MDIO_3		= 16'h0053,
+
+		//Ethernet MAC frame buffer
+		//Any address in this range will be treated as reading from the top of the buffer
+		REG_EMAC_BUFFER_LO	= 16'h1000,
+		REG_EMAC_BUFFER_HI	= 16'h1fff,
 
 		//Crypto accelerator
 		REG_CRYPT_BASE		= 16'h3800,
@@ -338,8 +357,9 @@ module ManagementRegisterInterface #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Address decoding and muxing logic
 
-	logic 					reading			= 0;
-	logic					crypto_active	= 0;
+	logic 					reading					= 0;
+	logic					crypto_active			= 0;
+	logic					rxheader_rd_empty_ff	= 0;
 
 	//Split interface config into port number and register ID
 	localparam PORT_BITS 				= 4;
@@ -364,6 +384,11 @@ module ManagementRegisterInterface #(
 		dp_phy_reg_rd			<= 0;
 		vsc_phy_reg_wr			<= 0;
 		vsc_phy_reg_rd			<= 0;
+		rxfifo_rd_en			<= 0;
+		rxheader_rd_en			<= 0;
+		rxfifo_rd_pop_single	<= 0;
+
+		rxheader_rd_empty_ff	<= rxheader_rd_empty;
 
 		//Start a new read
 		if(rd_en)
@@ -372,6 +397,10 @@ module ManagementRegisterInterface #(
 		//Finish a crypto operation
 		if(crypt_out_updated)
 			crypto_active		<= 0;
+
+		//Set interrupt line
+		if(rxheader_rd_empty_ff && !rxheader_rd_empty)
+			irq					<= 1;
 
 		//Continue a read
 		if(rd_en || reading) begin
@@ -427,6 +456,30 @@ module ManagementRegisterInterface #(
 
 			end
 
+			//Ethernet MAC
+			//Read data without any endianness swapping, since it's logically an array of bytes
+			else if(rd_addr >= REG_EMAC_BUFFER_LO) begin
+
+				case(rd_addr[1:0])
+					0: begin
+
+						//pop the buffer since we've got the read data in the working register
+						rxfifo_rd_pop_single	<= 1;
+
+						rd_data					<= rxfifo_rd_data[31:24];
+					end
+					1:	rd_data					<= rxfifo_rd_data[23:16];
+					2:	rd_data					<= rxfifo_rd_data[15:8];
+					3: begin
+						//prepare to read the next
+						rxfifo_rd_en			<= 1;
+
+						rd_data					<= rxfifo_rd_data[7:0];
+					end
+				endcase
+
+			end
+
 			//Main register decoder
 			else begin
 
@@ -459,6 +512,23 @@ module ManagementRegisterInterface #(
 					REG_VOLT_RAM_1:		rd_data	<= volt_ram[15:8];
 					REG_VOLT_AUX:		rd_data	<= volt_aux[7:0];
 					REG_VOLT_AUX_1:		rd_data	<= volt_aux[15:8];
+
+					//clear IRQ line when status register is read
+					REG_FPGA_IRQSTAT:	rd_data	<= {7'b0, !rxheader_rd_empty };
+					REG_FPGA_IRQSTAT_1: begin
+						rd_data <= 8'b0;
+						irq		<= 0;
+					end
+
+					REG_EMAC_RXLEN:		rd_data <= rxheader_rd_data[7:0];
+					REG_EMAC_RXLEN_1: begin
+						rd_data 		<= {5'b0, rxheader_rd_data[10:8]};
+						rxheader_rd_en	<= 1;
+
+						//read (but don't pop) first data word
+						//so it's ready by the time we need it
+						rxfifo_rd_en	<= 1;
+					end
 
 					REG_MBIST:			rd_data	<= mbist_fail_addr[7:0];
 					REG_MBIST_1:		rd_data	<= mbist_fail_addr[15:8];
@@ -542,6 +612,8 @@ module ManagementRegisterInterface #(
 
 			end
 
+			//Ethernet MAC TODO
+
 			else begin
 
 				case(wr_addr[7:0])
@@ -600,5 +672,25 @@ module ManagementRegisterInterface #(
 		end
 
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug ILA
+
+	ila_2 ila(
+		.clk(clk),
+		.probe0(rd_en),
+		.probe1(rd_valid),
+		.probe2(rd_addr),
+		.probe3(rd_data),
+		.probe4(irq),
+		.probe5(rxfifo_rd_en),
+		.probe6(rxheader_rd_en),
+		.probe7(rxheader_rd_empty),
+		.probe8(rxheader_rd_empty_ff),
+		.probe9(rxheader_rd_data),
+
+		.probe10(rxfifo_rd_pop_single),
+		.probe11(rxfifo_rd_data)
+	);
 
 endmodule

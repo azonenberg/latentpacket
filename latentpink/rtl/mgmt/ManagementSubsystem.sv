@@ -185,6 +185,7 @@ module ManagementSubsystem #(
 	);
 
 	//Ungate MDC after a while
+	//TODO: check if this is actually needed
 	logic mdc_ce = 0;
 	logic[19:0] gate_count = 1;
 	always_ff @(posedge sys_clk) begin
@@ -194,14 +195,6 @@ module ManagementSubsystem #(
 			gate_count	<= gate_count + 1'h1;
 	end
 	assign dp_mdc = dp_mdc_raw & mdc_ce;
-
-	ila_1 ila_dpmdio(
-		.clk(sys_clk),
-		.probe0(dp_mdio_tx_data),
-		.probe1(dp_mdio_tx_en),
-		.probe2(dp_mdio_rx_data),
-		.probe3(dp_mdc)
-	);
 
 	wire		vsc_mdio_tx_data;
 	wire		vsc_mdio_tx_en;
@@ -269,11 +262,25 @@ module ManagementSubsystem #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FIFO for storing incoming Ethernet frames
 
+	wire		rxfifo_rd_en;
+	wire		rxfifo_rd_pop_single;
+	wire[31:0]	rxfifo_rd_data;
+	wire		rxheader_rd_en;
+	wire		rxheader_rd_empty;
+	wire[10:0]	rxheader_rd_data;
+
 	ManagementRxFifo rx_fifo(
 		.sys_clk(sys_clk),
 		.mgmt0_rx_clk(mgmt0_rx_clk),
 		.mgmt0_rx_bus(mgmt0_rx_bus),
-		.mgmt0_link_up(mgmt0_link_up)
+		.mgmt0_link_up(mgmt0_link_up),
+
+		.rxfifo_rd_en(rxfifo_rd_en),
+		.rxfifo_rd_pop_single(rxfifo_rd_pop_single),
+		.rxfifo_rd_data(rxfifo_rd_data),
+		.rxheader_rd_en(rxheader_rd_en),
+		.rxheader_rd_empty(rxheader_rd_empty),
+		.rxheader_rd_data(rxheader_rd_data)
 	);
 
 	//DEBUG: vio on tx bus so it doesn't get optimized out
@@ -295,7 +302,7 @@ module ManagementSubsystem #(
 	wire[7:0]	mgmt_wr_data;
 
 	logic		mgmt_rd_valid_out	= 0;
-	logic[7:0]	mgmt_rd_data_out		= 0;
+	logic[7:0]	mgmt_rd_data_out	= 0;
 
 	//Prevent any logic from the rest of this module from being optimized into the bridge
 	//(because it's placed way off in the corner of the die near the QSPI IOBs)
@@ -306,7 +313,6 @@ module ManagementSubsystem #(
 		.qspi_sck(qspi_sck),
 		.qspi_cs_n(qspi_cs_n),
 		.qspi_dq(qspi_dq),
-		.irq(irq),
 
 		.rd_en(mgmt_rd_en),
 		.rd_addr(mgmt_rd_addr),
@@ -375,6 +381,8 @@ module ManagementSubsystem #(
 	) regs (
 		.clk(sys_clk),
 
+		.irq(irq),
+
 		//Memory bus
 		.rd_en(mgmt_rd_en),
 		.rd_addr(mgmt_rd_addr),
@@ -427,6 +435,12 @@ module ManagementSubsystem #(
 		.vsc_phy_reg_wr(vsc_phy_reg_wr),
 		.vsc_phy_reg_rd(vsc_phy_reg_rd),
 		.vsc_phy_md_addr(vsc_phy_md_addr),
+		.rxfifo_rd_en(rxfifo_rd_en),
+		.rxfifo_rd_pop_single(rxfifo_rd_pop_single),
+		.rxfifo_rd_data(rxfifo_rd_data),
+		.rxheader_rd_en(rxheader_rd_en),
+		.rxheader_rd_empty(rxheader_rd_empty),
+		.rxheader_rd_data(rxheader_rd_data),
 
 		//Control registers (port RX clock domain)
 		.port_rx_clk(port_rx_clk),
