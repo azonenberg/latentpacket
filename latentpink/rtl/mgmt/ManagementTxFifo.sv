@@ -34,132 +34,172 @@
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief FIFO for shifting Ethernet frames from the management PHY clock domain to the QSPI clock domain
+	@brief FIFO for shifting Ethernet frames from the QSPI clock domain to the management PHY clock domain
  */
-module ManagementRxFifo(
-	input wire					sys_clk,
+module ManagementTxFifo(
+	input wire				sys_clk,
 
-	input wire					mgmt0_rx_clk,
+	input wire				wr_en,
+	input wire[7:0]			wr_data,
+	input wire				wr_commit,
 
-	input wire EthernetRxBus	mgmt0_rx_bus,
-	input wire					mgmt0_link_up,
-
-	input wire					rxfifo_rd_en,
-	input wire					rxfifo_rd_pop_single,
-	output wire[31:0]			rxfifo_rd_data,
-	input wire					rxheader_rd_en,
-	output wire					rxheader_rd_empty,
-	output wire[10:0]			rxheader_rd_data
+	input wire				tx_clk,
+	input wire				link_up,
+	input wire				tx_ready,
+	output EthernetTxBus	tx_bus
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Main FIFO and push logic
+	// The actual FIFOs
 
-	logic		rxfifo_wr_en		= 0;
-	logic[31:0]	rxfifo_wr_data		= 0;
-
-	wire		wr_reset;
-	assign		wr_reset = !mgmt0_link_up;
+	//For now, no checks for overflow
+	//Assume we're popping (at gigabit speed) faster than we can possibly push from the slow micro
 
 	wire		rd_reset;
+	assign		rd_reset = !link_up;
+
+	wire		wr_reset;
+
+	logic		txfifo_rd_en			= 0;
+	wire[7:0]	txfifo_rd_data;
+
+	//Tie off unused high bits
+	assign tx_bus.data[31:8] = 0;
+	assign tx_bus.bytes_valid = 1;
 
 	ThreeStageSynchronizer sync_fifo_rst(
-		.clk_in(mgmt0_rx_clk),
-		.din(wr_reset),
-		.clk_out(sys_clk),
-		.dout(rd_reset)
+		.clk_in(sys_clk),
+		.din(rd_reset),
+		.clk_out(tx_clk),
+		.dout(wr_reset)
 	);
-
-	wire[10:0]	rxfifo_wr_size;
-	logic		rxfifo_wr_drop;
-
-	CrossClockPacketFifo #(
-		.WIDTH(32),
-		.DEPTH(1024)	//at least 2 packets worth
-	) rx_cdc_fifo (
-		.wr_clk(mgmt0_rx_clk),
-		.wr_en(rxfifo_wr_en),
-		.wr_data(rxfifo_wr_data),
+	CrossClockFifo #(
+		.WIDTH(8),
+		.DEPTH(4096),
+		.USE_BLOCK(1),
+		.OUT_REG(1)
+	) tx_cdc_fifo (
+		.wr_clk(sys_clk),
+		.wr_en(wr_en),
+		.wr_data(wr_data),
+		.wr_size(),
+		.wr_full(),
+		.wr_overflow(),
 		.wr_reset(wr_reset),
-		.wr_size(rxfifo_wr_size),
-		.wr_commit(mgmt0_rx_bus.commit),
-		.wr_rollback(rxfifo_wr_drop),
 
-		.rd_clk(sys_clk),
-		.rd_en(rxfifo_rd_en),
-		.rd_offset(10'h0),
-		.rd_pop_single(rxfifo_rd_pop_single),
-		.rd_pop_packet(1'b0),
-		.rd_packet_size(10'h0),
-		.rd_data(rxfifo_rd_data),
+		.rd_clk(tx_clk),
+		.rd_en(txfifo_rd_en),
+		.rd_data(tx_bus.data[7:0]),
 		.rd_size(),
+		.rd_empty(),
+		.rd_underflow(),
 		.rd_reset(rd_reset)
 	);
 
-	//PUSH SIDE
-	logic dropping = 0;
-	logic[10:0] framelen = 0;
-
-	wire		header_wfull;
+	logic		txheader_rd_en				= 0;
+	wire[10:0]	txheader_rd_data;
+	wire		txheader_rd_empty;
+	logic[10:0]	tx_wr_packetlen;
 
 	CrossClockFifo #(
 		.WIDTH(11),
 		.DEPTH(32),
 		.USE_BLOCK(0),
 		.OUT_REG(0)
-	) rx_framelen_fifo (
-		.wr_clk(mgmt0_rx_clk),
-		.wr_en(mgmt0_rx_bus.commit && !dropping),
-		.wr_data(framelen),
+	) tx_framelen_fifo (
+		.wr_clk(sys_clk),
+		.wr_en(wr_commit),
+		.wr_data(tx_wr_packetlen),
 		.wr_size(),
-		.wr_full(header_wfull),
+		.wr_full(),
 		.wr_overflow(),
 		.wr_reset(wr_reset),
 
-		.rd_clk(sys_clk),
-		.rd_en(rxheader_rd_en),
-		.rd_data(rxheader_rd_data),
+		.rd_clk(tx_clk),
+		.rd_en(txheader_rd_en),
+		.rd_data(txheader_rd_data),
 		.rd_size(),
-		.rd_empty(rxheader_rd_empty),
+		.rd_empty(txheader_rd_empty),
 		.rd_underflow(),
 		.rd_reset(rd_reset)
 	);
 
-	always_ff @(posedge mgmt0_rx_clk) begin
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Push logic
 
-		rxfifo_wr_drop		<= 0;
+	always_ff @(posedge sys_clk) begin
 
-		if(mgmt0_rx_bus.drop) begin
-			rxfifo_wr_drop	<= 1;
-			dropping		<= 1;
-		end
+		//Reset length when pushing packet
+		if(wr_commit)
+			tx_wr_packetlen	<= 0;
 
-		//Frame delimiter
-		if(mgmt0_rx_bus.start) begin
+		//Push a byte
+		if(wr_en)
+			tx_wr_packetlen	<= tx_wr_packetlen + 1;
+	end
 
-			//Not enough space for a full sized frame? Give up
-			if( (rxfifo_wr_size < 375) || header_wfull )
-				dropping	<= 1;
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Pop logic
 
-			//Nope, start a new frame
-			else
-				framelen	<= 0;
+	enum logic
+	{
+		TX_STATE_IDLE 		= 0,
+		TX_STATE_SENDING	= 1
+	} tx_state = TX_STATE_IDLE;
 
-		end
+	logic[10:0] tx_count = 0;
+	always_ff @(posedge tx_clk) begin
 
-		//If we hit max length frame or run out of space, drop the frame
-		else if( (rxfifo_wr_size < 2) || (framelen > 1500) ) begin
-			rxfifo_wr_drop	<= 1;
-			dropping		<= 1;
-		end
+		tx_bus.start		<= 0;
+		tx_bus.data_valid	<= txfifo_rd_en;
+		txheader_rd_en		<= 0;
+		txfifo_rd_en		<= 0;
 
-		//Nope, push data as needed
-		else if(!dropping) begin
-			rxfifo_wr_en	<= mgmt0_rx_bus.data_valid;
-			rxfifo_wr_data	<= mgmt0_rx_bus.data;
-			framelen		<= framelen + mgmt0_rx_bus.bytes_valid;
-		end
+		case(tx_state)
+
+			TX_STATE_IDLE: begin
+
+				if(!txheader_rd_empty && tx_ready && !txheader_rd_en) begin
+					tx_bus.start	<= 1;
+					tx_count		<= 1;
+					txfifo_rd_en	<= 1;
+					tx_state		<= TX_STATE_SENDING;
+				end
+
+			end
+
+			TX_STATE_SENDING: begin
+
+				if(tx_count >= txheader_rd_data) begin
+					tx_state		<= TX_STATE_IDLE;
+					txheader_rd_en	<= 1;
+				end
+				else begin
+					txfifo_rd_en	<= 1;
+					tx_count		<= tx_count + 1;
+				end
+
+			end
+
+		endcase
 
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug ILAs
+
+	ila_1 ila(
+		.clk(tx_clk),
+		.probe0(tx_bus.start),
+		.probe1(tx_bus.data_valid),
+		.probe2(tx_bus.data),
+		.probe3(tx_ready),
+		.probe4(txheader_rd_empty),
+		.probe5(txheader_rd_data),
+		.probe6(txfifo_rd_en),
+		.probe7(tx_state),
+		.probe8(tx_count),
+		.probe9(txheader_rd_en)
+	);
 
 endmodule

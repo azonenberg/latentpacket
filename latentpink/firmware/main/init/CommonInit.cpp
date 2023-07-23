@@ -198,7 +198,7 @@ void ConfigureIP()
 	IPv4Address defaultIP			= { .m_octets{10, 2,   6,   42} };
 	IPv4Address defaultNetmask		= { .m_octets{255, 255, 255,   0} };
 	IPv4Address defaultBroadcast	= { .m_octets{10, 2,   6, 255} };
-	IPv4Address defaultGateway		= { .m_octets{10, 2,   6,   1} };
+	IPv4Address defaultGateway		= { .m_octets{10, 2,   6,  252} };
 
 	g_ipConfig.m_address = g_kvs->ReadObject<IPv4Address>(defaultIP, "ip.address");
 	g_ipConfig.m_netmask = g_kvs->ReadObject<IPv4Address>(defaultNetmask, "ip.netmask");

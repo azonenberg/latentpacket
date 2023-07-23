@@ -283,11 +283,22 @@ module ManagementSubsystem #(
 		.rxheader_rd_data(rxheader_rd_data)
 	);
 
-	//DEBUG: vio on tx bus so it doesn't get optimized out
-	vio_1 vio(
-		.clk(mgmt0_tx_clk),
-		.probe_in0(mgmt0_tx_ready),
-		.probe_out0(mgmt0_tx_bus));
+	wire		txfifo_wr_en;
+	wire[7:0]	txfifo_wr_data;
+	wire		txfifo_wr_commit;
+
+	ManagementTxFifo tx_fifo(
+		.sys_clk(sys_clk),
+
+		.wr_en(txfifo_wr_en),
+		.wr_data(txfifo_wr_data),
+		.wr_commit(txfifo_wr_commit),
+
+		.tx_clk(mgmt0_tx_clk),
+		.link_up(mgmt0_link_up),
+		.tx_ready(mgmt0_tx_ready),
+		.tx_bus(mgmt0_tx_bus)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QSPI device bridge
@@ -441,6 +452,9 @@ module ManagementSubsystem #(
 		.rxheader_rd_en(rxheader_rd_en),
 		.rxheader_rd_empty(rxheader_rd_empty),
 		.rxheader_rd_data(rxheader_rd_data),
+		.txfifo_wr_en(txfifo_wr_en),
+		.txfifo_wr_data(txfifo_wr_data),
+		.txfifo_wr_commit(txfifo_wr_commit),
 
 		//Control registers (port RX clock domain)
 		.port_rx_clk(port_rx_clk),

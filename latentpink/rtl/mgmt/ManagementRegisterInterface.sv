@@ -112,6 +112,9 @@ module ManagementRegisterInterface #(
 	output logic					rxheader_rd_en = 0,
 	input wire						rxheader_rd_empty,
 	input wire[10:0]				rxheader_rd_data,
+	output logic 					txfifo_wr_en = 0,
+	output logic[7:0] 				txfifo_wr_data = 0,
+	output logic	 				txfifo_wr_commit = 0,
 
 	//Configuration registers in crypto clock domain
 	input wire						clk_crypt,
@@ -279,6 +282,7 @@ module ManagementRegisterInterface #(
 		//Ethernet MAC
 		REG_EMAC_RXLEN		= 16'h0024,
 		REG_EMAC_RXLEN_1	= 16'h0025,
+		REG_EMAC_COMMIT		= 16'h0028,		//write any value to end the active packet
 
 		//RAM BIST
 		REG_MBIST			= 16'h0040,		//31 = test enable flag (RW)
@@ -387,6 +391,8 @@ module ManagementRegisterInterface #(
 		rxfifo_rd_en			<= 0;
 		rxheader_rd_en			<= 0;
 		rxfifo_rd_pop_single	<= 0;
+		txfifo_wr_en			<= 0;
+		txfifo_wr_commit		<= 0;
 
 		rxheader_rd_empty_ff	<= rxheader_rd_empty;
 
@@ -612,7 +618,11 @@ module ManagementRegisterInterface #(
 
 			end
 
-			//Ethernet MAC TODO
+			//Ethernet MAC
+			else if(wr_addr >= REG_EMAC_BUFFER_LO) begin
+				txfifo_wr_en	<= 1;
+				txfifo_wr_data	<= wr_data;
+			end
 
 			else begin
 
@@ -664,6 +674,8 @@ module ManagementRegisterInterface #(
 						vsc_phy_reg_rd			<= wr_data[5];
 						vsc_phy_reg_wr			<= wr_data[6];
 					end
+
+					REG_EMAC_COMMIT:	txfifo_wr_commit <= 1;
 
 				endcase
 

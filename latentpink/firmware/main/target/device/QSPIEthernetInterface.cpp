@@ -68,9 +68,9 @@ void QSPIEthernetInterface::SendTxFrame(EthernetFrame* frame)
 {
 	g_log("Send of %d byte frame requested\n", frame->Length());
 
-	//TODO: actually send it
-
 	//TODO: DMA optimizations
+	g_fpga->BlockingWrite(REG_EMAC_BUFFER, frame->RawData(), frame->Length());
+	g_fpga->BlockingWrite8(REG_EMAC_COMMIT, 0);
 
 	//Done, put on free list
 	m_txFreeList.Push(frame);
@@ -107,6 +107,7 @@ EthernetFrame* QSPIEthernetInterface::GetRxFrame()
 	}
 
 	//Read it
+	//TODO: DMA optimizations
 	auto frame = m_rxFreeList.Pop();
 	frame->SetLength(len);
 	g_fpga->BlockingRead(REG_EMAC_BUFFER, frame->RawData(), len);

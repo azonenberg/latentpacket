@@ -71,6 +71,9 @@ public:
 		return data;
 	}
 
+	void BlockingWrite8(uint32_t insn, uint8_t data)
+	{ BlockingWrite(insn, &data, sizeof(data)); }
+
 	void BlockingWrite16(uint32_t insn, uint16_t data)
 	{ BlockingWrite(insn, reinterpret_cast<uint8_t*>(&data), sizeof(data)); }
 
@@ -93,6 +96,7 @@ enum regid_t
 
 	REG_FPGA_IRQSTAT	= 0x0020,
 	REG_EMAC_RXLEN		= 0x0024,
+	REG_EMAC_COMMIT		= 0x0028,
 
 	REG_MBIST			= 0x0040,
 	REG_MBIST_SEED		= 0x0044,
