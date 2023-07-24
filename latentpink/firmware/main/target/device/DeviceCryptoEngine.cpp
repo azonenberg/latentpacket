@@ -40,29 +40,12 @@ DeviceCryptoEngine::~DeviceCryptoEngine()
 
 void DeviceCryptoEngine::SharedSecret(uint8_t* sharedSecret, uint8_t* clientPublicKey)
 {
-	//Calculate the shared secret using our software implementation
-	uint32_t start = g_logTimer->GetCount();
-	CryptoEngine::SharedSecret(sharedSecret, clientPublicKey);
-	uint32_t delta = g_logTimer->GetCount() - start;
-	g_log("Shared secret calculation using software implementation took %d.%d ms\n", delta/10, delta % 10);
-
-	//Repeat using FPGA implementation
-	uint8_t fpgaSharedSecret[ECDH_KEY_SIZE] = {0};
-	start = g_logTimer->GetCount();
 	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_WORK, clientPublicKey, ECDH_KEY_SIZE);
 	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_E, m_ephemeralkeyPriv, ECDH_KEY_SIZE);
 	uint8_t status = 1;
 	while(status != 0)
 		status = g_fpga->BlockingRead8(REG_CRYPT_BASE + REG_CRYPT_STATUS);
-	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, fpgaSharedSecret, ECDH_KEY_SIZE);
-	delta = g_logTimer->GetCount() - start;
-	g_log("Shared secret calculation using FPGA implementation took %d.%d ms\n", delta/10, delta % 10);
-
-	//Verify result
-	if(!memcmp(fpgaSharedSecret, sharedSecret, ECDH_KEY_SIZE))
-		g_log("OK: Calculated shared secrets match\n");
-	else
-		g_log("FAIL: Calculated shared secrets do not match\n");
+	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, sharedSecret, ECDH_KEY_SIZE);
 }
 
 /**
@@ -80,33 +63,18 @@ void DeviceCryptoEngine::GenerateX25519KeyPair(uint8_t* pub)
 	m_ephemeralkeyPriv[31] &= 0x7f;
 	m_ephemeralkeyPriv[31] |= 0x40;
 
+	//Well defined curve25519 base point from crypto_scalarmult_base
 	static uint8_t basepoint[ECDH_KEY_SIZE] =
 	{
 		9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
-	uint32_t start = g_logTimer->GetCount();
-	crypto_scalarmult_base(pub, m_ephemeralkeyPriv);
-	uint32_t delta = g_logTimer->GetCount() - start;
-	g_log("Ephemeral key generation using software implementation took %d.%d ms\n", delta/10, delta % 10);
-
-	//Repeat using FPGA implementation
-	uint8_t fpgaPublicKey[ECDH_KEY_SIZE] = {0};
-	start = g_logTimer->GetCount();
+	//Make the FPGA do the rest of the work
 	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_WORK, basepoint, ECDH_KEY_SIZE);
 	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_E, m_ephemeralkeyPriv, ECDH_KEY_SIZE);
 	uint8_t status = 1;
 	while(status != 0)
 		status = g_fpga->BlockingRead8(REG_CRYPT_BASE + REG_CRYPT_STATUS);
-	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, fpgaPublicKey, ECDH_KEY_SIZE);
-	delta = g_logTimer->GetCount() - start;
-	g_log("Ephemeral key generation using FPGA implementation took %d.%d ms\n", delta/10, delta % 10);
-
-	//Verify result
-	if(!memcmp(fpgaPublicKey, pub, ECDH_KEY_SIZE))
-		g_log("OK: Calculated public keys match\n");
-	else
-		g_log("FAIL: Calculated public keys do not match\n");
-
+	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, pub, ECDH_KEY_SIZE);
 }

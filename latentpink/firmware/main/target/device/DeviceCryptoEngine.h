@@ -32,6 +32,9 @@
 
 #include <staticnet/drivers/stm32/STM32CryptoEngine.h>
 
+/**
+	@brief Extension of STM32CryptoEngine using our FPGA curve25519 accelerator
+ */
 class DeviceCryptoEngine : public STM32CryptoEngine
 {
 public:
