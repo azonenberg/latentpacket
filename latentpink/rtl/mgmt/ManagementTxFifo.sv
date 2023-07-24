@@ -105,7 +105,7 @@ module ManagementTxFifo(
 		.WIDTH(11),
 		.DEPTH(32),
 		.USE_BLOCK(0),
-		.OUT_REG(0)
+		.OUT_REG(1)
 	) tx_framelen_fifo (
 		.wr_clk(sys_clk),
 		.wr_en(wr_commit),
@@ -141,10 +141,11 @@ module ManagementTxFifo(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop logic
 
-	enum logic
+	enum logic[1:0]
 	{
 		TX_STATE_IDLE 		= 0,
-		TX_STATE_SENDING	= 1
+		TX_STATE_POP		= 1,
+		TX_STATE_SENDING	= 2
 	} tx_state = TX_STATE_IDLE;
 
 	logic[10:0] tx_count = 0;
@@ -160,19 +161,23 @@ module ManagementTxFifo(
 			TX_STATE_IDLE: begin
 
 				if(!txheader_rd_empty && tx_ready && !txheader_rd_en) begin
-					tx_bus.start	<= 1;
-					tx_count		<= 1;
-					txfifo_rd_en	<= 1;
-					tx_state		<= TX_STATE_SENDING;
+					txheader_rd_en	<= 1;
+					tx_state		<= TX_STATE_POP;
 				end
 
+			end
+
+			TX_STATE_POP: begin
+				tx_bus.start	<= 1;
+				tx_count		<= 1;
+				txfifo_rd_en	<= 1;
+				tx_state		<= TX_STATE_SENDING;
 			end
 
 			TX_STATE_SENDING: begin
 
 				if(tx_count >= txheader_rd_data) begin
 					tx_state		<= TX_STATE_IDLE;
-					txheader_rd_en	<= 1;
 				end
 				else begin
 					txfifo_rd_en	<= 1;
@@ -184,22 +189,5 @@ module ManagementTxFifo(
 		endcase
 
 	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug ILAs
-
-	ila_1 ila(
-		.clk(tx_clk),
-		.probe0(tx_bus.start),
-		.probe1(tx_bus.data_valid),
-		.probe2(tx_bus.data),
-		.probe3(tx_ready),
-		.probe4(txheader_rd_empty),
-		.probe5(txheader_rd_data),
-		.probe6(txfifo_rd_en),
-		.probe7(tx_state),
-		.probe8(tx_count),
-		.probe9(txheader_rd_en)
-	);
 
 endmodule

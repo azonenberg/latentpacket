@@ -898,12 +898,6 @@ module NetworkInterfaces(
 		.link_speed(mgmt0_link_speed)
 		);
 
-	ila_0 ila_mgmt0(
-		.clk(mgmt0_rx_clk),
-		.probe0(mgmt0_rx_bus),
-		.probe1(mgmt0_link_up)
-	);
-
 	ila_0 ila_g12(
 		.clk(clk_125mhz),
 		.probe0(g12_rx_bus),
