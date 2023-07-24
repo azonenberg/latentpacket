@@ -27,51 +27,40 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-/**
-	@file
-	@brief Configuration file for staticnet on LATENTPINK
- */
+#include "latentpink.h"
+#include "DeviceCryptoEngine.h"
 
-#ifndef staticnet_config_h
-#define staticnet_config_h
+DeviceCryptoEngine::DeviceCryptoEngine()
+{
+}
 
-///@brief Maximum size of an Ethernet frame (payload only, headers not included)
-#define ETHERNET_PAYLOAD_MTU 1500
+DeviceCryptoEngine::~DeviceCryptoEngine()
+{
+}
 
-///@brief Define this to zeroize all frame buffers between uses
-//#define ZEROIZE_BUFFERS_BEFORE_USE
+void DeviceCryptoEngine::SharedSecret(uint8_t* sharedSecret, uint8_t* clientPublicKey)
+{
+	//Calculate the shared secret using our software implementation
+	uint32_t start = g_logTimer->GetCount();
+	CryptoEngine::SharedSecret(sharedSecret, clientPublicKey);
+	uint32_t delta = g_logTimer->GetCount() - start;
+	g_log("Shared secret calculation using software implementation took %d.%d ms\n", delta/10, delta % 10);
 
-///@brief Define this to enable performance counters
-#define STATICNET_PERFORMANCE_COUNTERS
+	//Repeat using FPGA implementation
+	uint8_t fpgaSharedSecret[ECDH_KEY_SIZE] = {0};
+	start = g_logTimer->GetCount();
+	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_WORK, clientPublicKey, ECDH_KEY_SIZE);
+	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_E, m_ephemeralkeyPriv, ECDH_KEY_SIZE);
+	uint8_t status = 1;
+	while(status != 0)
+		status = g_fpga->BlockingRead8(REG_CRYPT_BASE + REG_CRYPT_STATUS);
+	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, fpgaSharedSecret, ECDH_KEY_SIZE);
+	delta = g_logTimer->GetCount() - start;
+	g_log("Shared secret calculation using FPGA implementation took %d.%d ms\n", delta/10, delta % 10);
 
-///@brief Number of ways of associativity for the ARP cache
-#define ARP_CACHE_WAYS 4
-
-///@brief Number of lines per set in the ARP cache
-#define ARP_CACHE_LINES 256
-
-///@brief Number of entries in the TCP socket table
-#define TCP_TABLE_WAYS 2
-
-///@brief Number of lines per set in the TCP socket table
-#define TCP_TABLE_LINES 16
-
-///@brief Maximum number of SSH connections supported
-#define SSH_TABLE_SIZE 2
-
-///@brief SSH socket RX buffer size
-#define SSH_RX_BUFFER_SIZE 2048
-
-///@brief CLI TX buffer size
-#define CLI_TX_BUFFER_SIZE 1024
-
-///@brief Maximum length of a SSH username
-#define SSH_MAX_USERNAME	32
-
-///@brief Max length of a CLI username
-#define CLI_USERNAME_MAX SSH_MAX_USERNAME
-
-///@brief Maximum length of a SSH password
-#define SSH_MAX_PASSWORD	128
-
-#endif
+	//Verify result
+	if(!memcmp(fpgaSharedSecret, sharedSecret, ECDH_KEY_SIZE))
+		g_log("OK: Calculated shared secrets match\n");
+	else
+		g_log("FAIL: Calculated shared secrets do not match\n");
+}

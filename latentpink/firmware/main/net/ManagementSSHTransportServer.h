@@ -37,7 +37,7 @@
 #include <staticnet/ssh/SSHTransportServer.h>
 #include "ManagementPasswordAuthenticator.h"
 #include "cli/SwitchCLISessionContext.h"
-#include <staticnet/drivers/stm32/STM32CryptoEngine.h>
+#include "../target/device/DeviceCryptoEngine.h"
 
 /**
 	@brief SSH server class for the bridge test
@@ -57,7 +57,7 @@ protected:
 	SwitchCLISessionContext m_context[SSH_TABLE_SIZE];
 
 	#ifndef SIMULATION
-	STM32CryptoEngine m_engine;
+	DeviceCryptoEngine m_engine;
 	#endif
 };
 

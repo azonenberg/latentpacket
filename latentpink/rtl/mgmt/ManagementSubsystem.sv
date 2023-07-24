@@ -464,6 +464,7 @@ module ManagementSubsystem #(
 
 		//Control registers (crypto clock domain)
 		.clk_crypt(clk_crypt),
+		.crypt_en(crypt_en),
 		.crypt_work_in(crypt_work_in),
 		.crypt_e(crypt_e),
 		.crypt_out_valid(crypt_out_valid),
