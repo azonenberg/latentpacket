@@ -64,3 +64,49 @@ void DeviceCryptoEngine::SharedSecret(uint8_t* sharedSecret, uint8_t* clientPubl
 	else
 		g_log("FAIL: Calculated shared secrets do not match\n");
 }
+
+/**
+	@brief Generates an x25519 key pair.
+
+	The private key is kept internal to the CryptoEngine object.
+
+	The public key is stored in the provided buffer, which must be at least 32 bytes in size.
+ */
+void DeviceCryptoEngine::GenerateX25519KeyPair(uint8_t* pub)
+{
+	//To be a valid key, a few bits need well-defined values. The rest are cryptographic randomness.
+	GenerateRandom(m_ephemeralkeyPriv, 32);
+	m_ephemeralkeyPriv[0] &= 0xF8;
+	m_ephemeralkeyPriv[31] &= 0x7f;
+	m_ephemeralkeyPriv[31] |= 0x40;
+
+	static uint8_t basepoint[ECDH_KEY_SIZE] =
+	{
+		9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	uint32_t start = g_logTimer->GetCount();
+	crypto_scalarmult_base(pub, m_ephemeralkeyPriv);
+	uint32_t delta = g_logTimer->GetCount() - start;
+	g_log("Ephemeral key generation using software implementation took %d.%d ms\n", delta/10, delta % 10);
+
+	//Repeat using FPGA implementation
+	uint8_t fpgaPublicKey[ECDH_KEY_SIZE] = {0};
+	start = g_logTimer->GetCount();
+	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_WORK, basepoint, ECDH_KEY_SIZE);
+	g_fpga->BlockingWrite(REG_CRYPT_BASE + REG_E, m_ephemeralkeyPriv, ECDH_KEY_SIZE);
+	uint8_t status = 1;
+	while(status != 0)
+		status = g_fpga->BlockingRead8(REG_CRYPT_BASE + REG_CRYPT_STATUS);
+	g_fpga->BlockingRead(REG_CRYPT_BASE + REG_WORK_OUT, fpgaPublicKey, ECDH_KEY_SIZE);
+	delta = g_logTimer->GetCount() - start;
+	g_log("Ephemeral key generation using FPGA implementation took %d.%d ms\n", delta/10, delta % 10);
+
+	//Verify result
+	if(!memcmp(fpgaPublicKey, pub, ECDH_KEY_SIZE))
+		g_log("OK: Calculated public keys match\n");
+	else
+		g_log("FAIL: Calculated public keys do not match\n");
+
+}

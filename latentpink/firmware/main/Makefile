@@ -1,6 +1,6 @@
 SRCDIR=$(CURDIR)
 ROOTDIR=$(CURDIR)/../../../
-CXXFLAGS=-g -O0 --std=c++17 -Wall -Wextra \
+CXXFLAGS=-g -O2 --std=c++17 -Wall -Wextra \
 	-I$(ROOTDIR) \
 	-I$(SRCDIR) \
 	-I$(ROOTDIR)/stm32-cpp/devices/inc \

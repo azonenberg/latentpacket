@@ -38,6 +38,8 @@ public:
 	DeviceCryptoEngine();
 	virtual ~DeviceCryptoEngine();
 
+	virtual void GenerateX25519KeyPair(uint8_t* pub);
+
 	virtual void SharedSecret(uint8_t* sharedSecret, uint8_t* clientPublicKey);
 };
 
