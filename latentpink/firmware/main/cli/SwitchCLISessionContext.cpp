@@ -38,19 +38,28 @@ static const char* hostname_objid = "hostname";
 enum cmdid_t
 {
 	CMD_ADDRESS,
+	CMD_ARP,
+	CMD_CACHE,
 	CMD_COMMIT,
 	CMD_DETAIL,
 	CMD_END,
 	CMD_EXIT,
+	CMD_FINGERPRINT,
 	CMD_FLASH,
+	CMD_GATEWAY,
 	CMD_INTERFACE,
 	CMD_IP,
+	CMD_HARDWARE,
 	CMD_HOSTNAME,
+	CMD_RELOAD,
 	CMD_ROLLBACK,
+	CMD_ROUTE,
 	CMD_SHOW,
+	CMD_SSH,
 	CMD_STATUS,
 	CMD_VERSION,
 	CMD_VLAN,
+	CMD_ZEROIZE,
 
 	//must be in order separately outside the alphabetical block
 	//so we can just add/subtract CMD_G0 to get an interface number
@@ -109,41 +118,77 @@ static const clikeyword_t g_interfaceCommands[] =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "ip"
 
+static const clikeyword_t g_ipAddressCommands[] =
+{
+	{"<address>",	FREEFORM_TOKEN,		nullptr,				"New IPv4 address and subnet mask in x.x.x.x/yy format"},
+	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
+};
+
+static const clikeyword_t g_ipGatewayCommands[] =
+{
+	{"<address>",	FREEFORM_TOKEN,		nullptr,				"New IPv4 default gateway"},
+	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
+};
+
 static const clikeyword_t g_ipCommands[] =
 {
-	{"address",		CMD_ADDRESS,		nullptr,	"TODO implement this"},
+	{"address",		CMD_ADDRESS,		g_ipAddressCommands,	"Set the IPv4 address of the device"},
+	{"gateway",		CMD_GATEWAY,		g_ipGatewayCommands,	"Set the IPv4 default gateway of the device"},
 
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "show"
 
+static const clikeyword_t g_showArpCommands[] =
+{
+	{"cache",			CMD_CACHE,				nullptr,				"Show contents of the ARP cache"},
+	{nullptr,			INVALID_COMMAND,		nullptr,				nullptr}
+};
+
+static const clikeyword_t g_showIpCommands[] =
+{
+	{"address",			CMD_ADDRESS,			nullptr,				"Show the IPv4 address and subnet mask"},
+	{"route",			CMD_ROUTE,				nullptr,				"Show the IPv4 routing table"},
+	{nullptr,			INVALID_COMMAND,		nullptr,				nullptr}
+};
+
+static const clikeyword_t g_showSshCommands[] =
+{
+	{"fingerprint",		CMD_FINGERPRINT,		nullptr,				"Show the SSH host key fingerprint (in OpenSSH base64 SHA256 format)"},
+	{nullptr,			INVALID_COMMAND,		nullptr,				nullptr}
+};
+
 static const clikeyword_t g_showInterfaceCommands[] =
 {
-	{"status",		CMD_STATUS,			nullptr,	"Display summary of all network interfaces"},
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+	{"status",			CMD_STATUS,			nullptr,					"Display summary of all network interfaces"},
+	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
 };
 
 static const clikeyword_t g_showFlashDetailCommands[] =
 {
-	{"<objname>",	FREEFORM_TOKEN,		nullptr,	"Name of the flash object to display"},
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+	{"<objname>",		FREEFORM_TOKEN,		nullptr,					"Name of the flash object to display"},
+	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
 };
 
 static const clikeyword_t g_showFlashCommands[] =
 {
-	{"<cr>",		OPTIONAL_TOKEN,		nullptr,					""},
-	{"detail",		CMD_DETAIL,			g_showFlashDetailCommands,	"Show detailed flash object contents"},
-	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
+	{"<cr>",			OPTIONAL_TOKEN,		nullptr,					""},
+	{"detail",			CMD_DETAIL,			g_showFlashDetailCommands,	"Show detailed flash object contents"},
+	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
 };
 
 static const clikeyword_t g_showCommands[] =
 {
-	{"flash",		CMD_FLASH,			g_showFlashCommands,		"Display flash usage and log data"},
-	{"interface",	CMD_INTERFACE,		g_showInterfaceCommands,	"Display interface properties and stats"},
-	{"version",		CMD_VERSION,		nullptr,					"Show firmware / FPGA version"},
-	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
+	{"arp",				CMD_ARP,			g_showArpCommands,			"Print ARP information"},
+	{"flash",			CMD_FLASH,			g_showFlashCommands,		"Display flash usage and log data"},
+	{"hardware",		CMD_HARDWARE,		nullptr,					"Print hardware information"},
+	{"interface",		CMD_INTERFACE,		g_showInterfaceCommands,	"Display interface properties and stats"},
+	{"ip",				CMD_IP,				g_showIpCommands,			"Print IPv4 information"},
+	{"ssh",				CMD_SSH,			g_showSshCommands,			"Print SSH information"},
+	{"version",			CMD_VERSION,		nullptr,					"Show firmware / FPGA version"},
+	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +198,15 @@ static const clikeyword_t g_vlanCommands[] =
 {
 	{"<1-4095>",	FREEFORM_TOKEN,		nullptr,	"VLAN number to assign"},
 	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// zeroize
+
+static const clikeyword_t g_zeroizeCommands[] =
+{
+	{"all",				FREEFORM_TOKEN,			NULL,				"Confirm erasing all flash data and return to default state"},
+	{NULL,				INVALID_COMMAND,		NULL,				NULL}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,8 +220,10 @@ static const clikeyword_t g_rootCommands[] =
 	{"hostname",	CMD_HOSTNAME,		g_hostnameCommands,		"Change the host name"},
 	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Configure interface properties"},
 	{"ip",			CMD_IP,				g_ipCommands,			"Configure IP addresses"},
+	{"reload",		CMD_RELOAD,			nullptr,				"Restart the system"},
 	{"rollback",	CMD_ROLLBACK,		nullptr,				"Revert all changes made since last commit"},
 	{"show",		CMD_SHOW,			g_showCommands,			"Print information"},
+	{"zeroize",		CMD_ZEROIZE,		g_zeroizeCommands,		"Erase all configuration data and reload"},
 
 	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
 };
@@ -298,11 +354,13 @@ void SwitchCLISessionContext::OnExecuteRoot()
 			OnInterfaceCommand();
 			break;
 
-		/*
 		case CMD_IP:
-			m_stream.Printf("set ip\n");
+			OnIPCommand();
 			break;
-		*/
+
+		case CMD_RELOAD:
+			OnReload();
+			break;
 
 		case CMD_ROLLBACK:
 			OnRollback();
@@ -310,6 +368,11 @@ void SwitchCLISessionContext::OnExecuteRoot()
 
 		case CMD_SHOW:
 			OnShowCommand();
+			break;
+
+		case CMD_ZEROIZE:
+			if(!strcmp(m_command[1].m_text, "all"))
+				OnZeroize();
 			break;
 
 		default:
@@ -351,6 +414,8 @@ void SwitchCLISessionContext::OnCommit()
 		if(!g_kvs->StoreObject(hostname_objid, (uint8_t*)m_hostname, strlen(m_hostname)))
 			m_stream->Printf("KVS write error\n");
 	}
+
+	//TODO: commit IP addresses
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,12 +432,161 @@ void SwitchCLISessionContext::OnInterfaceCommand()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "ip"
+
+bool SwitchCLISessionContext::ParseIPAddress(const char* addr, IPv4Address& ip)
+{
+	int len = strlen(addr);
+
+	int nfield = 0;
+	unsigned int fields[4] = {0};
+
+	//Parse
+	for(int i=0; i<len; i++)
+	{
+		//Dot = move to next field
+		if( (addr[i] == '.') && (nfield < 3) )
+			nfield ++;
+
+		//Digit = update current field
+		else if(isdigit(addr[i]))
+			fields[nfield] = (fields[nfield] * 10) + (addr[i] - '0');
+
+		else
+			return false;
+	}
+
+	//Validate
+	if(nfield != 3)
+		return false;
+	for(int i=0; i<4; i++)
+	{
+		if(fields[i] > 255)
+			return false;
+	}
+
+	//Set the IP
+	for(int i=0; i<4; i++)
+		ip.m_octets[i] = fields[i];
+	return true;
+}
+
+bool SwitchCLISessionContext::ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint8_t& mask)
+{
+
+}
+
+void SwitchCLISessionContext::OnIPAddress(const char* addr)
+{
+	/*
+	int len = strlen(ipstring);
+
+	int nfield = 0;	//0-3 = IP, 4 = netmask
+	unsigned int fields[5] = {0};
+
+	//Parse
+	bool fail = false;
+	for(int i=0; i<len; i++)
+	{
+		//Dot = move to next field
+		if( (ipstring[i] == '.') && (nfield < 3) )
+			nfield ++;
+
+		//Slash = move to netmask
+		else if( (ipstring[i] == '/') && (nfield == 3) )
+			nfield ++;
+
+		//Digit = update current field
+		else if(isdigit(ipstring[i]))
+			fields[nfield] = (fields[nfield] * 10) + (ipstring[i] - '0');
+
+		else
+		{
+			fail = true;
+			break;
+		}
+	}
+
+	//Validate
+	if(nfield != 4)
+		fail = true;
+	for(int i=0; i<4; i++)
+	{
+		if(fields[i] > 255)
+		{
+			fail = true;
+			break;
+		}
+	}
+	if( (fields[4] > 32) || (fields[4] == 0) )
+		fail = true;
+	if(fail)
+	{
+		m_stream->Printf("Usage: ip address x.x.x.x/yy\n");
+		return;
+	}
+
+	//Set the IP
+	for(int i=0; i<4; i++)
+		g_ipConfig.m_address.m_octets[i] = fields[i];
+
+	//Calculate the netmask
+	uint32_t mask = 0xffffffff << (32 - fields[4]);
+	g_ipConfig.m_netmask.m_octets[0] = (mask >> 24) & 0xff;
+	g_ipConfig.m_netmask.m_octets[1] = (mask >> 16) & 0xff;
+	g_ipConfig.m_netmask.m_octets[2] = (mask >> 8) & 0xff;
+	g_ipConfig.m_netmask.m_octets[3] = (mask >> 0) & 0xff;
+
+	//Calculate the broadcast address
+	for(int i=0; i<4; i++)
+		g_ipConfig.m_broadcast.m_octets[i] = g_ipConfig.m_address.m_octets[i] | ~g_ipConfig.m_netmask.m_octets[i];
+	*/
+}
+
+void SwitchCLISessionContext::OnIPGateway(const char* gw)
+{
+	if(!ParseIPAddress(gw, g_ipConfig.m_gateway))
+		m_stream->Printf("Usage: ip default-gateway x.x.x.x\n");
+}
+
+void SwitchCLISessionContext::OnIPCommand()
+{
+	switch(m_command[1].m_commandID)
+	{
+		case CMD_ADDRESS:
+			OnIPAddress(m_command[2].m_text);
+			break;
+
+		case CMD_GATEWAY:
+			OnIPGateway(m_command[2].m_text);
+			break;
+
+		default:
+			m_stream->Printf("Unrecognized command\n");
+			break;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "reload"
+
+void SwitchCLISessionContext::OnReload()
+{
+	g_log("Reload requested\n");
+	SCB.AIRCR = 0x05fa0004;
+	while(1)
+	{}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "rollback"
 
 void SwitchCLISessionContext::OnRollback()
 {
 	//Load and apply interface configuration
 	ConfigureInterfaces();
+
+	//TODO: roll back IP configuration
 
 	//Load our hostname
 	LoadHostname();
@@ -385,12 +599,52 @@ void SwitchCLISessionContext::OnShowCommand()
 {
 	switch(m_command[1].m_commandID)
 	{
+		case CMD_ARP:
+			switch(m_command[2].m_commandID)
+			{
+				case CMD_CACHE:
+					OnShowARPCache();
+					break;
+
+				default:
+					break;
+			}
+			break;
+
 		case CMD_FLASH:
 			OnShowFlash();
 			break;
 
 		case CMD_INTERFACE:
 			OnShowInterfaceCommand();
+			break;
+
+		case CMD_IP:
+			switch(m_command[2].m_commandID)
+			{
+				case CMD_ADDRESS:
+					OnShowIPAddress();
+					break;
+
+				case CMD_ROUTE:
+					OnShowIPRoute();
+					break;
+
+				default:
+					break;
+			}
+			break;
+
+		case CMD_SSH:
+			switch(m_command[2].m_commandID)
+			{
+				case CMD_FINGERPRINT:
+					OnShowSSHFingerprint();
+					break;
+
+				default:
+					break;
+			}
 			break;
 
 		case CMD_VERSION:
@@ -403,17 +657,31 @@ void SwitchCLISessionContext::OnShowCommand()
 	}
 }
 
-void SwitchCLISessionContext::OnShowInterfaceCommand()
+void SwitchCLISessionContext::OnShowARPCache()
 {
-	switch(m_command[2].m_commandID)
-	{
-		case CMD_STATUS:
-			OnShowInterfaceStatus();
-			break;
+	auto cache = g_ethProtocol->GetARP()->GetCache();
 
-		default:
-			m_stream->Printf("Unrecognized command\n");
-			break;
+	uint32_t ways = cache->GetWays();
+	uint32_t lines = cache->GetLines();
+	m_stream->Printf("ARP cache is %d ways of %d lines, %d spaces total\n", ways, lines, ways*lines);
+
+	m_stream->Printf("Expiration  HWaddress           Address\n");
+
+	for(uint32_t i=0; i<ways; i++)
+	{
+		auto way = cache->GetWay(i);
+		for(uint32_t j=0; j<lines; j++)
+		{
+			auto& line = way->m_lines[j];
+			if(line.m_valid)
+			{
+				m_stream->Printf("%10d  %02x:%02x:%02x:%02x:%02x:%02x   %d.%d.%d.%d\n",
+					line.m_lifetime,
+					line.m_mac[0], line.m_mac[1], line.m_mac[2], line.m_mac[3], line.m_mac[4], line.m_mac[5],
+					line.m_ip.m_octets[0], line.m_ip.m_octets[1], line.m_ip.m_octets[2], line.m_ip.m_octets[3]
+				);
+			}
+		}
 	}
 }
 
@@ -511,6 +779,136 @@ void SwitchCLISessionContext::OnShowFlash()
 	}
 }
 
+void SwitchCLISessionContext::OnShowHardware()
+{
+	/*
+		uint16_t rev = DBGMCU.IDCODE >> 16;
+	uint16_t device = DBGMCU.IDCODE & 0xfff;
+
+	m_stream->Printf("MCU:\n");
+	if(device == 0x451)
+	{
+		//Look up the stepping number
+		const char* srev = NULL;
+		switch(rev)
+		{
+			case 0x1000:
+				srev = "A";
+				break;
+
+			case 0x1001:
+				srev = "Z";
+				break;
+
+			default:
+				srev = "(unknown)";
+		}
+
+		uint8_t pkg = (PKG_ID >> 8) & 0x7;
+		switch(pkg)
+		{
+			case 7:
+				m_stream->Printf("    STM32F767 / 777 LQFP208/TFBGA216 rev %s (0x%04x)\n", srev, rev);
+				break;
+			case 6:
+				m_stream->Printf("    STM32F769 / 779 LQFP208/TFBGA216 rev %s (0x%04x)\n", srev, rev);
+				break;
+			case 5:
+				m_stream->Printf("    STM32F767 / 777 LQFP176 rev %s (0x%04x)\n", srev, rev);
+				break;
+			case 4:
+				m_stream->Printf("    STM32F769 / 779 LQFP176 rev %s (0x%04x)\n", srev, rev);
+				break;
+			case 3:
+				m_stream->Printf("    STM32F778 / 779 WLCSP180 rev %s (0x%04x)\n", srev, rev);
+				break;
+			case 2:
+				m_stream->Printf("    STM32F767 / 777 LQFP144 rev %s (0x%04x)\n", srev, rev);
+				break;
+			case 1:
+				m_stream->Printf("    STM32F767 / 777 LQFP100 rev %s (0x%04x)\n", srev, rev);
+				break;
+			default:
+				m_stream->Printf("    Unknown/reserved STM32F76x/F77x rev %s (0x%04x)\n", srev, rev);
+				break;
+		}
+		m_stream->Printf("    512 kB total SRAM, 128 kB DTCM, 16 kB ITCM, 4 kB backup SRAM\n");
+		m_stream->Printf("    %d kB Flash\n", F_ID);
+
+		//U_ID fields documented in 45.1 of STM32 programming manual
+		uint16_t waferX = U_ID[0] >> 16;
+		uint16_t waferY = U_ID[0] & 0xffff;
+		uint8_t waferNum = U_ID[1] & 0xff;
+		char waferLot[8] =
+		{
+			static_cast<char>((U_ID[1] >> 24) & 0xff),
+			static_cast<char>((U_ID[1] >> 16) & 0xff),
+			static_cast<char>((U_ID[1] >> 8) & 0xff),
+			static_cast<char>((U_ID[2] >> 24) & 0xff),
+			static_cast<char>((U_ID[2] >> 16) & 0xff),
+			static_cast<char>((U_ID[2] >> 8) & 0xff),
+			static_cast<char>((U_ID[2] >> 0) & 0xff),
+			'\0'
+		};
+		m_stream->Printf("    Lot %s, wafer %d, die (%d, %d)\n", waferLot, waferNum, waferX, waferY);
+
+		if(g_hasRmiiErrata)
+			m_stream->Printf("    RMII RXD0 errata present\n");
+	}
+	else
+		m_stream->Printf("Unknown device (0x%06x)\n", device);
+
+	//Print CPU info
+	if( (SCB.CPUID & 0xff00fff0) == 0x4100c270 )
+	{
+		m_stream->Printf("ARM Cortex-M7 r%dp%d\n", (SCB.CPUID >> 20) & 0xf, (SCB.CPUID & 0xf));
+		if(CPUID.CLIDR & 2)
+		{
+			m_stream->Printf("    L1 data cache present\n");
+			CPUID.CCSELR = 0;
+
+			int sets = ((CPUID.CCSIDR >> 13) & 0x7fff) + 1;
+			int ways = ((CPUID.CCSIDR >> 3) & 0x3ff) + 1;
+			int words = 1 << ((CPUID.CCSIDR & 3) + 2);
+			int total = (sets * ways * words * 4) / 1024;
+			m_stream->Printf("        %d sets, %d ways, %d words per line, %d kB total\n",
+				sets, ways, words, total);
+		}
+		if(CPUID.CLIDR & 1)
+		{
+			m_stream->Printf("    L1 instruction cache present\n");
+			CPUID.CCSELR = 1;
+
+			int sets = ((CPUID.CCSIDR >> 13) & 0x7fff) + 1;
+			int ways = ((CPUID.CCSIDR >> 3) & 0x3ff) + 1;
+			int words = 1 << ((CPUID.CCSIDR & 3) + 2);
+			int total = (sets * ways * words * 4) / 1024;
+			m_stream->Printf("        %d sets, %d ways, %d words per line, %d kB total\n",
+				sets, ways, words, total);
+		}
+	}
+	else
+		m_stream->Printf("Unknown CPU (0x%08x)\n", SCB.CPUID);
+
+	m_stream->Printf("Ethernet MAC address is %02x:%02x:%02x:%02x:%02x:%02x\n",
+		g_macAddress[0], g_macAddress[1], g_macAddress[2], g_macAddress[3], g_macAddress[4], g_macAddress[5]);
+	*/
+}
+
+void SwitchCLISessionContext::OnShowInterfaceCommand()
+{
+	switch(m_command[2].m_commandID)
+	{
+		case CMD_STATUS:
+			OnShowInterfaceStatus();
+			break;
+
+		default:
+			m_stream->Printf("Unrecognized command\n");
+			break;
+	}
+}
+
 void SwitchCLISessionContext::OnShowInterfaceStatus()
 {
 	m_stream->Printf("---------------------------------------------------------------------------------------------------------\n");
@@ -549,6 +947,49 @@ void SwitchCLISessionContext::OnShowInterfaceStatus()
 	}
 }
 
+void SwitchCLISessionContext::OnShowIPAddress()
+{
+	m_stream->Printf("IPv4 address: %d.%d.%d.%d\n",
+		g_ipConfig.m_address.m_octets[0],
+		g_ipConfig.m_address.m_octets[1],
+		g_ipConfig.m_address.m_octets[2],
+		g_ipConfig.m_address.m_octets[3]
+	);
+
+	m_stream->Printf("Subnet mask:  %d.%d.%d.%d\n",
+		g_ipConfig.m_netmask.m_octets[0],
+		g_ipConfig.m_netmask.m_octets[1],
+		g_ipConfig.m_netmask.m_octets[2],
+		g_ipConfig.m_netmask.m_octets[3]
+	);
+
+	m_stream->Printf("Broadcast:    %d.%d.%d.%d\n",
+		g_ipConfig.m_broadcast.m_octets[0],
+		g_ipConfig.m_broadcast.m_octets[1],
+		g_ipConfig.m_broadcast.m_octets[2],
+		g_ipConfig.m_broadcast.m_octets[3]
+	);
+}
+
+void SwitchCLISessionContext::OnShowIPRoute()
+{
+	m_stream->Printf("IPv4 routing table\n");
+	m_stream->Printf("Destination     Gateway\n");
+	m_stream->Printf("0.0.0.0         %d.%d.%d.%d\n",
+		g_ipConfig.m_gateway.m_octets[0],
+		g_ipConfig.m_gateway.m_octets[1],
+		g_ipConfig.m_gateway.m_octets[2],
+		g_ipConfig.m_gateway.m_octets[3]);
+}
+
+void SwitchCLISessionContext::OnShowSSHFingerprint()
+{
+	char buf[64] = {0};
+	STM32CryptoEngine tmp;
+	tmp.GetHostKeyFingerprint(buf, sizeof(buf));
+	m_stream->Printf("ED25519 key fingerprint is SHA256:%s.\n", buf);
+}
+
 void SwitchCLISessionContext::OnShowVersion()
 {
 	m_stream->Printf("LATENTPINK Ethernet switch v0.1\n");
@@ -580,4 +1021,13 @@ void SwitchCLISessionContext::OnVlan()
 	//Update our local config and push to hardware
 	g_portVlans[m_activeInterface] = vlanNum;
 	g_fpga->BlockingWrite16(GetInterfaceBase() + REG_VLAN_NUM, vlanNum);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "zeroize"
+
+void SwitchCLISessionContext::OnZeroize()
+{
+	g_kvs->WipeAll();
+	OnReload();
 }

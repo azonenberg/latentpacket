@@ -70,17 +70,34 @@ protected:
 	void OnExecuteInterface();
 
 	void OnCommit();
-	void OnRollback();
 
 	void OnInterfaceCommand();
+
+	void OnIPCommand();
+	void OnIPAddress(const char* addr);
+	void OnIPGateway(const char* gw);
+
+	void OnReload();
+	void OnRollback();
+
+	void OnShowARPCache();
 	void OnShowCommand();
 	void OnShowFlash();
 	void OnShowFlashDetail();
+	void OnShowHardware();
 	void OnShowInterfaceCommand();
 	void OnShowInterfaceStatus();
+	void OnShowIPAddress();
+	void OnShowIPRoute();
+	void OnShowSSHFingerprint();
 	void OnShowVersion();
 
 	void OnVlan();
+
+	void OnZeroize();
+
+	bool ParseIPAddress(const char* addr, IPv4Address& ip);
+	bool ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint8_t& mask);
 
 	SSHOutputStream m_sshstream;
 	CLIOutputStream* m_stream;

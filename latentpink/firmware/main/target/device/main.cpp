@@ -110,8 +110,9 @@ int main()
 	int nextRxFrame = 0;
 	uint32_t numRxFrames = 0;
 	uint32_t numRxBad = 0;
-	uint32_t nextAgingTick = 0;
 	*/
+	uint32_t nextAgingTick = 0;
+
 
 	GPIOPin irq(&GPIOA, 0, GPIOPin::MODE_INPUT, GPIOPin::SLEW_SLOW);
 	irq.SetPullMode(GPIOPin::PULL_DOWN);
@@ -131,14 +132,13 @@ int main()
 		//Poll for UART input
 		if(g_cliUART->HasInput())
 			uartContext.OnKeystroke(g_cliUART->BlockingRead());
-		/*
+
 		//Check for aging on stuff once a second
 		if(g_logTimer->GetCount() > nextAgingTick)
 		{
-			//g_ethStack->OnAgingTick();
+			g_ethProtocol->OnAgingTick();
 			nextAgingTick = g_logTimer->GetCount() + 10000;
 		}
-		*/
 	}
 
 	return 0;
