@@ -415,7 +415,15 @@ void SwitchCLISessionContext::OnCommit()
 			m_stream->Printf("KVS write error\n");
 	}
 
-	//TODO: commit IP addresses
+	//Save IP configuration
+	if(!g_kvs->StoreObjectIfNecessary<IPv4Address>(g_ipConfig.m_address, g_defaultIP, "ip.address"))
+		m_stream->Printf("KVS write error\n");
+	if(!g_kvs->StoreObjectIfNecessary<IPv4Address>(g_ipConfig.m_netmask, g_defaultNetmask, "ip.netmask"))
+		m_stream->Printf("KVS write error\n");
+	if(!g_kvs->StoreObjectIfNecessary<IPv4Address>(g_ipConfig.m_broadcast, g_defaultBroadcast, "ip.broadcast"))
+		m_stream->Printf("KVS write error\n");
+	if(!g_kvs->StoreObjectIfNecessary<IPv4Address>(g_ipConfig.m_gateway, g_defaultGateway, "ip.gateway"))
+		m_stream->Printf("KVS write error\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -471,67 +479,62 @@ bool SwitchCLISessionContext::ParseIPAddress(const char* addr, IPv4Address& ip)
 	return true;
 }
 
-bool SwitchCLISessionContext::ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint8_t& mask)
+bool SwitchCLISessionContext::ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint32_t& mask)
 {
-
-}
-
-void SwitchCLISessionContext::OnIPAddress(const char* addr)
-{
-	/*
-	int len = strlen(ipstring);
+	int len = strlen(addr);
 
 	int nfield = 0;	//0-3 = IP, 4 = netmask
 	unsigned int fields[5] = {0};
 
 	//Parse
-	bool fail = false;
 	for(int i=0; i<len; i++)
 	{
 		//Dot = move to next field
-		if( (ipstring[i] == '.') && (nfield < 3) )
+		if( (addr[i] == '.') && (nfield < 3) )
 			nfield ++;
 
 		//Slash = move to netmask
-		else if( (ipstring[i] == '/') && (nfield == 3) )
+		else if( (addr[i] == '/') && (nfield == 3) )
 			nfield ++;
 
 		//Digit = update current field
-		else if(isdigit(ipstring[i]))
-			fields[nfield] = (fields[nfield] * 10) + (ipstring[i] - '0');
+		else if(isdigit(addr[i]))
+			fields[nfield] = (fields[nfield] * 10) + (addr[i] - '0');
 
 		else
-		{
-			fail = true;
-			break;
-		}
+			return false;
 	}
 
 	//Validate
 	if(nfield != 4)
-		fail = true;
+		return false;
 	for(int i=0; i<4; i++)
 	{
 		if(fields[i] > 255)
-		{
-			fail = true;
-			break;
-		}
+			return false;
 	}
 	if( (fields[4] > 32) || (fields[4] == 0) )
-		fail = true;
-	if(fail)
+		return false;
+
+	//Set the IP
+	for(int i=0; i<4; i++)
+		ip.m_octets[i] = fields[i];
+
+	mask = 0xffffffff << (32 - fields[4]);
+	return true;
+}
+
+void SwitchCLISessionContext::OnIPAddress(const char* addr)
+{
+	//Parse the base IP address
+	uint32_t mask = 0;
+	if(!ParseIPAddressWithSubnet(addr, g_ipConfig.m_address, mask))
 	{
 		m_stream->Printf("Usage: ip address x.x.x.x/yy\n");
 		return;
 	}
 
-	//Set the IP
-	for(int i=0; i<4; i++)
-		g_ipConfig.m_address.m_octets[i] = fields[i];
-
 	//Calculate the netmask
-	uint32_t mask = 0xffffffff << (32 - fields[4]);
 	g_ipConfig.m_netmask.m_octets[0] = (mask >> 24) & 0xff;
 	g_ipConfig.m_netmask.m_octets[1] = (mask >> 16) & 0xff;
 	g_ipConfig.m_netmask.m_octets[2] = (mask >> 8) & 0xff;
@@ -540,7 +543,6 @@ void SwitchCLISessionContext::OnIPAddress(const char* addr)
 	//Calculate the broadcast address
 	for(int i=0; i<4; i++)
 		g_ipConfig.m_broadcast.m_octets[i] = g_ipConfig.m_address.m_octets[i] | ~g_ipConfig.m_netmask.m_octets[i];
-	*/
 }
 
 void SwitchCLISessionContext::OnIPGateway(const char* gw)
@@ -581,14 +583,13 @@ void SwitchCLISessionContext::OnReload()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "rollback"
 
+/**
+	@brief Load all of our configuration from the KVS, discarding any recent changes made in the CLI
+ */
 void SwitchCLISessionContext::OnRollback()
 {
-	//Load and apply interface configuration
 	ConfigureInterfaces();
-
-	//TODO: roll back IP configuration
-
-	//Load our hostname
+	ConfigureIP();
 	LoadHostname();
 }
 

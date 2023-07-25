@@ -122,6 +122,11 @@ extern const char* g_linkSpeedNamesLong[];
 extern const char* g_interfaceNames[];
 extern const char g_interfaceDescriptions[NUM_PORTS][64];
 
+extern const IPv4Address g_defaultIP;
+extern const IPv4Address g_defaultNetmask;
+extern const IPv4Address g_defaultBroadcast;
+extern const IPv4Address g_defaultGateway;
+
 extern uint16_t g_portVlans[NUM_PORTS];
 
 #ifndef SIMULATION

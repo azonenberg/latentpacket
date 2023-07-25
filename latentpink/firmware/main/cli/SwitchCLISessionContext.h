@@ -97,7 +97,7 @@ protected:
 	void OnZeroize();
 
 	bool ParseIPAddress(const char* addr, IPv4Address& ip);
-	bool ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint8_t& mask);
+	bool ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint32_t& mask);
 
 	SSHOutputStream m_sshstream;
 	CLIOutputStream* m_stream;
