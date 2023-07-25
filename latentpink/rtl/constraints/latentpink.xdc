@@ -476,13 +476,14 @@ set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i0 -to [
 set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_312p5mhz_raw*] 2.500
 set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through $_xlnx_shared_i0 -to [get_clocks *clk_125mhz_raw*] 2.500
 
-set_max_delay -from [get_clocks *clk_125mhz_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_312p5mhz_raw*] 2.500
-set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_125mhz_raw*] 2.500
+set _xlnx_shared_i1 [get_cells -hierarchical *dout0_reg*]
+set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_312p5mhz_raw*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_125mhz_raw*] 2.500
 
 set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through [get_cells -hierarchical *storage_reg*] -to [get_clocks *clk_125mhz_raw*] 2.500
 
-set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_crypt_raw*] 2.500
-set_max_delay -from [get_clocks *clk_crypt_raw*] -through [get_cells -hierarchical *dout0_reg*] -to [get_clocks *clk_ram_ctl_raw*] 2.500
+set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_crypt_raw*] 2.500
+set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_ram_ctl_raw*] 2.500
 
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks clk_qcapture_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_qcapture_raw] -group [get_clocks clk_ram_ctl_raw]
@@ -624,6 +625,9 @@ set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
 
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 create_pblock pblock_prefetch
 resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X0Y100:SLICE_X23Y124}
 resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X0Y40:DSP48_X1Y49}
@@ -731,10 +735,10 @@ set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g12_sgmii_rx_n]
 set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g13_sgmii_rx_p]
 set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g13_sgmii_rx_n]
 set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g13_sgmii_rxclk_p]
-set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g12_sgmii_tx_p]
-set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g12_sgmii_tx_n]
-set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g13_sgmii_tx_p]
-set_property IOSTANDARD DIFF_HSTL_I_DCI_18 [get_ports g13_sgmii_tx_n]
+set_property IOSTANDARD LVDS [get_ports g12_sgmii_tx_p]
+set_property IOSTANDARD LVDS [get_ports g12_sgmii_tx_n]
+set_property IOSTANDARD LVDS [get_ports g13_sgmii_tx_p]
+set_property IOSTANDARD LVDS [get_ports g13_sgmii_tx_n]
 
 set_property SLEW SLOW [get_ports dp_mdc]
 set_property SLEW SLOW [get_ports dp_mdio]
@@ -798,6 +802,9 @@ set_property DRIVE 8 [get_ports {mcu_dq[3]}]
 set_property DRIVE 8 [get_ports {mcu_dq[2]}]
 set_property DRIVE 8 [get_ports {mcu_dq[1]}]
 set_property DRIVE 8 [get_ports {mcu_dq[0]}]
+
+
+
 
 
 

@@ -126,6 +126,10 @@ int main()
 		if(irq)
 			PollFPGA();
 
+		//Check if we had a PHY link state change
+		//TODO: add irq bit for this so we don't have to poll nonstop
+		PollPHYs();
+
 		//Check if we had an optic inserted or removed
 		PollSFP();
 

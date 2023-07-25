@@ -118,6 +118,7 @@ extern linkstate_t g_linkState[NUM_PORTS];
 extern linkspeed_t g_linkSpeed[NUM_PORTS];
 extern const char* g_linkStateNames[];
 extern const char* g_linkSpeedNames[];
+extern const char* g_linkSpeedNamesLong[];
 extern const char* g_interfaceNames[];
 extern const char g_interfaceDescriptions[NUM_PORTS][64];
 
@@ -138,6 +139,7 @@ void InitManagementPHY();
 void InitSGMIIPHYs();
 void InitQSGMIIPHY();
 void PollFPGA();
+void PollPHYs();
 
 uint16_t ReadThermalSensor(uint8_t addr);
 uint16_t GetFanRPM(uint8_t channel);
@@ -155,6 +157,10 @@ void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval);
 
 uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid);
 void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
+
+uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid);
+
+void UpdateLinkState(uint8_t port, uint16_t bctl, uint16_t bstat);
 
 void MemoryTest();
 bool DoMemoryTest(uint32_t seed);
@@ -191,6 +197,19 @@ enum mdioreg_t
 	REG_PHY_ADDAR		= 0x0e,
 
 	REG_DP83867_CFG4	= 0x0031
+};
+
+enum basic_ctl_bits
+{
+	BCTL_SPEED_MASK		= 0x2040,
+	BCTL_SPEED_10M		= 0x0000,
+	BCTL_SPEED_100M		= 0x2000,
+	BCTL_SPEED_1G		= 0x0040
+};
+
+enum basic_status_bits
+{
+	BSTAT_LINK_STATE_UP		= 0x0004
 };
 
 #endif

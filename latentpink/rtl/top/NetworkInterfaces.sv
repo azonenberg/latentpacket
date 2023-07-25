@@ -912,21 +912,28 @@ module NetworkInterfaces(
 
 	SGMIIPerformanceCounters g12_sgmii_perf_ff = 0;
 	SGMIIPerformanceCounters g13_sgmii_perf_ff = 0;
-	logic	g12_link_up_ff = 0;
-	logic	g13_link_up_ff = 0;
+	logic		g12_link_up_ff = 0;
+	logic		g13_link_up_ff = 0;
+	lspeed_t	g12_link_speed_ff;
+	lspeed_t	g13_link_speed_ff;
 	always_ff @(posedge clk_125mhz) begin
 		g12_sgmii_perf_ff	<= g12_sgmii_perf;
 		g12_link_up_ff		<= g12_link_up;
+		g12_link_speed_ff	<= g12_link_speed;
+
 		g13_sgmii_perf_ff	<= g13_sgmii_perf;
 		g13_link_up_ff		<= g13_link_up;
+		g13_link_speed_ff	<= g13_link_speed;
 	end
 
 	vio_4 vio_perf(
 		.clk(clk_125mhz),
 		.probe_in0(g12_sgmii_perf_ff),
-		.probe_in1(g12_link_up),
+		.probe_in1(g12_link_up_ff),
 		.probe_in2(g13_sgmii_perf_ff),
-		.probe_in3(g13_link_up),
+		.probe_in3(g13_link_up_ff),
+		.probe_in4(g12_link_speed_ff),
+		.probe_in5(g13_link_speed_ff),
 		.probe_out0(g12_rst_stat),
 		.probe_out1(g13_rst_stat)
 	);

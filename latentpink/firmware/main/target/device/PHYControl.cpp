@@ -141,3 +141,105 @@ void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval)
 			return;
 	}
 }
+
+/**
+	@brief Wrapper to call the right MDIO read for the given interface
+ */
+uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid)
+{
+	if( (portnum == UPLINK_PORT) || (portnum >= NUM_PORTS))
+	{
+		g_log(Logger::ERROR, "InterfacePHYRead called with invalid port number %d\n", portnum);
+		return 0;
+	}
+
+	switch(portnum)
+	{
+		case MGMT_PORT:
+			return ManagementPHYRead(regid);
+
+		case 13:
+			return SGMIIPHYRead(1, regid);
+
+		case 12:
+			return SGMIIPHYRead(0, regid);
+
+		default:
+			return QSGMIIPHYRead(portnum, regid);
+	}
+}
+
+/**
+	@brief Poll the PHYs for link state changes
+
+	TODO: use IRQ pin to trigger this vs doing it nonstop?
+ */
+void PollPHYs()
+{
+	for(int i=0; i<NUM_PORTS; i++)
+	{
+		//DEBUG: QSGMII PHYs not working yet
+		if(i < 12)
+			continue;
+
+		if(i == UPLINK_PORT)
+		{
+			//TODO: get 10G SFP+ link status
+		}
+
+		else
+		{
+			uint16_t bctl = InterfacePHYRead(i, REG_BASIC_CONTROL);
+			uint16_t bstat = InterfacePHYRead(i, REG_BASIC_STATUS);
+			UpdateLinkState(i, bctl, bstat);
+		}
+	}
+}
+
+/**
+	@brief Update the state of a link given PHY basic control / status registers
+ */
+void UpdateLinkState(uint8_t port, uint16_t bctl, uint16_t bstat)
+{
+	//if port is not up or down, ignore updates
+	if( (g_linkState[port] != LINK_STATE_UP) && (g_linkState[port] != LINK_STATE_DOWN) )
+		return;
+
+	//Get current state
+	linkspeed_t speed = LINK_SPEED_10M;
+	switch(bctl & BCTL_SPEED_MASK)
+	{
+		case BCTL_SPEED_1G:
+			speed = LINK_SPEED_1G;
+			break;
+
+		case BCTL_SPEED_100M:
+			speed = LINK_SPEED_100M;
+			break;
+
+		case BCTL_SPEED_10M:
+		default:
+			speed = LINK_SPEED_10M;
+			break;
+	}
+
+	linkstate_t newState = (bstat & BSTAT_LINK_STATE_UP) ? LINK_STATE_UP : LINK_STATE_DOWN;
+
+	//See if it's changed
+	if( (newState != g_linkState[port]) ||
+		( (speed != g_linkSpeed[port]) && (g_linkState[port] == LINK_STATE_UP) ) )
+	{
+		g_linkState[port] = newState;
+		g_linkSpeed[port] = speed;
+
+		if(newState == LINK_STATE_DOWN)
+			g_log("Interface %s (%s): link is down\n", g_interfaceNames[port], g_interfaceDescriptions[port]);
+		else
+		{
+			g_log("Interface %s (%s): link is up at %s\n",
+				g_interfaceNames[port],
+				g_interfaceDescriptions[port],
+				g_linkSpeedNamesLong[speed]);
+		}
+	}
+}

@@ -373,6 +373,10 @@ module ManagementRegisterInterface #(
 	logic[PORT_BITS-1:0]	wr_port		= 0;
 	logic[REGID_BITS-1:0]	wr_regid	= 0;
 
+	logic					mgmt0_mdio_busy_latched = 0;
+	logic					dp_mdio_busy_latched	= 0;
+	logic					vsc_mdio_busy_latched	= 0;
+
 	always_ff @(posedge clk) begin
 
 		//Clear single cycle flags
@@ -534,20 +538,29 @@ module ManagementRegisterInterface #(
 					REG_MBIST_2:		rd_data	<= { 6'b0, mbist_fail_addr[17:15] };
 					REG_MBIST_3:		rd_data	<= { mbist_select, 1'b0, mbist_done, mbist_fail, 4'b0 };
 
-					REG_MGMT0_MDIO:		rd_data	<= mgmt0_phy_rd_data[7:0];
+					REG_MGMT0_MDIO: begin
+						rd_data					<= mgmt0_phy_rd_data[7:0];
+						mgmt0_mdio_busy_latched	<= mgmt0_mdio_busy;
+					end
 					REG_MGMT0_MDIO_1:	rd_data	<= mgmt0_phy_rd_data[15:8];
 					REG_MGMT0_MDIO_2:	rd_data	<= 0;
-					REG_MGMT0_MDIO_3:	rd_data <= {mgmt0_mdio_busy, 7'b0};
+					REG_MGMT0_MDIO_3:	rd_data <= {mgmt0_mdio_busy_latched, 7'b0};
 
-					REG_DP_MDIO:		rd_data	<= dp_phy_rd_data[7:0];
+					REG_DP_MDIO: begin
+						rd_data					<= dp_phy_rd_data[7:0];
+						dp_mdio_busy_latched	<= dp_mdio_busy;
+					end
 					REG_DP_MDIO_1:		rd_data	<= dp_phy_rd_data[15:8];
 					REG_DP_MDIO_2:		rd_data	<= 0;
-					REG_DP_MDIO_3:		rd_data <= {dp_mdio_busy, 7'b0};
+					REG_DP_MDIO_3:		rd_data <= {dp_mdio_busy_latched, 7'b0};
 
-					REG_VSC_MDIO:		rd_data	<= vsc_phy_rd_data[7:0];
+					REG_VSC_MDIO: begin
+						rd_data					<= vsc_phy_rd_data[7:0];
+						vsc_mdio_busy_latched	<= vsc_mdio_busy;
+					end
 					REG_VSC_MDIO_1:		rd_data	<= vsc_phy_rd_data[15:8];
 					REG_VSC_MDIO_2:		rd_data	<= 0;
-					REG_VSC_MDIO_3:		rd_data <= {vsc_mdio_busy, 7'b0};
+					REG_VSC_MDIO_3:		rd_data <= {vsc_mdio_busy_latched, 7'b0};
 
 					default: begin
 						rd_data	<= 0;

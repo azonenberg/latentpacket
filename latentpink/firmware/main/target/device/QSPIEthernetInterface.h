@@ -39,8 +39,8 @@
 #include <util/FIFO.h>
 #include <staticnet/drivers/base/EthernetInterface.h>
 
-#define QSPI_RX_BUFCOUNT 4
-#define QSPI_TX_BUFCOUNT 4
+#define QSPI_RX_BUFCOUNT 8
+#define QSPI_TX_BUFCOUNT 8
 
 /**
 	@brief Ethernet driver using FPGA based MAC attached voer quad SPI

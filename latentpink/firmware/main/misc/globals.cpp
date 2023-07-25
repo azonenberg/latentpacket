@@ -134,6 +134,17 @@ const char* g_linkSpeedNames[] =
 };
 
 /**
+	@brief Mapping of link speed IDs to printable names
+ */
+const char* g_linkSpeedNamesLong[] =
+{
+	"10 Mbps",
+	"100 Mbps",
+	"1000 Mbps",
+	"10 Gbps"
+};
+
+/**
 	@brief VLAN ID for each port
  */
 uint16_t g_portVlans[NUM_PORTS] = {0};
