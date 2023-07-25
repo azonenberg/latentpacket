@@ -89,6 +89,8 @@ protected:
 	void OnShowInterfaceStatus();
 	void OnShowIPAddress();
 	void OnShowIPRoute();
+	void OnShowMMDRegister();
+	void OnShowRegister();
 	void OnShowSSHFingerprint();
 	void OnShowVersion();
 

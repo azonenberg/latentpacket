@@ -67,6 +67,17 @@ void ManagementPHYWrite(uint8_t regid, uint16_t regval)
 }
 
 /**
+	@brief Reads an extended register from the management PHY
+ */
+uint16_t ManagementPHYExtendedRead(uint8_t mmd, uint8_t regid)
+{
+	ManagementPHYWrite(REG_PHY_REGCR, mmd);			//set address
+	ManagementPHYWrite(REG_PHY_ADDAR, regid);
+	ManagementPHYWrite(REG_PHY_REGCR, 0x4000 | mmd);	//data, no post inc
+	return ManagementPHYRead(REG_PHY_ADDAR);
+}
+
+/**
 	@brief Reads a register from a DP83867
  */
 uint16_t SGMIIPHYRead(uint8_t phyid, uint8_t regid)
@@ -101,6 +112,17 @@ void SGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval)
 }
 
 /**
+	@brief Reads an extended register from a DP83867
+ */
+uint16_t SGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid)
+{
+	SGMIIPHYWrite(phyid, REG_PHY_REGCR, mmd);			//set address
+	SGMIIPHYWrite(phyid, REG_PHY_ADDAR, regid);
+	SGMIIPHYWrite(phyid, REG_PHY_REGCR, 0x4000 | mmd);	//data, no post inc
+	return SGMIIPHYRead(phyid, REG_PHY_ADDAR);
+}
+
+/**
 	@brief Writes an extended register to a DP83867
  */
 void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval)
@@ -112,7 +134,7 @@ void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval)
 }
 
 /**
-	@brief Reads a register from the management PHY
+	@brief Reads a register from the VSC8512
  */
 uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid)
 {
@@ -143,6 +165,17 @@ void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval)
 }
 
 /**
+	@brief Reads an extended register from the VSC8512
+ */
+uint16_t QSGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid)
+{
+	QSGMIIPHYWrite(phyid, REG_PHY_REGCR, mmd);			//set address
+	QSGMIIPHYWrite(phyid, REG_PHY_ADDAR, regid);
+	QSGMIIPHYWrite(phyid, REG_PHY_REGCR, 0x4000 | mmd);	//data, no post inc
+	return QSGMIIPHYRead(phyid, REG_PHY_ADDAR);
+}
+
+/**
 	@brief Wrapper to call the right MDIO read for the given interface
  */
 uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid)
@@ -166,6 +199,33 @@ uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid)
 
 		default:
 			return QSGMIIPHYRead(portnum, regid);
+	}
+}
+
+/**
+	@brief Wrapper to call the right extended read for the given interface
+ */
+uint16_t InterfacePHYExtendedRead(uint8_t portnum, uint8_t mmd, uint8_t regid)
+{
+	if( (portnum == UPLINK_PORT) || (portnum >= NUM_PORTS))
+	{
+		g_log(Logger::ERROR, "InterfacePHYExtendedRead called with invalid port number %d\n", portnum);
+		return 0;
+	}
+
+	switch(portnum)
+	{
+		case MGMT_PORT:
+			return ManagementPHYExtendedRead(mmd, regid);
+
+		case 13:
+			return SGMIIPHYExtendedRead(1, mmd, regid);
+
+		case 12:
+			return SGMIIPHYExtendedRead(0, mmd, regid);
+
+		default:
+			return QSGMIIPHYExtendedRead(portnum, mmd, regid);
 	}
 }
 

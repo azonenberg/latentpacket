@@ -154,16 +154,20 @@ uint16_t GetFPGAVCCAUX();
 uint16_t GetFPGAVCCBRAM();
 
 uint16_t ManagementPHYRead(uint8_t regid);
+uint16_t ManagementPHYExtendedRead(uint8_t mmd, uint8_t regid);
 void ManagementPHYWrite(uint8_t regid, uint16_t regval);
 
 uint16_t SGMIIPHYRead(uint8_t phyid, uint8_t regid);
+uint16_t SGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid);
 void SGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
 void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval);
 
 uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid);
+uint16_t QSGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid);
 void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
 
 uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid);
+uint16_t InterfacePHYExtendedRead(uint8_t portnum, uint8_t mmd, uint8_t regid);
 
 void UpdateLinkState(uint8_t port, uint16_t bctl, uint16_t bstat);
 

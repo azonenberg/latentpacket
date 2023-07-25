@@ -47,11 +47,13 @@ enum cmdid_t
 	CMD_FINGERPRINT,
 	CMD_FLASH,
 	CMD_GATEWAY,
-	CMD_INTERFACE,
-	CMD_IP,
 	CMD_HARDWARE,
 	CMD_HOSTNAME,
+	CMD_INTERFACE,
+	CMD_IP,
+	CMD_MMD,
 	CMD_RELOAD,
+	CMD_REGISTER,
 	CMD_ROLLBACK,
 	CMD_ROUTE,
 	CMD_SHOW,
@@ -77,8 +79,8 @@ enum cmdid_t
 	CMD_G11,
 	CMD_G12,
 	CMD_G13,
-	CMD_MGMT0,
-	CMD_XG0
+	CMD_XG0,
+	CMD_MGMT0
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,6 +194,44 @@ static const clikeyword_t g_showCommands[] =
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "show" (interface mode)
+
+static const clikeyword_t g_showRegisterCommands[] =
+{
+	{"<regid>",			FREEFORM_TOKEN,			nullptr,					"Hexadecimal register address"},
+
+	{nullptr,			INVALID_COMMAND,		nullptr,					nullptr}
+};
+
+static const clikeyword_t g_showMmdRegisterCommands[] =
+{
+	{"register",		CMD_REGISTER,			g_showRegisterCommands,		"Register within the MMD"},
+
+	{nullptr,			INVALID_COMMAND,		nullptr,					nullptr}
+};
+
+static const clikeyword_t g_showMmdCommands[] =
+{
+	{"<mmdid>",			FREEFORM_TOKEN,			g_showMmdRegisterCommands,	"Hexadecimal MMD index"},
+
+	{nullptr,			INVALID_COMMAND,		nullptr,					nullptr}
+};
+
+static const clikeyword_t g_interfaceShowCommands[] =
+{
+	{"arp",				CMD_ARP,			g_showArpCommands,			"Print ARP information"},
+	{"flash",			CMD_FLASH,			g_showFlashCommands,		"Display flash usage and log data"},
+	{"hardware",		CMD_HARDWARE,		nullptr,					"Print hardware information"},
+	{"interface",		CMD_INTERFACE,		g_showInterfaceCommands,	"Display interface properties and stats"},
+	{"ip",				CMD_IP,				g_showIpCommands,			"Print IPv4 information"},
+	{"mmd",				CMD_MMD,			g_showMmdCommands,			"Read MMD registers"},
+	{"register",		CMD_REGISTER,		g_showRegisterCommands,		"Read PHY registers"},
+	{"ssh",				CMD_SSH,			g_showSshCommands,			"Print SSH information"},
+	{"version",			CMD_VERSION,		nullptr,					"Show firmware / FPGA version"},
+	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "vlan"
 
 static const clikeyword_t g_vlanCommands[] =
@@ -231,11 +271,12 @@ static const clikeyword_t g_rootCommands[] =
 //Top level commands in interface mode
 static const clikeyword_t g_interfaceRootCommands[] =
 {
-	{"end",			CMD_END,			nullptr,				"Return to normal mode"},
-	{"exit",		CMD_EXIT,			nullptr,				"Return to normal mode"},
-	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Configure another interface"},
-	{"vlan",		CMD_VLAN,			g_vlanCommands,			"Configure interface VLAN"},
-	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
+	{"end",			CMD_END,			nullptr,					"Return to normal mode"},
+	{"exit",		CMD_EXIT,			nullptr,					"Return to normal mode"},
+	{"interface",	CMD_INTERFACE,		g_interfaceCommands,		"Configure another interface"},
+	{"show",		CMD_SHOW,			g_interfaceShowCommands,	"Print information"},
+	{"vlan",		CMD_VLAN,			g_vlanCommands,				"Configure interface VLAN"},
+	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -636,6 +677,14 @@ void SwitchCLISessionContext::OnShowCommand()
 			}
 			break;
 
+		case CMD_MMD:
+			OnShowMMDRegister();
+			break;
+
+		case CMD_REGISTER:
+			OnShowRegister();
+			break;
+
 		case CMD_SSH:
 			switch(m_command[2].m_commandID)
 			{
@@ -981,6 +1030,23 @@ void SwitchCLISessionContext::OnShowIPRoute()
 		g_ipConfig.m_gateway.m_octets[1],
 		g_ipConfig.m_gateway.m_octets[2],
 		g_ipConfig.m_gateway.m_octets[3]);
+}
+
+void SwitchCLISessionContext::OnShowMMDRegister()
+{
+	int mmd = strtol(m_command[2].m_text, nullptr, 16);
+	int regid = strtol(m_command[4].m_text, nullptr, 16);
+	auto value = InterfacePHYExtendedRead(m_activeInterface, mmd, regid);
+
+	m_stream->Printf("MMD %02x register 0x%04x = 0x%04x\n", mmd, regid, value);
+}
+
+void SwitchCLISessionContext::OnShowRegister()
+{
+	int regid = strtol(m_command[2].m_text, nullptr, 16);
+	auto value = InterfacePHYRead(m_activeInterface, regid);
+
+	m_stream->Printf("Register 0x%02x = 0x%04x\n", regid, value);
 }
 
 void SwitchCLISessionContext::OnShowSSHFingerprint()
