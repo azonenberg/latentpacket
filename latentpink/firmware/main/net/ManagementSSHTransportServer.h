@@ -59,7 +59,7 @@ protected:
 	SwitchCLISessionContext m_context[SSH_TABLE_SIZE];
 
 	#ifndef SIMULATION
-	DeviceCryptoEngine m_engine;
+	DeviceCryptoEngine m_engine[SSH_TABLE_SIZE];
 	#endif
 };
 

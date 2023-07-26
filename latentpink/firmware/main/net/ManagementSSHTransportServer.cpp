@@ -45,7 +45,7 @@ ManagementSSHTransportServer::ManagementSSHTransportServer(TCPProtocol& tcp)
 		#ifdef SIMULATION
 			m_state[i].m_crypto = new SimCryptoEngine;
 		#else
-			m_state[i].m_crypto = &m_engine;
+			m_state[i].m_crypto = &m_engine[i];
 		#endif
 	}
 
