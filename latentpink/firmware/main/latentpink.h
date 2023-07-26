@@ -49,6 +49,7 @@
 #include <cli/UARTOutputStream.h>
 #endif
 
+#include "misc/LogSink.h"
 
 #include <microkvs/kvs/KVS.h>
 #ifdef SIMULATION
@@ -70,7 +71,10 @@
 
 #include "misc/FPGAInterface.h"
 
+#define MAX_LOG_SINKS SSH_TABLE_SIZE
+
 extern KVS* g_kvs;
+extern LogSink<MAX_LOG_SINKS>* g_logSink;
 extern Logger g_log;
 extern FPGAInterface* g_fpga;
 extern Timer* g_logTimer;

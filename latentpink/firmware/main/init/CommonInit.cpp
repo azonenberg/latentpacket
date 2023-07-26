@@ -48,7 +48,10 @@ void InitLog(CharacterDevice* logdev, Timer* timer)
 {
 	g_logTimer = timer;
 
-	g_log.Initialize(logdev, timer);
+	static LogSink<MAX_LOG_SINKS> sink(logdev);
+	g_logSink = &sink;
+
+	g_log.Initialize(g_logSink, timer);
 	g_log("Logging ready\n");
 	g_log("LATENTPINK MCU firmware v0.1 by Andrew D. Zonenberg\n");
 	{

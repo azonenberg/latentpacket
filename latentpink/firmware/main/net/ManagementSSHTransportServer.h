@@ -50,6 +50,8 @@ public:
 
 protected:
 	virtual void InitializeShell(int id, TCPTableEntry* socket);
+	virtual void GracefulDisconnect(int id, TCPTableEntry* socket);
+	virtual void DropConnection(int id, TCPTableEntry* socket);
 	virtual void OnRxShellData(int id, TCPTableEntry* socket, char* data, uint16_t len);
 
 	ManagementPasswordAuthenticator m_auth;

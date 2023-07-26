@@ -95,12 +95,27 @@ ManagementSSHTransportServer::~ManagementSSHTransportServer()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Run a trivial shell
+// Shell helpers
 
 void ManagementSSHTransportServer::InitializeShell(int id, TCPTableEntry* socket)
 {
 	m_context[id].Initialize(id, socket, this, m_state[id].m_username);
 	m_context[id].PrintPrompt();
+
+	//TODO: only if we "terminal monitor" or similar?
+	g_logSink->AddSink(m_context[id].GetSSHStream());
+}
+
+void ManagementSSHTransportServer::GracefulDisconnect(int id, TCPTableEntry* socket)
+{
+	g_logSink->RemoveSink(m_context[id].GetSSHStream());
+	SSHTransportServer::GracefulDisconnect(id, socket);
+}
+
+void ManagementSSHTransportServer::DropConnection(int id, TCPTableEntry* socket)
+{
+	g_logSink->RemoveSink(m_context[id].GetSSHStream());
+	SSHTransportServer::DropConnection(id, socket);
 }
 
 void ManagementSSHTransportServer::OnRxShellData(int id, TCPTableEntry* /*socket*/, char* data, uint16_t len)

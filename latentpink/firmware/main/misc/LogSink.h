@@ -27,220 +27,90 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "latentpink.h"
+#ifndef LogSink_h
+#define LogSink_h
 
 /**
-	@brief Global Ethernet interface
- */
-EthernetInterface* g_ethIface = nullptr;
+	@brief A destination for Logger that can output to multiple CLIOutputStream's
 
-/**
-	@brief Global key-value store for persistent configuration
+	TODO: look into refactoring Logger so it can write directly to a CLIOutputStream?
  */
-KVS* g_kvs = nullptr;
-
-/**
-	@brief Character device for logging
- */
-LogSink<MAX_LOG_SINKS>* g_logSink = nullptr;
-
-/**
-	@brief Logger for output stuff
- */
-Logger g_log;
-
-/**
-	@brief Timer used by logger
- */
-Timer* g_logTimer = nullptr;
-
-/**
-	@brief Interface to the FPGA
- */
-FPGAInterface* g_fpga = nullptr;
-
-/**
-	@brief State of each port
- */
-linkstate_t g_linkState[NUM_PORTS];
-
-/**
-	@brief Speed of each port
- */
-linkspeed_t g_linkSpeed[NUM_PORTS];
-
-/**
-	@brief Mapping of link state IDs to printable names
- */
-const char* g_linkStateNames[] =
+template<uint32_t MAX_SINKS>
+class LogSink : public CharacterDevice
 {
-	"notconnect",
-	"connected",
-	"admindown",
-	"errdisable",
-	"testpattern"
+public:
+
+	LogSink(CharacterDevice* primary)
+		: m_primary(primary)
+	{
+		for(uint32_t i=0; i<MAX_SINKS; i++)
+			m_sinks[i] = nullptr;
+	}
+
+	/**
+		@brief Adds a new log sink
+	 */
+	void AddSink(CLIOutputStream* sink)
+	{
+		for(uint32_t i=0; i<MAX_SINKS; i++)
+		{
+			if(!m_sinks[i])
+			{
+				m_sinks[i] = sink;
+				break;
+			}
+		}
+	}
+
+	/**
+		@brief Removes a log sink
+	 */
+	void RemoveSink(CLIOutputStream* sink)
+	{
+		for(uint32_t i=0; i<MAX_SINKS; i++)
+		{
+			if(m_sinks[i] == sink)
+			{
+				m_sinks[i] = nullptr;
+				break;
+			}
+		}
+	}
+
+	virtual void PrintBinary(char ch)
+	{
+		m_primary->PrintBinary(ch);
+		for(uint32_t i=0; i<MAX_SINKS; i++)
+		{
+			if(m_sinks[i])
+				m_sinks[i]->PutCharacter(ch);
+		}
+	}
+
+	virtual void PrintText(char ch)
+	{
+		m_primary->PrintText(ch);
+		for(uint32_t i=0; i<MAX_SINKS; i++)
+		{
+			if(m_sinks[i])
+				m_sinks[i]->PutCharacter(ch);
+		}
+	}
+
+	virtual void PrintString(const char* str)
+	{
+		m_primary->PrintString(str);
+		for(uint32_t i=0; i<MAX_SINKS; i++)
+		{
+			if(m_sinks[i])
+				m_sinks[i]->PutString(str);
+		}
+	}
+
+protected:
+	CharacterDevice* m_primary;
+
+	CLIOutputStream* m_sinks[MAX_SINKS];
 };
 
-/**
-	@brief Hardware names for each port
- */
-const char* g_interfaceNames[NUM_PORTS] =
-{
-	"g0",
-	"g1",
-	"g2",
-	"g3",
-	"g4",
-	"g5",
-	"g6",
-	"g7",
-	"g8",
-	"g9",
-	"g10",
-	"g11",
-	"g12",
-	"g13",
-	"xg0",
-	"mgmt0"
-};
-
-/**
-	@brief Pretty-printed names for each port
- */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
-{
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (VSC8512)",
-	"Edge port (DP83867CS)",
-	"Edge port (DP83867CS)",
-	"SFP+ uplink",
-	"Management (KSZ9031RNX)"
-};
-
-/**
-	@brief Mapping of link speed IDs to printable names
- */
-const char* g_linkSpeedNames[] =
-{
-	"10",
-	"100",
-	"1000",
-	"10G"
-};
-
-/**
-	@brief Mapping of link speed IDs to printable names
- */
-const char* g_linkSpeedNamesLong[] =
-{
-	"10 Mbps",
-	"100 Mbps",
-	"1000 Mbps",
-	"10 Gbps"
-};
-
-/**
-	@brief VLAN ID for each port
- */
-uint16_t g_portVlans[NUM_PORTS] = {0};
-
-/**
-	@brief Our MAC address
- */
-MACAddress g_macAddress;
-
-/**
-	@brief Our IPv4 address
- */
-IPv4Config g_ipConfig;
-
-/**
-	@brief Ethernet protocol stack
- */
-EthernetProtocol* g_ethProtocol = nullptr;
-
-#ifndef SIMULATION
-
-/**
-	@brief QSPI interface to FPGA
- */
-OctoSPI* g_qspi = nullptr;
-
-/**
-	@brief UART console
- */
-UART* g_cliUART = nullptr;
-
-/**
-	@brief I2C bus to MAC address EEPROM
- */
-I2C* g_macI2C = nullptr;
-
-/**
-	@brief I2C bus to thermal sensors
- */
-I2C* g_tempI2C = nullptr;
-
-/**
-	@brief I2C bus to SFP+
- */
-I2C* g_sfpI2C = nullptr;
-
-/**
-	@brief Names for each temp sensors
- */
-uint8_t g_tempSensorAddrs[4] =
-{
-	0x90,
-	0x92,
-	0x94,
-	0x96
-};
-
-/**
-	@brief Names for each temp sensor
- */
-const char* g_tempSensorNames[4] =
-{
-	"MCU, 3V3 regulator",
-	"RGMII PHY, 1V2 regulator",
-	"SGMII PHYs",
-	"QDR-II+, SFP+"
-};
-
-/**
-	@brief SFP+ MOD_ABS pin
- */
-GPIOPin* g_sfpModAbsPin = nullptr;
-
-/**
-	@brief SFP+ TX_DISABLE pin
- */
-GPIOPin* g_sfpTxDisablePin = nullptr;
-
-/**
-	@brief SFP+ TX_FAULT pin
- */
-GPIOPin* g_sfpTxFaultPin = nullptr;
-
-/**
-	@brief Flag indicating if the SFP+ optic in xg0 is present
- */
-bool g_sfpPresent = false;
-
-/**
-	@brief Flag indicating if the SFP+ optic in xg0 has a laser fault
- */
-bool g_sfpFaulted = false;
-
-#endif	//ifndef SIMULATION
+#endif

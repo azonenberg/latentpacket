@@ -57,6 +57,9 @@ public:
 		CLISessionContext::Initialize(m_stream, username);
 	}
 
+	SSHOutputStream* GetSSHStream()
+	{ return &m_sshstream; }
+
 	virtual ~SwitchCLISessionContext()
 	{}
 
