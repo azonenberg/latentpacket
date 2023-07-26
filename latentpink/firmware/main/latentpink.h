@@ -78,9 +78,6 @@ extern EthernetInterface* g_ethIface;
 extern MACAddress g_macAddress;
 extern IPv4Config g_ipConfig;
 extern EthernetProtocol* g_ethProtocol;
-extern GPIOPin* g_sfpModAbsPin;
-extern GPIOPin* g_sfpTxDisablePin;
-extern GPIOPin* g_sfpTxFaultPin;
 extern bool g_sfpPresent;
 extern bool g_sfpFaulted;
 
@@ -90,6 +87,9 @@ extern OctoSPI* g_qspi;
 extern I2C* g_macI2C;
 extern I2C* g_tempI2C;
 extern I2C* g_sfpI2C;
+extern GPIOPin* g_sfpModAbsPin;
+extern GPIOPin* g_sfpTxDisablePin;
+extern GPIOPin* g_sfpTxFaultPin;
 #endif
 
 //includes fabric ports, management, and uplink
@@ -156,6 +156,7 @@ uint16_t GetFPGAVCCBRAM();
 uint16_t ManagementPHYRead(uint8_t regid);
 uint16_t ManagementPHYExtendedRead(uint8_t mmd, uint8_t regid);
 void ManagementPHYWrite(uint8_t regid, uint16_t regval);
+void ManagementPHYExtendedWrite(uint8_t regid, uint8_t mmd, uint16_t regval);
 
 uint16_t SGMIIPHYRead(uint8_t phyid, uint8_t regid);
 uint16_t SGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid);
@@ -165,9 +166,13 @@ void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval);
 uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid);
 uint16_t QSGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid);
 void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
+void QSGMIIPHYExtendedWrite(uint8_t phyid, uint8_t mmd, uint8_t regid, uint16_t regval);
 
 uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid);
 uint16_t InterfacePHYExtendedRead(uint8_t portnum, uint8_t mmd, uint8_t regid);
+
+void InterfacePHYWrite(uint8_t portnum, uint8_t regid, uint16_t regval);
+void InterfacePHYExtendedWrite(uint8_t portnum, uint8_t mmd, uint8_t regid, uint16_t regval);
 
 void UpdateLinkState(uint8_t port, uint16_t bctl, uint16_t bstat);
 

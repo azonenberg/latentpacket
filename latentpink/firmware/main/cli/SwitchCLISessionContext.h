@@ -73,12 +73,27 @@ protected:
 
 	void OnInterfaceCommand();
 
+	void OnAutonegotiation();
+
 	void OnIPCommand();
 	void OnIPAddress(const char* addr);
 	void OnIPGateway(const char* gw);
 
+	void OnMdiCommand();
+	void OnModeCommand();
+
+	void OnNoCommand();
+	void OnNoAutonegotiation();
+	void OnNoSpeed();
+	void OnNoTestPattern();
+
 	void OnReload();
 	void OnRollback();
+
+	void OnSetCommand();
+	void OnSetRegister();
+	void OnSetMmdRegister();
+	void OnSpeed();
 
 	void OnShowARPCache();
 	void OnShowCommand();
@@ -93,6 +108,9 @@ protected:
 	void OnShowRegister();
 	void OnShowSSHFingerprint();
 	void OnShowVersion();
+
+	void OnTest();
+	void OnTestPattern();
 
 	void OnVlan();
 
@@ -112,6 +130,9 @@ protected:
 
 	///@brief Hostname (only used for display)
 	char m_hostname[33];
+
+	///@brief Register values saved when entering test mode on a PHY
+	uint16_t m_testModeSavedRegisters[3];
 };
 
 #endif

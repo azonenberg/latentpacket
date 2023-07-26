@@ -78,6 +78,17 @@ uint16_t ManagementPHYExtendedRead(uint8_t mmd, uint8_t regid)
 }
 
 /**
+	@brief Writes an extended register to the management PHY
+ */
+void ManagementPHYExtendedWrite(uint8_t mmd, uint8_t regid, uint16_t regval)
+{
+	ManagementPHYWrite(REG_PHY_REGCR, mmd);				//set address
+	ManagementPHYWrite(REG_PHY_ADDAR, regid);
+	ManagementPHYWrite(REG_PHY_REGCR, 0x4000 | mmd);	//data, no post inc
+	ManagementPHYWrite(REG_PHY_ADDAR, regval);
+}
+
+/**
 	@brief Reads a register from a DP83867
  */
 uint16_t SGMIIPHYRead(uint8_t phyid, uint8_t regid)
@@ -176,6 +187,17 @@ uint16_t QSGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid)
 }
 
 /**
+	@brief Writes an extended register to the VSC8512
+ */
+void QSGMIIPHYExtendedWrite(uint8_t phyid, uint8_t mmd, uint8_t regid, uint16_t regval)
+{
+	QSGMIIPHYWrite(phyid, REG_PHY_REGCR, mmd);			//set address
+	QSGMIIPHYWrite(phyid, REG_PHY_ADDAR, regid);
+	QSGMIIPHYWrite(phyid, REG_PHY_REGCR, 0x4000 | mmd);	//data, no post inc
+	QSGMIIPHYWrite(phyid, REG_PHY_ADDAR, regval);
+}
+
+/**
 	@brief Wrapper to call the right MDIO read for the given interface
  */
 uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid)
@@ -203,7 +225,7 @@ uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid)
 }
 
 /**
-	@brief Wrapper to call the right extended read for the given interface
+	@brief Wrapper to call the right extended read command for the given interface
  */
 uint16_t InterfacePHYExtendedRead(uint8_t portnum, uint8_t mmd, uint8_t regid)
 {
@@ -226,6 +248,68 @@ uint16_t InterfacePHYExtendedRead(uint8_t portnum, uint8_t mmd, uint8_t regid)
 
 		default:
 			return QSGMIIPHYExtendedRead(portnum, mmd, regid);
+	}
+}
+
+/**
+	@brief Wrapper to call the right MDIO write for the given interface
+ */
+void InterfacePHYWrite(uint8_t portnum, uint8_t regid, uint16_t regval)
+{
+	if( (portnum == UPLINK_PORT) || (portnum >= NUM_PORTS))
+	{
+		g_log(Logger::ERROR, "InterfacePHYWrite called with invalid port number %d\n", portnum);
+		return;
+	}
+
+	switch(portnum)
+	{
+		case MGMT_PORT:
+			ManagementPHYWrite(regid, regval);
+			break;
+
+		case 13:
+			SGMIIPHYWrite(1, regid, regval);
+			break;
+
+		case 12:
+			SGMIIPHYWrite(0, regid, regval);
+			break;
+
+		default:
+			QSGMIIPHYWrite(portnum, regid, regval);
+			break;
+	}
+}
+
+/**
+	@brief Wrapper to call the right extended write command for the given interface
+ */
+void InterfacePHYExtendedWrite(uint8_t portnum, uint8_t mmd, uint8_t regid, uint16_t regval)
+{
+	if( (portnum == UPLINK_PORT) || (portnum >= NUM_PORTS))
+	{
+		g_log(Logger::ERROR, "InterfacePHYExtendedWrite called with invalid port number %d\n", portnum);
+		return;
+	}
+
+	switch(portnum)
+	{
+		case MGMT_PORT:
+			ManagementPHYExtendedWrite(mmd, regid, regval);
+			break;
+
+		case 13:
+			SGMIIPHYExtendedWrite(1, regid, regval);
+			break;
+
+		case 12:
+			SGMIIPHYExtendedWrite(0, regid, regval);
+			break;
+
+		default:
+			QSGMIIPHYExtendedWrite(portnum, mmd, regid, regval);
+			break;
 	}
 }
 
