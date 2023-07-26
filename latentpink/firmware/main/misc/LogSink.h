@@ -83,7 +83,10 @@ public:
 		for(uint32_t i=0; i<MAX_SINKS; i++)
 		{
 			if(m_sinks[i])
+			{
 				m_sinks[i]->PutCharacter(ch);
+				m_sinks[i]->Flush();
+			}
 		}
 	}
 
@@ -93,7 +96,10 @@ public:
 		for(uint32_t i=0; i<MAX_SINKS; i++)
 		{
 			if(m_sinks[i])
+			{
 				m_sinks[i]->PutCharacter(ch);
+				m_sinks[i]->Flush();
+			}
 		}
 	}
 
@@ -103,7 +109,10 @@ public:
 		for(uint32_t i=0; i<MAX_SINKS; i++)
 		{
 			if(m_sinks[i])
+			{
 				m_sinks[i]->PutString(str);
+				m_sinks[i]->Flush();
+			}
 		}
 	}
 
