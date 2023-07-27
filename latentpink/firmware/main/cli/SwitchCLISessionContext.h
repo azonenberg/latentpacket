@@ -119,8 +119,22 @@ protected:
 
 	void OnZeroize();
 
+	/**
+		@brief Returns true if the active interface is a KSZ9031
+	 */
+	bool IsActiveInterfaceKSZ9031()
+	{ return m_activeInterface == MGMT_PORT; };
+
+	/**
+		@brief Returns true if the active interface is a DP83867
+	 */
+	bool IsActiveInterfaceDP83867()
+	{ return (m_activeInterface == 12) || (m_activeInterface == 13); };
+
 	bool ParseIPAddress(const char* addr, IPv4Address& ip);
 	bool ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint32_t& mask);
+
+	void RestartNegotiation(int nport);
 
 	SSHOutputStream m_sshstream;
 	CLIOutputStream* m_stream;

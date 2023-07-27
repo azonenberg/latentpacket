@@ -61,10 +61,13 @@ enum cmdid_t
 	CMD_JITTER,
 	CMD_MASTER,
 	CMD_MDI,
+	CMD_MLT3,
 	CMD_MMD,
 	CMD_MODE,
 	CMD_NO,
 	CMD_PREFER,
+	CMD_PULSE4,
+	CMD_PULSE64,
 	CMD_RELOAD,
 	CMD_REGISTER,
 	CMD_ROLLBACK,
@@ -355,6 +358,9 @@ static const clikeyword_t g_testpatternCommands[] =
 {
 	{"distortion",		CMD_DISTORTION,			nullptr,					"Distortion test (mode 4)"},
 	{"jitter",			CMD_JITTER,				g_modeCommands,				"Jitter test (modes 2/3)"},
+	{"mlt3",			CMD_MLT3,				nullptr,					"MLT-3 idles (DP83867 only)"},
+	{"pulse4",			CMD_PULSE4,				nullptr,					"Pulse, 3 zeroes (DP83867 only)"},
+	{"pulse64",			CMD_PULSE64,			nullptr,					"Pulse, 63 zeroes (DP83867 only)"},
 	{"waveform",		CMD_WAVEFORM_TEST,		nullptr,					"Waveform test (mode 1)"},
 	{nullptr,			INVALID_COMMAND,		nullptr,					nullptr}
 };
@@ -398,7 +404,7 @@ static const clikeyword_t g_rootCommands[] =
 };
 
 //Top level commands in interface mode
-static const clikeyword_t g_interfaceRootCommands[] =
+static const clikeyword_t g_copperInterfaceRootCommands[] =
 {
 	{"autonegotiation",	CMD_AUTONEGOTIATION,	nullptr,					"Enable autonegotiation"},
 	{"end",				CMD_END,				nullptr,					"Return to normal mode"},
@@ -411,6 +417,18 @@ static const clikeyword_t g_interfaceRootCommands[] =
 	{"show",			CMD_SHOW,				g_interfaceShowCommands,	"Print information"},
 	{"speed",			CMD_SPEED,				g_interfaceSpeedCommands,	"Set port operating speed"},
 	{"testpattern",		CMD_TESTPATTERN,		g_testpatternCommands,		"Send a test pattern"},
+	{"vlan",			CMD_VLAN,				g_vlanCommands,				"Configure interface VLAN"},
+	{nullptr,			INVALID_COMMAND,		nullptr,					nullptr}
+};
+
+static const clikeyword_t g_fiberInterfaceRootCommands[] =
+{
+	{"end",				CMD_END,				nullptr,					"Return to normal mode"},
+	{"exit",			CMD_EXIT,				nullptr,					"Return to normal mode"},
+	{"interface",		CMD_INTERFACE,			g_interfaceCommands,		"Configure another interface"},
+	{"no",				CMD_NO,					g_interfaceNoCommands,		"Turn settings off"},
+	{"set",				CMD_SET,				g_interfaceSetCommands,		"Set raw hardware registers"},
+	{"show",			CMD_SHOW,				g_interfaceShowCommands,	"Print information"},
 	{"vlan",			CMD_VLAN,				g_vlanCommands,				"Configure interface VLAN"},
 	{nullptr,			INVALID_COMMAND,		nullptr,					nullptr}
 };
@@ -432,10 +450,10 @@ SwitchCLISessionContext::SwitchCLISessionContext()
 
 void SwitchCLISessionContext::PrintPrompt()
 {
-	if(m_rootCommands == g_interfaceRootCommands)
-		m_stream->Printf("%s@%s(int-%s)# ", m_username, m_hostname, g_interfaceNames[m_activeInterface]);
-	else //if(m_rootCommands == g_rootCommands)
+	if(m_rootCommands == g_rootCommands)
 		m_stream->Printf("%s@%s# ", m_username, m_hostname);
+	else
+		m_stream->Printf("%s@%s(int-%s)# ", m_username, m_hostname, g_interfaceNames[m_activeInterface]);
 	m_stream->Flush();
 }
 
@@ -456,11 +474,10 @@ void SwitchCLISessionContext::LoadHostname()
 
 void SwitchCLISessionContext::OnExecute()
 {
-	if(m_rootCommands == g_interfaceRootCommands)
-		OnExecuteInterface();
-
-	else //if(m_rootCommands == g_rootCommands)
+	if(m_rootCommands == g_rootCommands)
 		OnExecuteRoot();
+	else
+		OnExecuteInterface();
 
 	m_stream->Flush();
 }
@@ -690,7 +707,10 @@ void SwitchCLISessionContext::OnInterfaceCommand()
 	if(m_activeInterface >= NUM_PORTS)
 		m_activeInterface = NUM_PORTS-1;
 
-	m_rootCommands = g_interfaceRootCommands;
+	if(m_activeInterface == UPLINK_PORT)
+		m_rootCommands = g_fiberInterfaceRootCommands;
+	else
+		m_rootCommands = g_copperInterfaceRootCommands;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2082,9 +2102,6 @@ void SwitchCLISessionContext::OnTest()
 
 void SwitchCLISessionContext::OnTestPattern()
 {
-	g_log("\"testpattern\" not implemented\n");
-
-	/*
 	int mode = 0;
 	switch(m_command[1].m_commandID)
 	{
@@ -2102,37 +2119,64 @@ void SwitchCLISessionContext::OnTestPattern()
 		case CMD_DISTORTION:
 			mode = 4;
 			break;
+
+		case CMD_PULSE4:
+			if(IsActiveInterfaceDP83867())
+				mode = 6;
+			break;
+
+		case CMD_PULSE64:
+			if(IsActiveInterfaceDP83867())
+				mode = 7;
+			break;
+
+		case CMD_MLT3:
+			if(IsActiveInterfaceDP83867())
+				mode = 5;
+			break;
 	}
 
 	//Save previous state if we're not already in test mode
-	auto oldGig = PhyRegisterRead(m_activeInterface, PHY_REG_GIG_CONTROL);
+	auto oldGig = InterfacePHYRead(m_activeInterface, REG_GIG_CONTROL);
 	if( (oldGig & 0xe000) == 0)
 	{
-		m_testModeSavedRegisters[0] = PhyRegisterRead(m_activeInterface, PHY_REG_BASIC_CONTROL);
-		m_testModeSavedRegisters[1] = PhyRegisterRead(m_activeInterface, PHY_REG_MDIX);
+		m_testModeSavedRegisters[0] = InterfacePHYRead(m_activeInterface, REG_BASIC_CONTROL);
+
+		//KSZ9031 also needs preserving the MDIX register
+		if(IsActiveInterfaceKSZ9031())
+			m_testModeSavedRegisters[1] = InterfacePHYRead(m_activeInterface, REG_KSZ9031_MDIX);
+
 		m_testModeSavedRegisters[2] = oldGig;
 	}
 
-	//Force link up, no negotiation, 1000baseT, and enable the test mode
-	PhyRegisterWrite(m_activeInterface, PHY_REG_BASIC_CONTROL, 0x0140);
-	PhyRegisterWrite(m_activeInterface, PHY_REG_MDIX, 0x0040);
-	PhyRegisterWrite(m_activeInterface, PHY_REG_GIG_CONTROL, 0x1000 | (mode << 13));
-	*/
+	//Force link up, no negotiation, 1000baseT, and enable the test mode on all pairs
+	InterfacePHYWrite(m_activeInterface, REG_BASIC_CONTROL, 0x0140);
+	if(IsActiveInterfaceKSZ9031())
+		InterfacePHYWrite(m_activeInterface, REG_KSZ9031_MDIX, 0x0040);
+	if(IsActiveInterfaceDP83867())
+		InterfacePHYExtendedWrite(m_activeInterface, 0x1f, REG_DP83867_TMCH_CTRL, 0x0480);
+	InterfacePHYWrite(m_activeInterface, REG_GIG_CONTROL, 0x1000 | (mode << 13));
+
+	//Update link state
+	g_log("Interface %s (%s): link is sending test pattern\n",
+		g_interfaceNames[m_activeInterface], g_interfaceDescriptions[m_activeInterface]);
+	g_linkState[m_activeInterface] = LINK_STATE_TESTPATTERN;
 }
 
 void SwitchCLISessionContext::OnNoTestPattern()
 {
-	g_log("\"no testpattern\" not implemented\n");
-
-	/*
-	//Restore old register values
-	PhyRegisterWrite(m_activeInterface, PHY_REG_GIG_CONTROL, m_testModeSavedRegisters[2]);
-	PhyRegisterWrite(m_activeInterface, PHY_REG_MDIX, m_testModeSavedRegisters[1]);
-	PhyRegisterWrite(m_activeInterface, PHY_REG_BASIC_CONTROL, m_testModeSavedRegisters[0]);
+	//Restore old register values in reverse order
+	InterfacePHYWrite(m_activeInterface, REG_GIG_CONTROL, m_testModeSavedRegisters[2]);
+	if(IsActiveInterfaceKSZ9031())
+		InterfacePHYWrite(m_activeInterface, REG_KSZ9031_MDIX, m_testModeSavedRegisters[1]);
+	InterfacePHYWrite(m_activeInterface, REG_BASIC_CONTROL, m_testModeSavedRegisters[0]);
 
 	//Restart negotiation so the link comes back up
 	RestartNegotiation(m_activeInterface);
-	*/
+
+	g_log("Interface %s (%s): link is down\n",
+		g_interfaceNames[m_activeInterface], g_interfaceDescriptions[m_activeInterface]);
+	g_linkState[m_activeInterface] = LINK_STATE_DOWN;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2160,4 +2204,13 @@ void SwitchCLISessionContext::OnZeroize()
 {
 	g_kvs->WipeAll();
 	OnReload();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Miscellaneous helpers
+
+void SwitchCLISessionContext::RestartNegotiation(int nport)
+{
+	auto base = InterfacePHYRead(nport, REG_BASIC_CONTROL);
+	InterfacePHYWrite(nport, REG_BASIC_CONTROL, base | 0x0200);
 }

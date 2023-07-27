@@ -30,6 +30,11 @@
 #ifndef latentpink_h
 #define latentpink_h
 
+//includes fabric ports, management, and uplink
+#define NUM_PORTS 16
+#define UPLINK_PORT 14
+#define MGMT_PORT 15
+
 #ifdef SIMULATION
 #include <unistd.h>
 #include <stdio.h>
@@ -95,11 +100,6 @@ extern GPIOPin* g_sfpModAbsPin;
 extern GPIOPin* g_sfpTxDisablePin;
 extern GPIOPin* g_sfpTxFaultPin;
 #endif
-
-//includes fabric ports, management, and uplink
-#define NUM_PORTS 16
-#define UPLINK_PORT 14
-#define MGMT_PORT 15
 
 enum linkstate_t
 {
@@ -206,15 +206,23 @@ void OnShutdown();
 
 enum mdioreg_t
 {
-	REG_BASIC_CONTROL	= 0x0,
-	REG_BASIC_STATUS	= 0x1,
-	REG_PHY_ID_1		= 0x2,
-	REG_PHY_ID_2		= 0x3,
+	//IEEE defined registers
+	REG_BASIC_CONTROL		= 0x0000,
+	REG_BASIC_STATUS		= 0x0001,
+	REG_PHY_ID_1			= 0x0002,
+	REG_PHY_ID_2			= 0x0003,
+	REG_GIG_CONTROL			= 0x0009,
 
-	REG_PHY_REGCR		= 0x0d,
-	REG_PHY_ADDAR		= 0x0e,
+	//Extended register access
+	REG_PHY_REGCR			= 0x000d,
+	REG_PHY_ADDAR			= 0x000e,
 
-	REG_DP83867_CFG4	= 0x0031
+	//KSZ9031 specific
+	REG_KSZ9031_MDIX		= 0x001c,
+
+	//DP83867 specific
+	REG_DP83867_TMCH_CTRL	= 0x0025,
+	REG_DP83867_CFG4		= 0x0031
 };
 
 enum basic_ctl_bits
