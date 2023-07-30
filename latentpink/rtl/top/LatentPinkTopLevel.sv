@@ -70,12 +70,12 @@ module LatentPinkTopLevel(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//QSGMII PHY
-/*
+
 	//QSGMII interface (polarity inverted on RX2)
 	output wire[2:0]	qsgmii_tx_p,
 	output wire[2:0]	qsgmii_tx_n,
 	input wire[2:0]		qsgmii_rx_p,
-	input wire[2:0]		qsgmii_rx_n,*/
+	input wire[2:0]		qsgmii_rx_n,
 
 	input wire			vsc_fast_status,
 	input wire			vsc_mdint,
@@ -189,7 +189,7 @@ module LatentPinkTopLevel(
 	inout wire			i2c_derp_sda_device
 );
 
-	//DEBUG: put MDIO clock on PMOD bus
+	//DEBUG: put various interesting signals on PMOD bus
 	assign pmod_dq[7:2] = 0;
 	assign pmod_dq[0] = dp_mdc;
 	assign pmod_dq[1] = g12_rst_n;
@@ -357,12 +357,12 @@ module LatentPinkTopLevel(
 		.sfp_rx_n(sfp_rx_n),
 
 		.sfp_rx_los(sfp_rx_los),
-		/*
+
 		.qsgmii_tx_p(qsgmii_tx_p),
 		.qsgmii_tx_n(qsgmii_tx_n),
 		.qsgmii_rx_p(qsgmii_rx_p),
 		.qsgmii_rx_n(qsgmii_rx_n),
-		*/
+
 		.mgmt0_rx_clk(mgmt0_rx_clk),
 		.mgmt0_rx_dv(mgmt0_rx_dv),
 		.mgmt0_rxd(mgmt0_rxd),
@@ -568,15 +568,16 @@ module LatentPinkTopLevel(
 		.probe_in3(frame_port_wr),
 		.probe_in4(frame_len)
 	);
+	*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// VIOs to tie off not-yet-used transmit ports
-	*/
+	// VIOs to tie off not-yet-used transmit ports and ensure realistic logic utilization
+	/*
 	vio_1 vio_xg_tx(
 		.clk(xg0_mac_tx_clk),
 		.probe_in0(1'b0),
 		.probe_out0(xg0_mac_tx_bus));
-	/*
+
 	vio_1 vio_g12_tx(
 		.clk(clk_125mhz),
 		.probe_in0(g12_tx_ready),
@@ -598,6 +599,7 @@ module LatentPinkTopLevel(
 
 	end
 	*/
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)
 

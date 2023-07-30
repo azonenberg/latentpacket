@@ -710,7 +710,10 @@ void InitSGMIIPHYs()
 		if( (phyid1 == 0x2000) && ( (phyid2 >> 4) == 0xa23))
 			g_log("PHY ID %d = %04x %04x (DP83867 rev %d)\n", i, phyid1, phyid2, phyid2 & 0xf);
 		else
+		{
 			g_log("PHY ID %d = %04x %04x (unknown)\n", i, phyid1, phyid2);
+			return;
+		}
 	}
 
 	//Turn on mirror mode for g13 PHY
@@ -719,6 +722,9 @@ void InitSGMIIPHYs()
 
 /**
 	@brief Initializes the QSGMII PHY
+
+	NOTE: Microchip MESA, reference code, and docs refer to this as an Atom12 or Atom family part
+	Seems to have something in common with Luton26, but is not quite the same part
  */
 void InitQSGMIIPHY()
 {
@@ -728,19 +734,172 @@ void InitQSGMIIPHY()
 	//Wake up PHY while holding it in reset, wait for 5ms
 	static GPIOPin vsc_powerdown(&GPIOH, 14, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW, 0, true);
 	static GPIOPin vsc_rst_n(&GPIOH, 15, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW, 0, true);
+	vsc_powerdown = 0;
+	vsc_rst_n = 0;
+	g_logTimer->Sleep(50);
 
-	//Hold PHY in powerdown mode
-	vsc_powerdown = 1;
-
-	//vsc_powerdown = 0;
-	//vsc_rst_n = 0;
-	//g_logTimer->Sleep(50);
-	/*
-	//Clear reset and wait another 125ms before configuring it
+	//Clear reset and wait another 250ms before configuring it
 	vsc_rst_n = 1;
-	g_logTimer->Sleep(1250);
+	g_logTimer->Sleep(2500);
 
+	//Read the ID of PHY 0
+	auto phyid1 = QSGMIIPHYRead(0, REG_PHY_ID_1);
+	auto phyid2 = QSGMIIPHYRead(0, REG_PHY_ID_2);
+	if( (phyid1 == 0x0007) && (phyid2 >> 4) == 0x06e)
+		g_log("PHY ID = %04x %04x (VSC8512 rev %d)\n", phyid1, phyid2, phyid2 & 0xf);
+	else
+	{
+		g_log("PHY ID = %04x %04x (unknown)\n", phyid1, phyid2);
+		return;
+	}
+
+	//For now, assume we're a rev D (3) PHY
+	//This part has been out for a while and we shouldn't ever have to deal with older silicon revs
+	//given the component shortage clearing out old inventory!
+	if( (phyid2 & 0xf) != 3)
+	{
+		g_log(Logger::ERROR, "Don't know how to initialize silicon revisions other than D\n");
+		while(1)
+		{}
+	}
+
+	//Initialization script based on values from luton26_atom12_revCD_init_script() in Microchip MESA
+	g_log("Running Atom12 rev C/D init script\n");
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_MAIN);
+	QSGMIIPHYWriteMasked(0, REG_VSC8512_EXT_CTRL_STAT, 0x0001, 0x0001);	//this register is documented as read only, table 34
+	QSGMIIPHYWrite(0, REG_VSC8512_EXT_PHY_CTRL_2, 0x0040);				//+2 edge rate for 100baseTX
+																		//Reserved bit 6 set
+																		//No jumbo frame support or loopback
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_EXT2);
+	QSGMIIPHYWrite(0, VSC_PAGE_CU_PMD_TX, 0x02be);						//Non-default trim values for 10baseT amplitude
+
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_TEST);
+	QSGMIIPHYWrite(0, 20, 0x4420);										//magic undocumented value
+	QSGMIIPHYWrite(0, 24, 0x0c00);										//magic undocumented value
+	QSGMIIPHYWrite(0, 9, 0x18c8);										//magic undocumented value
+	QSGMIIPHYWriteMasked(0, 8, 0x8000, 0x8000);							//magic undocumented value
+	QSGMIIPHYWrite(0, 5, 0x1320);										//magic undocumented value
+
+	//Magic block of writes to registers 18, 17, 16
+	//wtf is token ring even doing in this chipset? or is this misnamed?
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_TR);
+	static const uint16_t magicTokenRingBlock[45][3] =
+	{
+		{ 0x0027, 0x303d, 0x9792 },
+		{ 0x00a0, 0xf147, 0x97a0 },
+		{ 0x0005, 0x2f54, 0x8fe4 },
+		{ 0x0004, 0x01bd, 0x8fae },
+		{ 0x000f, 0x000f, 0x8fac },
+		{ 0x0000, 0x0004, 0x87fe },
+		{ 0x0006, 0x0150, 0x8fe0 },
+		{ 0x0012, 0x480a, 0x8f82 },
+		{ 0x0000, 0x0034, 0x8f80 },
+		{ 0x0000, 0x0012, 0x82e0 },
+		{ 0x0005, 0x0208, 0x83a2 },
+		{ 0x0000, 0x9186, 0x83b2 },
+		{ 0x000e, 0x3700, 0x8fb0 },
+		{ 0x0004, 0x9fa1, 0x9688 },
+		{ 0x0000, 0xffff, 0x8fd2 },
+		{ 0x0003, 0x9fa0, 0x968a },
+		{ 0x0020, 0x640b, 0x9690 },
+		{ 0x0000, 0x2220, 0x8258 },
+		{ 0x0000, 0x2a20, 0x825a },
+		{ 0x0000, 0x3060, 0x825c },
+		{ 0x0000, 0x3fa0, 0x825e },
+		{ 0x0000, 0xe0f0, 0x83a6 },
+		{ 0x0000, 0x4489, 0x8f92 },
+		{ 0x0000, 0x7000, 0x96a2 },
+		{ 0x0010, 0x2048, 0x96a6 },
+		{ 0x00ff, 0x0000, 0x96a0 },
+		{ 0x0091, 0x9880, 0x8fe8 },
+		{ 0x0004, 0xd602, 0x8fea },
+		{ 0x00ef, 0xef00, 0x96b0 },
+		{ 0x0000, 0x7100, 0x96b2 },
+		{ 0x0000, 0x5064, 0x96b4 },
+		{ 0x0050, 0x100f, 0x87fa },
+
+		//this block is apparently for regular 10baseT mode
+		//need different sequence for 10base-Te
+		{ 0x0071, 0xf6d9, 0x8488 },
+		{ 0x0000, 0x0db6, 0x848e },
+		{ 0x0059, 0x6596, 0x849c },
+		{ 0x0000, 0x0514, 0x849e },
+		{ 0x0041, 0x0280, 0x84a2 },
+		{ 0x0000, 0x0000, 0x84a4 },
+		{ 0x0000, 0x0000, 0x84a6 },
+		{ 0x0000, 0x0000, 0x84a8 },
+		{ 0x0000, 0x0000, 0x84aa },
+		{ 0x007d, 0xf7dd, 0x84ae },
+		{ 0x006d, 0x95d4, 0x84b0 },
+		{ 0x0049, 0x2410, 0x84b2 },
+
+		//apparently this improves 100base-TX link startup
+		{ 0x0068, 0x8980, 0x8f90 }
+	};
+
+	for(int i=0; i<45; i++)
+	{
+		QSGMIIPHYWrite(0, 18, magicTokenRingBlock[i][0]);
+		QSGMIIPHYWrite(0, 17, magicTokenRingBlock[i][1]);
+		QSGMIIPHYWrite(0, 16, magicTokenRingBlock[i][2]);
+	}
+
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_TEST);	//undocumented
+	QSGMIIPHYWriteMasked(0, 8, 0x0000, 0x8000);
+
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_MAIN);
+	QSGMIIPHYWriteMasked(0, REG_VSC8512_EXT_CTRL_STAT, 0x0000, 0x0001);	//this register is documented as read only, table 34
+
+	//TODO: 8051 microcode patch luton26_atom12_revC_patch
+
+	//Set the operating mode to 12 PHYs with QSGMII
+	//(see table 77)
+	//Wait until this completes
+	g_log("Selecting 12-PHY QSGMII mode\n");
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_GENERAL_PURPOSE);
+	while(true)
+	{
+		auto tmp = QSGMIIPHYRead(0, REG_VSC_GP_GLOBAL_SERDES);
+		if( (tmp & 0x8000) == 0)
+			break;
+	}
+	QSGMIIPHYWrite(0, REG_VSC_GP_GLOBAL_SERDES, 0x80a0);	//table 77 of datasheet says 80a0,
+															//this doesn't seem to match what we see in MESA code? (80e0)
+	while(true)
+	{
+		auto tmp = QSGMIIPHYRead(0, REG_VSC_GP_GLOBAL_SERDES);
+		if( (tmp & 0x8000) == 0)
+			break;
+	}
+
+	//Set MAC mode to QSGMII
+	QSGMIIPHYWriteMasked(0, REG_VSC_MAC_MODE, 0x0000, 0xc000);
+
+	//Initialize each port
+	g_log("Per-port init\n");
 	for(int i=0; i<12; i++)
+	{
+		QSGMIIPHYWrite(i, REG_VSC8512_PAGESEL, VSC_PAGE_EXT2);
+		QSGMIIPHYWrite(i, VSC_PAGE_CU_PMD_TX, 0x02be);						//Non-default trim values for 10baseT amplitude
+
+		QSGMIIPHYWrite(i, REG_VSC8512_PAGESEL, VSC_PAGE_EXT3);
+		QSGMIIPHYWrite(i, VSC_MAC_PCS_CTL, 0x4180);							//Restart MAC on link state change
+																			//Default preamble mode
+																			//Enable SGMII autonegotiation
+
+		QSGMIIPHYWrite(i, REG_VSC8512_PAGESEL, VSC_PAGE_MAIN);
+
+		QSGMIIPHYWrite(i, REG_GIG_CONTROL, 0x600);							//Advertise multi-port device, 1000/full
+		QSGMIIPHYWrite(i, REG_AN_ADVERT, 0x141);							//Advertise 100/full, 10/full only
+	}
+
+	//TODO: initialize temperature sensor vtss_phy_chip_temp_init_private
+
+	//Return to normal base register page
+	g_log("PHY init done\n");
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_MAIN);
+
+	for(int i=0; i<32; i++)
 	{
 		uint8_t phyaddr = i;
 		//g_log("PHY %d\n", i);
@@ -751,7 +910,7 @@ void InitQSGMIIPHY()
 		auto phyid2 = QSGMIIPHYRead(phyaddr, REG_PHY_ID_2);
 
 		g_log("PHY ID %d = %04x %04x\n", i, phyid1, phyid2);
-	}*/
+	}
 }
 
 

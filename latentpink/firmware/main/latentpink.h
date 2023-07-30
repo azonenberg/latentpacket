@@ -170,6 +170,7 @@ void SGMIIPHYExtendedWrite(uint8_t phyid, uint16_t regid, uint16_t regval);
 uint16_t QSGMIIPHYRead(uint8_t phyid, uint8_t regid);
 uint16_t QSGMIIPHYExtendedRead(uint8_t phyid, uint8_t mmd, uint8_t regid);
 void QSGMIIPHYWrite(uint8_t phyid, uint8_t regid, uint16_t regval);
+void QSGMIIPHYWriteMasked(uint8_t phyid, uint8_t regid, uint16_t regval, uint16_t mask);
 void QSGMIIPHYExtendedWrite(uint8_t phyid, uint8_t mmd, uint8_t regid, uint16_t regval);
 
 uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid);
@@ -207,22 +208,54 @@ void OnShutdown();
 enum mdioreg_t
 {
 	//IEEE defined registers
-	REG_BASIC_CONTROL		= 0x0000,
-	REG_BASIC_STATUS		= 0x0001,
-	REG_PHY_ID_1			= 0x0002,
-	REG_PHY_ID_2			= 0x0003,
-	REG_GIG_CONTROL			= 0x0009,
+	REG_BASIC_CONTROL			= 0x0000,
+	REG_BASIC_STATUS			= 0x0001,
+	REG_PHY_ID_1				= 0x0002,
+	REG_PHY_ID_2				= 0x0003,
+	REG_AN_ADVERT				= 0x0004,
+	REG_GIG_CONTROL				= 0x0009,
 
 	//Extended register access
-	REG_PHY_REGCR			= 0x000d,
-	REG_PHY_ADDAR			= 0x000e,
+	REG_PHY_REGCR				= 0x000d,
+	REG_PHY_ADDAR				= 0x000e,
 
 	//KSZ9031 specific
-	REG_KSZ9031_MDIX		= 0x001c,
+	REG_KSZ9031_MDIX			= 0x001c,
 
 	//DP83867 specific
-	REG_DP83867_TMCH_CTRL	= 0x0025,
-	REG_DP83867_CFG4		= 0x0031
+	REG_DP83867_TMCH_CTRL		= 0x0025,
+	REG_DP83867_CFG4			= 0x0031,
+
+	//VSC8512 specific
+	REG_VSC8512_PAGESEL			= 0x1f,
+
+	//VSC8512 main/standard page
+	REG_VSC8512_EXT_CTRL_STAT	= 0x14,
+	REG_VSC8512_EXT_PHY_CTRL_2	= 0x18,
+
+	//VSC8512 extended page 2
+	VSC_PAGE_CU_PMD_TX			= 0x10,
+
+	//VSC8512 extended page 3
+	VSC_MAC_PCS_CTL				= 0x10,
+
+	//GPIO / global command page
+	REG_VSC_GP_GLOBAL_SERDES	= 0x12,
+	REG_VSC_MAC_MODE			= 0x13
+	//14.2.3 p18 says 19G 15:14 = 00/10
+
+	//REG_
+};
+
+enum vsc_page_t
+{
+	VSC_PAGE_MAIN				= 0x0000,
+	VSC_PAGE_EXT2				= 0x0002,
+	VSC_PAGE_EXT3				= 0x0003,
+
+	VSC_PAGE_GENERAL_PURPOSE	= 0x0010,
+	VSC_PAGE_TEST				= 0x2a30,
+	VSC_PAGE_TR					= 0x52b5
 };
 
 enum basic_ctl_bits

@@ -221,7 +221,8 @@ module ManagementSubsystem #(
 	//(because it's placed way off in the corner of the die near the QSPI IOBs)
 	(* keep_hierarchy = "yes" *)
 	EthernetMDIOTransceiver #(
-		.CLK_DIV(75)
+		//.CLK_DIV(75)
+		.CLK_DIV(750)
 	)  vsc_mdio_txvr (
 		.clk(sys_clk),
 		.phy_md_addr(vsc_phy_md_addr),

@@ -475,7 +475,6 @@ module NetworkInterfaces(
 		.remote_fault(xg0_remote_fault)
 	);
 
-	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QSGMII interfaces (g0-g11)
 
@@ -493,6 +492,10 @@ module NetworkInterfaces(
 	wire[3:0]	qsgmii_tx_force_disparity_negative[2:0];
 	wire[31:0]	qsgmii_tx_data[3:0];
 	wire[3:0]	qsgmii_tx_data_is_ctl[2:0];
+
+	wire[3:0]	qsgmii_tx_swing;
+	wire[4:0]	qsgmii_tx_pre_cursor;
+	wire[4:0]	qsgmii_tx_post_cursor;
 
 	qsgmii_transceiver port_g0_g11(
 
@@ -596,6 +599,10 @@ module NetworkInterfaces(
 
 		.gt0_txcharisk_in(qsgmii_tx_data_is_ctl[0]),
 
+		.gt0_txdiffctrl_in(qsgmii_tx_swing),
+		.gt0_txprecursor_in(qsgmii_tx_pre_cursor),
+		.gt0_txpostcursor_in(qsgmii_tx_post_cursor),
+
 		.gt0_txresetdone_out(),
 		.gt0_txpolarity_in(1'b0),	//no inversion
 
@@ -669,6 +676,10 @@ module NetworkInterfaces(
 		.gt1_txoutclkpcs_out(),
 
 		.gt1_txcharisk_in(qsgmii_tx_data_is_ctl[1]),
+
+		.gt1_txdiffctrl_in(qsgmii_tx_swing),
+		.gt1_txprecursor_in(qsgmii_tx_pre_cursor),
+		.gt1_txpostcursor_in(qsgmii_tx_post_cursor),
 
 		.gt1_txresetdone_out(),
 		.gt1_txpolarity_in(1'b0),	//no inversion
@@ -744,6 +755,10 @@ module NetworkInterfaces(
 
 		.gt2_txcharisk_in(qsgmii_tx_data_is_ctl[2]),
 
+		.gt2_txdiffctrl_in(qsgmii_tx_swing),
+		.gt2_txprecursor_in(qsgmii_tx_pre_cursor),
+		.gt2_txpostcursor_in(qsgmii_tx_post_cursor),
+
 		.gt2_txresetdone_out(),
 		.gt2_txpolarity_in(1'b0)	//no inversion
 	);
@@ -797,7 +812,7 @@ module NetworkInterfaces(
 		);
 
 	end
-	*/
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII interfaces (g12, g13)
 
@@ -898,18 +913,6 @@ module NetworkInterfaces(
 		.link_speed(mgmt0_link_speed)
 		);
 
-	ila_0 ila_g12(
-		.clk(clk_125mhz),
-		.probe0(g12_rx_bus),
-		.probe1(g12_link_up)
-	);
-
-	ila_0 ila_g13(
-		.clk(clk_125mhz),
-		.probe0(g13_rx_bus),
-		.probe1(g13_link_up)
-	);
-
 	SGMIIPerformanceCounters g12_sgmii_perf_ff = 0;
 	SGMIIPerformanceCounters g13_sgmii_perf_ff = 0;
 	logic		g12_link_up_ff = 0;
@@ -936,6 +939,25 @@ module NetworkInterfaces(
 		.probe_in5(g13_link_speed_ff),
 		.probe_out0(g12_rst_stat),
 		.probe_out1(g13_rst_stat)
+	);
+
+	wire[11:0]	qsgmii_link_up_sync;
+
+	for(genvar g=0; g<12; g=g+1) begin
+		ThreeStageSynchronizer sync_link_up(
+			.clk_in(qsgmii_rx_clk[g/4]),
+			.din(qsgmii_link_up[g]),
+			.clk_out(clk_125mhz),
+			.dout(qsgmii_link_up_sync[g])
+		);
+	end
+
+	vio_0 vio_qsgmii(
+		.clk(clk_125mhz),
+		.probe_in0(qsgmii_link_up_sync),
+		.probe_out0(qsgmii_tx_swing),			//default 2
+		.probe_out1(qsgmii_tx_pre_cursor),		//default 0
+		.probe_out2(qsgmii_tx_post_cursor)		//default 0
 	);
 
 endmodule

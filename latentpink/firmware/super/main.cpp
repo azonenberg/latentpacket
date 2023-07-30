@@ -60,6 +60,7 @@ GPIOPin* g_all_ok_led = nullptr;
 
 bool g_fpgaUp = false;
 GPIOPin* g_fpga_done = nullptr;
+GPIOPin* g_mcu_rst_n = nullptr;
 
 void PollFPGA();
 
@@ -127,6 +128,7 @@ int main()
 	g_pwr_ok_led = &pwr_ok_led;
 	g_all_ok_led = &all_ok_led;
 	g_fpga_done = &fpga_done;
+	g_mcu_rst_n = &mcu_rst_n;
 
 	//Wait 5 seconds in case something goes wrong during first power up
 	g_log("5 second delay\n");
@@ -164,9 +166,8 @@ int main()
 	StartSubRail(en_vtt, pgood_1v8, 100, "Vtt + Vref");
 
 	//All power rails came up if we get here
-	g_log("Power is good, releasing resets\n");
+	g_log("Power is good, releasing FPGA reset\n");
 	pwr_ok_led = 1;
-	mcu_rst_n = 1;
 	fpga_rst_n = 1;
 
 	//Everything started up if we get here
@@ -198,14 +199,16 @@ void PollFPGA()
 	if(done && !g_fpgaUp)
 	{
 		g_all_ok_led->Set(true);
-		g_log("FPGA is up\n");
+		g_log("FPGA is up, releasing MCU reset\n");
+		g_mcu_rst_n->Set(true);
 		g_fpgaUp = true;
 	}
 
 	else if(!done && g_fpgaUp)
 	{
 		g_all_ok_led->Set(false);
-		g_log("FPGA is down\n");
+		g_log("FPGA is down, resetting MCU\n");
+		g_mcu_rst_n->Set(false);
 		g_fpgaUp = false;
 	}
 }

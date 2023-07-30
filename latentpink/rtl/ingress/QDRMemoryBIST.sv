@@ -66,7 +66,7 @@ module QDRMemoryBIST(
 			.clk(clk),
 			.update(prbs_update),
 			.init(prbs_init),
-			.seed(seed[30:0] + g),
+			.seed(seed[30:0] + g[30:0]),
 			.dout(prbs_out[g*36 +: 36])
 		);
 	end

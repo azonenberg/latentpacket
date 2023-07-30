@@ -198,6 +198,15 @@ void QSGMIIPHYExtendedWrite(uint8_t phyid, uint8_t mmd, uint8_t regid, uint16_t 
 }
 
 /**
+	@brief Read-modify-write transaction to update bitfields within a register
+ */
+void QSGMIIPHYWriteMasked(uint8_t phyid, uint8_t regid, uint16_t regval, uint16_t mask)
+{
+	uint16_t val = QSGMIIPHYRead(phyid, regid);
+	QSGMIIPHYWrite(phyid, regid, (val & ~mask) | (regval & mask) );
+}
+
+/**
 	@brief Wrapper to call the right MDIO read for the given interface
  */
 uint16_t InterfacePHYRead(uint8_t portnum, uint8_t regid)
