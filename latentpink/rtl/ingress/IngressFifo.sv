@@ -304,6 +304,7 @@ module IngressFifo #(
 	} packetmeta_t;
 
 	wire[NUM_PORTS-1:0]			metafifo_empty;
+	logic[NUM_PORTS-1:0]		metafifo_empty_ff = {NUM_PORTS{1'b1}};
 	logic[NUM_PORTS-1:0]		metafifo_rd	= 0;
 	packetmeta_t[NUM_PORTS-1:0]	metafifo_rdata;
 
@@ -346,6 +347,13 @@ module IngressFifo #(
 			.reset()
 		 );
 
+	end
+
+	//Pipeline empty flag to improve timing performance
+	//We check for empty in PORT_STATE_IDLE, then go through PREFETCH and PREFETCH_WAIT
+	//before any chance of coming back to IDLE. So an extra cycle of latency is totally fine
+	always_ff @(posedge clk_ram_ctl) begin
+		metafifo_empty_ff	<= metafifo_empty;
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -434,6 +442,7 @@ module IngressFifo #(
 
 	typedef enum logic[3:0]
 	{
+		PORT_STATE_INIT,			//first clock out of reset
 		PORT_STATE_IDLE,			//nothing going on
 		PORT_STATE_PREFETCH,		//data words being prefetched
 		PORT_STATE_PREFETCH_WAIT,	//wait for MAC address to be prefetched
@@ -451,7 +460,7 @@ module IngressFifo #(
 
 	initial begin
 		for(integer i=0; i<NUM_PORTS; i=i+1) begin
-			portstates[i]		= PORT_STATE_IDLE;
+			portstates[i]		= PORT_STATE_INIT;
 			prefetch_count[i]	= 0;
 			prefetch_rcount[i]	= 0;
 			prefetch_target[i]	= 0;
@@ -514,10 +523,14 @@ module IngressFifo #(
 
 			case(portstates[i])
 
+				PORT_STATE_INIT: begin
+					portstates[i]							<= PORT_STATE_IDLE;
+				end	//PORT_STATE_INIT
+
 				//Wait for a frame to show up and be written to RAM
 				PORT_STATE_IDLE: begin
 
-					if(!metafifo_empty[i] && !ram_rd_en) begin
+					if(!metafifo_empty_ff[i] && !ram_rd_en) begin
 
 						//Read the metadata fifo
 						metafifo_rd[i]						<= 1;

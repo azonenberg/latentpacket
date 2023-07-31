@@ -327,4 +327,21 @@ module ForwardingEngine #(
 
 	end
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug LA
+
+	ila_1 ila(
+		.clk(clk_ram_ctl),
+		.probe0(mac_lookup_en),
+		.probe1(mac_lookup_en_ff4),
+		.probe2(mac_lookup_src_port),
+		.probe3(start_forwarding),
+		.probe4(fwd_source),
+		.probe5(frame_valid),
+		.probe6(frame_data),
+		.probe7(frame_last),
+		.probe8(mac_lookup_hit),
+		.probe9(mac_lookup_dst_port)
+	);
+
 endmodule

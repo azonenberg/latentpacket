@@ -480,8 +480,7 @@ set _xlnx_shared_i1 [get_cells -hierarchical *dout0_reg*]
 set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_312p5mhz_raw*] 2.500
 set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_125mhz_raw*] 2.500
 
-set _xlnx_shared_i2 [get_cells -hierarchical *storage_reg*]
-set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through $_xlnx_shared_i2 -to [get_clocks *clk_125mhz_raw*] 2.500
+set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through [get_cells -hierarchical *storage_reg*] -to [get_clocks *clk_125mhz_raw*] 2.500
 
 set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_crypt_raw*] 2.500
 set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_ram_ctl_raw*] 2.500
@@ -497,6 +496,7 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_c
 # Floorplanning: input FIFO
 
 create_pblock pblock_sgmii_cdc
+add_cells_to_pblock [get_pblocks pblock_sgmii_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[12].cdc} {buffer/infifo/cdcs[13].cdc}]]
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {SLICE_X56Y100:SLICE_X73Y124}
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {DSP48_X3Y40:DSP48_X3Y49}
 resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB18_X3Y40:RAMB18_X3Y49}
@@ -504,6 +504,7 @@ resize_pblock [get_pblocks pblock_sgmii_cdc] -add {RAMB36_X3Y20:RAMB36_X3Y24}
 set_property IS_SOFT FALSE [get_pblocks pblock_sgmii_cdc]
 
 create_pblock pblock_xg0_cdc
+add_cells_to_pblock [get_pblocks pblock_xg0_cdc] [get_cells -quiet [list {buffer/infifo/cdcs[14].cdc}]]
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {SLICE_X20Y150:SLICE_X101Y199}
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {DSP48_X1Y60:DSP48_X5Y79}
 resize_pblock [get_pblocks pblock_xg0_cdc] -add {RAMB18_X1Y60:RAMB18_X5Y79}
@@ -537,6 +538,7 @@ set_property LOC MMCME2_ADV_X1Y2 [get_cells clk_system/rgmii_mmcm]
 # Floorplanning: RAM
 
 create_pblock pblock_ram
+add_cells_to_pblock [get_pblocks pblock_ram] [get_cells -quiet [list buffer/bist buffer/bistmux buffer/infifo/decc_hi buffer/infifo/decc_lo buffer/infifo/ecc_hi buffer/infifo/ecc_lo buffer/qdr]]
 resize_pblock [get_pblocks pblock_ram] -add {SLICE_X0Y50:SLICE_X23Y199}
 resize_pblock [get_pblocks pblock_ram] -add {DSP48_X0Y20:DSP48_X1Y79}
 resize_pblock [get_pblocks pblock_ram] -add {RAMB18_X0Y20:RAMB18_X1Y79}
@@ -546,6 +548,7 @@ resize_pblock [get_pblocks pblock_ram] -add {RAMB36_X0Y10:RAMB36_X1Y39}
 # Floorplanning: SGMII g13
 
 create_pblock pblock_sgmii
+add_cells_to_pblock [get_pblocks pblock_sgmii] [get_cells -quiet [list interfaces/port_g12 interfaces/port_g13]]
 resize_pblock [get_pblocks pblock_sgmii] -add {SLICE_X92Y50:SLICE_X109Y99}
 resize_pblock [get_pblocks pblock_sgmii] -add {DSP48_X5Y20:DSP48_X5Y39}
 resize_pblock [get_pblocks pblock_sgmii] -add {RAMB18_X6Y20:RAMB18_X6Y39}
@@ -594,6 +597,7 @@ set_property IS_SOFT FALSE [get_pblocks pblock_rgmii]
 # Floorplanning: QSGMII
 
 create_pblock pblock_qsgmii
+add_cells_to_pblock [get_pblocks pblock_qsgmii] [get_cells -quiet [list interfaces/port_g0_g11 {interfaces/qsgmii[0].quad} {interfaces/qsgmii[1].quad} {interfaces/qsgmii[2].quad}]]
 resize_pblock [get_pblocks pblock_qsgmii] -add {SLICE_X36Y150:SLICE_X101Y199}
 resize_pblock [get_pblocks pblock_qsgmii] -add {DSP48_X2Y60:DSP48_X5Y79}
 resize_pblock [get_pblocks pblock_qsgmii] -add {RAMB18_X2Y60:RAMB18_X5Y79}
@@ -615,6 +619,22 @@ set_property IS_SOFT FALSE [get_pblocks pblock_10g]
 # Floorplanning: metadata FIFO
 
 create_pblock pblock_metafifo
+add_cells_to_pblock [get_pblocks pblock_metafifo] [get_cells -quiet [list \
+          {buffer/infifo/metafifo[0].fifo} \
+          {buffer/infifo/metafifo[10].fifo} \
+          {buffer/infifo/metafifo[11].fifo} \
+          {buffer/infifo/metafifo[12].fifo} \
+          {buffer/infifo/metafifo[13].fifo} \
+          {buffer/infifo/metafifo[14].fifo} \
+          {buffer/infifo/metafifo[1].fifo} \
+          {buffer/infifo/metafifo[2].fifo} \
+          {buffer/infifo/metafifo[3].fifo} \
+          {buffer/infifo/metafifo[4].fifo} \
+          {buffer/infifo/metafifo[5].fifo} \
+          {buffer/infifo/metafifo[6].fifo} \
+          {buffer/infifo/metafifo[7].fifo} \
+          {buffer/infifo/metafifo[8].fifo} \
+          {buffer/infifo/metafifo[9].fifo}]]
 resize_pblock [get_pblocks pblock_metafifo] -add {SLICE_X8Y100:SLICE_X23Y224 SLICE_X0Y100:SLICE_X7Y199}
 resize_pblock [get_pblocks pblock_metafifo] -add {DSP48_X0Y40:DSP48_X1Y89}
 resize_pblock [get_pblocks pblock_metafifo] -add {RAMB18_X0Y40:RAMB18_X1Y89}
@@ -626,7 +646,10 @@ set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
 
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
+set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 create_pblock pblock_prefetch
+add_cells_to_pblock [get_pblocks pblock_prefetch] [get_cells -quiet [list buffer/infifo/prefetch_fifo buffer/infifo/tagfifo]]
 resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X0Y100:SLICE_X23Y124}
 resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X0Y40:DSP48_X1Y49}
 resize_pblock [get_pblocks pblock_prefetch] -add {RAMB18_X0Y40:RAMB18_X1Y49}
@@ -636,6 +659,7 @@ resize_pblock [get_pblocks pblock_prefetch] -add {RAMB36_X0Y20:RAMB36_X1Y24}
 # Floorplanning: MAC address table
 
 create_pblock pblock_mactable
+add_cells_to_pblock [get_pblocks pblock_mactable] [get_cells -quiet [list fwd/mactable]]
 resize_pblock [get_pblocks pblock_mactable] -add {SLICE_X0Y45:SLICE_X55Y99}
 resize_pblock [get_pblocks pblock_mactable] -add {DSP48_X0Y18:DSP48_X2Y39}
 resize_pblock [get_pblocks pblock_mactable] -add {RAMB18_X0Y18:RAMB18_X2Y39}
@@ -823,6 +847,8 @@ set_clock_groups -asynchronous -group [get_clocks interfaces/port_g0_g11/inst/qs
 set_false_path -from [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt0_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks clk_125mhz_raw]
 set_false_path -from [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt1_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks clk_125mhz_raw]
 set_false_path -from [get_clocks interfaces/port_g0_g11/inst/qsgmii_transceiver_i/gt2_qsgmii_transceiver_i/gtxe2_i/RXOUTCLK] -to [get_clocks clk_125mhz_raw]
+
+
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

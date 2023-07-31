@@ -95,16 +95,16 @@ module PacketBuffering #(
 	//Tie off unused address pins since we've only got a 36 Mbit SRAM stuffed
 	assign qdr_a[20:18] = 2'b0;
 
-	wire		ram_rd_en;
-	wire[17:0]	ram_rd_addr;
-	wire		ram_rd_valid;
+	wire			ram_rd_en;
+	wire[17:0]		ram_rd_addr;
+	wire			ram_rd_valid;
 
-	wire[143:0]	ram_rd_data;
-	wire		ram_wr_en;
-	wire[17:0]	ram_wr_addr;
-	wire[143:0]	ram_wr_data;
+	wire[143:0]		ram_rd_data;
+	wire			ram_wr_en;
+	wire[17:0]		ram_wr_addr;
+	wire[143:0]		ram_wr_data;
 
-	wire		qdr_pll_lock;
+	wire			qdr_pll_lock;
 
 	QDR2PController #(
 		.RAM_WIDTH(36),
@@ -135,7 +135,53 @@ module PacketBuffering #(
 		.qdr_qclk_p(qdr_cq_p),
 		.qdr_qclk_n(qdr_cq_n)
 	);
-	/*
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// BIST muxing
+
+	wire		ram_wr_en_fifo;
+	wire[17:0]	ram_wr_addr_fifo;
+	wire[143:0]	ram_wr_data_fifo;
+	wire		ram_rd_en_fifo;
+	wire[17:0]	ram_rd_addr_fifo;
+
+	wire		ram_wr_en_bist;
+	wire[17:0]	ram_wr_addr_bist;
+	wire[143:0]	ram_wr_data_bist;
+	wire		ram_rd_en_bist;
+	wire[17:0]	ram_rd_addr_bist;
+
+	wire		mbist_select_ff;
+	wire		mbist_start_ff;
+
+	BISTMuxes bistmux(
+		.clk_ram_ctl(clk_ram_ctl),
+
+		.mbist_select(mbist_select),
+		.mbist_start(mbist_start),
+
+		.mbist_select_ff(mbist_select_ff),
+		.mbist_start_ff(mbist_start_ff),
+
+		.ram_wr_en_fifo(ram_wr_en_fifo),
+		.ram_wr_addr_fifo(ram_wr_addr_fifo),
+		.ram_wr_data_fifo(ram_wr_data_fifo),
+		.ram_rd_en_fifo(ram_rd_en_fifo),
+		.ram_rd_addr_fifo(ram_rd_addr_fifo),
+
+		.ram_wr_en_bist(ram_wr_en_bist),
+		.ram_wr_addr_bist(ram_wr_addr_bist),
+		.ram_wr_data_bist(ram_wr_data_bist),
+		.ram_rd_en_bist(ram_rd_en_bist),
+		.ram_rd_addr_bist(ram_rd_addr_bist),
+
+		.ram_wr_en(ram_wr_en),
+		.ram_wr_addr(ram_wr_addr),
+		.ram_wr_data(ram_wr_data),
+		.ram_rd_en(ram_rd_en),
+		.ram_rd_addr(ram_rd_addr)
+	);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FIFO logic
 
@@ -151,12 +197,12 @@ module PacketBuffering #(
 		.untagged_allowed(untagged_allowed),
 
 		.clk_ram_ctl(clk_ram_ctl),
-		.ram_wr_en(ram_wr_en),
-		.ram_wr_addr(ram_wr_addr),
-		.ram_wr_data(ram_wr_data),
-		.ram_rd_en(ram_rd_en),
-		.ram_rd_addr(ram_rd_addr),
-		.ram_rd_valid(ram_rd_valid),
+		.ram_wr_en(ram_wr_en_fifo),
+		.ram_wr_addr(ram_wr_addr_fifo),
+		.ram_wr_data(ram_wr_data_fifo),
+		.ram_rd_en(ram_rd_en_fifo),
+		.ram_rd_addr(ram_rd_addr_fifo),
+		.ram_rd_valid(ram_rd_valid && !mbist_select_ff),
 		.ram_rd_data(ram_rd_data),
 
 		.fabric_state(fabric_state),
@@ -165,29 +211,50 @@ module PacketBuffering #(
 		.frame_last(frame_last),
 		.frame_data(frame_data)
 	);
-	*/
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Memory tester
 
-	//TODO: BIST muxes so we can share with IngressFifo
-
 	QDRMemoryBIST bist(
 		.clk(clk_ram_ctl),
 
-		.ram_rd_en(ram_rd_en),
-		.ram_rd_addr(ram_rd_addr),
-		.ram_rd_valid(ram_rd_valid),
+		.ram_rd_en(ram_rd_en_bist),
+		.ram_rd_addr(ram_rd_addr_bist),
+		.ram_rd_valid(ram_rd_valid && mbist_select_ff),
 		.ram_rd_data(ram_rd_data),
-		.ram_wr_en(ram_wr_en),
-		.ram_wr_addr(ram_wr_addr),
-		.ram_wr_data(ram_wr_data),
+		.ram_wr_en(ram_wr_en_bist),
+		.ram_wr_addr(ram_wr_addr_bist),
+		.ram_wr_data(ram_wr_data_bist),
 
-		.start(mbist_start),
+		.start(mbist_start_ff),
 		.seed(mbist_seed),
 		.done(mbist_done),
 		.fail(mbist_fail),
 		.fail_addr(mbist_fail_addr)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug LA
+
+	ila_0 ila(
+		.clk(clk_ram_ctl),
+		.probe0(infifo.prefetch_target[0]),
+		.probe1(ram_wr_en),
+		.probe2(ram_wr_addr),
+		.probe3(infifo.fec_wr_en),
+		.probe4(infifo.fec_wr_data),
+		.probe5(ram_rd_en),
+		.probe6(ram_rd_addr),
+		.probe7(ram_rd_valid),
+		.probe8(infifo.fec_rd_valid),
+		.probe9(infifo.fec_rd_data),
+		.probe10(infifo.fec_correctable_err),
+		.probe11(infifo.fec_uncorrectable_err),
+		.probe12(infifo.portstates[0]),
+		.probe13(infifo.prefetch_count[0]),
+		.probe14(infifo.prefetch_rcount[0]),
+		.probe15(infifo.prefetch_wordlen[0])
 	);
 
 endmodule

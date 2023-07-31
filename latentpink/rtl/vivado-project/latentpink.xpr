@@ -66,13 +66,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="89"/>
-    <Option Name="WTModelSimExportSim" Val="89"/>
-    <Option Name="WTQuestaExportSim" Val="89"/>
+    <Option Name="WTXSimExportSim" Val="101"/>
+    <Option Name="WTModelSimExportSim" Val="101"/>
+    <Option Name="WTQuestaExportSim" Val="101"/>
     <Option Name="WTIesExportSim" Val="0"/>
-    <Option Name="WTVcsExportSim" Val="89"/>
-    <Option Name="WTRivieraExportSim" Val="88"/>
-    <Option Name="WTActivehdlExportSim" Val="88"/>
+    <Option Name="WTVcsExportSim" Val="101"/>
+    <Option Name="WTRivieraExportSim" Val="100"/>
+    <Option Name="WTActivehdlExportSim" Val="100"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -629,6 +629,13 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../mgmt/ManagementTxFifo.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../ingress/BISTMuxes.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>

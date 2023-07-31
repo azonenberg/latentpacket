@@ -511,11 +511,11 @@ module LatentPinkTopLevel(
 		.qdr_cq_p(qdr_cq_p),
 		.qdr_cq_n(qdr_cq_n),
 
-		/*.fabric_state(fabric_state),
+		.fabric_state(fabric_state),
 		.forward_en(forward_en),
 		.frame_valid(frame_valid),
 		.frame_last(frame_last),
-		.frame_data(frame_data),*/
+		.frame_data(frame_data),
 
 		.mbist_start(mbist_start),
 		.mbist_seed(mbist_seed),
@@ -530,7 +530,7 @@ module LatentPinkTopLevel(
 
 	vlan_t[NUM_PORTS-1:0]	port_vlan_fabric;
 	wire[NUM_PORTS-1:0]		port_is_trunk;
-	/*
+
 	wire[NUM_PORTS-1:0]		port_trunk;
 	wire[NUM_PORTS-1:0]		port_space_avail;	//TODO: hook up to exit queues
 
@@ -557,18 +557,12 @@ module LatentPinkTopLevel(
 		.frame_len(frame_len)
 	);
 
-
-	//VIO to generate forwarding requests
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// VIO to generate forwarding requests
 	vio_3 vio_bufout(
 		.clk(clk_ram_ctl),
-		.probe_out0(port_space_avail),
-		.probe_in0(frame_valid),
-		.probe_in1(frame_last),
-		.probe_in2(frame_data),
-		.probe_in3(frame_port_wr),
-		.probe_in4(frame_len)
+		.probe_out0(port_space_avail)
 	);
-	*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// VIOs to tie off not-yet-used transmit ports and ensure realistic logic utilization
@@ -597,8 +591,7 @@ module LatentPinkTopLevel(
 				.probe_out0(qsgmii_mac_tx_bus[g*4 + i]));
 		end
 
-	end
-	*/
+	end*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)
