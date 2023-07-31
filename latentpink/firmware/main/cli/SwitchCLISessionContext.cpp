@@ -47,6 +47,7 @@ enum cmdid_t
 	CMD_CACHE,
 	CMD_COMMIT,
 	CMD_CROSSOVER,
+	CMD_DESCRIPTION,
 	CMD_DETAIL,
 	CMD_DISTORTION,
 	CMD_END,
@@ -105,6 +106,16 @@ enum cmdid_t
 	CMD_XG0,
 	CMD_MGMT0
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "description"
+
+static const clikeyword_t g_descriptionCommands[] =
+{
+	{"<string>",	TEXT_TOKEN,			nullptr,	"New description for the port"},
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "hostname"
@@ -407,6 +418,7 @@ static const clikeyword_t g_rootCommands[] =
 static const clikeyword_t g_copperInterfaceRootCommands[] =
 {
 	{"autonegotiation",	CMD_AUTONEGOTIATION,	nullptr,					"Enable autonegotiation"},
+	{"description",		CMD_DESCRIPTION,		g_descriptionCommands,		"Set interface description"},
 	{"end",				CMD_END,				nullptr,					"Return to normal mode"},
 	{"exit",			CMD_EXIT,				nullptr,					"Return to normal mode"},
 	{"interface",		CMD_INTERFACE,			g_interfaceCommands,		"Configure another interface"},
@@ -423,6 +435,7 @@ static const clikeyword_t g_copperInterfaceRootCommands[] =
 
 static const clikeyword_t g_fiberInterfaceRootCommands[] =
 {
+	{"description",		CMD_DESCRIPTION,		g_descriptionCommands,		"Set interface description"},
 	{"end",				CMD_END,				nullptr,					"Return to normal mode"},
 	{"exit",			CMD_EXIT,				nullptr,					"Return to normal mode"},
 	{"interface",		CMD_INTERFACE,			g_interfaceCommands,		"Configure another interface"},
@@ -491,6 +504,10 @@ void SwitchCLISessionContext::OnExecuteInterface()
 	{
 		case CMD_AUTONEGOTIATION:
 			OnAutonegotiation();
+			break;
+
+		case CMD_DESCRIPTION:
+			OnDescription();
 			break;
 
 		//Return to top level config mode
@@ -666,6 +683,41 @@ void SwitchCLISessionContext::OnCommit()
 			if(!g_kvs->StoreObjectIfNecessary<uint16_t>(g_portVlans[i], 1, "%s.vlan", g_interfaceNames[i]))
 				m_stream->Printf("KVS write error\n");
 		}
+
+		//Description
+		//TODO: make string wrapper for StoreObjectIfNecessary
+		if(strcmp(g_defaultInterfaceDescriptions[i], g_interfaceDescriptions[i]) != 0)
+		{
+			bool nameChanged = true;
+
+			//See if the previously stored name is the same and only store if different
+			auto plog = g_kvs->FindObjectF("%s.desc", g_interfaceNames[i]);
+			if(plog)
+			{
+				auto olddesc = (const char*)g_kvs->MapObject(plog);
+
+				char tmp[DESCRIPTION_LEN] = {0};
+				auto len = plog->m_len;
+				if(len >= DESCRIPTION_LEN)
+					len = DESCRIPTION_LEN - 1;
+				memcpy(tmp, olddesc, len);
+
+				if(strcmp(tmp, g_interfaceDescriptions[i]) == 0)
+					nameChanged = false;
+			}
+
+			if(nameChanged)
+			{
+				if(!g_kvs->StoreObject(
+					(uint8_t*)g_interfaceDescriptions[i],
+					strlen(g_interfaceDescriptions[i]),
+					"%s.desc",
+					g_interfaceNames[i]))
+				{
+					m_stream->Printf("KVS write error\n");
+				}
+			}
+		}
 	}
 
 	//Check if we already have the same hostname stored
@@ -696,6 +748,16 @@ void SwitchCLISessionContext::OnCommit()
 	if(!g_kvs->StoreObjectIfNecessary<IPv4Address>(g_ipConfig.m_gateway, g_defaultGateway, "ip.gateway"))
 		m_stream->Printf("KVS write error\n");
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "description"
+
+void SwitchCLISessionContext::OnDescription()
+{
+	strncpy(g_interfaceDescriptions[m_activeInterface], m_command[1].m_text, DESCRIPTION_LEN-1);
+	g_interfaceDescriptions[m_activeInterface][DESCRIPTION_LEN-1] = '\0';
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "interface"

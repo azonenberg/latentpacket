@@ -331,8 +331,8 @@ void PollPHYs()
 {
 	for(int i=0; i<NUM_PORTS; i++)
 	{
-		//DEBUG: QSGMII PHYs not working yet
-		if(i < 12)
+		//DEBUG: upper QSGMII PHYs not working yet
+		if( (i >= 8) && (i <= 11) )
 			continue;
 
 		if(i == UPLINK_PORT)

@@ -107,7 +107,29 @@ const char* g_interfaceNames[NUM_PORTS] =
 /**
 	@brief Pretty-printed names for each port
  */
-const char g_interfaceDescriptions[NUM_PORTS][64] =
+char g_interfaceDescriptions[NUM_PORTS][DESCRIPTION_LEN] =
+{
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+};
+
+/**
+	@brief Default names for each port
+ */
+const char* g_defaultInterfaceDescriptions[NUM_PORTS] =
 {
 	"Edge port (VSC8512)",
 	"Edge port (VSC8512)",

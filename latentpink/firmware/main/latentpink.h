@@ -124,7 +124,9 @@ extern const char* g_linkStateNames[];
 extern const char* g_linkSpeedNames[];
 extern const char* g_linkSpeedNamesLong[];
 extern const char* g_interfaceNames[];
-extern const char g_interfaceDescriptions[NUM_PORTS][64];
+#define DESCRIPTION_LEN 64
+extern char g_interfaceDescriptions[NUM_PORTS][DESCRIPTION_LEN];
+extern const char* g_defaultInterfaceDescriptions[NUM_PORTS];
 
 extern const IPv4Address g_defaultIP;
 extern const IPv4Address g_defaultNetmask;

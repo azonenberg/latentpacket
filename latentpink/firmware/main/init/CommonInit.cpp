@@ -131,10 +131,19 @@ void InitInterfaces()
 	}
 
 	ConfigureInterfaces();
+
+	//Push changes to hardware
+	#ifndef SIMULATION
+	InitManagementPHY();
+	InitSGMIIPHYs();
+	InitQSGMIIPHY();
+	#endif
 }
 
 /**
 	@brief Loads interface configuration from the KVS and applies it
+
+	Do not perform one-time hardware init in this function.
  */
 void ConfigureInterfaces()
 {
@@ -151,14 +160,23 @@ void ConfigureInterfaces()
 		}
 		else
 			g_portVlans[i] = 0;
-	}
 
-	//Push changes to hardware
-	#ifndef SIMULATION
-	InitManagementPHY();
-	InitSGMIIPHYs();
-	InitQSGMIIPHY();
-	#endif
+		//Load the interface description
+		//TODO: make string wrapper for ReadObject
+		//(Need to zero fill since KVS buffer is not null terminated)
+		const char* desc = g_defaultInterfaceDescriptions[i];
+		uint32_t len = strlen(desc);
+		auto plog = g_kvs->FindObjectF("%s.desc", g_interfaceNames[i]);
+		if(plog)
+		{
+			desc = (const char*)g_kvs->MapObject(plog);
+			len = plog->m_len;
+			if(len >= DESCRIPTION_LEN)
+				len = DESCRIPTION_LEN - 1;
+		}
+		memcpy(g_interfaceDescriptions[i], desc, len);
+		g_interfaceDescriptions[i][len] = '\0';
+	}
 }
 
 /**

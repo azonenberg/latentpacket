@@ -78,6 +78,8 @@ protected:
 
 	void OnAutonegotiation();
 
+	void OnDescription();
+
 	void OnIPCommand();
 	void OnIPAddress(const char* addr);
 	void OnIPGateway(const char* gw);
