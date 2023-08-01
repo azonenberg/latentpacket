@@ -497,6 +497,8 @@ module NetworkInterfaces(
 	wire[4:0]	qsgmii_tx_pre_cursor;
 	wire[4:0]	qsgmii_tx_post_cursor;
 
+	wire[2:0]	qsgmii_rx_clk_mac;
+
 	qsgmii_transceiver port_g0_g11(
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -553,8 +555,8 @@ module NetworkInterfaces(
 		.gt0_eyescandataerror_out(),
 		.gt0_eyescantrigger_in(1'b0),
 
-		.gt0_rxusrclk_in(qsgmii_rx_clk[0]),
-		.gt0_rxusrclk2_in(qsgmii_rx_clk[0]),
+		.gt0_rxusrclk_in(qsgmii_rx_clk_mac[0]),
+		.gt0_rxusrclk2_in(qsgmii_rx_clk_mac[0]),
 		.gt0_rxdata_out(qsgmii_rx_data_out[0]),
 		.gt0_rxdisperr_out(qsgmii_rx_disparity_err[0]),
 		.gt0_rxnotintable_out(qsgmii_rx_symbol_err[0]),
@@ -631,8 +633,8 @@ module NetworkInterfaces(
 		.gt1_eyescandataerror_out(),
 		.gt1_eyescantrigger_in(1'b0),
 
-		.gt1_rxusrclk_in(qsgmii_rx_clk[1]),
-		.gt1_rxusrclk2_in(qsgmii_rx_clk[1]),
+		.gt1_rxusrclk_in(qsgmii_rx_clk_mac[1]),
+		.gt1_rxusrclk2_in(qsgmii_rx_clk_mac[1]),
 		.gt1_rxdata_out(qsgmii_rx_data_out[1]),
 		.gt1_rxdisperr_out(qsgmii_rx_disparity_err[1]),
 		.gt1_rxnotintable_out(qsgmii_rx_symbol_err[1]),
@@ -709,8 +711,8 @@ module NetworkInterfaces(
 		.gt2_eyescandataerror_out(),
 		.gt2_eyescantrigger_in(1'b0),
 
-		.gt2_rxusrclk_in(qsgmii_rx_clk[2]),
-		.gt2_rxusrclk2_in(qsgmii_rx_clk[2]),
+		.gt2_rxusrclk_in(qsgmii_rx_clk_mac[2]),
+		.gt2_rxusrclk2_in(qsgmii_rx_clk_mac[2]),
 		.gt2_rxdata_out(qsgmii_rx_data_out[2]),
 		.gt2_rxdisperr_out(qsgmii_rx_disparity_err[2]),
 		.gt2_rxnotintable_out(qsgmii_rx_symbol_err[2]),
@@ -763,25 +765,16 @@ module NetworkInterfaces(
 		.gt2_txpolarity_in(1'b0)	//no inversion
 	);
 
-	wire[2:0]	qsgmii_rx_clk_mac;
 	for(genvar g=0; g<3; g=g+1) begin : qsgmii
 
 		//RX can use a regional buffer since we transition away from that domain quickly
-		//Transition into two separate regional clocks and hope we get them sufficiently deskewed in placement??
-
-		//For now, use a global buffer for the CDC block so we can put it south of the GTs in CLOCKREGION_X1Y2.
-		//This will change in LATENTRED when we no longer have SGMII logic at the very bottom in CLOCKREGION_X1Y1.
-		//we will then be able to use a second BUFH and put all of the CDC buffers in CLOCKREGION_X0Y4 and X0Y3.
-		BUFGCE clkbuf_rx_cdc(
+		//(inside the GigBaseXPCS)
+		BUFHCE clkbuf_rx_cdc(
 			.I(qsgmii_rx_clk_raw[g]),
-			.O(qsgmii_rx_clk[g]),
+			.O(qsgmii_rx_clk_mac[g]),
 			.CE(1'b1));
-		assign qsgmii_rx_clk_mac[g] = qsgmii_rx_clk[g];
-		//BUFHCE clkbuf_rx_mac(
-		//	.I(qsgmii_rx_clk_raw[g]),
-		//	.O(qsgmii_rx_clk_mac[g]),
-		//	.CE(1'b1));
 
+		assign qsgmii_rx_clk[g] = qsgmii_tx_clk[g];
 
 		//TX clock is used for more stuff
 		BUFG clkbuf_tx(

@@ -60,6 +60,8 @@ module ManagementSubsystem #(
 	inout wire						mgmt0_mdio,
 	output wire						mgmt0_mdc,
 
+	input wire						xg0_link_up,
+
 	inout wire						dp_mdio,
 	output wire						dp_mdc,
 	input wire						g12_int_n,
@@ -346,6 +348,19 @@ module ManagementSubsystem #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Pipeline register on write data
+
+	logic		mgmt_wr_en_ff	= 0;
+	logic[15:0]	mgmt_wr_addr_ff	= 0;
+	logic[7:0]	mgmt_wr_data_ff	= 0;
+
+	always_ff @(posedge sys_clk) begin
+		mgmt_wr_en_ff	<= mgmt_wr_en;
+		mgmt_wr_addr_ff	<= mgmt_wr_addr;
+		mgmt_wr_data_ff	<= mgmt_wr_data;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Device information
 
 	wire[63:0]	die_serial;
@@ -401,9 +416,9 @@ module ManagementSubsystem #(
 		.rd_valid(mgmt_rd_valid),
 		.rd_data(mgmt_rd_data),
 
-		.wr_en(mgmt_wr_en),
-		.wr_addr(mgmt_wr_addr),
-		.wr_data(mgmt_wr_data),
+		.wr_en(mgmt_wr_en_ff),
+		.wr_addr(mgmt_wr_addr_ff),
+		.wr_data(mgmt_wr_data_ff),
 
 		//Control registers (device info clock domain)
 		.die_serial_valid(die_serial_valid),
@@ -462,6 +477,7 @@ module ManagementSubsystem #(
 		.port_rx_vlan(port_rx_vlan),
 		.port_rx_tagged_allowed(port_rx_tagged_allowed),
 		.port_rx_untagged_allowed(port_rx_untagged_allowed),
+		.xg0_link_up(xg0_link_up),
 
 		//Control registers (crypto clock domain)
 		.clk_crypt(clk_crypt),

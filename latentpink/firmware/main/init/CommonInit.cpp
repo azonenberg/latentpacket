@@ -86,29 +86,40 @@ void InitFPGA()
 	g_log("Initializing FPGA\n");
 	LogIndenter li(g_log);
 
-	//Wait 500ms to make sure the FPGA is booted
-	//TODO: more formal handshake
+	//Wait 50ms to make sure the FPGA is booted
+	//TODO: more formal handshake of some sort?
 	//g_log("Waiting for boot\n");
-	//g_logTimer->Sleep(5000);
+	//g_logTimer->Sleep(50);
 
 	//Read the FPGA IDCODE and serial number
-	uint8_t buf[8];
-	g_fpga->BlockingRead(REG_FPGA_IDCODE, buf, 4);
-	uint32_t idcode = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-	g_fpga->BlockingRead(REG_FPGA_SERIAL, buf, 8);
-
-	//Print status
-	switch(idcode & 0x0fffffff)
+	//Retry until we get a nonzero result indicating FPGA is up
+	while(true)
 	{
-		case 0x364c093:
-			g_log("IDCODE: %08x (XC7K160T rev %d)\n", idcode, idcode >> 28);
-			break;
+		uint8_t buf[8];
+		g_fpga->BlockingRead(REG_FPGA_IDCODE, buf, 4);
+		uint32_t idcode = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+		g_fpga->BlockingRead(REG_FPGA_SERIAL, buf, 8);
 
-		default:
-			g_log("IDCODE: %08x (unknown device, rev %d)\n", idcode, idcode >> 28);
-			break;
+		//If IDCODE is all zeroes, poll again
+		if(idcode == 0)
+			continue;
+
+		//Print status
+		switch(idcode & 0x0fffffff)
+		{
+			case 0x364c093:
+				g_log("IDCODE: %08x (XC7K160T rev %d)\n", idcode, idcode >> 28);
+				break;
+
+			default:
+				g_log("IDCODE: %08x (unknown device, rev %d)\n", idcode, idcode >> 28);
+				break;
+		}
+		g_log("Serial: %02x%02x%02x%02x%02x%02x%02x%02x\n",
+			buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+
+		break;
 	}
-	g_log("Serial: %02x%02x%02x%02x%02x%02x%02x%02x\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 }
 
 /**
@@ -160,6 +171,10 @@ void ConfigureInterfaces()
 		}
 		else
 			g_portVlans[i] = 0;
+
+		//Configure all ports as access (untagged allowed, tagged dropped)
+		//TODO: support trunk mode
+		g_fpga->BlockingWrite8(ifbase + REG_TAG_MODE, 0x2);
 
 		//Load the interface description
 		//TODO: make string wrapper for ReadObject

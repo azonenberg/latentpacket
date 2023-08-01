@@ -69,6 +69,7 @@ module ManagementRegisterInterface #(
 	output vlan_t[NUM_PORTS-1:0]	port_rx_vlan,
 	output wire[NUM_PORTS-1:0]		port_rx_tagged_allowed,
 	output wire[NUM_PORTS-1:0]		port_rx_untagged_allowed,
+	input wire						xg0_link_up,
 
 	//Configuration registers in core clock domain
 	output vlan_t[NUM_PORTS-1:0]	port_vlan		= 0,
@@ -237,6 +238,15 @@ module ManagementRegisterInterface #(
 
 	end
 
+	wire	xg0_link_up_sync;
+
+	ThreeStageSynchronizer sync_xg0_link_up(
+		.clk_in(port_rx_clk[14]),
+		.din(xg0_link_up),
+		.clk_out(clk),
+		.dout(xg0_link_up_sync)
+	);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// List of named registers
 
@@ -313,6 +323,9 @@ module ManagementRegisterInterface #(
 		REG_VSC_MDIO_1		= 16'h0051,
 		REG_VSC_MDIO_2		= 16'h0052,
 		REG_VSC_MDIO_3		= 16'h0053,
+
+		//10G interface
+		REG_XG0_STAT		= 16'h0060,		//0 = link up
 
 		//Ethernet MAC frame buffer
 		//Any address in this range will be treated as reading from the top of the buffer
@@ -561,6 +574,8 @@ module ManagementRegisterInterface #(
 					REG_VSC_MDIO_1:		rd_data	<= vsc_phy_rd_data[15:8];
 					REG_VSC_MDIO_2:		rd_data	<= 0;
 					REG_VSC_MDIO_3:		rd_data <= {vsc_mdio_busy_latched, 7'b0};
+
+					REG_XG0_STAT:		rd_data <= {7'b0, xg0_link_up_sync };
 
 					default: begin
 						rd_data	<= 0;

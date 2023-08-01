@@ -329,7 +329,7 @@ module ForwardingEngine #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug LA
-
+	/*
 	ila_1 ila(
 		.clk(clk_ram_ctl),
 		.probe0(mac_lookup_en),
@@ -343,5 +343,6 @@ module ForwardingEngine #(
 		.probe8(mac_lookup_hit),
 		.probe9(mac_lookup_dst_port)
 	);
+	*/
 
 endmodule

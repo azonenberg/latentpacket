@@ -633,6 +633,8 @@ module LatentPinkTopLevel(
 		.mgmt0_link_up(mgmt0_link_up),
 		.mgmt0_link_speed(mgmt0_link_speed),
 
+		.xg0_link_up(xg0_link_up),
+
 		.mgmt0_mdio(mgmt0_mdio),
 		.mgmt0_mdc(mgmt0_mdc),
 		.dp_mdio(dp_mdio),

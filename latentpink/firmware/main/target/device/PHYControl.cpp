@@ -331,13 +331,45 @@ void PollPHYs()
 {
 	for(int i=0; i<NUM_PORTS; i++)
 	{
-		//DEBUG: upper QSGMII PHYs not working yet
-		if( (i >= 8) && (i <= 11) )
+		//if port is not up or down, ignore updates
+		//(it's administratively down, errdisable, or similar)
+		if( (g_linkState[i] != LINK_STATE_UP) && (g_linkState[i] != LINK_STATE_DOWN) )
 			continue;
+
+		//DEBUG: upper QSGMII PHYs not working yet so ignore them
+		if( (i >= 8) && (i <= 11) )
+		{
+			g_linkState[i] = LINK_STATE_ERR_DISABLE;
+			continue;
+		}
 
 		if(i == UPLINK_PORT)
 		{
-			//TODO: get 10G SFP+ link status
+			uint32_t status = g_fpga->BlockingRead32(REG_XG0_STAT);
+			if(status & 1)
+			{
+				//Link went up?
+				if(g_linkState[i] != LINK_STATE_UP)
+				{
+					g_linkState[i] = LINK_STATE_UP;
+					g_linkSpeed[i] = LINK_SPEED_10G;
+
+					g_log("Interface %s (%s): link is up at %s\n",
+						g_interfaceNames[i],
+						g_interfaceDescriptions[i],
+						g_linkSpeedNamesLong[g_linkSpeed[i]]);
+				}
+			}
+
+			else
+			{
+				//Link went down?
+				if(g_linkState[i] != LINK_STATE_DOWN)
+				{
+					g_linkState[i] = LINK_STATE_DOWN;
+					g_log("Interface %s (%s): link is down\n", g_interfaceNames[i], g_interfaceDescriptions[i]);
+				}
+			}
 		}
 
 		else
@@ -354,10 +386,6 @@ void PollPHYs()
  */
 void UpdateLinkState(uint8_t port, uint16_t bctl, uint16_t bstat)
 {
-	//if port is not up or down, ignore updates
-	if( (g_linkState[port] != LINK_STATE_UP) && (g_linkState[port] != LINK_STATE_DOWN) )
-		return;
-
 	//Get current state
 	linkspeed_t speed = LINK_SPEED_10M;
 	switch(bctl & BCTL_SPEED_MASK)

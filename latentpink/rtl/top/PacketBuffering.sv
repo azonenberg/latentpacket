@@ -234,27 +234,4 @@ module PacketBuffering #(
 		.fail_addr(mbist_fail_addr)
 	);
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug LA
-
-	ila_0 ila(
-		.clk(clk_ram_ctl),
-		.probe0(infifo.prefetch_target[0]),
-		.probe1(ram_wr_en),
-		.probe2(ram_wr_addr),
-		.probe3(infifo.fec_wr_en),
-		.probe4(infifo.fec_wr_data),
-		.probe5(ram_rd_en),
-		.probe6(ram_rd_addr),
-		.probe7(ram_rd_valid),
-		.probe8(infifo.fec_rd_valid),
-		.probe9(infifo.fec_rd_data),
-		.probe10(infifo.fec_correctable_err),
-		.probe11(infifo.fec_uncorrectable_err),
-		.probe12(infifo.portstates[0]),
-		.probe13(infifo.prefetch_count[0]),
-		.probe14(infifo.prefetch_rcount[0]),
-		.probe15(infifo.prefetch_wordlen[0])
-	);
-
 endmodule

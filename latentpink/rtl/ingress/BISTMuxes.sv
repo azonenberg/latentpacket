@@ -74,7 +74,7 @@ module BISTMuxes(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Mux path
 
-	always_comb begin
+	always_ff @(posedge clk_ram_ctl) begin
 		if(mbist_select_ff) begin
 			ram_wr_en	= ram_wr_en_bist;
 			ram_wr_addr	= ram_wr_addr_bist;

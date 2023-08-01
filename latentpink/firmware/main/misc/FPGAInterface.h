@@ -104,6 +104,8 @@ enum regid_t
 	REG_DP_MDIO			= 0x004c,
 	REG_VSC_MDIO		= 0x0050,
 
+	REG_XG0_STAT		= 0x0060,
+
 	REG_EMAC_BUFFER		= 0x1000,
 
 	REG_CRYPT_BASE		= 0x3800,
