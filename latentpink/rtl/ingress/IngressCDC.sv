@@ -295,9 +295,6 @@ module IngressCDC(
 		mem_valid		= 0;
 		last_read		= 0;
 
-		//Pop a frame if we're not already popping one and there's something to read
-		header_rd_en 	= !pop_active && !header_rd_en_ff && !header_rd_empty;
-
 		fifo_rd_en		= 0;
 		fifo_rd_offset	= fifo_rd_offset_ff;
 
@@ -333,6 +330,10 @@ module IngressCDC(
 		fifo_pop_packet		<= 0;
 		mem_frame_done		<= 0;
 
+		//Pop a frame if we're not already popping one and there's something to read
+		//(This needs to be pipelined for performance, too slow to do combinatorial)
+		header_rd_en 		<= !pop_active && !header_rd_en && !header_rd_en_ff && !header_rd_empty;
+
 		//Read data is not valid after consumption
 		if(mem_valid)
 			fifo_rd_valid	<= 0;
@@ -340,6 +341,12 @@ module IngressCDC(
 		//Read data is valid one cycle after we pop it
 		if(fifo_rd_en)
 			fifo_rd_valid	<= 1;
+
+		//New frame showed up!
+		if(header_rd_en) begin
+			pop_active	<= 1;
+			sending		<= 0;
+		end
 
 		//Tell host when we're ready to send it
 		if(header_rd_en_ff) begin
@@ -351,17 +358,6 @@ module IngressCDC(
 				rd_wordcount	<= header_rd_bytelen[10:4] + 1;
 			else
 				rd_wordcount	<= header_rd_bytelen[10:4];
-		end
-
-		//Idle, no frame in progress
-		if(!pop_active) begin
-
-			//New frame showed up!
-			if(header_rd_en) begin
-				pop_active	<= 1;
-				sending		<= 0;
-			end
-
 		end
 
 		//Starting to send

@@ -55,7 +55,7 @@ module PacketBufferingSim();
 	wire clk_625mhz_0;
 	wire clk_625mhz_90;
 
-	wire pll_main_lock;
+	wire pll_sgmii_lock;
 
 	wire clk_ram;
 	wire clk_ram_ctl;
@@ -74,7 +74,7 @@ module PacketBufferingSim();
 		.clk_625mhz_0(clk_625mhz_0),
 		.clk_625mhz_90(clk_625mhz_90),
 
-		.pll_main_lock(pll_main_lock),
+		.pll_sgmii_lock(pll_sgmii_lock),
 
 		.clk_ram(clk_ram),
 		.clk_ram_ctl(clk_ram_ctl),
@@ -174,10 +174,10 @@ module PacketBufferingSim();
 			assign port_vlan[g] = 4;
 		end
 
-		//g4 has ten untagged pings using the port native vlan(6)
+		//g4 has ten untagged 1024 byte (payload) pings using the port native vlan (6)
 		else if(g == 4) begin
 			PcapPacketGenerator #(
-				.FILENAME("../../../../../../../testdata/pings.pcapng")
+				.FILENAME("../../../../../../../testdata/big-pings.pcapng")
 			) gen (
 				.clk(clk_125mhz_p),
 				.next(port_next_packet[g]),
@@ -235,7 +235,14 @@ module PacketBufferingSim();
 		.forward_en(forward_en),
 		.frame_valid(frame_valid),
 		.frame_last(frame_last),
-		.frame_data(frame_data)
+		.frame_data(frame_data),
+
+		.mbist_select(1'b0),
+		.mbist_start(1'b0),
+		.mbist_seed(32'b0),
+		.mbist_done(),
+		.mbist_fail(),
+		.mbist_fail_addr()
 	);
 
 	logic[14:0] port_space_avail = 15'h7fff;
@@ -269,7 +276,7 @@ module PacketBufferingSim();
 
 			//Bring up all links
 			0: begin
-				if(pll_ram_lock && pll_main_lock) begin
+				if(pll_ram_lock && pll_sgmii_lock) begin
 					port_link_up	<= 15'h7fff;
 					state			<= 1;
 				end

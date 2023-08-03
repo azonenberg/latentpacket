@@ -256,6 +256,10 @@ module ForwardingEngine #(
 
 		end
 
+		//Clear start flag once data shows up
+		if(frame_valid)
+			forward_en					<= 0;
+
 		//Start forwarding after a pipeline delay
 		if(start_forwarding) begin
 
@@ -329,7 +333,7 @@ module ForwardingEngine #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug LA
-	/*
+
 	ila_1 ila(
 		.clk(clk_ram_ctl),
 		.probe0(mac_lookup_en),
@@ -341,8 +345,12 @@ module ForwardingEngine #(
 		.probe6(frame_data),
 		.probe7(frame_last),
 		.probe8(mac_lookup_hit),
-		.probe9(mac_lookup_dst_port)
+		.probe9(mac_lookup_dst_port),
+		.probe10(mac_lookup_src_mac),
+
+		.probe11(fwd_broadcast),
+		.probe12(frame_port_wr),
+		.probe13(frame_len)
 	);
-	*/
 
 endmodule
