@@ -472,6 +472,7 @@ module IngressFifo #(
 
 	logic						prefetching				= 0;
 	logic						prefetch_startup		= 0;
+	(* max_fanout = 16 *)
 	logic[PORT_BITS-1:0]		prefetch_port			= 0;
 	logic						prefetch_hold			= 0;
 	logic						prefetch_target_valid	= 0;
@@ -660,24 +661,6 @@ module IngressFifo #(
 
 		end	//port loop
 
-	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Simple deadlock detector
-
-	logic	borked = 0;
-
-	logic[7:0] busy_count = 0;
-	always_ff @(posedge clk_ram_ctl) begin
-		if(busy) begin
-			busy_count <= busy_count + 1;
-			if(busy_count == 8'hff)
-				borked	<= 1;
-		end
-		else begin
-			borked		<= 0;
-			busy_count	<= 0;
-		end
 	end
 
 endmodule
