@@ -471,18 +471,21 @@ module LatentPinkTopLevel(
 	wire[17:0]	mbist_fail_addr;
 	wire		mbist_select;
 
+	wire[NUM_PORTS-1:0]				port_link_up;
+	assign port_link_up =
+	{
+		xg0_link_up,
+		g13_link_up,
+		g12_link_up,
+		qsgmii_link_up
+	};
+
 	PacketBuffering #(
 		.NUM_PORTS(NUM_PORTS)
 	) buffer (
 
 		.port_rx_clk(port_rx_clk),
-		.port_link_up(
-		{
-			xg0_link_up,
-			g13_link_up,
-			g12_link_up,
-			qsgmii_link_up
-		}),
+		.port_link_up(port_link_up),
 		.port_rx_bus(
 		{
 			xg0_mac_rx_bus,
@@ -532,10 +535,16 @@ module LatentPinkTopLevel(
 	wire[NUM_PORTS-1:0]		port_is_trunk;
 
 	wire[NUM_PORTS-1:0]		port_trunk;
-	wire[NUM_PORTS-1:0]		port_space_avail;	//TODO: hook up to exit queues
+	wire[NUM_PORTS-1:0]		port_space_avail;
+	logic[NUM_PORTS-1:0]	port_space_avail_ff = 0;
 
 	wire[NUM_PORTS-1:0]		frame_port_wr;
 	wire[10:0]				frame_len;
+
+	//Pipeline delay to improve timing on the status flags
+	always_ff @(posedge clk_ram_ctl) begin
+		port_space_avail_ff	<= port_space_avail;
+	end
 
 	ForwardingEngine #(
 		.NUM_PORTS(NUM_PORTS)
@@ -551,45 +560,72 @@ module LatentPinkTopLevel(
 
 		.port_vlan(port_vlan_fabric),
 		.port_trunk(port_is_trunk),
-		.port_space_avail(port_space_avail),
+		.port_space_avail(port_space_avail_ff),
 
 		.frame_port_wr(frame_port_wr),
 		.frame_len(frame_len)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DEBUG: always report space in output buffers
+	// Exit queues
 
-	assign port_space_avail = 15'h7fff;
+	wire[NUM_PORTS-1:0]		port_tx_clk;
+	assign port_tx_clk =
+	{
+		xg0_mac_tx_clk,		//xg0 serdes clock
+		clk_125mhz,			//g13:12 oversample to 125 MHz domain
+		clk_125mhz,
+		qsgmii_tx_clk[2],	//g11:8 serdes clock
+		qsgmii_tx_clk[2],
+		qsgmii_tx_clk[2],
+		qsgmii_tx_clk[2],
+		qsgmii_tx_clk[1],	//g7:4 serdes clock
+		qsgmii_tx_clk[1],
+		qsgmii_tx_clk[1],
+		qsgmii_tx_clk[1],
+		qsgmii_tx_clk[0],	//g3:0 serdes clock
+		qsgmii_tx_clk[0],
+		qsgmii_tx_clk[0],
+		qsgmii_tx_clk[0]
+	};
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// VIOs to tie off not-yet-used transmit ports and ensure realistic logic utilization
-	/*
-	vio_1 vio_xg_tx(
-		.clk(xg0_mac_tx_clk),
-		.probe_in0(1'b0),
-		.probe_out0(xg0_mac_tx_bus));
+	wire[NUM_PORTS-1:0] port_tx_ready;
+	assign port_tx_ready =
+	{
+		1'b1,
+		g13_tx_ready,
+		g12_tx_ready,
+		qsgmii_mac_tx_ready
+	};
 
-	vio_1 vio_g12_tx(
-		.clk(clk_125mhz),
-		.probe_in0(g12_tx_ready),
-		.probe_out0(g12_tx_bus));
-
-	vio_1 vio_g13_tx(
-		.clk(clk_125mhz),
-		.probe_in0(g13_tx_ready),
-		.probe_out0(g13_tx_bus));
-
-	for(genvar g=0; g<3; g=g+1) begin : qsgmii
-
-		for(genvar i=0; i<4; i=i+1) begin : port
-			vio_1 vio_tx(
-				.clk(qsgmii_tx_clk[g]),
-				.probe_in0(qsgmii_mac_tx_ready[g*4 + i]),
-				.probe_out0(qsgmii_mac_tx_bus[g*4 + i]));
+	EthernetTxBus[NUM_PORTS-1:0] port_tx_bus;
+	assign xg0_mac_tx_bus = port_tx_bus[14];
+	assign g13_tx_bus = port_tx_bus[13];
+	assign g12_tx_bus = port_tx_bus[12];
+	for(genvar g=0; g<3; g=g+1) begin
+		for(genvar h=0; h<4; h=h+1) begin
+			assign qsgmii_mac_tx_bus[g*4 + h] = port_tx_bus[g*4 + h];
 		end
+	end
 
-	end*/
+	EgressFifo #(
+		.NUM_PORTS(NUM_PORTS)
+	) exit (
+		.port_rx_clk(port_rx_clk),
+		.port_link_up(port_link_up),
+
+		.clk_ram_ctl(clk_ram_ctl),
+		.frame_valid(frame_valid),
+		.frame_last(frame_last),
+		.frame_data(frame_data),
+		.frame_len(frame_len),
+		.frame_port_wr(frame_port_wr),
+		.port_space_avail(port_space_avail),
+
+		.port_tx_clk(port_tx_clk),
+		.port_tx_ready(port_tx_ready),
+		.port_tx_bus(port_tx_bus)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Curve25519 crypto_scalarmult accelerator (for speeding up SSH key exchange)

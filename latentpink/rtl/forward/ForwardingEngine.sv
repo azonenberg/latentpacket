@@ -66,7 +66,7 @@ module ForwardingEngine #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MAC address table
 
-	//TODO: move this to a CDC FIFO
+	//TODO: move this to a CDC FIFO so the table can be in another clock domain?
 
 	logic					mac_lookup_en		= 0;
 	vlan_t					mac_lookup_src_vlan	= 0;
@@ -347,10 +347,16 @@ module ForwardingEngine #(
 		.probe8(mac_lookup_hit),
 		.probe9(mac_lookup_dst_port),
 		.probe10(mac_lookup_src_mac),
-
 		.probe11(fwd_broadcast),
 		.probe12(frame_port_wr),
-		.probe13(frame_len)
+		.probe13(frame_len),
+		.probe14(port_trunk),
+		.probe15(port_space_avail),
+
+		.probe16(fabric_state[0].ready),
+		.probe17(fabric_state[0].src_vlan),
+		.probe18(fabric_state[0].bytelen),
+		.probe19(port_state[0])
 	);
 
 endmodule

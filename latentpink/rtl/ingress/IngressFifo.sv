@@ -507,6 +507,9 @@ module IngressFifo #(
 		if(prefetch_rd_en)
 			popcount							<= popcount_next;
 
+		if(prefetch_startup)
+			prefetch_count						<= 1;
+
 		if(metafifo_rd_valid[prefetch_port])
 			prefetch_startup					= 0;
 
@@ -558,7 +561,6 @@ module IngressFifo #(
 
 		end
 
-
 		for(integer i=0; i<NUM_PORTS; i=i+1) begin
 
 			case(portstates[i])
@@ -573,7 +575,6 @@ module IngressFifo #(
 						prefetch_startup				= 1;
 						prefetch_hold					<= 0;
 						prefetch_port					<= i;
-						prefetch_count					<= 1;
 						prefetch_target_valid			<= 0;
 					end
 

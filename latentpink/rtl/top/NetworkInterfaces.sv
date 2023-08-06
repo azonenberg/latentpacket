@@ -512,20 +512,14 @@ module NetworkInterfaces(
 		.gt0_tx_fsm_reset_done_out(),
 		.gt0_rx_fsm_reset_done_out(),
 		.gt0_data_valid_in(1'b1),
-		.gt0_tx_mmcm_lock_in(1'b1),
-		.gt0_tx_mmcm_reset_out(),
 
 		.gt1_tx_fsm_reset_done_out(),
 		.gt1_rx_fsm_reset_done_out(),
 		.gt1_data_valid_in(1'b1),
-		.gt1_tx_mmcm_lock_in(1'b1),
-		.gt1_tx_mmcm_reset_out(),
 
 		.gt2_tx_fsm_reset_done_out(),
 		.gt2_rx_fsm_reset_done_out(),
 		.gt2_data_valid_in(1'b1),
-		.gt2_tx_mmcm_lock_in(1'b1),
-		.gt2_tx_mmcm_reset_out(),
 
 		.gt0_qplloutclk_in(qpll_clkout_10g3125),
 		.gt0_qplloutrefclk_in(qpll_refclk),

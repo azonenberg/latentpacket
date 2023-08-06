@@ -33,6 +33,8 @@
 
 module PacketBufferingSim();
 
+	parameter NUM_PORTS = 15;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Simulated external oscillator
 
@@ -205,6 +207,7 @@ module PacketBufferingSim();
 	wire				frame_last;
 	wire				frame_valid;
 	wire[127:0]			frame_data;
+	wire[10:0]			frame_len;
 
 	PacketBuffering dut(
 		.port_rx_clk(port_rx_clk),
@@ -245,8 +248,9 @@ module PacketBufferingSim();
 		.mbist_fail_addr()
 	);
 
-	logic[14:0] port_space_avail = 15'h7fff;
-	logic[14:0] port_trunk = 15'h0001;			//port g0 is a trunk port
+	logic[NUM_PORTS-1:0]	port_trunk = 15'h4001;			//port g0 and xg0 are trunk ports
+	wire[NUM_PORTS-1:0]		port_space_avail;
+	wire[NUM_PORTS-1:0]		frame_port_wr;
 
 	ForwardingEngine fwd(
 		.clk_ram_ctl(clk_ram_ctl),
@@ -256,10 +260,29 @@ module PacketBufferingSim();
 		.frame_valid(frame_valid),
 		.frame_last(frame_last),
 		.frame_data(frame_data),
+		.frame_port_wr(frame_port_wr),
+		.frame_len(frame_len),
 
 		.port_vlan(port_vlan),
 		.port_trunk(port_trunk),
 		.port_space_avail(port_space_avail)
+	);
+
+	EgressFifo exit(
+		.port_rx_clk(port_rx_clk),
+		.port_link_up(port_link_up),
+
+		.clk_ram_ctl(clk_ram_ctl),
+		.frame_valid(frame_valid),
+		.frame_last(frame_last),
+		.frame_data(frame_data),
+		.frame_len(frame_len),
+		.frame_port_wr(frame_port_wr),
+		.port_space_avail(port_space_avail),
+
+		.port_tx_clk(port_rx_clk),
+		.port_tx_ready(15'h7fff),
+		.port_tx_bus()
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
