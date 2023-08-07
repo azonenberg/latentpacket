@@ -424,3 +424,24 @@ void UpdateLinkState(uint8_t port, uint16_t bctl, uint16_t bstat)
 		}
 	}
 }
+
+/**
+	@brief Get the temperature of the VSC8512 in 8.8 fixed point format
+
+	(see vtss_phy_read_temp_reg, vtss_phy_chip_temp_get_private)
+
+	Transfer function: adc value * -0.714C + 135.3
+ */
+uint16_t GetVSC8512Temperature()
+{
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_GENERAL_PURPOSE);
+
+	QSGMIIPHYWriteMasked(0, REG_VSC_TEMP_CONF, 0x00, 0x40);
+	QSGMIIPHYWriteMasked(0, REG_VSC_TEMP_CONF, 0x40, 0x40);
+	uint8_t tempadc = QSGMIIPHYRead(0, REG_VSC_TEMP_VAL) & 0xff;
+	int16_t tempval = 34636 - 183*tempadc;
+
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_MAIN);
+
+	return tempval;
+}

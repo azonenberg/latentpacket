@@ -40,11 +40,6 @@ uint16_t ReadThermalSensor(uint8_t addr)
 	if(!g_tempI2C->BlockingRead16(addr, reply))
 		return 0xff;
 
-	/*
-	int degInt = (reply >> 8);
-	int degFrac = ((reply & 0xff) / 256.0) * 100;
-	g_log("Temp sensor 0x%02x: %04x (%d.%02d C)\n", addr, reply, degInt, degFrac);
-	*/
 	return reply;
 }
 
@@ -96,4 +91,17 @@ uint16_t GetFPGAVCCBRAM()
 uint16_t GetFPGAVCCAUX()
 {
 	return g_fpga->BlockingRead16(REG_VOLT_AUX);
+}
+
+/**
+	@brief Gets the temperature of the SFP+
+ */
+uint16_t GetSFPTemperature()
+{
+	//FIXME: assumes internally calibrated
+
+	g_sfpI2C->BlockingWrite8(0xa2, 96);
+	uint16_t temp = 0;
+	g_sfpI2C->BlockingRead16(0xa2, temp);
+	return temp;
 }

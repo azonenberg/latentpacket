@@ -380,6 +380,8 @@ void InitSensors()
 	g_log("FPGA VCCBRAM:                          %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
 	volt = GetFPGAVCCAUX();
 	g_log("FPGA VCCAUX:                           %d.%02d V\n", (volt >> 8), static_cast<int>(((volt & 0xff) / 256.0) * 100));
+
+	InitDTS();
 }
 
 /**
@@ -618,9 +620,7 @@ void PollSFP()
 		}
 
 		//Get temperature
-		g_sfpI2C->BlockingWrite8(0xa2, 96);
-		uint16_t temp = 0;
-		g_sfpI2C->BlockingRead16(0xa2, temp);
+		uint16_t temp = GetSFPTemperature();
 		g_log("Temperature:    %2d.%02d C\n", (temp >> 8), static_cast<int>(((temp & 0xff) / 256.0) * 100));
 
 		//Get supply voltage
@@ -893,13 +893,19 @@ void InitQSGMIIPHY()
 		QSGMIIPHYWrite(i, REG_AN_ADVERT, 0x141);							//Advertise 100/full, 10/full only
 	}
 
-	//TODO: initialize temperature sensor vtss_phy_chip_temp_init_private
+	//Initialize undocumented temperature sensor (see vtss_phy_chip_temp_init_private in MESA)
+	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_GENERAL_PURPOSE);
+	QSGMIIPHYWriteMasked(0, REG_VSC_TEMP_CONF, 0xc0, 0xc0);
+	int16_t tempval = GetVSC8512Temperature();
+	g_log("PHY die temperature: %d.%02d C\n",
+		(tempval >> 8),
+		static_cast<int>(((tempval & 0xff) / 256.0) * 100));
 
 	//Return to normal base register page
 	g_log("PHY init done\n");
 	QSGMIIPHYWrite(0, REG_VSC8512_PAGESEL, VSC_PAGE_MAIN);
 
-	for(int i=0; i<32; i++)
+	for(int i=0; i<12; i++)
 	{
 		uint8_t phyaddr = i;
 		//g_log("PHY %d\n", i);
@@ -924,4 +930,21 @@ void InitEthernet()
 	//Create the Ethernet interface
 	static QSPIEthernetInterface iface;
 	g_ethIface = &iface;
+}
+
+/**
+	@brief Initialize the digital temperature sensor
+ */
+void InitDTS()
+{
+	//APB4 clock is 64 MHz, so divide by 80 to get 800 kHz ticks
+	//(must be <1 MHz)
+	//15 cycles integration time = 18.75 us
+	static DigitalTempSensor dts(&DTS, 80, 15, 64000000);
+	g_dts = &dts;
+
+	auto tempval = dts.GetTemperature();
+	g_log("MCU die temperature:                   %d.%02d C\n",
+		(tempval >> 8),
+		static_cast<int>(((tempval & 0xff) / 256.0) * 100));
 }

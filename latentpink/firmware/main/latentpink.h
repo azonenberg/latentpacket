@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #else
 #include "stm32.h"
+#include <peripheral/DTS.h>
 #include <peripheral/Flash.h>
 #include <peripheral/GPIO.h>
 #include <peripheral/I2C.h>
@@ -99,6 +100,7 @@ extern I2C* g_sfpI2C;
 extern GPIOPin* g_sfpModAbsPin;
 extern GPIOPin* g_sfpTxDisablePin;
 extern GPIOPin* g_sfpTxFaultPin;
+extern DigitalTempSensor* g_dts;
 #endif
 
 enum linkstate_t
@@ -139,6 +141,7 @@ extern uint16_t g_portVlans[NUM_PORTS];
 void InitClocks();
 void InitUART();
 void InitTimer();
+void InitDTS();
 void InitQSPI();
 void InitFPGA();
 void InitI2C();
@@ -158,6 +161,8 @@ uint16_t GetFPGATemperature();
 uint16_t GetFPGAVCCINT();
 uint16_t GetFPGAVCCAUX();
 uint16_t GetFPGAVCCBRAM();
+uint16_t GetVSC8512Temperature();
+uint16_t GetSFPTemperature();
 
 uint16_t ManagementPHYRead(uint8_t regid);
 uint16_t ManagementPHYExtendedRead(uint8_t mmd, uint8_t regid);
@@ -243,10 +248,10 @@ enum mdioreg_t
 
 	//GPIO / global command page
 	REG_VSC_GP_GLOBAL_SERDES	= 0x12,
-	REG_VSC_MAC_MODE			= 0x13
+	REG_VSC_MAC_MODE			= 0x13,
 	//14.2.3 p18 says 19G 15:14 = 00/10
-
-	//REG_
+	REG_VSC_TEMP_CONF			= 0x1a,
+	REG_VSC_TEMP_VAL			= 0x1c
 };
 
 enum vsc_page_t

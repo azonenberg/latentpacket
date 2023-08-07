@@ -112,6 +112,7 @@ protected:
 	void OnShowMMDRegister();
 	void OnShowRegister();
 	void OnShowSSHFingerprint();
+	void OnShowTemperature();
 	void OnShowVersion();
 
 	void OnTest();

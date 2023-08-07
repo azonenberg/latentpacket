@@ -80,6 +80,7 @@ enum cmdid_t
 	CMD_SSH,
 	CMD_STRAIGHT,
 	CMD_STATUS,
+	CMD_TEMPERATURE,
 	CMD_TEST,
 	CMD_TESTPATTERN,
 	CMD_VERSION,
@@ -320,6 +321,7 @@ static const clikeyword_t g_showCommands[] =
 	{"interface",		CMD_INTERFACE,		g_showInterfaceCommands,	"Display interface properties and stats"},
 	{"ip",				CMD_IP,				g_showIpCommands,			"Print IPv4 information"},
 	{"ssh",				CMD_SSH,			g_showSshCommands,			"Print SSH information"},
+	{"temperature",		CMD_TEMPERATURE,	nullptr,					"Display temperature sensor values"},
 	{"version",			CMD_VERSION,		nullptr,					"Show firmware / FPGA version"},
 	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
 };
@@ -1144,6 +1146,10 @@ void SwitchCLISessionContext::OnShowCommand()
 				default:
 					break;
 			}
+			break;
+
+		case CMD_TEMPERATURE:
+			OnShowTemperature();
 			break;
 
 		case CMD_VERSION:
@@ -1976,6 +1982,51 @@ void SwitchCLISessionContext::OnShowSSHFingerprint()
 	STM32CryptoEngine tmp;
 	tmp.GetHostKeyFingerprint(buf, sizeof(buf));
 	m_stream->Printf("ED25519 key fingerprint is SHA256:%s.\n", buf);
+}
+
+void SwitchCLISessionContext::OnShowTemperature()
+{
+	//Read fans
+	for(uint8_t i=0; i<2; i++)
+	{
+		auto rpm = GetFanRPM(i);
+		if(rpm == 0)
+			m_stream->Printf("Fan %d:                                 STOPPED\n", i, rpm);
+		else
+			m_stream->Printf("Fan %d:                                 %d RPM\n", i, rpm);
+	}
+
+	//Read I2C temp sensors
+	for(uint8_t i=0; i<4; i++)
+	{
+		auto addr = g_tempSensorAddrs[i];
+		auto temp = ReadThermalSensor(addr);
+		m_stream->Printf("Temp 0x%02x (%25s): %d.%02d C\n",
+			addr,
+			g_tempSensorNames[i],
+			(temp >> 8),
+			static_cast<int>(((temp & 0xff) / 256.0) * 100));
+	}
+
+	//Read SFP+ temp sensor (TODO: only if optic is inserted)
+	auto temp = GetSFPTemperature();
+	m_stream->Printf("SFP+ optic:                            %2d.%02d C\n",
+		(temp >> 8), static_cast<int>(((temp & 0xff) / 256.0) * 100));
+
+	//Read VSC8512 PHY temperature
+	temp = GetVSC8512Temperature();
+	m_stream->Printf("VSC8512:                               %2d.%02d C\n",
+		(temp >> 8), static_cast<int>(((temp & 0xff) / 256.0) * 100));
+
+	//Read FPGA XADC temperature
+	temp = GetFPGATemperature();
+	m_stream->Printf("FPGA:                                  %2d.%02d C\n",
+		(temp >> 8), static_cast<int>(((temp & 0xff) / 256.0) * 100));
+
+	//Read MCU DTS temperature
+	temp = g_dts->GetTemperature();
+	m_stream->Printf("MCU:                                   %2d.%02d C\n",
+		(temp >> 8), static_cast<int>(((temp & 0xff) / 256.0) * 100));
 }
 
 void SwitchCLISessionContext::OnShowVersion()

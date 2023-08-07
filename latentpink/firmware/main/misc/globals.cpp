@@ -265,4 +265,9 @@ bool g_sfpPresent = false;
  */
 bool g_sfpFaulted = false;
 
+/**
+	@brief Digital temperature sensor
+ */
+DigitalTempSensor* g_dts = nullptr;
+
 #endif	//ifndef SIMULATION
