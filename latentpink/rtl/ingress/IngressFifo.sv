@@ -439,6 +439,7 @@ module IngressFifo #(
 		PORT_STATE_META_READ,		//reading metadata
 		PORT_STATE_PREFETCH,		//data words being prefetched
 		PORT_STATE_PREFETCH_WAIT,	//wait for MAC address to be prefetched
+		PORT_STATE_READY_NEXT,		//ready next cycle
 		PORT_STATE_READY,			//ready to start forwarding
 		PORT_STATE_FORWARD,			//forwarding now
 		PORT_STATE_LAST				//forwarding last frame
@@ -563,6 +564,30 @@ module IngressFifo #(
 
 		for(integer i=0; i<NUM_PORTS; i=i+1) begin
 
+			//Move out of portstate  case to reduce fan-in
+			//metafifo_rd_valid can only ever be asserted if PORT_STATE_META_READ
+			if(metafifo_rd_valid[i]) begin
+
+				fabric_state[i].src_vlan		<= metafifo_rdata[i].src_vlan;
+				fabric_state[i].bytelen			<= metafifo_rdata[i].len;
+
+				//Calculate frame length in words (rounded up)
+				prefetch_wordlen				= metafifo_rdata[i].len[10:4];
+				if(metafifo_rdata[i].len[3:0])
+					prefetch_wordlen			= prefetch_wordlen + 1;
+
+				//Clamp to max prefetch FIFO depth
+				if(prefetch_wordlen >= PREFETCH_DEPTH)
+					prefetch_target				<= PREFETCH_DEPTH - 1;
+				else
+					prefetch_target				<= prefetch_wordlen;
+
+				prefetch_target_valid			<= 1;
+
+				portstates[i]					<= PORT_STATE_PREFETCH;
+
+			end
+
 			case(portstates[i])
 
 				//Wait for a frame to show up and be written to RAM, then read the metadata
@@ -581,31 +606,8 @@ module IngressFifo #(
 				end	//PORT_STATE_IDLE
 
 				PORT_STATE_META_READ: begin
-
 					prefetch_rcount[i]					<= 0;
 					mac_pending[i]						<= 1;
-
-					if(metafifo_rd_valid[i]) begin
-
-						fabric_state[i].src_vlan		<= metafifo_rdata[i].src_vlan;
-						fabric_state[i].bytelen			<= metafifo_rdata[i].len;
-
-						//Calculate frame length in words (rounded up)
-						prefetch_wordlen				= metafifo_rdata[i].len[10:4];
-						if(metafifo_rdata[i].len[3:0])
-							prefetch_wordlen			= prefetch_wordlen + 1;
-
-						//Clamp to max prefetch FIFO depth
-						if(prefetch_wordlen >= PREFETCH_DEPTH)
-							prefetch_target				<= PREFETCH_DEPTH - 1;
-						else
-							prefetch_target				<= prefetch_wordlen;
-
-						prefetch_target_valid			<= 1;
-
-						portstates[i]					<= PORT_STATE_PREFETCH;
-
-					end
 				end	//PORT_STATE_META_READ
 
 				//Prefetch the first PREFETCH_DEPTH words
@@ -615,11 +617,16 @@ module IngressFifo #(
 				//Wait until all data we requested has been fully prefetched
 				PORT_STATE_PREFETCH_WAIT: begin
 					if(!mac_pending[i] && (prefetch_count >= prefetch_rcount[i])) begin
-						prefetching					= 0;
-						fabric_state[i].ready		<= 1;
-						portstates[i]				<= PORT_STATE_READY;
+						portstates[i]				<= PORT_STATE_READY_NEXT;
 					end
-				end	//PORT_STATE_MAC_WAIT
+				end	//PORT_STATE_PREFETCH_WAIT
+
+				//extra pipeline delay, try and avoid needing this long term
+				PORT_STATE_READY_NEXT: begin
+					prefetching					= 0;
+					fabric_state[i].ready		<= 1;
+					portstates[i]				<= PORT_STATE_READY;
+				end	//PORT_STATE_READY_NEXT
 
 				//Wait for forwarding request
 				PORT_STATE_READY: begin
@@ -663,6 +670,40 @@ module IngressFifo #(
 		end	//port loop
 
 	end
+
+	ila_0 ila(
+		.clk(port_rx_clk[2]),
+		.probe0(cdcs[2].cdc.rx_bus.start),
+		.probe1(cdcs[2].cdc.rx_bus.commit),
+		.probe2(cdcs[2].cdc.rx_bus.bytes_valid),
+		.probe3(cdcs[2].cdc.rx_bus.data_valid),
+		.probe4(cdcs[2].cdc.rx_bus.drop),
+		.probe5(cdcs[2].cdc.fifo_wr_en),
+		.probe6(cdcs[2].cdc.fifo_wr_data),
+		.probe7(cdcs[2].cdc.fifo_wr_size),
+		.probe8(cdcs[2].cdc.fifo_wr_commit),
+		.probe9(cdcs[2].cdc.fifo_wr_rollback),
+		.probe10(cdcs[2].cdc.wr_phase),
+		.probe11(cdcs[2].cdc.wr_dropping),
+		.probe12(cdcs[2].cdc.header_fifo_full),
+		.probe13(cdcs[2].cdc.rx_bus.data)
+	);
+
+	ila_2 ila2(
+		.clk(clk_ram_ctl),
+		.probe0(portstates[0]),
+		.probe1(portstates[2]),
+		.probe2(frame_last),
+		.probe3(popcount),
+		.probe4(forwarding),
+		.probe5(prefetch_rd_en),
+		.probe6(forwarding),
+		.probe7(prefetch_startup),
+		.probe8(prefetch_hold),
+		.probe9(prefetch_port),
+		.probe10(prefetch_target_valid),
+		.probe11(prefetch_count)
+	);
 
 endmodule
 

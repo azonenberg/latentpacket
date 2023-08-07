@@ -274,25 +274,6 @@ module EgressFifo #(
 
 		end
 
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Debug ILA on port 2
-
-		if(g == 2) begin
-			ila_0 ila(
-				.clk(port_tx_clk[g]),
-				.probe0(port_tx_bus[g].data_valid),
-				.probe1(port_tx_bus[g].bytes_valid),
-				.probe2(port_tx_bus[g].data),
-				.probe3(port_tx_bus[g].start),
-				.probe4(tx_state),
-				.probe5(tx_count),
-				.probe6(header_rd_en),
-				.probe7(header_rd_data),
-				.probe8(port_space_avail[g])
-			);
-		end
-
-
 	end
 
 endmodule
