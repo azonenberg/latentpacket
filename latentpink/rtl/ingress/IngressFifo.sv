@@ -386,8 +386,7 @@ module IngressFifo #(
 	//Number of 128-bit words to prefetch from QDR before getting the "forward" signal for the frame
 	//Must equal or exceed SRAM clock rate (187.5 MHz) * SRAM read latency (estimated ~80ns), so minimum of 16
 	//We can fit up to 32 in a single BRAM without increasing area, but this will harm latency.
-	//TODO: can we reduce SRAM read latency with a better CDC FIFO in the QDR?
-	localparam PREFETCH_DEPTH		= 32;
+	localparam PREFETCH_DEPTH		= 16;
 	localparam PREFETCH_BITS		= $clog2(PREFETCH_DEPTH);
 	localparam NUM_PORTS_ROUNDED	= 2 ** PORT_BITS;
 
@@ -550,13 +549,13 @@ module IngressFifo #(
 				ram_rd_addr[0 +: PTR_BITS]			<= fifo_rd_ptr[prefetch_port];
 				fifo_rd_ptr[prefetch_port]			<= fifo_rd_ptr[prefetch_port] + 1'h1;
 
-				prefetch_count						<= prefetch_count + 1'h1;
-
 				//Stop if we've prefetched the entire frame, or PREFETCH_DEPTH words
 				if(prefetch_target_valid && (prefetch_count == prefetch_target)) begin
 					portstates[prefetch_port]		<= PORT_STATE_PREFETCH_WAIT;
 					prefetch_hold					<= 1;
 				end
+				else
+					prefetch_count					<= prefetch_count + 1'h1;
 
 			end
 
@@ -671,6 +670,19 @@ module IngressFifo #(
 
 	end
 
+	//Detect if we get stuck
+	logic[7:0] borkcount = 0;
+	logic borked = 0;
+	always_ff @(posedge clk_ram_ctl) begin
+		if(prefetch_hold) begin
+			borkcount	<= borkcount + 1;
+			if(borkcount == 255)
+				borked	<= 1;
+		end
+		else
+			borkcount	<= 0;
+	end
+
 	ila_0 ila(
 		.clk(port_rx_clk[2]),
 		.probe0(cdcs[2].cdc.rx_bus.start),
@@ -702,7 +714,9 @@ module IngressFifo #(
 		.probe8(prefetch_hold),
 		.probe9(prefetch_port),
 		.probe10(prefetch_target_valid),
-		.probe11(prefetch_count)
+		.probe11(prefetch_count),
+		.probe12(prefetching),
+		.probe13(borked)
 	);
 
 endmodule
