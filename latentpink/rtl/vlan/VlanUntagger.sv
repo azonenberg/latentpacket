@@ -82,8 +82,10 @@ module VlanUntagger(
 		end
 
 		//Ignore if dropping this frame
-		if(in_bus.drop)
-			dropping	<= 1;
+		if(in_bus.drop) begin
+			dropping		<= 1;
+			out_bus.drop	<= 1;
+		end
 		else if(dropping) begin
 		end
 
