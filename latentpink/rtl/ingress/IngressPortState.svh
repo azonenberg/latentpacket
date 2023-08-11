@@ -42,6 +42,7 @@ typedef struct packed
 	logic		ready;
 	vlan_t		src_vlan;
 	logic[10:0]	bytelen;
+	logic[6:0]	wordlen;	//ceil(bytelen/4)
 	macaddr_t	dst_mac;
 	macaddr_t	src_mac;
 } inportstate_t;

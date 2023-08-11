@@ -14,13 +14,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="2,056.667 ns"></ZoomStartTime>
-      <ZoomEndTime time="6,802.668 ns"></ZoomEndTime>
-      <Cursor1Time time="3,426.667 ns"></Cursor1Time>
+      <ZoomStartTime time="4.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="11,889.001 ns"></ZoomEndTime>
+      <Cursor1Time time="3,704.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="310"></NameColumnWidth>
-      <ValueColumnWidth column_width="251"></ValueColumnWidth>
+      <ValueColumnWidth column_width="247"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="18" />
    <wvobject type="group" fp_name="group600">
@@ -126,6 +126,7 @@
    <wvobject type="group" fp_name="group602">
       <obj_property name="label">Interfaces</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject type="array" fp_name="/PacketBufferingSim/port_rx_clk">
          <obj_property name="ElementShortName">port_rx_clk[14:0]</obj_property>
          <obj_property name="ObjectShortName">port_rx_clk[14:0]</obj_property>
@@ -184,67 +185,6 @@
             <obj_property name="ElementShortName">port_frame_bytelen[14:0][10:0]</obj_property>
             <obj_property name="ObjectShortName">port_frame_bytelen[14:0][10:0]</obj_property>
             <obj_property name="isExpanded"></obj_property>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[14]">
-               <obj_property name="ElementShortName">[14][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[14][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[13]">
-               <obj_property name="ElementShortName">[13][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[13][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[12]">
-               <obj_property name="ElementShortName">[12][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[12][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[11]">
-               <obj_property name="ElementShortName">[11][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[11][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[10]">
-               <obj_property name="ElementShortName">[10][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[10][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[9]">
-               <obj_property name="ElementShortName">[9][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[9][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[8]">
-               <obj_property name="ElementShortName">[8][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[8][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[7]">
-               <obj_property name="ElementShortName">[7][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[7][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[6]">
-               <obj_property name="ElementShortName">[6][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[6][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[5]">
-               <obj_property name="ElementShortName">[5][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[5][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[4]">
-               <obj_property name="ElementShortName">[4][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[4][10:0]</obj_property>
-               <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[3]">
-               <obj_property name="ElementShortName">[3][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[3][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[2]">
-               <obj_property name="ElementShortName">[2][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[2][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[1]">
-               <obj_property name="ElementShortName">[1][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[1][10:0]</obj_property>
-            </wvobject>
-            <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_frame_bytelen[0]">
-               <obj_property name="ElementShortName">[0][10:0]</obj_property>
-               <obj_property name="ObjectShortName">[0][10:0]</obj_property>
-            </wvobject>
          </wvobject>
          <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/port_mem_valid">
             <obj_property name="ElementShortName">port_mem_valid[14:0]</obj_property>
@@ -296,8 +236,8 @@
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
          <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fifo_wr_ptr">
-            <obj_property name="ElementShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
-            <obj_property name="ObjectShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
+            <obj_property name="ElementShortName">fifo_wr_ptr[14:0][14:0]</obj_property>
+            <obj_property name="ObjectShortName">fifo_wr_ptr[14:0][14:0]</obj_property>
          </wvobject>
          <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/ram_wr_en">
             <obj_property name="ElementShortName">ram_wr_en</obj_property>
@@ -364,17 +304,9 @@
          <obj_property name="ElementShortName">fec_uncorrectable_err[1:0]</obj_property>
          <obj_property name="ObjectShortName">fec_uncorrectable_err[1:0]</obj_property>
       </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/portstates">
-         <obj_property name="ElementShortName">portstates[14:0][2:0]</obj_property>
-         <obj_property name="ObjectShortName">portstates[14:0][2:0]</obj_property>
-      </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/metafifo_empty">
          <obj_property name="ElementShortName">metafifo_empty[14:0]</obj_property>
          <obj_property name="ObjectShortName">metafifo_empty[14:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/metafifo_rd">
-         <obj_property name="ElementShortName">metafifo_rd[14:0]</obj_property>
-         <obj_property name="ObjectShortName">metafifo_rd[14:0]</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/metafifo_rdata">
          <obj_property name="ElementShortName">metafifo_rdata[14:0]</obj_property>
@@ -489,20 +421,20 @@
             <obj_property name="ObjectShortName">full[15:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_fifo/rpos">
-            <obj_property name="ElementShortName">rpos[15:0][4:0]</obj_property>
-            <obj_property name="ObjectShortName">rpos[15:0][4:0]</obj_property>
+            <obj_property name="ElementShortName">rpos[15:0][7:0]</obj_property>
+            <obj_property name="ObjectShortName">rpos[15:0][7:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_fifo/wpos">
-            <obj_property name="ElementShortName">wpos[15:0][4:0]</obj_property>
-            <obj_property name="ObjectShortName">wpos[15:0][4:0]</obj_property>
+            <obj_property name="ElementShortName">wpos[15:0][7:0]</obj_property>
+            <obj_property name="ObjectShortName">wpos[15:0][7:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_fifo/irpos">
-            <obj_property name="ElementShortName">irpos[15:0][4:0]</obj_property>
-            <obj_property name="ObjectShortName">irpos[15:0][4:0]</obj_property>
+            <obj_property name="ElementShortName">irpos[15:0][7:0]</obj_property>
+            <obj_property name="ObjectShortName">irpos[15:0][7:0]</obj_property>
          </wvobject>
          <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_fifo/iwpos">
-            <obj_property name="ElementShortName">iwpos[15:0][4:0]</obj_property>
-            <obj_property name="ObjectShortName">iwpos[15:0][4:0]</obj_property>
+            <obj_property name="ElementShortName">iwpos[15:0][7:0]</obj_property>
+            <obj_property name="ObjectShortName">iwpos[15:0][7:0]</obj_property>
          </wvobject>
       </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_count">
@@ -510,73 +442,21 @@
          <obj_property name="ObjectShortName">prefetch_count[6:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_rcount">
-         <obj_property name="ElementShortName">prefetch_rcount[14:0][6:0]</obj_property>
-         <obj_property name="ObjectShortName">prefetch_rcount[14:0][6:0]</obj_property>
-         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-      </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_wordlen">
          <obj_property name="ElementShortName">prefetch_wordlen[6:0]</obj_property>
          <obj_property name="ObjectShortName">prefetch_wordlen[6:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_target">
-         <obj_property name="ElementShortName">prefetch_target[3:0]</obj_property>
-         <obj_property name="ObjectShortName">prefetch_target[3:0]</obj_property>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_rcount">
+         <obj_property name="ElementShortName">prefetch_rcount[14:0][6:0]</obj_property>
+         <obj_property name="ObjectShortName">prefetch_rcount[14:0][6:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/prefetch_target_valid">
-         <obj_property name="ElementShortName">prefetch_target_valid</obj_property>
-         <obj_property name="ObjectShortName">prefetch_target_valid</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/mac_pending">
-         <obj_property name="ElementShortName">mac_pending[14:0]</obj_property>
-         <obj_property name="ObjectShortName">mac_pending[14:0]</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/prefetch_fifo/underflow">
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="ElementShortName">underflow</obj_property>
          <obj_property name="ObjectShortName">underflow</obj_property>
          <obj_property name="label">prefetch_underflow</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/prefetching">
-         <obj_property name="ElementShortName">prefetching</obj_property>
-         <obj_property name="ObjectShortName">prefetching</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/prefetch_startup">
-         <obj_property name="ElementShortName">prefetch_startup</obj_property>
-         <obj_property name="ObjectShortName">prefetch_startup</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/prefetch_hold">
-         <obj_property name="ElementShortName">prefetch_hold</obj_property>
-         <obj_property name="ObjectShortName">prefetch_hold</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/prefetch_port">
-         <obj_property name="ElementShortName">prefetch_port[3:0]</obj_property>
-         <obj_property name="ObjectShortName">prefetch_port[3:0]</obj_property>
-      </wvobject>
-      <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/forwarding">
-         <obj_property name="ElementShortName">forwarding</obj_property>
-         <obj_property name="ObjectShortName">forwarding</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fwd_port">
-         <obj_property name="ElementShortName">fwd_port[3:0]</obj_property>
-         <obj_property name="ObjectShortName">fwd_port[3:0]</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fwd_count">
-         <obj_property name="ElementShortName">fwd_count[6:0]</obj_property>
-         <obj_property name="ObjectShortName">fwd_count[6:0]</obj_property>
-         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fwd_wordlen">
-         <obj_property name="ElementShortName">fwd_wordlen[6:0]</obj_property>
-         <obj_property name="ObjectShortName">fwd_wordlen[6:0]</obj_property>
-         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-      </wvobject>
-      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fwd_rd_ptr">
-         <obj_property name="ElementShortName">fwd_rd_ptr[13:0]</obj_property>
-         <obj_property name="ObjectShortName">fwd_rd_ptr[13:0]</obj_property>
-         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/popcount">
          <obj_property name="ElementShortName">popcount[6:0]</obj_property>
@@ -589,14 +469,23 @@
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fifo_rd_ptr">
-         <obj_property name="ElementShortName">fifo_rd_ptr[14:0][13:0]</obj_property>
-         <obj_property name="ObjectShortName">fifo_rd_ptr[14:0][13:0]</obj_property>
+         <obj_property name="ElementShortName">fifo_rd_ptr[14:0][14:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_rd_ptr[14:0][14:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fifo_wr_ptr">
-         <obj_property name="ElementShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
-         <obj_property name="ObjectShortName">fifo_wr_ptr[14:0][13:0]</obj_property>
+         <obj_property name="ElementShortName">fifo_wr_ptr[14:0][14:0]</obj_property>
+         <obj_property name="ObjectShortName">fifo_wr_ptr[14:0][14:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/metafifo_rd">
+         <obj_property name="ElementShortName">metafifo_rd[14:0]</obj_property>
+         <obj_property name="ObjectShortName">metafifo_rd[14:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/portstates">
+         <obj_property name="ElementShortName">portstates[14:0][2:0]</obj_property>
+         <obj_property name="ObjectShortName">portstates[14:0][2:0]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="divider670" type="divider">
@@ -608,6 +497,94 @@
    <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state">
       <obj_property name="ElementShortName">fabric_state[14:0]</obj_property>
       <obj_property name="ObjectShortName">fabric_state[14:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[14]">
+         <obj_property name="ElementShortName">[14]</obj_property>
+         <obj_property name="ObjectShortName">[14]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[13]">
+         <obj_property name="ElementShortName">[13]</obj_property>
+         <obj_property name="ObjectShortName">[13]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[12]">
+         <obj_property name="ElementShortName">[12]</obj_property>
+         <obj_property name="ObjectShortName">[12]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[11]">
+         <obj_property name="ElementShortName">[11]</obj_property>
+         <obj_property name="ObjectShortName">[11]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[10]">
+         <obj_property name="ElementShortName">[10]</obj_property>
+         <obj_property name="ObjectShortName">[10]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[9]">
+         <obj_property name="ElementShortName">[9]</obj_property>
+         <obj_property name="ObjectShortName">[9]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[8]">
+         <obj_property name="ElementShortName">[8]</obj_property>
+         <obj_property name="ObjectShortName">[8]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[7]">
+         <obj_property name="ElementShortName">[7]</obj_property>
+         <obj_property name="ObjectShortName">[7]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[6]">
+         <obj_property name="ElementShortName">[6]</obj_property>
+         <obj_property name="ObjectShortName">[6]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[5]">
+         <obj_property name="ElementShortName">[5]</obj_property>
+         <obj_property name="ObjectShortName">[5]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[4]">
+         <obj_property name="ElementShortName">[4]</obj_property>
+         <obj_property name="ObjectShortName">[4]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3]">
+         <obj_property name="ElementShortName">[3]</obj_property>
+         <obj_property name="ObjectShortName">[3]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject type="logic" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3].ready">
+            <obj_property name="ElementShortName">.ready</obj_property>
+            <obj_property name="ObjectShortName">.ready</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3].src_vlan">
+            <obj_property name="ElementShortName">.src_vlan[11:0]</obj_property>
+            <obj_property name="ObjectShortName">.src_vlan[11:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3].bytelen">
+            <obj_property name="ElementShortName">.bytelen[10:0]</obj_property>
+            <obj_property name="ObjectShortName">.bytelen[10:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3].wordlen">
+            <obj_property name="ElementShortName">.wordlen[6:0]</obj_property>
+            <obj_property name="ObjectShortName">.wordlen[6:0]</obj_property>
+            <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3].dst_mac">
+            <obj_property name="ElementShortName">.dst_mac[47:0]</obj_property>
+            <obj_property name="ObjectShortName">.dst_mac[47:0]</obj_property>
+         </wvobject>
+         <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[3].src_mac">
+            <obj_property name="ElementShortName">.src_mac[47:0]</obj_property>
+            <obj_property name="ObjectShortName">.src_mac[47:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[2]">
+         <obj_property name="ElementShortName">[2]</obj_property>
+         <obj_property name="ObjectShortName">[2]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[1]">
+         <obj_property name="ElementShortName">[1]</obj_property>
+         <obj_property name="ObjectShortName">[1]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/PacketBufferingSim/dut/infifo/fabric_state[0]">
+         <obj_property name="ElementShortName">[0]</obj_property>
+         <obj_property name="ObjectShortName">[0]</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="divider1973" type="divider">
    </wvobject>
