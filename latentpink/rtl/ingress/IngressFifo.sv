@@ -78,7 +78,9 @@ module IngressFifo #(
 	input wire[NUM_PORTS-1:0]				forward_en,
 	output logic							frame_valid			= 0,
 	output logic							frame_last			= 0,
-	output wire[127:0]						frame_data
+	output wire[127:0]						frame_data,
+
+	output wire								la_trig
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +152,43 @@ module IngressFifo #(
 			.mem_frame_vlan(port_mem_vlan[g]),
 			.mem_frame_start(port_frame_start[g])
 		);
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Pointers for SRAM FIFO
+
+	logic[PTR_BITS:0]	fifo_wr_ptr[NUM_PORTS-1:0];
+	logic[PTR_BITS:0]	fifo_rd_ptr[NUM_PORTS-1:0];
+
+	logic[NUM_PORTS-1:0]	fifo_empty;
+	logic[NUM_PORTS-1:0]	fifo_full;
+	logic[PTR_BITS:0]		fifo_wsize[NUM_PORTS-1:0];
+	logic[NUM_PORTS-1:0]	fifo_almost_full;
+
+	initial begin
+		for(integer i=0; i<NUM_PORTS; i=i+1) begin
+			fifo_wr_ptr[i] = 0;
+			fifo_rd_ptr[i] = 0;
+		end
+	end
+
+	//Empty / full flag generation
+	always_comb begin
+		for(integer i=0; i<NUM_PORTS; i=i+1) begin
+			fifo_empty[i]	= (fifo_rd_ptr[i] == fifo_wr_ptr[i]);
+
+			fifo_full[i]	= 	(fifo_wr_ptr[i][PTR_BITS-1:0] == fifo_rd_ptr[i][PTR_BITS-1:0]) &&
+								(fifo_wr_ptr[i][PTR_BITS] != fifo_rd_ptr[i][PTR_BITS]);
+
+			fifo_wsize[i]	= PORT_FIFO_SIZE[PTR_BITS:0] + fifo_rd_ptr[i] - fifo_wr_ptr[i];
+		end
+	end
+
+	//Almost full if not enough space for a max sized frame
+	always_ff @(posedge clk_ram_ctl) begin
+		for(integer i=0; i<NUM_PORTS; i=i+1) begin
+			fifo_almost_full[i]	<= (fifo_wsize[i] < 96);
+		end
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -265,14 +304,6 @@ module IngressFifo #(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SRAM write address generation
-
-	logic[PTR_BITS-1:0] fifo_wr_ptr[NUM_PORTS-1:0];
-
-	initial begin
-		for(integer i=0; i<NUM_PORTS; i=i+1) begin
-			fifo_wr_ptr[i] = 0;
-		end
-	end
 
 	always_ff @(posedge clk_ram_ctl) begin
 
@@ -422,15 +453,8 @@ module IngressFifo #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Readout logic
 
-	logic[PTR_BITS-1:0] 		fifo_rd_ptr[NUM_PORTS-1:0];
 	logic[NUM_PORTS-1:0]		metafifo_rd_ff		= 0;
 	logic[NUM_PORTS-1:0]		metafifo_rd_valid	= 0;
-
-	initial begin
-		for(integer i=0; i<NUM_PORTS; i=i+1) begin
-			fifo_rd_ptr[i] = 0;
-		end
-	end
 
 	typedef enum logic[2:0]
 	{
@@ -449,14 +473,12 @@ module IngressFifo #(
 	logic[6:0]					prefetch_rcount[NUM_PORTS-1:0];		//number of words received from QDR so far
 	logic[6:0]					prefetch_wordlen = 0;				//total length of frame in words
 	logic[PREFETCH_BITS-1:0]	prefetch_target = 0;				//number of words to prefetch
-	logic[NUM_PORTS-1:0]		mac_pending	= 0;
+	logic[NUM_PORTS-1:0]		mac_pending		= 0;
 
 	initial begin
 		for(integer i=0; i<NUM_PORTS; i=i+1) begin
 			portstates[i]		= PORT_STATE_IDLE;
 			prefetch_rcount[i]	= 0;
-			prefetch_target[i]	= 0;
-			prefetch_wordlen[i]	= 0;
 		end
 	end
 
@@ -468,7 +490,7 @@ module IngressFifo #(
 	logic[6:0]					fwd_wordlen	= 0;
 	logic[6:0]					fwd_count	= 0;
 	logic[PORT_BITS-1:0]		fwd_port	= 0;
-	logic[PTR_BITS-1:0]			fwd_rd_ptr	= 0;
+	logic[PTR_BITS:0]			fwd_rd_ptr	= 0;
 
 	logic						prefetching				= 0;
 	logic						prefetch_startup		= 0;
@@ -670,53 +692,63 @@ module IngressFifo #(
 
 	end
 
-	//Detect if we get stuck
-	logic[7:0] borkcount = 0;
-	logic borked = 0;
-	always_ff @(posedge clk_ram_ctl) begin
-		if(prefetch_hold) begin
-			borkcount	<= borkcount + 1;
-			if(borkcount == 255)
-				borked	<= 1;
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug logic
+
+	/*
+
+	//Make single pulse for trigger
+	logic	trig_sync = 0;
+	logic[7:0] deadtime = 0;
+	always_ff @(posedge qsgmii_rx_clk[0]) begin
+		trig_sync	<= 0;
+		if(deadtime)
+			deadtime <= deadtime + 1;
+
+		if(la_trig && !trig_sync && !deadtime) begin
+			trig_sync	<= 1;
+			deadtime	<= 1;
 		end
-		else
-			borkcount	<= 0;
+
 	end
+	*/
 
 	ila_0 ila(
-		.clk(port_rx_clk[2]),
-		.probe0(cdcs[2].cdc.rx_bus.start),
-		.probe1(cdcs[2].cdc.rx_bus.commit),
-		.probe2(cdcs[2].cdc.rx_bus.bytes_valid),
-		.probe3(cdcs[2].cdc.rx_bus.data_valid),
-		.probe4(cdcs[2].cdc.rx_bus.drop),
-		.probe5(cdcs[2].cdc.fifo_wr_en),
-		.probe6(cdcs[2].cdc.fifo_wr_data),
-		.probe7(cdcs[2].cdc.fifo_wr_size),
-		.probe8(cdcs[2].cdc.fifo_wr_commit),
-		.probe9(cdcs[2].cdc.fifo_wr_rollback),
-		.probe10(cdcs[2].cdc.wr_phase),
-		.probe11(cdcs[2].cdc.wr_dropping),
-		.probe12(cdcs[2].cdc.header_fifo_full),
-		.probe13(cdcs[2].cdc.rx_bus.data)
-	);
-
-	ila_2 ila2(
 		.clk(clk_ram_ctl),
-		.probe0(portstates[0]),
-		.probe1(portstates[2]),
-		.probe2(frame_last),
-		.probe3(popcount),
-		.probe4(forwarding),
-		.probe5(prefetch_rd_en),
-		.probe6(forwarding),
-		.probe7(prefetch_startup),
-		.probe8(prefetch_hold),
-		.probe9(prefetch_port),
-		.probe10(prefetch_target_valid),
-		.probe11(prefetch_count),
-		.probe12(prefetching),
-		.probe13(borked)
+		.probe0(fec_wr_en),
+		.probe1(fec_wr_data),
+		.probe2(fec_wr_port),
+		.probe3(fec_rd_valid),
+		.probe4(fec_rd_data),
+		.probe5(fec_rd_port),
+		.probe6(fec_correctable_err),
+		.probe7(fec_uncorrectable_err),
+		.probe8(frame_valid),
+		.probe9(frame_last),
+		.probe10(frame_data),
+		.probe11(ram_wr_en),
+		.probe12(ram_wr_addr),
+		.probe13(ram_rd_en),
+		.probe14(ram_rd_addr),
+		.probe15(fifo_empty),
+		.probe16(fifo_full),
+		.probe17(fifo_wr_ptr[0]),
+		.probe18(fifo_wr_ptr[2]),
+		.probe19(fifo_rd_ptr[0]),
+		.probe20(fifo_rd_ptr[2]),
+		.probe21(fifo_almost_full),
+		.probe22(fifo_wsize[0]),
+		.probe23(fifo_wsize[2]),
+		.probe24(fwd_rd_ptr),
+		.probe25(fwd_port),
+		.probe26(forward_en),
+		.probe27(fwd_count),
+		.probe28(fwd_wordlen),
+		.probe29(popcount_next),
+		.probe30(forwarding),
+
+		.trig_out(la_trig),
+		.trig_out_ack(la_trig)
 	);
 
 endmodule

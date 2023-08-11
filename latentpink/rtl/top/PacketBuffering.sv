@@ -86,7 +86,10 @@ module PacketBuffering #(
 	input wire[31:0]						mbist_seed,
 	output wire								mbist_done,
 	output wire								mbist_fail,
-	output wire[17:0]						mbist_fail_addr
+	output wire[17:0]						mbist_fail_addr,
+
+	//Debug outputs
+	output wire								la_trig
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,7 +212,10 @@ module PacketBuffering #(
 		.forward_en(forward_en),
 		.frame_valid(frame_valid),
 		.frame_last(frame_last),
-		.frame_data(frame_data)
+		.frame_data(frame_data),
+
+		//DEBUG
+		.la_trig(la_trig)
 	);
 
 

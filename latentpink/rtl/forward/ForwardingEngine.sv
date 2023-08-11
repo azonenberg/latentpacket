@@ -331,32 +331,4 @@ module ForwardingEngine #(
 
 	end
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug LA
-
-	ila_1 ila(
-		.clk(clk_ram_ctl),
-		.probe0(mac_lookup_en),
-		.probe1(mac_lookup_en_ff4),
-		.probe2(mac_lookup_src_port),
-		.probe3(start_forwarding),
-		.probe4(fwd_source),
-		.probe5(frame_valid),
-		.probe6(frame_data),
-		.probe7(frame_last),
-		.probe8(mac_lookup_hit),
-		.probe9(mac_lookup_dst_port),
-		.probe10(mac_lookup_src_mac),
-		.probe11(fwd_broadcast),
-		.probe12(frame_port_wr),
-		.probe13(frame_len),
-		.probe14(port_trunk),
-		.probe15(port_space_avail),
-
-		.probe16(fabric_state[0].ready),
-		.probe17(fabric_state[0].src_vlan),
-		.probe18(fabric_state[0].bytelen),
-		.probe19(port_state[0])
-	);
-
 endmodule

@@ -189,12 +189,17 @@ module LatentPinkTopLevel(
 	inout wire			i2c_derp_sda_device
 );
 
-	//DEBUG: put various interesting signals on PMOD bus
-	assign pmod_dq[7:2] = 0;
-	assign pmod_dq[0] = dp_mdc;
-	assign pmod_dq[1] = g12_rst_n;
-
 	localparam NUM_PORTS = 15;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// DEBUG: put various interesting signals on PMOD bus
+
+	assign gpio_led[3:0] = 4'h0;
+
+	assign pmod_dq[7:1] = 0;
+
+	//Tie off flash chip select until we implement taht
+	assign flash_cs_n = 1;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Level shift LEDs
@@ -424,10 +429,7 @@ module LatentPinkTopLevel(
 		.mgmt0_tx_bus(mgmt0_tx_bus),
 		.mgmt0_tx_ready(mgmt0_tx_ready),
 		.mgmt0_link_up(mgmt0_link_up),
-		.mgmt0_link_speed(mgmt0_link_speed),
-
-		//DEBUG
-		.gpio_led(gpio_led)
+		.mgmt0_link_speed(mgmt0_link_speed)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -525,7 +527,10 @@ module LatentPinkTopLevel(
 		.mbist_done(mbist_done),
 		.mbist_fail(mbist_fail),
 		.mbist_fail_addr(mbist_fail_addr),
-		.mbist_select(mbist_select)
+		.mbist_select(mbist_select),
+
+		//DEBUG
+		.la_trig(pmod_dq[0])
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

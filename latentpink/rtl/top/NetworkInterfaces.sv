@@ -165,10 +165,7 @@ module NetworkInterfaces(
 	input EthernetTxBus								mgmt0_tx_bus,
 	output wire										mgmt0_tx_ready,
 	output wire										mgmt0_link_up,
-	output lspeed_t									mgmt0_link_speed,
-
-	//DEBUG placeholder
-	output wire[3:0] 								gpio_led
+	output lspeed_t									mgmt0_link_speed
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,122 +202,6 @@ module NetworkInterfaces(
 
 	(* keep = "true" *)
 	IBUFDS #(.DIFF_TERM("TRUE")) ibuf_sgmii1(.I(g13_sgmii_rxclk_p), .IB(g13_sgmii_rxclk_n), .O(sgmii_rxclk1));
-
-	/*
-	wire led_clk0;
-	wire led_clk1;
-
-	wire led_fbclk0;
-	PLLE2_BASE #(
-		.BANDWIDTH("OPTIMIZED"),
-		.CLKOUT0_DIVIDE(4),
-		.CLKOUT1_DIVIDE(10),
-		.CLKOUT2_DIVIDE(10),
-		.CLKOUT3_DIVIDE(10),
-		.CLKOUT4_DIVIDE(10),
-		.CLKOUT5_DIVIDE(10),
-
-		.CLKOUT0_PHASE(0),
-		.CLKOUT1_PHASE(0),
-		.CLKOUT2_PHASE(0),
-		.CLKOUT3_PHASE(0),
-		.CLKOUT4_PHASE(0),
-		.CLKOUT5_PHASE(0),
-
-		.CLKOUT0_DUTY_CYCLE(0.5),
-		.CLKOUT1_DUTY_CYCLE(0.5),
-		.CLKOUT2_DUTY_CYCLE(0.5),
-		.CLKOUT3_DUTY_CYCLE(0.5),
-		.CLKOUT4_DUTY_CYCLE(0.5),
-		.CLKOUT5_DUTY_CYCLE(0.5),
-
-		.CLKFBOUT_MULT(2),
-		.DIVCLK_DIVIDE(1),
-		.CLKFBOUT_PHASE(0),
-
-		.CLKIN1_PERIOD(1.6),
-		.STARTUP_WAIT("FALSE")
-
-	) led_pll0 (
-		.CLKIN1(sgmii_rxclk0),
-		.CLKFBIN(led_fbclk0),
-		.RST(1'b0),
-		.PWRDWN(1'b0),
-		.CLKOUT0(led_clk0),
-		.CLKOUT1(),
-		.CLKOUT2(),
-		.CLKOUT3(),
-		.CLKOUT4(),
-		.CLKOUT5(),
-		.CLKFBOUT(led_fbclk0),
-		.LOCKED()
-	);
-
-	wire led_fbclk1;
-	PLLE2_BASE #(
-		.BANDWIDTH("OPTIMIZED"),
-		.CLKOUT0_DIVIDE(4),
-		.CLKOUT1_DIVIDE(10),
-		.CLKOUT2_DIVIDE(10),
-		.CLKOUT3_DIVIDE(10),
-		.CLKOUT4_DIVIDE(10),
-		.CLKOUT5_DIVIDE(10),
-
-		.CLKOUT0_PHASE(0),
-		.CLKOUT1_PHASE(0),
-		.CLKOUT2_PHASE(0),
-		.CLKOUT3_PHASE(0),
-		.CLKOUT4_PHASE(0),
-		.CLKOUT5_PHASE(0),
-
-		.CLKOUT0_DUTY_CYCLE(0.5),
-		.CLKOUT1_DUTY_CYCLE(0.5),
-		.CLKOUT2_DUTY_CYCLE(0.5),
-		.CLKOUT3_DUTY_CYCLE(0.5),
-		.CLKOUT4_DUTY_CYCLE(0.5),
-		.CLKOUT5_DUTY_CYCLE(0.5),
-
-		.CLKFBOUT_MULT(2),
-		.DIVCLK_DIVIDE(1),
-		.CLKFBOUT_PHASE(0),
-
-		.CLKIN1_PERIOD(1.6),
-		.STARTUP_WAIT("FALSE")
-
-	) led_pll1 (
-		.CLKIN1(sgmii_rxclk1),
-		.CLKFBIN(led_fbclk1),
-		.RST(1'b0),
-		.PWRDWN(1'b0),
-		.CLKOUT0(led_clk1),
-		.CLKOUT1(),
-		.CLKOUT2(),
-		.CLKOUT3(),
-		.CLKOUT4(),
-		.CLKOUT5(),
-		.CLKFBOUT(led_fbclk1),
-		.LOCKED()
-	);
-
-	logic[1:0] sgmii_led = 0;
-	assign gpio_led[1:0] = sgmii_led;
-
-	logic[20:0] led_count0 = 0;
-	logic[20:0] led_count1 = 0;
-
-	always_ff @(posedge led_clk0) begin
-		led_count0 <= led_count0 + 1;
-		if(led_count0 == 0)
-			sgmii_led[0] <= !sgmii_led[0];
-	end
-
-	always_ff @(posedge led_clk1) begin
-		led_count1 <= led_count1 + 1;
-		if(led_count1 == 0)
-			sgmii_led[1] <= !sgmii_led[1];
-	end
-	*/
-	assign gpio_led[3:0] = 4'h0;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 10G SFP+ uplink (xg0)
@@ -938,6 +819,9 @@ module NetworkInterfaces(
 			.dout(qsgmii_link_up_sync[g])
 		);
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug stuff
 
 	vio_0 vio_qsgmii(
 		.clk(clk_125mhz),
