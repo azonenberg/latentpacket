@@ -192,13 +192,14 @@ module LatentPinkTopLevel(
 	localparam NUM_PORTS = 15;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DEBUG: put various interesting signals on PMOD bus
+	// DEBUG: put various interesting signals on PMOD bus and LEDs
 
 	assign gpio_led[3:0] = 4'h0;
+	assign pmod_dq[7:0] = 0;
 
-	assign pmod_dq[7:1] = 0;
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Tie off flash chip select until we implement that. Leave other signals floating for now
 
-	//Tie off flash chip select until we implement taht
 	assign flash_cs_n = 1;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -527,10 +528,7 @@ module LatentPinkTopLevel(
 		.mbist_done(mbist_done),
 		.mbist_fail(mbist_fail),
 		.mbist_fail_addr(mbist_fail_addr),
-		.mbist_select(mbist_select),
-
-		//DEBUG
-		.la_trig(pmod_dq[0])
+		.mbist_select(mbist_select)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

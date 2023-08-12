@@ -274,25 +274,6 @@ module EgressFifo #(
 
 		end
 
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Debug ILA
-
-		if( (g == 0) || (g == 2) ) begin
-
-			ila_1 ila(
-				.clk(clk_ram_ctl),
-				.probe0(frame_valid),
-				.probe1(frame_port_wr[g]),
-				.probe2(frame_data),
-				.probe3(frame_len),
-				.probe4(frame_last),
-				.probe5(port_space_avail[g]),
-				.probe6(data_wr_size),
-				.probe7(header_wr_size)
-			);
-
-		end
-
 	end	//main loop
 
 endmodule

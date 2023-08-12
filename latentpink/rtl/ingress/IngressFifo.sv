@@ -78,9 +78,7 @@ module IngressFifo #(
 	input wire[NUM_PORTS-1:0]				forward_en,
 	output logic							frame_valid			= 0,
 	output logic							frame_last			= 0,
-	output wire[127:0]						frame_data,
-
-	output wire								la_trig
+	output wire[127:0]						frame_data
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -639,88 +637,6 @@ module IngressFifo #(
 		end	//port loop
 
 	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug logic
-
-	/*
-
-	//Make single pulse for trigger
-	logic	trig_sync = 0;
-	logic[7:0] deadtime = 0;
-	always_ff @(posedge qsgmii_rx_clk[0]) begin
-		trig_sync	<= 0;
-		if(deadtime)
-			deadtime <= deadtime + 1;
-
-		if(la_trig && !trig_sync && !deadtime) begin
-			trig_sync	<= 1;
-			deadtime	<= 1;
-		end
-
-	end
-	*/
-
-	//Detect if we get any data stuck in the prefetch fifo
-	logic[7:0] bork_count = 0;
-	logic	borked = 0;
-	always_ff @(posedge clk_ram_ctl) begin
-		borked	<= 0;
-		if( (portstates[0] == PORT_STATE_PREFETCH) || (portstates[2] == PORT_STATE_PREFETCH) ) begin
-			bork_count	<= bork_count + 1;
-			if(bork_count == 8'hff)
-				borked	<= 1;
-		end
-		else
-			bork_count <= 0;
-	end
-
-	ila_0 ila(
-		.clk(clk_ram_ctl),
-		.probe0(fec_wr_en),
-		.probe1(fec_wr_data),
-		.probe2(fec_wr_port),
-		.probe3(fec_rd_valid),
-		.probe4(fec_rd_data),
-		.probe5(fec_rd_port),
-		.probe6(fec_correctable_err),
-		.probe7(fec_uncorrectable_err),
-		.probe8(frame_valid),
-		.probe9(frame_last),
-		.probe10(frame_data),
-		.probe11(ram_wr_en),
-		.probe12(ram_wr_addr),
-		.probe13(ram_rd_en),
-		.probe14(ram_rd_addr),
-		.probe15(fifo_empty),
-		.probe16(fifo_full),
-		.probe17(fifo_wr_ptr[0]),
-		.probe18(fifo_wr_ptr[2]),
-		.probe19(fifo_rd_ptr[0]),
-		.probe20(fifo_rd_ptr[2]),
-		.probe21(fifo_almost_full),
-		.probe22(fifo_wsize[0]),
-		.probe23(fifo_wsize[2]),
-		.probe24(prefetch_port),
-		.probe25(prefetching),
-		.probe26(prefetch_wordlen),
-		.probe27(prefetch_count),
-		.probe28(forward_en),
-		.probe29(fwd_wordlen),
-		.probe30(fwd_count),
-		.probe31(portstates[0]),
-		.probe32(portstates[2]),
-		.probe33(prefetch_fifo.empty),
-		.probe34(prefetch_fifo.full),
-		.probe35(borked),
-		.probe36(prefetch_rcount[0]),
-		.probe37(prefetch_rcount[2]),
-		.probe38(fabric_state[0].wordlen),
-		.probe39(fabric_state[2].wordlen),
-
-		.trig_out(la_trig),
-		.trig_out_ack(la_trig)
-	);
 
 endmodule
 
