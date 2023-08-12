@@ -482,6 +482,7 @@ module IngressFifo #(
 	logic[6:0]					fwd_wordlen	= 0;
 	logic[6:0]					fwd_count	= 0;
 
+
 	always_ff @(posedge clk_ram_ctl) begin
 
 		//Pipeline two cycle read latency for metadata FIFO to improve setup timing
@@ -562,15 +563,10 @@ module IngressFifo #(
 						prefetch_port						<= i;
 						prefetch_wordlen					<= fabric_state[i].wordlen;
 
-						//We already fetched one word, so subtract that from the future prefetch size.
-						//Add one more so we can do a direct equality check to see if we'll be done next cycle,
+						//Add offset of 1 so we can do a direct equality check to see if we'll be done next cycle,
 						//rather than having to compare to count+1.
-						prefetch_count						<= 2;
+						prefetch_count						<= 1;
 
-						ram_rd_en							<= 1;
-						ram_rd_addr[PTR_BITS +: PORT_BITS]	<= i;
-						ram_rd_addr[0 +: PTR_BITS]			<= fifo_rd_ptr[i];
-						fifo_rd_ptr[i]						<= fifo_rd_ptr[i] + 1'h1;
 						portstates[i]						<= PORT_STATE_PREFETCH_FIRST;
 					end
 				end	//PORT_STATE_META_READY
@@ -613,7 +609,7 @@ module IngressFifo #(
 						//Now forwarding
 						portstates[i]				<= PORT_STATE_FORWARD;
 
-						fwd_wordlen					<= prefetch_wordlen;
+						fwd_wordlen					<= fabric_state[i].wordlen;
 						fwd_count					<= prefetch_count;
 
 						popcount					<= 1;
@@ -665,6 +661,20 @@ module IngressFifo #(
 	end
 	*/
 
+	//Detect if we get any data stuck in the prefetch fifo
+	logic[7:0] bork_count = 0;
+	logic	borked = 0;
+	always_ff @(posedge clk_ram_ctl) begin
+		borked	<= 0;
+		if( (portstates[0] == PORT_STATE_PREFETCH) || (portstates[2] == PORT_STATE_PREFETCH) ) begin
+			bork_count	<= bork_count + 1;
+			if(bork_count == 8'hff)
+				borked	<= 1;
+		end
+		else
+			bork_count <= 0;
+	end
+
 	ila_0 ila(
 		.clk(clk_ram_ctl),
 		.probe0(fec_wr_en),
@@ -691,7 +701,6 @@ module IngressFifo #(
 		.probe21(fifo_almost_full),
 		.probe22(fifo_wsize[0]),
 		.probe23(fifo_wsize[2]),
-
 		.probe24(prefetch_port),
 		.probe25(prefetching),
 		.probe26(prefetch_wordlen),
@@ -701,6 +710,13 @@ module IngressFifo #(
 		.probe30(fwd_count),
 		.probe31(portstates[0]),
 		.probe32(portstates[2]),
+		.probe33(prefetch_fifo.empty),
+		.probe34(prefetch_fifo.full),
+		.probe35(borked),
+		.probe36(prefetch_rcount[0]),
+		.probe37(prefetch_rcount[2]),
+		.probe38(fabric_state[0].wordlen),
+		.probe39(fabric_state[2].wordlen),
 
 		.trig_out(la_trig),
 		.trig_out_ack(la_trig)
