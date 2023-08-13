@@ -37,7 +37,8 @@
 	@brief Container for management logic
  */
 module ManagementSubsystem #(
-	parameter NUM_PORTS				= 15
+	parameter NUM_PORTS				= 15,
+	localparam PORT_BITS			= $clog2(NUM_PORTS)
 )(
 	input wire						sys_clk,
 	input wire						clk_sysinfo,
@@ -98,7 +99,14 @@ module ManagementSubsystem #(
 	output wire[255:0]				crypt_work_in,
 	output wire[255:0]				crypt_e,
 	input wire						crypt_out_valid,
-	input wire[255:0]				crypt_work_out
+	input wire[255:0]				crypt_work_out,
+
+	//Network interface performance counter access in core clock domain
+	output wire						net_perf_rd,
+	output wire[PORT_BITS-1:0]		net_perf_rd_port,
+	output wire[15:0]				net_perf_regid,
+	input wire						net_perf_valid,
+	input wire[63:0]				net_perf_value
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -485,7 +493,14 @@ module ManagementSubsystem #(
 		.crypt_work_in(crypt_work_in),
 		.crypt_e(crypt_e),
 		.crypt_out_valid(crypt_out_valid),
-		.crypt_work_out(crypt_work_out)
+		.crypt_work_out(crypt_work_out),
+
+		//MAC performance counter access
+		.net_perf_rd(net_perf_rd),
+		.net_perf_rd_port(net_perf_rd_port),
+		.net_perf_regid(net_perf_regid),
+		.net_perf_valid(net_perf_valid),
+		.net_perf_value(net_perf_value)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

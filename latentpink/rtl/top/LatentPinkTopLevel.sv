@@ -190,6 +190,7 @@ module LatentPinkTopLevel(
 );
 
 	localparam NUM_PORTS = 15;
+	localparam PORT_BITS = $clog2(NUM_PORTS);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DEBUG: put various interesting signals on PMOD bus and LEDs
@@ -296,7 +297,6 @@ module LatentPinkTopLevel(
 	wire[2:0]							qsgmii_tx_clk;
 
 	EthernetRxBus[11:0]					qsgmii_mac_rx_bus;
-	GigabitMacPerformanceCounters[11:0]	qsgmii_mac_perf;
 
 	EthernetTxBus[11:0]					qsgmii_mac_tx_bus;
 	wire[11:0]							qsgmii_mac_tx_ready;
@@ -308,16 +308,12 @@ module LatentPinkTopLevel(
 	wire								g12_tx_ready;
 	wire								g12_link_up;
 	lspeed_t							g12_link_speed;
-	SGMIIPerformanceCounters			g12_sgmii_perf;
-	GigabitMacPerformanceCounters		g12_mac_perf;
 
 	EthernetRxBus						g13_rx_bus;
 	EthernetTxBus						g13_tx_bus;
 	wire								g13_tx_ready;
 	wire								g13_link_up;
 	lspeed_t							g13_link_speed;
-	SGMIIPerformanceCounters			g13_sgmii_perf;
-	GigabitMacPerformanceCounters		g13_mac_perf;
 
 	wire								mgmt0_rx_clk_buf;
 
@@ -337,6 +333,13 @@ module LatentPinkTopLevel(
 		.stretched(sfp_led[1])
 	);
 
+	//Performance counter access
+	wire				net_perf_rd;
+	wire[PORT_BITS-1:0]	net_perf_rd_port;
+	wire[15:0]			net_perf_regid;
+	wire				net_perf_valid;
+	wire[63:0]			net_perf_value;
+
 	NetworkInterfaces interfaces(
 
 		//Top level clocks
@@ -346,6 +349,7 @@ module LatentPinkTopLevel(
 		.clk_400mhz(clk_400mhz),
 		.clk_625mhz_0(clk_625mhz_0),
 		.clk_625mhz_90(clk_625mhz_90),
+		.clk_ram_ctl(clk_ram_ctl),
 		.pll_rgmii_lock(pll_rgmii_lock),
 
 		//QPLL stuff
@@ -403,7 +407,6 @@ module LatentPinkTopLevel(
 		.qsgmii_rx_clk(qsgmii_rx_clk),
 		.qsgmii_tx_clk(qsgmii_tx_clk),
 		.qsgmii_mac_rx_bus(qsgmii_mac_rx_bus),
-		.qsgmii_mac_perf(qsgmii_mac_perf),
 		.qsgmii_mac_tx_bus(qsgmii_mac_tx_bus),
 		.qsgmii_mac_tx_ready(qsgmii_mac_tx_ready),
 		.qsgmii_link_up(qsgmii_link_up),
@@ -414,23 +417,26 @@ module LatentPinkTopLevel(
 		.g12_tx_ready(g12_tx_ready),
 		.g12_link_up(g12_link_up),
 		.g12_link_speed(g12_link_speed),
-		.g12_sgmii_perf(g12_sgmii_perf),
-		.g12_mac_perf(g12_mac_perf),
 
 		.g13_rx_bus(g13_rx_bus),
 		.g13_tx_bus(g13_tx_bus),
 		.g13_tx_ready(g13_tx_ready),
 		.g13_link_up(g13_link_up),
 		.g13_link_speed(g13_link_speed),
-		.g13_sgmii_perf(g13_sgmii_perf),
-		.g13_mac_perf(g13_mac_perf),
 
 		.mgmt0_rx_clk_buf(mgmt0_rx_clk_buf),
 		.mgmt0_rx_bus(mgmt0_rx_bus),
 		.mgmt0_tx_bus(mgmt0_tx_bus),
 		.mgmt0_tx_ready(mgmt0_tx_ready),
 		.mgmt0_link_up(mgmt0_link_up),
-		.mgmt0_link_speed(mgmt0_link_speed)
+		.mgmt0_link_speed(mgmt0_link_speed),
+
+		//Performance counter access
+		.perf_rd(net_perf_rd),
+		.perf_rd_port(net_perf_rd_port),
+		.perf_regid(net_perf_regid),
+		.perf_valid(net_perf_valid),
+		.perf_value(net_perf_value)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -705,7 +711,14 @@ module LatentPinkTopLevel(
 		.crypt_work_in(crypt_work_in),
 		.crypt_e(crypt_e),
 		.crypt_out_valid(crypt_out_valid),
-		.crypt_work_out(crypt_work_out)
+		.crypt_work_out(crypt_work_out),
+
+		//MAC performance counter access
+		.net_perf_rd(net_perf_rd),
+		.net_perf_rd_port(net_perf_rd_port),
+		.net_perf_regid(net_perf_regid),
+		.net_perf_valid(net_perf_valid),
+		.net_perf_value(net_perf_value)
 	);
 
 

@@ -38,7 +38,10 @@
 	@author Andrew D. Zonenberg
 	@brief Contains all Ethernet interfaces
  */
-module NetworkInterfaces(
+module NetworkInterfaces #(
+	parameter NUM_PORTS			= 15,
+	localparam PORT_BITS		= $clog2(NUM_PORTS)
+)(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Global clocks
@@ -49,6 +52,8 @@ module NetworkInterfaces(
 	input wire					clk_400mhz,
 	input wire					clk_625mhz_0,
 	input wire					clk_625mhz_90,
+
+	input wire					clk_ram_ctl,
 
 	input wire					pll_rgmii_lock,
 
@@ -133,39 +138,45 @@ module NetworkInterfaces(
 
 	output wire					xg0_link_up,
 
-	output wire[2:0]								qsgmii_rx_clk,
-	output wire[2:0]								qsgmii_tx_clk,
+	output wire[2:0]					qsgmii_rx_clk,
+	output wire[2:0]					qsgmii_tx_clk,
 
-	output EthernetRxBus[11:0] 						qsgmii_mac_rx_bus,
-	output GigabitMacPerformanceCounters[11:0]		qsgmii_mac_perf,
+	output EthernetRxBus[11:0] 			qsgmii_mac_rx_bus,
 
-	input wire EthernetTxBus[11:0]					qsgmii_mac_tx_bus,
-	output wire[11:0]								qsgmii_mac_tx_ready,
-	output wire[11:0]								qsgmii_link_up,
-	output lspeed_t[11:0]							qsgmii_link_speed,
+	input wire EthernetTxBus[11:0]		qsgmii_mac_tx_bus,
+	output wire[11:0]					qsgmii_mac_tx_ready,
+	output wire[11:0]					qsgmii_link_up,
+	output lspeed_t[11:0]				qsgmii_link_speed,
 
-	output EthernetRxBus							g12_rx_bus,
-	input wire EthernetTxBus						g12_tx_bus,
-	output wire										g12_tx_ready,
-	output wire										g12_link_up,
-	output wire lspeed_t							g12_link_speed,
-	output SGMIIPerformanceCounters					g12_sgmii_perf,
-	output GigabitMacPerformanceCounters			g12_mac_perf,
+	output EthernetRxBus				g12_rx_bus,
+	input wire EthernetTxBus			g12_tx_bus,
+	output wire							g12_tx_ready,
+	output wire							g12_link_up,
+	output wire lspeed_t				g12_link_speed,
+	output SGMIIPerformanceCounters		g12_sgmii_perf,
 
-	output EthernetRxBus							g13_rx_bus,
-	input wire EthernetTxBus						g13_tx_bus,
-	output wire										g13_tx_ready,
-	output wire										g13_link_up,
-	output wire lspeed_t							g13_link_speed,
-	output SGMIIPerformanceCounters					g13_sgmii_perf,
-	output GigabitMacPerformanceCounters			g13_mac_perf,
+	output EthernetRxBus				g13_rx_bus,
+	input wire EthernetTxBus			g13_tx_bus,
+	output wire							g13_tx_ready,
+	output wire							g13_link_up,
+	output wire lspeed_t				g13_link_speed,
+	output SGMIIPerformanceCounters		g13_sgmii_perf,
 
-	output wire										mgmt0_rx_clk_buf,
-	output EthernetRxBus							mgmt0_rx_bus,
-	input EthernetTxBus								mgmt0_tx_bus,
-	output wire										mgmt0_tx_ready,
-	output wire										mgmt0_link_up,
-	output lspeed_t									mgmt0_link_speed
+	output wire							mgmt0_rx_clk_buf,
+	output EthernetRxBus				mgmt0_rx_bus,
+	input EthernetTxBus					mgmt0_tx_bus,
+	output wire							mgmt0_tx_ready,
+	output wire							mgmt0_link_up,
+	output lspeed_t						mgmt0_link_speed,
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Performance counter access
+
+	input wire					perf_rd,
+	input wire[PORT_BITS-1:0]	perf_rd_port,
+	input wire[15:0]			perf_regid,
+	output logic				perf_valid	= 0,
+	output logic[63:0]			perf_value	= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -360,7 +371,6 @@ module NetworkInterfaces(
 	// QSGMII interfaces (g0-g11)
 
 	wire[2:0]	cpll_lock;
-
 
 	wire[2:0]	qsgmii_rx_clk_raw;
 	wire[3:0]	qsgmii_rx_disparity_err[2:0];
@@ -673,7 +683,6 @@ module NetworkInterfaces(
 			.mac_rx_bus(qsgmii_mac_rx_bus[g*4 +: 4]),
 			.link_up(qsgmii_link_up[g*4 +: 4]),
 			.link_speed(qsgmii_link_speed[g*4 +: 4]),
-			.mac_perf(qsgmii_mac_perf[g*4 +: 4]),
 
 			.mac_tx_bus(qsgmii_mac_tx_bus[g*4 +: 4]),
 			.mac_tx_ready(qsgmii_mac_tx_ready[g*4 +: 4])
@@ -715,7 +724,6 @@ module NetworkInterfaces(
 
 		.rst_stat(g12_rst_stat),
 		.sgmii_perf(g12_sgmii_perf),
-		.mac_perf(g12_mac_perf),
 
 		.rx_error()	//ignore, just look at perf counters to see when we get errors
 	);
@@ -749,15 +757,12 @@ module NetworkInterfaces(
 
 		.rst_stat(g13_rst_stat),
 		.sgmii_perf(g13_sgmii_perf),
-		.mac_perf(g13_mac_perf),
 
 		.rx_error()	//ignore, just look at perf counters to see when we get errors
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// RGMII PHY for mgmt0
-
-	//TODO: perf counters
 
 	RGMIIMACWrapper port_mgmt0(
 		.clk_125mhz(clk_125mhz),
@@ -781,34 +786,6 @@ module NetworkInterfaces(
 		.link_speed(mgmt0_link_speed)
 		);
 
-	SGMIIPerformanceCounters g12_sgmii_perf_ff = 0;
-	SGMIIPerformanceCounters g13_sgmii_perf_ff = 0;
-	logic		g12_link_up_ff = 0;
-	logic		g13_link_up_ff = 0;
-	lspeed_t	g12_link_speed_ff;
-	lspeed_t	g13_link_speed_ff;
-	always_ff @(posedge clk_125mhz) begin
-		g12_sgmii_perf_ff	<= g12_sgmii_perf;
-		g12_link_up_ff		<= g12_link_up;
-		g12_link_speed_ff	<= g12_link_speed;
-
-		g13_sgmii_perf_ff	<= g13_sgmii_perf;
-		g13_link_up_ff		<= g13_link_up;
-		g13_link_speed_ff	<= g13_link_speed;
-	end
-
-	vio_4 vio_perf(
-		.clk(clk_125mhz),
-		.probe_in0(g12_sgmii_perf_ff),
-		.probe_in1(g12_link_up_ff),
-		.probe_in2(g13_sgmii_perf_ff),
-		.probe_in3(g13_link_up_ff),
-		.probe_in4(g12_link_speed_ff),
-		.probe_in5(g13_link_speed_ff),
-		.probe_out0(g12_rst_stat),
-		.probe_out1(g13_rst_stat)
-	);
-
 	wire[11:0]	qsgmii_link_up_sync;
 
 	for(genvar g=0; g<12; g=g+1) begin
@@ -821,11 +798,190 @@ module NetworkInterfaces(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Performance counters
+
+	//TODO: clear support
+
+	wire[15:0][63:0]	perf_values;
+	wire[15:0] 			perf_valids;
+
+	//QSGMII perf counters
+	for(genvar g=0; g<12; g=g+1) begin : qsgmiiperf
+
+		EthernetMacPerformanceData	macdata;
+
+		EthernetPerformanceCounters count(
+			.rx_clk(qsgmii_tx_clk[g/4]),
+			.tx_clk(qsgmii_tx_clk[g/4]),
+
+			.rx_bus(qsgmii_mac_rx_bus[g]),
+			.tx_bus(qsgmii_mac_tx_bus[g]),
+
+			.counters(macdata)
+		);
+
+		NetworkInterfacePerfReadout #(
+			.MAC_TX_RX_SAME_CLOCK(1)
+		) readout (
+
+			.clk_sgmii_rx(1'b0),				//SGMIIPerformanceCounters TODO
+			.clk_sgmii_tx(1'b0),
+			.clk_mac_rx(qsgmii_tx_clk[g/4]),	//GigBaseXPCS does internal elastic buffer needed for autonegotiation
+			.clk_mac_tx(qsgmii_tx_clk[g/4]),	//so both TX and RX MAC side buses run in tx_clk domain
+
+			.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
+			.mac_perf(macdata),
+
+			.clk_mgmt(clk_ram_ctl),
+			.rd_en(perf_rd && (perf_rd_port == g)),
+			.rd_addr(perf_regid),
+			.rd_valid(perf_valids[g]),
+			.rd_data(perf_values[g])
+		);
+
+	end
+
+	//Discrete port perf counters
+	EthernetMacPerformanceData	g12_macdata;
+	EthernetMacPerformanceData	g13_macdata;
+	EthernetMacPerformanceData	xg0_macdata;
+	EthernetMacPerformanceData	mgmt0_macdata;
+
+	EthernetPerformanceCounters g12_count(
+		.rx_clk(clk_125mhz),
+		.tx_clk(clk_125mhz),
+
+		.rx_bus(g12_rx_bus),
+		.tx_bus(g12_tx_bus),
+
+		.counters(g12_macdata)
+	);
+
+	EthernetPerformanceCounters g13_count(
+		.rx_clk(clk_125mhz),
+		.tx_clk(clk_125mhz),
+
+		.rx_bus(g13_rx_bus),
+		.tx_bus(g13_tx_bus),
+
+		.counters(g13_macdata)
+	);
+
+	EthernetPerformanceCounters #(
+		.PIPELINED_INCREMENT(1)
+	) xg0_count (
+		.rx_clk(xg0_mac_rx_clk),
+		.tx_clk(xg0_mac_tx_clk),
+
+		.rx_bus(xg0_mac_rx_bus),
+		.tx_bus(xg0_mac_tx_bus),
+
+		.counters(xg0_macdata)
+	);
+
+	EthernetPerformanceCounters mgmt0_count(
+		.rx_clk(mgmt0_rx_clk_buf),
+		.tx_clk(clk_125mhz),
+
+		.rx_bus(mgmt0_rx_bus),
+		.tx_bus(mgmt0_tx_bus),
+
+		.counters(mgmt0_macdata)
+	);
+
+	NetworkInterfacePerfReadout #(
+		.MAC_TX_RX_SAME_CLOCK(1)
+	) g12_readout (
+
+		.clk_sgmii_rx(1'b0),			//SGMIIPerformanceCounters TODO
+		.clk_sgmii_tx(1'b0),
+		.clk_mac_rx(clk_125mhz),
+		.clk_mac_tx(clk_125mhz),
+
+		.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
+		.mac_perf(g12_macdata),
+
+		.clk_mgmt(clk_ram_ctl),
+		.rd_en(perf_rd && (perf_rd_port == 12)),
+		.rd_addr(perf_regid),
+		.rd_valid(perf_valids[12]),
+		.rd_data(perf_values[12])
+	);
+
+	NetworkInterfacePerfReadout #(
+		.MAC_TX_RX_SAME_CLOCK(1)
+	) g13_readout (
+
+		.clk_sgmii_rx(1'b0),			//SGMIIPerformanceCounters TODO
+		.clk_sgmii_tx(1'b0),
+		.clk_mac_rx(clk_125mhz),
+		.clk_mac_tx(clk_125mhz),
+
+		.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
+		.mac_perf(g13_macdata),
+
+		.clk_mgmt(clk_ram_ctl),
+		.rd_en(perf_rd && (perf_rd_port == 13)),
+		.rd_addr(perf_regid),
+		.rd_valid(perf_valids[13]),
+		.rd_data(perf_values[13])
+	);
+
+	NetworkInterfacePerfReadout #(
+		.MAC_TX_RX_SAME_CLOCK(0)
+	) xg0_readout (
+
+		.clk_sgmii_rx(1'b0),
+		.clk_sgmii_tx(1'b0),
+		.clk_mac_rx(xg0_mac_rx_clk),
+		.clk_mac_tx(xg0_mac_tx_clk),
+
+		.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
+		.mac_perf(xg0_macdata),
+
+		.clk_mgmt(clk_ram_ctl),
+		.rd_en(perf_rd && (perf_rd_port == 14)),
+		.rd_addr(perf_regid),
+		.rd_valid(perf_valids[14]),
+		.rd_data(perf_values[14])
+	);
+
+	NetworkInterfacePerfReadout #(
+		.MAC_TX_RX_SAME_CLOCK(0)
+	) mgmt0_readout (
+
+		.clk_sgmii_rx(1'b0),
+		.clk_sgmii_tx(1'b0),
+		.clk_mac_rx(mgmt0_rx_clk_buf),
+		.clk_mac_tx(clk_125mhz),
+
+		.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
+		.mac_perf(mgmt0_macdata),
+
+		.clk_mgmt(clk_ram_ctl),
+		.rd_en(perf_rd && (perf_rd_port == 15)),
+		.rd_addr(perf_regid),
+		.rd_valid(perf_valids[15]),
+		.rd_data(perf_values[15])
+	);
+
+	//Final output muxing
+	always_ff @(posedge clk_ram_ctl) begin
+		perf_valid	<= 0;
+
+		for(integer i=0; i<16; i=i+1) begin
+			if(perf_valids[i]) begin
+				perf_valid	<= 1;
+				perf_value	<= perf_values[i];
+			end
+		end
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug stuff
 
 	vio_0 vio_qsgmii(
 		.clk(clk_125mhz),
-		.probe_in0(qsgmii_link_up_sync),
 		.probe_out0(qsgmii_tx_swing),			//default 2
 		.probe_out1(qsgmii_tx_pre_cursor),		//default 0
 		.probe_out2(qsgmii_tx_post_cursor)		//default 0
