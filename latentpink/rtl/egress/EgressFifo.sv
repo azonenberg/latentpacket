@@ -91,6 +91,35 @@ module EgressFifo #(
 		);
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Pipeline delay on a few interfaces that are far away
+
+		logic			data_wr_en;
+		logic[127:0]	data_wr_data;
+
+		if(g == 14) begin
+
+			initial begin
+				data_wr_en		= 0;
+				data_wr_data	= 0;
+			end
+
+			always_ff @(posedge clk_ram_ctl) begin
+				data_wr_en		<= (frame_valid && frame_port_wr[g]);
+				data_wr_data	<= frame_data;
+			end
+
+		end
+
+		else begin
+
+			always_comb begin
+				data_wr_en = (frame_valid && frame_port_wr[g]);
+				data_wr_data = frame_data;
+			end
+
+		end
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// CDC FIFOs
 
 		wire[9:0]	data_wr_size;
@@ -106,8 +135,8 @@ module EgressFifo #(
 			.OUT_REG(1)
 		) data_fifo (
 			.wr_clk(clk_ram_ctl),
-			.wr_en(frame_valid && frame_port_wr[g]),
-			.wr_data(frame_data),
+			.wr_en(data_wr_en),
+			.wr_data(data_wr_data),
 			.wr_reset(rst_core),
 			.wr_size(data_wr_size),
 			.wr_overflow(),

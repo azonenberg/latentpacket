@@ -335,18 +335,18 @@ module ManagementRegisterInterface #(
 		REG_XG0_STAT		= 16'h0060,		//0 = link up
 
 		//Performance counters (indirectly accessed because of CDC delays)
-		REG_PERF_CLEAR		= 16'h0100,		//Write port number to clear all performance counters to zero
-		REG_PERF_PORT		= 16'h0101,		//Index of port whose performance counter we wish to read
-		REG_PERF_ADDR		= 16'h0104,		//16-bit address of performance counter to read
-		REG_PERF_ADDR_1		= 16'h0105,
-		REG_PERF_DATA		= 16'h0108,
-		REG_PERF_DATA_1		= 16'h0109,
-		REG_PERF_DATA_2		= 16'h010a,
-		REG_PERF_DATA_3		= 16'h010b,
-		REG_PERF_DATA_4		= 16'h010c,
-		REG_PERF_DATA_5		= 16'h010d,
-		REG_PERF_DATA_6		= 16'h010e,
-		REG_PERF_DATA_7		= 16'h010f,
+		REG_PERF_CLEAR		= 16'h0070,		//Write port number to clear all performance counters to zero
+		REG_PERF_PORT		= 16'h0071,		//Index of port whose performance counter we wish to read
+		REG_PERF_ADDR		= 16'h0074,		//16-bit address of performance counter to read
+		REG_PERF_ADDR_1		= 16'h0075,
+		REG_PERF_DATA		= 16'h0078,
+		REG_PERF_DATA_1		= 16'h0079,
+		REG_PERF_DATA_2		= 16'h007a,
+		REG_PERF_DATA_3		= 16'h007b,
+		REG_PERF_DATA_4		= 16'h007c,
+		REG_PERF_DATA_5		= 16'h007d,
+		REG_PERF_DATA_6		= 16'h007e,
+		REG_PERF_DATA_7		= 16'h007f,
 
 		//Ethernet MAC frame buffer
 		//Any address in this range will be treated as reading from the top of the buffer
@@ -597,14 +597,14 @@ module ManagementRegisterInterface #(
 
 					REG_XG0_STAT:		rd_data <= {7'b0, xg0_link_up_sync };
 
-					REG_PERF_DATA:		rd_data	<= net_perf_value[7*8 +: 8];
-					REG_PERF_DATA_1:	rd_data	<= net_perf_value[6*8 +: 8];
-					REG_PERF_DATA_2:	rd_data	<= net_perf_value[5*8 +: 8];
-					REG_PERF_DATA_3:	rd_data	<= net_perf_value[4*8 +: 8];
-					REG_PERF_DATA_4:	rd_data	<= net_perf_value[3*8 +: 8];
-					REG_PERF_DATA_5:	rd_data	<= net_perf_value[2*8 +: 8];
-					REG_PERF_DATA_6:	rd_data	<= net_perf_value[1*8 +: 8];
-					REG_PERF_DATA_7:	rd_data	<= net_perf_value[0*8 +: 8];
+					REG_PERF_DATA:		rd_data	<= net_perf_value[0*8 +: 8];
+					REG_PERF_DATA_1:	rd_data	<= net_perf_value[1*8 +: 8];
+					REG_PERF_DATA_2:	rd_data	<= net_perf_value[2*8 +: 8];
+					REG_PERF_DATA_3:	rd_data	<= net_perf_value[3*8 +: 8];
+					REG_PERF_DATA_4:	rd_data	<= net_perf_value[4*8 +: 8];
+					REG_PERF_DATA_5:	rd_data	<= net_perf_value[5*8 +: 8];
+					REG_PERF_DATA_6:	rd_data	<= net_perf_value[6*8 +: 8];
+					REG_PERF_DATA_7:	rd_data	<= net_perf_value[7*8 +: 8];
 
 					default: begin
 						rd_data	<= 0;
@@ -741,23 +741,5 @@ module ManagementRegisterInterface #(
 		end
 
 	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DEBUG
-
-	ila_0 ila(
-		.clk(clk),
-		.probe0(net_perf_rd),
-		.probe1(net_perf_rd_port),
-		.probe2(net_perf_regid),
-		.probe3(net_perf_valid),
-		.probe4(net_perf_value),
-		.probe5(wr_en),
-		.probe6(wr_addr),
-		.probe7(wr_data),
-		.probe8(rd_en),
-		.probe9(rd_valid),
-		.probe10(rd_data)
-	);
 
 endmodule

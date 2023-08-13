@@ -106,10 +106,26 @@ enum regid_t
 
 	REG_XG0_STAT		= 0x0060,
 
+	REG_PERF_CLEAR		= 0x0070,
+	REG_PERF_PORT		= 0x0071,
+	REG_PERF_ADDR		= 0x0074,
+	REG_PERF_DATA		= 0x0078,
+
 	REG_EMAC_BUFFER		= 0x1000,
 
 	REG_CRYPT_BASE		= 0x3800,
 	REG_INTERFACE_BASE	= 0x4000
+};
+
+//must match regid_t in NetworkInterfacePerfReadout.sv
+enum perfregid_t
+{
+	REG_TX_FRAMES		= 0x1000,
+	REG_TX_BYTES		= 0x1001,
+
+	REG_RX_FRAMES		= 0x1180,
+	REG_RX_CRC_ERRS		= 0x1181,
+	REG_RX_BYTES		= 0x1182
 };
 
 enum regconsts

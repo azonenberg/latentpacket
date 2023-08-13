@@ -106,6 +106,7 @@ protected:
 	void OnShowFlashDetail();
 	void OnShowHardware();
 	void OnShowInterfaceCommand();
+	void OnShowInterfaceCounters(uint8_t interface);
 	void OnShowInterfaceStatus();
 	void OnShowIPAddress();
 	void OnShowIPRoute();
@@ -136,6 +137,8 @@ protected:
 
 	bool ParseIPAddress(const char* addr, IPv4Address& ip);
 	bool ParseIPAddressWithSubnet(const char* addr, IPv4Address& ip, uint32_t& mask);
+
+	uint64_t ReadPerformanceCounter(uint8_t port, uint16_t reg);
 
 	void RestartNegotiation(int nport);
 

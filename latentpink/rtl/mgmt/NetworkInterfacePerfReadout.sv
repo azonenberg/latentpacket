@@ -173,9 +173,9 @@ module NetworkInterfacePerfReadout #(
 				case(regid_mac_tx)
 					REG_TX_FRAMES[7:0]:		rd_data_mac_tx	<= mac_perf.tx_frames;
 					REG_TX_BYTES[7:0]:		rd_data_mac_tx	<= mac_perf.tx_bytes;
-					REG_RX_FRAMES[7:0]:		rd_data_mac_rx	<= mac_perf.rx_frames;
-					REG_RX_CRC_ERRS[7:0]:	rd_data_mac_rx	<= mac_perf.rx_crc_err;
-					REG_RX_BYTES[7:0]:		rd_data_mac_rx	<= mac_perf.rx_bytes;
+					REG_RX_FRAMES[7:0]:		rd_data_mac_tx	<= mac_perf.rx_frames;
+					REG_RX_CRC_ERRS[7:0]:	rd_data_mac_tx	<= mac_perf.rx_crc_err;
+					REG_RX_BYTES[7:0]:		rd_data_mac_tx	<= mac_perf.rx_bytes;
 					default:				rd_data_mac_tx	<= 0;
 				endcase
 			end

@@ -690,6 +690,15 @@ module NetworkInterfaces #(
 
 	end
 
+	for(genvar g=0; g<12; g=g+1) begin : linkstates
+		ThreeStageSynchronizer sync_link_up(
+			.clk_in(qsgmii_rx_clk[g/4]),
+			.din(qsgmii_link_up[g]),
+			.clk_out(clk_125mhz),
+			.dout(qsgmii_link_up_sync[g])
+		);
+	end
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SGMII interfaces (g12, g13)
 
@@ -787,15 +796,6 @@ module NetworkInterfaces #(
 		);
 
 	wire[11:0]	qsgmii_link_up_sync;
-
-	for(genvar g=0; g<12; g=g+1) begin
-		ThreeStageSynchronizer sync_link_up(
-			.clk_in(qsgmii_rx_clk[g/4]),
-			.din(qsgmii_link_up[g]),
-			.clk_out(clk_125mhz),
-			.dout(qsgmii_link_up_sync[g])
-		);
-	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Performance counters

@@ -46,6 +46,7 @@ enum cmdid_t
 	CMD_ARP,
 	CMD_CACHE,
 	CMD_COMMIT,
+	CMD_COUNTERS,
 	CMD_CROSSOVER,
 	CMD_DESCRIPTION,
 	CMD_DETAIL,
@@ -294,8 +295,32 @@ static const clikeyword_t g_showSshCommands[] =
 	{nullptr,			INVALID_COMMAND,		nullptr,				nullptr}
 };
 
+static const clikeyword_t g_showIntSuffixCommands[] =
+{
+	//{"<cr>",			OPTIONAL_TOKEN,		nullptr,	""},
+	{"counters",		CMD_COUNTERS,		nullptr,	"Show interface performance counters"},
+	{nullptr,			INVALID_COMMAND,	nullptr,	nullptr}
+};
+
 static const clikeyword_t g_showInterfaceCommands[] =
 {
+	{"g0",				CMD_G0,				g_showIntSuffixCommands,	"Gigabit0"},
+	{"g1",				CMD_G1,				g_showIntSuffixCommands,	"Gigabit1"},
+	{"g2",				CMD_G2,				g_showIntSuffixCommands,	"Gigabit2"},
+	{"g3",				CMD_G3,				g_showIntSuffixCommands,	"Gigabit3"},
+	{"g4",				CMD_G4,				g_showIntSuffixCommands,	"Gigabit4"},
+	{"g5",				CMD_G5,				g_showIntSuffixCommands,	"Gigabit5"},
+	{"g6",				CMD_G6,				g_showIntSuffixCommands,	"Gigabit6"},
+	{"g7",				CMD_G7,				g_showIntSuffixCommands,	"Gigabit7"},
+	{"g8",				CMD_G8,				g_showIntSuffixCommands,	"Gigabit8"},
+	{"g9",				CMD_G9,				g_showIntSuffixCommands,	"Gigabit9"},
+	{"g10",				CMD_G10,			g_showIntSuffixCommands,	"Gigabit10"},
+	{"g11",				CMD_G11,			g_showIntSuffixCommands,	"Gigabit11"},
+	{"g12",				CMD_G12,			g_showIntSuffixCommands,	"Gigabit12"},
+	{"g13",				CMD_G13,			g_showIntSuffixCommands,	"Gigabit13"},
+	{"mgmt0",			CMD_MGMT0,			g_showIntSuffixCommands,	"Management0"},
+	{"xg0",				CMD_XG0,			g_showIntSuffixCommands,	"10Gigabit0"},
+
 	{"status",			CMD_STATUS,			nullptr,					"Display summary of all network interfaces"},
 	{nullptr,			INVALID_COMMAND,	nullptr,					nullptr}
 };
@@ -1838,6 +1863,25 @@ void SwitchCLISessionContext::OnShowHardware()
 
 void SwitchCLISessionContext::OnShowInterfaceCommand()
 {
+	//Interface number?
+	if(m_command[2].m_commandID >= CMD_G0)
+	{
+		//Look at the next argument
+		//Generally something like "show int g3 count"
+		switch(m_command[3].m_commandID)
+		{
+			case CMD_COUNTERS:
+				OnShowInterfaceCounters(m_command[2].m_commandID - CMD_G0);
+				break;
+
+			default:
+				m_stream->Printf("Unrecognized command\n");
+				break;
+		}
+
+		return;
+	}
+
 	switch(m_command[2].m_commandID)
 	{
 		case CMD_STATUS:
@@ -1848,6 +1892,45 @@ void SwitchCLISessionContext::OnShowInterfaceCommand()
 			m_stream->Printf("Unrecognized command\n");
 			break;
 	}
+}
+
+/**
+	@brief Read a performance counter from an interface
+ */
+uint64_t SwitchCLISessionContext::ReadPerformanceCounter(uint8_t port, uint16_t reg)
+{
+	g_fpga->BlockingWrite8(REG_PERF_PORT, port);
+	g_fpga->BlockingWrite16(REG_PERF_ADDR, reg);
+
+	uint64_t ret = 0;
+	g_fpga->BlockingRead(REG_PERF_DATA, (uint8_t*)&ret, sizeof(ret));
+
+	return ret;
+}
+
+/**
+	@brief Show performance counters for a single interface
+ */
+void SwitchCLISessionContext::OnShowInterfaceCounters(uint8_t interface)
+{
+	m_stream->Printf("MAC IN\n");
+
+	//TODO: support int64 printing in our printf function?
+	//for now cast to int32
+	uint32_t ret = ReadPerformanceCounter(interface, REG_RX_FRAMES);
+	m_stream->Printf("    Valid frames:      %d\n", ret);
+	ret = ReadPerformanceCounter(interface, REG_RX_CRC_ERRS);
+	m_stream->Printf("    Invalid frames:    %d\n", ret);
+	ret = ReadPerformanceCounter(interface, REG_RX_BYTES);
+	m_stream->Printf("    Total bytes:       %d\n", ret);
+
+
+	m_stream->Printf("MAC OUT\n");
+
+	ret = ReadPerformanceCounter(interface, REG_TX_FRAMES);
+	m_stream->Printf("    Frames:            %d\n", ret);
+	ret = ReadPerformanceCounter(interface, REG_TX_BYTES);
+	m_stream->Printf("    Bytes:             %d\n", ret);
 }
 
 void SwitchCLISessionContext::OnShowInterfaceStatus()
