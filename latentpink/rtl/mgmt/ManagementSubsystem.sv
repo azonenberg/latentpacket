@@ -106,7 +106,8 @@ module ManagementSubsystem #(
 	output wire[PORT_BITS-1:0]		net_perf_rd_port,
 	output wire[15:0]				net_perf_regid,
 	input wire						net_perf_valid,
-	input wire[63:0]				net_perf_value
+	input wire[63:0]				net_perf_value,
+	output wire[15:0]				net_perf_rst
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -500,7 +501,8 @@ module ManagementSubsystem #(
 		.net_perf_rd_port(net_perf_rd_port),
 		.net_perf_regid(net_perf_regid),
 		.net_perf_valid(net_perf_valid),
-		.net_perf_value(net_perf_value)
+		.net_perf_value(net_perf_value),
+		.net_perf_rst(net_perf_rst)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

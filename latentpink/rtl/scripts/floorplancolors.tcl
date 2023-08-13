@@ -32,3 +32,4 @@ highlight_objects -color_index 8 -leaf_cells [get_cells {crypt25519}]
 # light pink debug blocks
 highlight_objects -color_index 17 -leaf_cells [get_cells {dbg_hub}]
 highlight_objects -color_index 17 -leaf_cells [get_cells [list {interfaces/vio_*}]]
+highlight_objects -color_index 17 -leaf_cells [get_cells [list mgmt/vio_irq]]

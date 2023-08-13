@@ -130,7 +130,8 @@ module ManagementRegisterInterface #(
 	output logic[PORT_BITS-1:0]		net_perf_rd_port	= 0,
 	output logic[15:0]				net_perf_regid		= 0,
 	input wire						net_perf_valid,
-	input wire[63:0]				net_perf_value
+	input wire[63:0]				net_perf_value,
+	output logic[15:0]				net_perf_rst		= 0
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,6 +430,7 @@ module ManagementRegisterInterface #(
 		txfifo_wr_en			<= 0;
 		txfifo_wr_commit		<= 0;
 		net_perf_rd				<= 0;
+		net_perf_rst			<= 0;
 
 		//Start a new read
 		if(rd_en)
@@ -724,6 +726,8 @@ module ManagementRegisterInterface #(
 						vsc_phy_reg_rd			<= wr_data[5];
 						vsc_phy_reg_wr			<= wr_data[6];
 					end
+
+					REG_PERF_CLEAR: 	net_perf_rst[wr_data[3:0]]	<= 1;
 
 					REG_PERF_PORT:		net_perf_rd_port	<= wr_data[3:0];
 					REG_PERF_ADDR:		net_perf_regid[7:0]	<= wr_data;

@@ -176,7 +176,8 @@ module NetworkInterfaces #(
 	input wire[PORT_BITS-1:0]	perf_rd_port,
 	input wire[15:0]			perf_regid,
 	output logic				perf_valid	= 0,
-	output logic[63:0]			perf_value	= 0
+	output logic[63:0]			perf_value	= 0,
+	input wire[15:0]			perf_rst
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -800,15 +801,25 @@ module NetworkInterfaces #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Performance counters
 
-	//TODO: clear support
-
 	wire[15:0][63:0]	perf_values;
 	wire[15:0] 			perf_valids;
+
+	//clock domain shifted resets
+	wire[15:0]			perf_rst_mac_rx;
+	wire[15:0]			perf_rst_mac_tx;
 
 	//QSGMII perf counters
 	for(genvar g=0; g<12; g=g+1) begin : qsgmiiperf
 
 		EthernetMacPerformanceData	macdata;
+
+		//Single reset for both sides since tx/rx mac bus are the same clock domain
+		PulseSynchronizer sync_perf_rst(
+			.clk_a(clk_ram_ctl),
+			.pulse_a(perf_rst[g]),
+			.clk_b(qsgmii_tx_clk[g/4]),
+			.pulse_b(perf_rst_mac_rx[g]));
+		assign perf_rst_mac_tx[g] = perf_rst_mac_rx[g];
 
 		EthernetPerformanceCounters count(
 			.rx_clk(qsgmii_tx_clk[g/4]),
@@ -816,6 +827,9 @@ module NetworkInterfaces #(
 
 			.rx_bus(qsgmii_mac_rx_bus[g]),
 			.tx_bus(qsgmii_mac_tx_bus[g]),
+
+			.rst_rx(perf_rst_mac_rx[g]),
+			.rst_tx(perf_rst_mac_tx[g]),
 
 			.counters(macdata)
 		);
@@ -847,12 +861,29 @@ module NetworkInterfaces #(
 	EthernetMacPerformanceData	xg0_macdata;
 	EthernetMacPerformanceData	mgmt0_macdata;
 
+	//Single reset for both sides since tx/rx mac bus are the same clock domain
+	PulseSynchronizer sync_perf_rst_g12(
+		.clk_a(clk_ram_ctl),
+		.pulse_a(perf_rst[12]),
+		.clk_b(clk_125mhz),
+		.pulse_b(perf_rst_mac_rx[12]));
+	PulseSynchronizer sync_perf_rst_g13(
+		.clk_a(clk_ram_ctl),
+		.pulse_a(perf_rst[13]),
+		.clk_b(clk_125mhz),
+		.pulse_b(perf_rst_mac_rx[13]));
+	assign perf_rst_mac_tx[12] = perf_rst_mac_rx[12];
+	assign perf_rst_mac_tx[13] = perf_rst_mac_rx[13];
+
 	EthernetPerformanceCounters g12_count(
 		.rx_clk(clk_125mhz),
 		.tx_clk(clk_125mhz),
 
 		.rx_bus(g12_rx_bus),
 		.tx_bus(g12_tx_bus),
+
+		.rst_rx(perf_rst_mac_rx[12]),
+		.rst_tx(perf_rst_mac_tx[12]),
 
 		.counters(g12_macdata)
 	);
@@ -864,8 +895,22 @@ module NetworkInterfaces #(
 		.rx_bus(g13_rx_bus),
 		.tx_bus(g13_tx_bus),
 
+		.rst_rx(perf_rst_mac_rx[13]),
+		.rst_tx(perf_rst_mac_tx[13]),
+
 		.counters(g13_macdata)
 	);
+
+	PulseSynchronizer sync_perf_rst_xg0_rx(
+		.clk_a(clk_ram_ctl),
+		.pulse_a(perf_rst[14]),
+		.clk_b(xg0_mac_rx_clk),
+		.pulse_b(perf_rst_mac_rx[14]));
+	PulseSynchronizer sync_perf_rst_xg0_tx(
+		.clk_a(clk_ram_ctl),
+		.pulse_a(perf_rst[14]),
+		.clk_b(xg0_mac_tx_clk),
+		.pulse_b(perf_rst_mac_tx[14]));
 
 	EthernetPerformanceCounters #(
 		.PIPELINED_INCREMENT(1)
@@ -876,8 +921,22 @@ module NetworkInterfaces #(
 		.rx_bus(xg0_mac_rx_bus),
 		.tx_bus(xg0_mac_tx_bus),
 
+		.rst_rx(perf_rst_mac_rx[14]),
+		.rst_tx(perf_rst_mac_tx[14]),
+
 		.counters(xg0_macdata)
 	);
+
+	PulseSynchronizer sync_perf_rst_mgmt0_rx(
+		.clk_a(clk_ram_ctl),
+		.pulse_a(perf_rst[15]),
+		.clk_b(mgmt0_rx_clk_buf),
+		.pulse_b(perf_rst_mac_rx[15]));
+	PulseSynchronizer sync_perf_rst_mgmt0_tx(
+		.clk_a(clk_ram_ctl),
+		.pulse_a(perf_rst[15]),
+		.clk_b(clk_125mhz),
+		.pulse_b(perf_rst_mac_tx[15]));
 
 	EthernetPerformanceCounters mgmt0_count(
 		.rx_clk(mgmt0_rx_clk_buf),
@@ -885,6 +944,9 @@ module NetworkInterfaces #(
 
 		.rx_bus(mgmt0_rx_bus),
 		.tx_bus(mgmt0_tx_bus),
+
+		.rst_rx(perf_rst_mac_rx[15]),
+		.rst_tx(perf_rst_mac_tx[15]),
 
 		.counters(mgmt0_macdata)
 	);
@@ -965,14 +1027,20 @@ module NetworkInterfaces #(
 		.rd_data(perf_values[15])
 	);
 
-	//Final output muxing
+	//Final output pipeline stages and muxing
+	logic[15:0][63:0]	perf_values_ff;
+	logic[15:0] 		perf_valids_ff = 0;
+
 	always_ff @(posedge clk_ram_ctl) begin
 		perf_valid	<= 0;
 
+		perf_values_ff	<= perf_values;
+		perf_valids_ff	<= perf_valids;
+
 		for(integer i=0; i<16; i=i+1) begin
-			if(perf_valids[i]) begin
+			if(perf_valids_ff[i]) begin
 				perf_valid	<= 1;
-				perf_value	<= perf_values[i];
+				perf_value	<= perf_values_ff[i];
 			end
 		end
 	end

@@ -339,6 +339,7 @@ module LatentPinkTopLevel(
 	wire[15:0]			net_perf_regid;
 	wire				net_perf_valid;
 	wire[63:0]			net_perf_value;
+	wire[15:0]			net_perf_rst;
 
 	NetworkInterfaces interfaces(
 
@@ -436,7 +437,8 @@ module LatentPinkTopLevel(
 		.perf_rd_port(net_perf_rd_port),
 		.perf_regid(net_perf_regid),
 		.perf_valid(net_perf_valid),
-		.perf_value(net_perf_value)
+		.perf_value(net_perf_value),
+		.perf_rst(net_perf_rst)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -718,7 +720,8 @@ module LatentPinkTopLevel(
 		.net_perf_rd_port(net_perf_rd_port),
 		.net_perf_regid(net_perf_regid),
 		.net_perf_valid(net_perf_valid),
-		.net_perf_value(net_perf_value)
+		.net_perf_value(net_perf_value),
+		.net_perf_rst(net_perf_rst)
 	);
 
 
