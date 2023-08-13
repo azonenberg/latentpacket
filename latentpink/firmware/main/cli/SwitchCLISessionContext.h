@@ -74,6 +74,8 @@ protected:
 
 	void OnCommit();
 
+	void OnClearCounters(uint8_t interface);
+
 	void OnInterfaceCommand();
 
 	void OnAutonegotiation();

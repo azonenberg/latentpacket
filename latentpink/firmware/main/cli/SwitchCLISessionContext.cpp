@@ -45,6 +45,7 @@ enum cmdid_t
 	CMD_AUTONEGOTIATION,
 	CMD_ARP,
 	CMD_CACHE,
+	CMD_CLEAR,
 	CMD_COMMIT,
 	CMD_COUNTERS,
 	CMD_CROSSOVER,
@@ -110,27 +111,9 @@ enum cmdid_t
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// "description"
-
-static const clikeyword_t g_descriptionCommands[] =
-{
-	{"<string>",	TEXT_TOKEN,			nullptr,	"New description for the port"},
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
-};
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// "hostname"
-
-static const clikeyword_t g_hostnameCommands[] =
-{
-	{"<string>",	FREEFORM_TOKEN,		nullptr,	"New host name"},
-	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "interface"
 
+// Out of alphabetical order so it can be referred to by other commands operating on interfaces to avoid duplication
 static const clikeyword_t g_interfaceCommands[] =
 {
 	{"g0",			CMD_G0,				nullptr,	"Gigabit0"},
@@ -150,6 +133,40 @@ static const clikeyword_t g_interfaceCommands[] =
 	{"mgmt0",		CMD_MGMT0,			nullptr,	"Management0"},
 	{"xg0",			CMD_XG0,			nullptr,	"10Gigabit0"},
 
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "clear"
+
+static const clikeyword_t g_clearCountersCommands[] =
+{
+	{"interface",	CMD_INTERFACE,		g_interfaceCommands,	"Clear performance counters for an interface"},
+	{nullptr,		INVALID_COMMAND,	nullptr,				nullptr}
+};
+
+static const clikeyword_t g_clearCommands[] =
+{
+	{"counters",	CMD_COUNTERS,		g_clearCountersCommands,	"Clear performance counters"},
+	{nullptr,		INVALID_COMMAND,	nullptr,					nullptr}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "description"
+
+static const clikeyword_t g_descriptionCommands[] =
+{
+	{"<string>",	TEXT_TOKEN,			nullptr,	"New description for the port"},
+	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "hostname"
+
+static const clikeyword_t g_hostnameCommands[] =
+{
+	{"<string>",	FREEFORM_TOKEN,		nullptr,	"New host name"},
 	{nullptr,		INVALID_COMMAND,	nullptr,	nullptr}
 };
 
@@ -427,6 +444,7 @@ static const clikeyword_t g_zeroizeCommands[] =
 //Top level commands in root mode
 static const clikeyword_t g_rootCommands[] =
 {
+	{"clear",		CMD_CLEAR,			g_clearCommands,		"Clear performance counters and other debugging state"},
 	{"commit",		CMD_COMMIT,			nullptr,				"Commit volatile config changes to flash memory"},
 	{"exit",		CMD_EXIT,			nullptr,				"Log out"},
 	{"hostname",	CMD_HOSTNAME,		g_hostnameCommands,		"Change the host name"},
@@ -599,6 +617,12 @@ void SwitchCLISessionContext::OnExecuteRoot()
 {
 	switch(m_command[0].m_commandID)
 	{
+		case CMD_CLEAR:
+			//for now, 1-2 are always "counters" and "interface" so don't bother checking
+			//then 3 will be the interface ID
+			OnClearCounters(m_command[3].m_commandID - CMD_G0);
+			break;
+
 		case CMD_COMMIT:
 			OnCommit();
 			break;
@@ -694,6 +718,14 @@ void SwitchCLISessionContext::OnNoAutonegotiation()
 
 	RestartNegotiation(m_activeInterface);
 	*/
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// "clear"
+
+void SwitchCLISessionContext::OnClearCounters(uint8_t interface)
+{
+	g_fpga->BlockingWrite8(REG_PERF_CLEAR, interface);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
