@@ -338,7 +338,7 @@ module LatentPinkTopLevel(
 	wire[PORT_BITS-1:0]	net_perf_rd_port;
 	wire[15:0]			net_perf_regid;
 	wire				net_perf_valid;
-	wire[63:0]			net_perf_value;
+	wire[47:0]			net_perf_value;
 	wire[15:0]			net_perf_rst;
 
 	NetworkInterfaces interfaces(

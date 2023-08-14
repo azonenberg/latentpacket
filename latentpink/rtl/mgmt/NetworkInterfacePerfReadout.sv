@@ -56,7 +56,7 @@ module NetworkInterfacePerfReadout #(
 	input wire			rd_en,
 	input wire[15:0]	rd_addr,
 	output logic		rd_valid	= 0,
-	output logic[63:0]	rd_data		= 0
+	output logic[47:0]	rd_data		= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,8 @@ module NetworkInterfacePerfReadout #(
 	if(MAC_TX_RX_SAME_CLOCK) begin
 
 		RegisterSynchronizer #(
-			.WIDTH(8)
+			.WIDTH(8),
+			.IN_REG(0)
 		) sync_req_mac_tx (
 			.clk_a(clk_mgmt),
 			.en_a(rd_en && ( (rd_addr[15:8] == 8'h10) || (rd_addr[15:8] == 8'h11) ) ),
@@ -123,7 +124,8 @@ module NetworkInterfacePerfReadout #(
 	else begin
 
 		RegisterSynchronizer #(
-			.WIDTH(8)
+			.WIDTH(8),
+			.IN_REG(0)
 		) sync_req_mac_tx (
 			.clk_a(clk_mgmt),
 			.en_a(rd_en && (rd_addr[15:8] == 8'h10)),
@@ -137,7 +139,8 @@ module NetworkInterfacePerfReadout #(
 		);
 
 		RegisterSynchronizer #(
-			.WIDTH(8)
+			.WIDTH(8),
+			.IN_REG(0)
 		) sync_req_mac_rx (
 			.clk_a(clk_mgmt),
 			.en_a(rd_en && (rd_addr[15:8] == 8'h11)),
@@ -222,13 +225,14 @@ module NetworkInterfacePerfReadout #(
 	wire		rd_updated_mac_rx;
 	wire		rd_updated_mac_tx;
 
-	wire[63:0]	rd_data_from_mac_rx;
-	wire[63:0]	rd_data_from_mac_tx;
+	wire[47:0]	rd_data_from_mac_rx;
+	wire[47:0]	rd_data_from_mac_tx;
 
 	if(MAC_TX_RX_SAME_CLOCK) begin
 
 		RegisterSynchronizer #(
-			.WIDTH(64)
+			.WIDTH(48),
+			.IN_REG(0)
 		) sync_data_mac_tx (
 			.clk_a(clk_mac_tx),
 			.en_a(rd_valid_mac_tx),
@@ -246,7 +250,8 @@ module NetworkInterfacePerfReadout #(
 	else begin
 
 		RegisterSynchronizer #(
-			.WIDTH(64)
+			.WIDTH(48),
+			.IN_REG(0)
 		) sync_data_mac_rx (
 			.clk_a(clk_mac_rx),
 			.en_a(rd_valid_mac_rx),
@@ -260,7 +265,8 @@ module NetworkInterfacePerfReadout #(
 		);
 
 		RegisterSynchronizer #(
-			.WIDTH(64)
+			.WIDTH(48),
+			.IN_REG(0)
 		) sync_data_mac_tx (
 			.clk_a(clk_mac_tx),
 			.en_a(rd_valid_mac_tx),

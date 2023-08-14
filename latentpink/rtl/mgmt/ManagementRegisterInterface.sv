@@ -130,7 +130,7 @@ module ManagementRegisterInterface #(
 	output logic[PORT_BITS-1:0]		net_perf_rd_port	= 0,
 	output logic[15:0]				net_perf_regid		= 0,
 	input wire						net_perf_valid,
-	input wire[63:0]				net_perf_value,
+	input wire[47:0]				net_perf_value,
 	output logic[15:0]				net_perf_rst		= 0
 	);
 
@@ -605,8 +605,8 @@ module ManagementRegisterInterface #(
 					REG_PERF_DATA_3:	rd_data	<= net_perf_value[3*8 +: 8];
 					REG_PERF_DATA_4:	rd_data	<= net_perf_value[4*8 +: 8];
 					REG_PERF_DATA_5:	rd_data	<= net_perf_value[5*8 +: 8];
-					REG_PERF_DATA_6:	rd_data	<= net_perf_value[6*8 +: 8];
-					REG_PERF_DATA_7:	rd_data	<= net_perf_value[7*8 +: 8];
+					REG_PERF_DATA_6:	rd_data	<= 0;	//reserved in case we ever go back to 64 bits
+					REG_PERF_DATA_7:	rd_data	<= 0;
 
 					default: begin
 						rd_data	<= 0;

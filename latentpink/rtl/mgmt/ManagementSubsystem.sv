@@ -106,7 +106,7 @@ module ManagementSubsystem #(
 	output wire[PORT_BITS-1:0]		net_perf_rd_port,
 	output wire[15:0]				net_perf_regid,
 	input wire						net_perf_valid,
-	input wire[63:0]				net_perf_value,
+	input wire[47:0]				net_perf_value,
 	output wire[15:0]				net_perf_rst
 );
 

@@ -176,7 +176,7 @@ module NetworkInterfaces #(
 	input wire[PORT_BITS-1:0]	perf_rd_port,
 	input wire[15:0]			perf_regid,
 	output logic				perf_valid	= 0,
-	output logic[63:0]			perf_value	= 0,
+	output logic[47:0]			perf_value	= 0,
 	input wire[15:0]			perf_rst
 );
 
@@ -801,7 +801,7 @@ module NetworkInterfaces #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Performance counters
 
-	wire[15:0][63:0]	perf_values;
+	wire[15:0][47:0]	perf_values;
 	wire[15:0] 			perf_valids;
 
 	//clock domain shifted resets
@@ -1028,7 +1028,7 @@ module NetworkInterfaces #(
 	);
 
 	//Final output pipeline stages and muxing
-	logic[15:0][63:0]	perf_values_ff;
+	logic[15:0][47:0]	perf_values_ff;
 	logic[15:0] 		perf_valids_ff = 0;
 
 	always_ff @(posedge clk_ram_ctl) begin
