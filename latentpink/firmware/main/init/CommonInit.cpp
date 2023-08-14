@@ -149,6 +149,11 @@ void InitInterfaces()
 	InitSGMIIPHYs();
 	InitQSGMIIPHY();
 	#endif
+
+	//Reset performance counters to zero to clean out any junk that might have shown up during powerup
+	g_logTimer->Sleep(50);
+	for(uint32_t i=0; i<NUM_PORTS; i++)
+		g_fpga->BlockingWrite8(REG_PERF_CLEAR, i);
 }
 
 /**
