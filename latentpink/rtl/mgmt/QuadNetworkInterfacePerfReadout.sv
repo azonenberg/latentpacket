@@ -36,218 +36,90 @@
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief Performance counter readout for a single network interface
+	@brief Performance counter readout for four QSGMII network interfaces
  */
-module NetworkInterfacePerfReadout #(
-	parameter MAC_TX_RX_SAME_CLOCK = 0
-)(
+module QuadNetworkInterfacePerfReadout(
 
 	//Clock domains for performance counters
-	input wire			clk_sgmii_rx,
-	input wire			clk_sgmii_tx,
-	input wire			clk_mac_rx,
-	input wire			clk_mac_tx,
+	input wire									clk_mac,
 
-	//Performance counter values (not all may be supported in a given port)
-	input wire	SGMIIPerformanceCounters	sgmii_perf,
-	input wire	EthernetMacPerformanceData	mac_perf,
+	//Performance counter values
+	input wire EthernetMacPerformanceData[3:0]	mac_perf,
 
 	//Management bus
-	input wire			clk_mgmt,
-	input wire			rd_en,
-	input wire[15:0]	rd_addr,
-	output logic		rd_valid	= 0,
-	output logic[47:0]	rd_data		= 0
+	input wire									clk_mgmt,
+	input wire									rd_en,
+	input wire[1:0]								rd_port,
+	input wire[15:0]							rd_addr,
+	output logic								rd_valid	= 0,
+	output logic[47:0]							rd_data		= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Synchronize read request from management clock domain out into each of the remote clock domains
 
-	wire		rd_mac_rx;
-	wire[7:0]	regid_mac_rx;
+	wire		rd_mac;
+	wire[7:0]	regid_mac;
+	wire[1:0]	port_mac;
 
-	wire		rd_mac_tx;
-	wire[7:0]	regid_mac_tx;
+	RegisterSynchronizer #(
+		.WIDTH(10),
+		.IN_REG(0)
+	) sync_req_mac (
+		.clk_a(clk_mgmt),
+		.en_a(rd_en && ( (rd_addr[15:8] == 8'h10) || (rd_addr[15:8] == 8'h11) ) ),
+		.ack_a(),
+		.reg_a({rd_addr[7:0], rd_port}),
 
-	//Avoid double sync if mac tx/rx are using same clock domain (common for SGMII etc)
-	if(MAC_TX_RX_SAME_CLOCK) begin
-
-		RegisterSynchronizer #(
-			.WIDTH(8),
-			.IN_REG(0)
-		) sync_req_mac_tx (
-			.clk_a(clk_mgmt),
-			.en_a(rd_en && ( (rd_addr[15:8] == 8'h10) || (rd_addr[15:8] == 8'h11) ) ),
-			.ack_a(),
-			.reg_a(rd_addr[7:0]),
-
-			.clk_b(clk_mac_tx),
-			.updated_b(rd_mac_tx),
-			.reset_b(1'b0),
-			.reg_b(regid_mac_tx)
-		);
-
-	end
-
-	else begin
-
-		RegisterSynchronizer #(
-			.WIDTH(8),
-			.IN_REG(0)
-		) sync_req_mac_tx (
-			.clk_a(clk_mgmt),
-			.en_a(rd_en && (rd_addr[15:8] == 8'h10)),
-			.ack_a(),
-			.reg_a(rd_addr[7:0]),
-
-			.clk_b(clk_mac_tx),
-			.updated_b(rd_mac_tx),
-			.reset_b(1'b0),
-			.reg_b(regid_mac_tx)
-		);
-
-		RegisterSynchronizer #(
-			.WIDTH(8),
-			.IN_REG(0)
-		) sync_req_mac_rx (
-			.clk_a(clk_mgmt),
-			.en_a(rd_en && (rd_addr[15:8] == 8'h11)),
-			.ack_a(),
-			.reg_a(rd_addr[7:0]),
-
-			.clk_b(clk_mac_rx),
-			.updated_b(rd_mac_rx),
-			.reset_b(1'b0),
-			.reg_b(regid_mac_rx)
-		);
-
-	end
+		.clk_b(clk_mac),
+		.updated_b(rd_mac),
+		.reset_b(1'b0),
+		.reg_b({regid_mac, port_mac})
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Mux read data in remote clock domains
 
-	logic[47:0]	rd_data_mac_rx	= 0;
-	logic[47:0]	rd_data_mac_tx	= 0;
+	logic[47:0]	rd_data_mac	= 0;
+	logic		rd_valid_mac	= 0;
 
-	logic		rd_valid_mac_rx	= 0;
-	logic		rd_valid_mac_tx	= 0;
+	always_ff @(posedge clk_mac) begin
+		rd_valid_mac		<= 0;
 
-	//Avoid double sync if mac tx/rx are using same clock domain (common for SGMII etc)
-	if(MAC_TX_RX_SAME_CLOCK) begin
+		if(rd_mac) begin
+			rd_valid_mac	<= 1;
 
-		always_ff @(posedge clk_mac_tx) begin
-			rd_valid_mac_tx		<= 0;
-
-			if(rd_mac_tx) begin
-				rd_valid_mac_tx	<= 1;
-
-				case(regid_mac_tx)
-					REG_TX_FRAMES[7:0]:		rd_data_mac_tx	<= mac_perf.tx_frames;
-					REG_TX_BYTES[7:0]:		rd_data_mac_tx	<= mac_perf.tx_bytes;
-					REG_RX_FRAMES[7:0]:		rd_data_mac_tx	<= mac_perf.rx_frames;
-					REG_RX_CRC_ERRS[7:0]:	rd_data_mac_tx	<= mac_perf.rx_crc_err;
-					REG_RX_BYTES[7:0]:		rd_data_mac_tx	<= mac_perf.rx_bytes;
-					default:				rd_data_mac_tx	<= 0;
-				endcase
-			end
+			case(regid_mac)
+				REG_TX_FRAMES[7:0]:		rd_data_mac	<= mac_perf[port_mac].tx_frames;
+				REG_TX_BYTES[7:0]:		rd_data_mac	<= mac_perf[port_mac].tx_bytes;
+				REG_RX_FRAMES[7:0]:		rd_data_mac	<= mac_perf[port_mac].rx_frames;
+				REG_RX_CRC_ERRS[7:0]:	rd_data_mac	<= mac_perf[port_mac].rx_crc_err;
+				REG_RX_BYTES[7:0]:		rd_data_mac	<= mac_perf[port_mac].rx_bytes;
+				default:				rd_data_mac	<= 0;
+			endcase
 		end
-
-	end
-
-	else begin
-
-		always_ff @(posedge clk_mac_rx) begin
-			rd_valid_mac_rx		<= 0;
-
-			if(rd_mac_rx) begin
-				rd_valid_mac_rx	<= 1;
-
-				case(regid_mac_rx)
-					REG_RX_FRAMES[7:0]:		rd_data_mac_rx	<= mac_perf.rx_frames;
-					REG_RX_CRC_ERRS[7:0]:	rd_data_mac_rx	<= mac_perf.rx_crc_err;
-					REG_RX_BYTES[7:0]:		rd_data_mac_rx	<= mac_perf.rx_bytes;
-					default:				rd_data_mac_rx	<= 0;
-				endcase
-			end
-		end
-
-		always_ff @(posedge clk_mac_tx) begin
-			rd_valid_mac_tx		<= 0;
-
-			if(rd_mac_tx) begin
-				rd_valid_mac_tx	<= 1;
-
-				case(regid_mac_tx)
-					REG_TX_FRAMES[7:0]:		rd_data_mac_tx	<= mac_perf.tx_frames;
-					REG_TX_BYTES[7:0]:		rd_data_mac_tx	<= mac_perf.tx_bytes;
-					default:				rd_data_mac_tx	<= 0;
-				endcase
-			end
-		end
-
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Synchronize read data from remote clock domains back to management clock domain
 
-	wire		rd_updated_mac_rx;
-	wire		rd_updated_mac_tx;
+	wire		rd_updated_mac;
+	wire[47:0]	rd_data_from_mac;
 
-	wire[47:0]	rd_data_from_mac_rx;
-	wire[47:0]	rd_data_from_mac_tx;
+	RegisterSynchronizer #(
+		.WIDTH(48),
+		.IN_REG(0)
+	) sync_data_mac (
+		.clk_a(clk_mac),
+		.en_a(rd_valid_mac),
+		.ack_a(),
+		.reg_a(rd_data_mac),
 
-	if(MAC_TX_RX_SAME_CLOCK) begin
-
-		RegisterSynchronizer #(
-			.WIDTH(48),
-			.IN_REG(0)
-		) sync_data_mac_tx (
-			.clk_a(clk_mac_tx),
-			.en_a(rd_valid_mac_tx),
-			.ack_a(),
-			.reg_a(rd_data_mac_tx),
-
-			.clk_b(clk_mgmt),
-			.updated_b(rd_updated_mac_tx),
-			.reset_b(1'b0),
-			.reg_b(rd_data_from_mac_tx)
-		);
-
-	end
-
-	else begin
-
-		RegisterSynchronizer #(
-			.WIDTH(48),
-			.IN_REG(0)
-		) sync_data_mac_rx (
-			.clk_a(clk_mac_rx),
-			.en_a(rd_valid_mac_rx),
-			.ack_a(),
-			.reg_a(rd_data_mac_rx),
-
-			.clk_b(clk_mgmt),
-			.updated_b(rd_updated_mac_rx),
-			.reset_b(1'b0),
-			.reg_b(rd_data_from_mac_rx)
-		);
-
-		RegisterSynchronizer #(
-			.WIDTH(48),
-			.IN_REG(0)
-		) sync_data_mac_tx (
-			.clk_a(clk_mac_tx),
-			.en_a(rd_valid_mac_tx),
-			.ack_a(),
-			.reg_a(rd_data_mac_tx),
-
-			.clk_b(clk_mgmt),
-			.updated_b(rd_updated_mac_tx),
-			.reset_b(1'b0),
-			.reg_b(rd_data_from_mac_tx)
-		);
-
-	end
+		.clk_b(clk_mgmt),
+		.updated_b(rd_updated_mac),
+		.reset_b(1'b0),
+		.reg_b(rd_data_from_mac)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Mux read data back from whatever clock domain it came from
@@ -255,16 +127,9 @@ module NetworkInterfacePerfReadout #(
 	always_ff @(posedge clk_mgmt) begin
 		rd_valid	<= 0;
 
-		if(!MAC_TX_RX_SAME_CLOCK) begin
-			if(rd_updated_mac_rx) begin
-				rd_valid	<= 1;
-				rd_data		<= rd_data_from_mac_rx;
-			end
-		end
-
-		if(rd_updated_mac_tx) begin
+		if(rd_updated_mac) begin
 			rd_valid	<= 1;
-			rd_data		<= rd_data_from_mac_tx;
+			rd_data		<= rd_data_from_mac;
 		end
 
 	end

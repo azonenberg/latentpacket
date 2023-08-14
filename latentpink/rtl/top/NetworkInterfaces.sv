@@ -801,53 +801,54 @@ module NetworkInterfaces #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Performance counters
 
-	wire[15:0][47:0]	perf_values;
-	wire[15:0] 			perf_valids;
+	wire[6:0][47:0]	perf_values;
+	wire[6:0] 		perf_valids;
 
 	//clock domain shifted resets
 	wire[15:0]			perf_rst_mac_rx;
 	wire[15:0]			perf_rst_mac_tx;
 
 	//QSGMII perf counters
-	for(genvar g=0; g<12; g=g+1) begin : qsgmiiperf
+	for(genvar g=0; g<3; g=g+1) begin : qsgmiiperf
 
-		EthernetMacPerformanceData	macdata;
+		EthernetMacPerformanceData[3:0]	macdata;
 
-		//Single reset for both sides since tx/rx mac bus are the same clock domain
-		PulseSynchronizer sync_perf_rst(
-			.clk_a(clk_ram_ctl),
-			.pulse_a(perf_rst[g]),
-			.clk_b(qsgmii_tx_clk[g/4]),
-			.pulse_b(perf_rst_mac_rx[g]));
-		assign perf_rst_mac_tx[g] = perf_rst_mac_rx[g];
+		for(genvar h=0; h<4; h=h+1) begin : channels
 
-		EthernetPerformanceCounters count(
-			.rx_clk(qsgmii_tx_clk[g/4]),
-			.tx_clk(qsgmii_tx_clk[g/4]),
+			//Single reset for both sides since tx/rx mac bus are the same clock domain
+			wire	perf_rst_sync;
+			PulseSynchronizer sync_perf_rst(
+				.clk_a(clk_ram_ctl),
+				.pulse_a(perf_rst[g*4 + h]),
+				.clk_b(qsgmii_tx_clk[g]),
+				.pulse_b(perf_rst_sync));
 
-			.rx_bus(qsgmii_mac_rx_bus[g]),
-			.tx_bus(qsgmii_mac_tx_bus[g]),
+			//The actual counters
+			EthernetPerformanceCounters count(
+				.rx_clk(qsgmii_tx_clk[g]),
+				.tx_clk(qsgmii_tx_clk[g]),
 
-			.rst_rx(perf_rst_mac_rx[g]),
-			.rst_tx(perf_rst_mac_tx[g]),
+				.rx_bus(qsgmii_mac_rx_bus[g*4 + h]),
+				.tx_bus(qsgmii_mac_tx_bus[g*4 + h]),
 
-			.counters(macdata)
-		);
+				.rst_rx(perf_rst_sync),
+				.rst_tx(perf_rst_sync),
 
-		NetworkInterfacePerfReadout #(
-			.MAC_TX_RX_SAME_CLOCK(1)
-		) readout (
+				.counters(macdata[h])
+			);
 
-			.clk_sgmii_rx(1'b0),				//SGMIIPerformanceCounters TODO
-			.clk_sgmii_tx(1'b0),
-			.clk_mac_rx(qsgmii_tx_clk[g/4]),	//GigBaseXPCS does internal elastic buffer needed for autonegotiation
-			.clk_mac_tx(qsgmii_tx_clk[g/4]),	//so both TX and RX MAC side buses run in tx_clk domain
+		end
 
-			.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
+		QuadNetworkInterfacePerfReadout readout (
+
+			.clk_mac(qsgmii_tx_clk[g]),
+
+			//.sgmii_perf({$bits(SGMIIPerformanceCounters){1'b0}}),
 			.mac_perf(macdata),
 
 			.clk_mgmt(clk_ram_ctl),
-			.rd_en(perf_rd && (perf_rd_port == g)),
+			.rd_en(perf_rd && (perf_rd_port[3:2] == g)),
+			.rd_port(perf_rd_port[1:0]),
 			.rd_addr(perf_regid),
 			.rd_valid(perf_valids[g]),
 			.rd_data(perf_values[g])
@@ -966,8 +967,8 @@ module NetworkInterfaces #(
 		.clk_mgmt(clk_ram_ctl),
 		.rd_en(perf_rd && (perf_rd_port == 12)),
 		.rd_addr(perf_regid),
-		.rd_valid(perf_valids[12]),
-		.rd_data(perf_values[12])
+		.rd_valid(perf_valids[3]),
+		.rd_data(perf_values[3])
 	);
 
 	NetworkInterfacePerfReadout #(
@@ -985,8 +986,8 @@ module NetworkInterfaces #(
 		.clk_mgmt(clk_ram_ctl),
 		.rd_en(perf_rd && (perf_rd_port == 13)),
 		.rd_addr(perf_regid),
-		.rd_valid(perf_valids[13]),
-		.rd_data(perf_values[13])
+		.rd_valid(perf_valids[4]),
+		.rd_data(perf_values[4])
 	);
 
 	NetworkInterfacePerfReadout #(
@@ -1004,8 +1005,8 @@ module NetworkInterfaces #(
 		.clk_mgmt(clk_ram_ctl),
 		.rd_en(perf_rd && (perf_rd_port == 14)),
 		.rd_addr(perf_regid),
-		.rd_valid(perf_valids[14]),
-		.rd_data(perf_values[14])
+		.rd_valid(perf_valids[5]),
+		.rd_data(perf_values[5])
 	);
 
 	NetworkInterfacePerfReadout #(
@@ -1023,13 +1024,13 @@ module NetworkInterfaces #(
 		.clk_mgmt(clk_ram_ctl),
 		.rd_en(perf_rd && (perf_rd_port == 15)),
 		.rd_addr(perf_regid),
-		.rd_valid(perf_valids[15]),
-		.rd_data(perf_values[15])
+		.rd_valid(perf_valids[6]),
+		.rd_data(perf_values[6])
 	);
 
 	//Final output pipeline stages and muxing
-	logic[15:0][47:0]	perf_values_ff;
-	logic[15:0] 		perf_valids_ff = 0;
+	logic[6:0][47:0]	perf_values_ff;
+	logic[6:0] 		perf_valids_ff = 0;
 
 	always_ff @(posedge clk_ram_ctl) begin
 		perf_valid	<= 0;
@@ -1037,7 +1038,7 @@ module NetworkInterfaces #(
 		perf_values_ff	<= perf_values;
 		perf_valids_ff	<= perf_valids;
 
-		for(integer i=0; i<16; i=i+1) begin
+		for(integer i=0; i<7; i=i+1) begin
 			if(perf_valids_ff[i]) begin
 				perf_valid	<= 1;
 				perf_value	<= perf_values_ff[i];
