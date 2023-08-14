@@ -601,10 +601,10 @@ set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii]
 
 create_pblock pblock_10g
 add_cells_to_pblock [get_pblocks pblock_10g] [get_cells -quiet [list interfaces/port_xg0 interfaces/xg_transceiver]]
-resize_pblock [get_pblocks pblock_10g] -add {SLICE_X36Y175:SLICE_X101Y219}
-resize_pblock [get_pblocks pblock_10g] -add {DSP48_X2Y70:DSP48_X5Y87}
-resize_pblock [get_pblocks pblock_10g] -add {RAMB18_X2Y70:RAMB18_X5Y87}
-resize_pblock [get_pblocks pblock_10g] -add {RAMB36_X2Y35:RAMB36_X5Y43}
+resize_pblock [get_pblocks pblock_10g] -add {SLICE_X36Y150:SLICE_X101Y205}
+resize_pblock [get_pblocks pblock_10g] -add {DSP48_X2Y60:DSP48_X5Y81}
+resize_pblock [get_pblocks pblock_10g] -add {RAMB18_X2Y60:RAMB18_X5Y81}
+resize_pblock [get_pblocks pblock_10g] -add {RAMB36_X2Y30:RAMB36_X5Y40}
 set_property IS_SOFT FALSE [get_pblocks pblock_10g]
 
 #######################################################################################################################
@@ -627,16 +627,15 @@ add_cells_to_pblock [get_pblocks pblock_metafifo] [get_cells -quiet [list \
           {buffer/infifo/metafifo[7].fifo} \
           {buffer/infifo/metafifo[8].fifo} \
           {buffer/infifo/metafifo[9].fifo}]]
-resize_pblock [get_pblocks pblock_metafifo] -add {SLICE_X0Y50:SLICE_X23Y199}
-resize_pblock [get_pblocks pblock_metafifo] -add {DSP48_X0Y20:DSP48_X1Y79}
-resize_pblock [get_pblocks pblock_metafifo] -add {RAMB18_X0Y20:RAMB18_X1Y79}
-resize_pblock [get_pblocks pblock_metafifo] -add {RAMB36_X0Y10:RAMB36_X1Y39}
+resize_pblock [get_pblocks pblock_metafifo] -add {SLICE_X0Y50:SLICE_X23Y189}
+resize_pblock [get_pblocks pblock_metafifo] -add {DSP48_X0Y20:DSP48_X1Y75}
+resize_pblock [get_pblocks pblock_metafifo] -add {RAMB18_X0Y20:RAMB18_X1Y75}
+resize_pblock [get_pblocks pblock_metafifo] -add {RAMB36_X0Y10:RAMB36_X1Y37}
 set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
 
 #######################################################################################################################
 # Floorplanning: prefetcher
 
-set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 set_property PARENT pblock_metafifo [get_pblocks pblock_prefetch]
 create_pblock pblock_prefetch
 add_cells_to_pblock [get_pblocks pblock_prefetch] [get_cells -quiet [list buffer/infifo/prefetch_fifo buffer/infifo/tagfifo]]
@@ -884,15 +883,14 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_c
 
 create_pblock pblock_xg0_exit
 add_cells_to_pblock [get_pblocks pblock_xg0_exit] [get_cells -quiet [list {exit/fifos[14].data_fifo} {exit/fifos[14].header_fifo}]]
-resize_pblock [get_pblocks pblock_xg0_exit] -add {SLICE_X88Y190:SLICE_X101Y219}
-resize_pblock [get_pblocks pblock_xg0_exit] -add {DSP48_X5Y76:DSP48_X5Y87}
-resize_pblock [get_pblocks pblock_xg0_exit] -add {RAMB18_X5Y76:RAMB18_X5Y87}
-resize_pblock [get_pblocks pblock_xg0_exit] -add {RAMB36_X5Y38:RAMB36_X5Y43}
+resize_pblock [get_pblocks pblock_xg0_exit] -add {SLICE_X88Y190:SLICE_X101Y199}
+resize_pblock [get_pblocks pblock_xg0_exit] -add {DSP48_X5Y76:DSP48_X5Y79}
+resize_pblock [get_pblocks pblock_xg0_exit] -add {RAMB18_X5Y76:RAMB18_X5Y79}
+resize_pblock [get_pblocks pblock_xg0_exit] -add {RAMB36_X5Y38:RAMB36_X5Y39}
 set_property IS_SOFT FALSE [get_pblocks pblock_xg0_exit]
 
 
 
-set_property PARENT pblock_metafifo [get_pblocks pblock_qsgmii_perf]
 set_property PARENT pblock_metafifo [get_pblocks pblock_qsgmii_perf]
 create_pblock pblock_qsgmii_perf
 add_cells_to_pblock [get_pblocks pblock_qsgmii_perf] [get_cells -quiet [list \
@@ -930,8 +928,6 @@ set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii_perf]
 
 
 
-set_property PARENT pblock_10g [get_pblocks pblock_10g_counters]
-set_property PARENT pblock_10g [get_pblocks pblock_10g_counters]
 create_pblock pblock_10g_counters
 add_cells_to_pblock [get_pblocks pblock_10g_counters] [get_cells -quiet [list interfaces/xg0_count]]
 resize_pblock [get_pblocks pblock_10g_counters] -add {SLICE_X56Y175:SLICE_X101Y199}
@@ -1026,6 +1022,8 @@ resize_pblock [get_pblocks pblock_qsgmii_exit] -add {DSP48_X5Y40:DSP48_X5Y59}
 resize_pblock [get_pblocks pblock_qsgmii_exit] -add {RAMB18_X4Y40:RAMB18_X6Y59}
 resize_pblock [get_pblocks pblock_qsgmii_exit] -add {RAMB36_X4Y20:RAMB36_X6Y29}
 set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii_exit]
+
+
 
 
 
