@@ -336,13 +336,6 @@ void PollPHYs()
 		if( (g_linkState[i] != LINK_STATE_UP) && (g_linkState[i] != LINK_STATE_DOWN) )
 			continue;
 
-		//DEBUG: upper QSGMII PHYs not working yet so ignore them
-		if( (i >= 8) && (i <= 11) )
-		{
-			g_linkState[i] = LINK_STATE_ERR_DISABLE;
-			continue;
-		}
-
 		if(i == UPLINK_PORT)
 		{
 			uint32_t status = g_fpga->BlockingRead32(REG_XG0_STAT);

@@ -915,7 +915,12 @@ void InitQSGMIIPHY()
 		auto phyid1 = QSGMIIPHYRead(phyaddr, REG_PHY_ID_1);
 		auto phyid2 = QSGMIIPHYRead(phyaddr, REG_PHY_ID_2);
 
-		g_log("PHY ID %d = %04x %04x\n", i, phyid1, phyid2);
+		//g_log("PHY ID %d = %04x %04x\n", i, phyid1, phyid2);
+		if( (phyid1 != 0x0007) || (phyid2 >> 4) != 0x06e)
+		{
+			g_log(Logger::ERROR, "PHY ID = %04x %04x (invalid)\n", phyid1, phyid2);
+			return;
+		}
 	}
 }
 
