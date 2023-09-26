@@ -695,10 +695,10 @@ module ManagementRegisterInterface #(
 					REG_MGMT0_MDIO_1:	mgmt0_phy_wr_data[15:8]	<= wr_data;
 					REG_MGMT0_MDIO_2: begin
 						mgmt0_phy_reg_addr		<= wr_data[4:0];
-						mgmt0_phy_md_addr[3:0]	<= wr_data[7:5];
+						mgmt0_phy_md_addr[2:0]	<= wr_data[7:5];
 					end
 					REG_MGMT0_MDIO_3: begin
-						mgmt0_phy_md_addr[4]	<= wr_data[0];
+						mgmt0_phy_md_addr[4:3]	<= wr_data[1:0];
 						mgmt0_phy_reg_rd		<= wr_data[5];
 						mgmt0_phy_reg_wr		<= wr_data[6];
 					end
@@ -707,10 +707,10 @@ module ManagementRegisterInterface #(
 					REG_DP_MDIO_1:	dp_phy_wr_data[15:8]		<= wr_data;
 					REG_DP_MDIO_2: begin
 						dp_phy_reg_addr			<= wr_data[4:0];
-						dp_phy_md_addr[3:0]		<= wr_data[7:5];
+						dp_phy_md_addr[2:0]		<= wr_data[7:5];
 					end
 					REG_DP_MDIO_3: begin
-						dp_phy_md_addr[4]		<= wr_data[0];
+						dp_phy_md_addr[4:3]		<= wr_data[1:0];
 						dp_phy_reg_rd			<= wr_data[5];
 						dp_phy_reg_wr			<= wr_data[6];
 					end
@@ -719,10 +719,10 @@ module ManagementRegisterInterface #(
 					REG_VSC_MDIO_1:	vsc_phy_wr_data[15:8]		<= wr_data;
 					REG_VSC_MDIO_2: begin
 						vsc_phy_reg_addr		<= wr_data[4:0];
-						vsc_phy_md_addr[3:0]	<= wr_data[7:5];
+						vsc_phy_md_addr[2:0]	<= wr_data[7:5];
 					end
 					REG_VSC_MDIO_3: begin
-						vsc_phy_md_addr[4]		<= wr_data[0];
+						vsc_phy_md_addr[4:3]	<= wr_data[1:0];
 						vsc_phy_reg_rd			<= wr_data[5];
 						vsc_phy_reg_wr			<= wr_data[6];
 					end
