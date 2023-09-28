@@ -104,8 +104,6 @@ module PacketBuffering #(
 	wire[17:0]		ram_wr_addr;
 	wire[143:0]		ram_wr_data;
 
-	wire			qdr_pll_lock;
-
 	QDR2PController #(
 		.RAM_WIDTH(36),
 		.ADDR_BITS(18)
@@ -121,7 +119,6 @@ module PacketBuffering #(
 		.wr_en(ram_wr_en),
 		.wr_addr(ram_wr_addr),
 		.wr_data(ram_wr_data),
-		.pll_lock(qdr_pll_lock),
 
 		.qdr_d(qdr_d),
 		.qdr_q(qdr_q),

@@ -128,7 +128,7 @@ module QDRMemoryBIST(
 
 		//Check results
 		for(integer i=0; i<4; i=i+1)
-			match[i] = (ram_wr_data[i*36 +: 36] == ram_rd_data[i*36 +: 36]);
+			match[i] = (prbs_out[i*36 +: 36] == ram_rd_data[i*36 +: 36]);
 		rd_ok = (match_ff == 4'hf);
 
 	end

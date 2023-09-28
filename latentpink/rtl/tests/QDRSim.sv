@@ -25,7 +25,8 @@ module QDRSim();
 	wire clk_625mhz_0;
 	wire clk_625mhz_90;
 
-	wire pll_main_lock;
+	wire pll_rgmii_lock;
+	wire pll_sgmii_lock;
 
 	wire clk_ram;
 	wire clk_ram_ctl;
@@ -44,7 +45,8 @@ module QDRSim();
 		.clk_625mhz_0(clk_625mhz_0),
 		.clk_625mhz_90(clk_625mhz_90),
 
-		.pll_main_lock(pll_main_lock),
+		.pll_rgmii_lock(pll_rgmii_lock),
+		.pll_sgmii_lock(pll_sgmii_lock),
 
 		.clk_ram(clk_ram),
 		.clk_ram_ctl(clk_ram_ctl),
@@ -120,7 +122,8 @@ module QDRSim();
 	logic[17:0]		ram_wr_addr	= 0;
 	logic[143:0]	ram_wr_data	= 0;
 
-	wire			qdr_pll_lock;
+	wire			ram_rst_done;
+	wire			ram_pll_lock;
 
 	QDR2PController #(
 		.RAM_WIDTH(36),
@@ -137,7 +140,6 @@ module QDRSim();
 		.wr_en(ram_wr_en),
 		.wr_addr(ram_wr_addr),
 		.wr_data(ram_wr_data),
-		.pll_lock(qdr_pll_lock),
 
 		.qdr_d(qdr_d),
 		.qdr_q(qdr_q),
@@ -149,7 +151,10 @@ module QDRSim();
 		.qdr_dclk_p(qdr_dclk_p),
 		.qdr_dclk_n(qdr_dclk_n),
 		.qdr_qclk_p(qdr_qclk_p),
-		.qdr_qclk_n(qdr_qclk_n)
+		.qdr_qclk_n(qdr_qclk_n),
+
+		.rst_done(ram_rst_done),
+		.pll_lock(ram_pll_lock)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,8 +175,7 @@ module QDRSim();
 			//Write a single value
 			0: begin
 
-				if(qdr_pll_lock) begin
-
+				if(ram_rst_done && ram_pll_lock) begin
 					$display("Single write");
 
 					ram_wr_en	<= 1;

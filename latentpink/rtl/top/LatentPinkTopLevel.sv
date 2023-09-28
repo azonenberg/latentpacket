@@ -196,7 +196,8 @@ module LatentPinkTopLevel(
 	// DEBUG: put various interesting signals on PMOD bus and LEDs
 
 	assign gpio_led[3:0] = 4'h0;
-	assign pmod_dq[7:0] = 0;
+	assign pmod_dq[7:1] = 0;
+	assign pmod_dq[0] = qsgmii_mac_rx_bus[0].start;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Tie off flash chip select until we implement that. Leave other signals floating for now

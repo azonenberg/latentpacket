@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="673.917 ns"></ZoomStartTime>
-      <ZoomEndTime time="809.218 ns"></ZoomEndTime>
-      <Cursor1Time time="786.667 ns"></Cursor1Time>
+      <ZoomStartTime time="478.567 ns"></ZoomStartTime>
+      <ZoomEndTime time="749.568 ns"></ZoomEndTime>
+      <Cursor1Time time="553.067 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="162"></NameColumnWidth>
+      <NameColumnWidth column_width="158"></NameColumnWidth>
       <ValueColumnWidth column_width="66"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="56" />
+   <WVObjectSize size="55" />
    <wvobject type="logic" fp_name="/QDRSim/clk_125mhz_p">
       <obj_property name="ElementShortName">clk_125mhz_p</obj_property>
       <obj_property name="ObjectShortName">clk_125mhz_p</obj_property>
@@ -27,10 +27,6 @@
    <wvobject type="logic" fp_name="/QDRSim/clk_125mhz_n">
       <obj_property name="ElementShortName">clk_125mhz_n</obj_property>
       <obj_property name="ObjectShortName">clk_125mhz_n</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/QDRSim/pll_main_lock">
-      <obj_property name="ElementShortName">pll_main_lock</obj_property>
-      <obj_property name="ObjectShortName">pll_main_lock</obj_property>
    </wvobject>
    <wvobject fp_name="divider34" type="divider">
    </wvobject>
@@ -76,17 +72,9 @@
       <obj_property name="ElementShortName">pll_ram_lock</obj_property>
       <obj_property name="ObjectShortName">pll_ram_lock</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/QDRSim/qdr_pll_lock">
-      <obj_property name="ElementShortName">qdr_pll_lock</obj_property>
-      <obj_property name="ObjectShortName">qdr_pll_lock</obj_property>
-   </wvobject>
    <wvobject type="logic" fp_name="/QDRSim/ctrl/clk_qcapture">
       <obj_property name="ElementShortName">clk_qcapture</obj_property>
       <obj_property name="ObjectShortName">clk_qcapture</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/QDRSim/ctrl/clk_qcapture_div2">
-      <obj_property name="ElementShortName">clk_qcapture_div2</obj_property>
-      <obj_property name="ObjectShortName">clk_qcapture_div2</obj_property>
    </wvobject>
    <wvobject fp_name="divider36" type="divider">
    </wvobject>
@@ -229,5 +217,120 @@
    <wvobject type="array" fp_name="/QDRSim/qdr_q">
       <obj_property name="ElementShortName">qdr_q[35:0]</obj_property>
       <obj_property name="ObjectShortName">qdr_q[35:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider129" type="divider">
+   </wvobject>
+   <wvobject type="group" fp_name="group156">
+      <obj_property name="label">fifo</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/rst_done">
+         <obj_property name="ElementShortName">rst_done</obj_property>
+         <obj_property name="ObjectShortName">rst_done</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/wr_clk">
+         <obj_property name="ElementShortName">wr_clk</obj_property>
+         <obj_property name="ObjectShortName">wr_clk</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/wr_en">
+         <obj_property name="ElementShortName">wr_en</obj_property>
+         <obj_property name="ObjectShortName">wr_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/wr_data">
+         <obj_property name="ElementShortName">wr_data[143:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_data[143:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/wr_full">
+         <obj_property name="ElementShortName">wr_full</obj_property>
+         <obj_property name="ObjectShortName">wr_full</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/wr_overflow">
+         <obj_property name="ElementShortName">wr_overflow</obj_property>
+         <obj_property name="ObjectShortName">wr_overflow</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/wr_reset">
+         <obj_property name="ElementShortName">wr_reset</obj_property>
+         <obj_property name="ObjectShortName">wr_reset</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rd_clk">
+         <obj_property name="ElementShortName">rd_clk</obj_property>
+         <obj_property name="ObjectShortName">rd_clk</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rd_en">
+         <obj_property name="ElementShortName">rd_en</obj_property>
+         <obj_property name="ObjectShortName">rd_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/rd_data">
+         <obj_property name="ElementShortName">rd_data[143:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_data[143:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rd_empty">
+         <obj_property name="ElementShortName">rd_empty</obj_property>
+         <obj_property name="ObjectShortName">rd_empty</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rd_underflow">
+         <obj_property name="ElementShortName">rd_underflow</obj_property>
+         <obj_property name="ObjectShortName">rd_underflow</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rd_valid">
+         <obj_property name="ElementShortName">rd_valid</obj_property>
+         <obj_property name="ObjectShortName">rd_valid</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/rst_shreg">
+         <obj_property name="ElementShortName">rst_shreg[11:0]</obj_property>
+         <obj_property name="ObjectShortName">rst_shreg[11:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rst">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rst_read_n">
+         <obj_property name="ElementShortName">rst_read_n</obj_property>
+         <obj_property name="ObjectShortName">rst_read_n</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/wr_full_int">
+         <obj_property name="ElementShortName">wr_full_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_full_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/wr_overflow_int">
+         <obj_property name="ElementShortName">wr_overflow_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_overflow_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/rd_empty_int">
+         <obj_property name="ElementShortName">rd_empty_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_empty_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/rd_underflow_int">
+         <obj_property name="ElementShortName">rd_underflow_int[1:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_underflow_int[1:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/QDRSim/ctrl/fifo/rd_en_gated">
+         <obj_property name="ElementShortName">rd_en_gated</obj_property>
+         <obj_property name="ObjectShortName">rd_en_gated</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/WIDTH">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/DEPTH">
+         <obj_property name="ElementShortName">DEPTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DEPTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/BLOCK_WIDTH">
+         <obj_property name="ElementShortName">BLOCK_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">BLOCK_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/BLOCK_DATA">
+         <obj_property name="ElementShortName">BLOCK_DATA[31:0]</obj_property>
+         <obj_property name="ObjectShortName">BLOCK_DATA[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/BLOCK_PARITY">
+         <obj_property name="ElementShortName">BLOCK_PARITY[31:0]</obj_property>
+         <obj_property name="ObjectShortName">BLOCK_PARITY[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/QDRSim/ctrl/fifo/NUM_BLOCKS">
+         <obj_property name="ElementShortName">NUM_BLOCKS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">NUM_BLOCKS[31:0]</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

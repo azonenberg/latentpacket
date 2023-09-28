@@ -477,13 +477,12 @@ set _xlnx_shared_i1 [get_cells -hierarchical *dout0_reg*]
 set_max_delay -from [get_clocks *clk_125mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_312p5mhz_raw*] 2.500
 set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_125mhz_raw*] 2.500
 
-set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through [get_cells -hierarchical *storage_reg*] -to [get_clocks *clk_125mhz_raw*] 2.500
+set _xlnx_shared_i2 [get_cells -hierarchical *storage_reg*]
+set_max_delay -from [get_clocks *clk_312p5mhz_raw*] -through $_xlnx_shared_i2 -to [get_clocks *clk_125mhz_raw*] 2.500
 
 set_max_delay -from [get_clocks *clk_ram_ctl_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_crypt_raw*] 2.500
 set_max_delay -from [get_clocks *clk_crypt_raw*] -through $_xlnx_shared_i1 -to [get_clocks *clk_ram_ctl_raw*] 2.500
 
-set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks clk_qcapture_raw]
-set_clock_groups -asynchronous -group [get_clocks clk_qcapture_raw] -group [get_clocks clk_ram_ctl_raw]
 set_clock_groups -asynchronous -group [get_clocks interfaces/xg_transceiver/inst/sfp_wizard_i/gt0_sfp_wizard_i/gtxe2_i/RXOUTCLK] -group [get_clocks clk_ram_ctl_raw]
 set_clock_groups -asynchronous -group [get_clocks clk_ram_ctl_raw] -group [get_clocks interfaces/xg_transceiver/inst/sfp_wizard_i/gt0_sfp_wizard_i/gtxe2_i/RXOUTCLK]
 set_clock_groups -asynchronous -group [get_clocks mgmt0_rx_clk] -group [get_clocks clk_ram_ctl_raw]
@@ -652,10 +651,10 @@ set_property IS_SOFT FALSE [get_pblocks pblock_metafifo]
 
 create_pblock pblock_prefetch
 add_cells_to_pblock [get_pblocks pblock_prefetch] [get_cells -quiet [list buffer/infifo/prefetch_fifo buffer/infifo/tagfifo]]
-resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X0Y60:SLICE_X23Y84}
-resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X0Y24:DSP48_X1Y33}
-resize_pblock [get_pblocks pblock_prefetch] -add {RAMB18_X0Y24:RAMB18_X1Y33}
-resize_pblock [get_pblocks pblock_prefetch] -add {RAMB36_X0Y12:RAMB36_X1Y16}
+resize_pblock [get_pblocks pblock_prefetch] -add {SLICE_X24Y60:SLICE_X47Y84}
+resize_pblock [get_pblocks pblock_prefetch] -add {DSP48_X2Y24:DSP48_X2Y33}
+resize_pblock [get_pblocks pblock_prefetch] -add {RAMB18_X1Y24:RAMB18_X2Y33}
+resize_pblock [get_pblocks pblock_prefetch] -add {RAMB36_X1Y12:RAMB36_X2Y16}
 set_property IS_SOFT FALSE [get_pblocks pblock_prefetch]
 
 #######################################################################################################################
@@ -997,16 +996,15 @@ resize_pblock [get_pblocks pblock_qsgmii_exit] -add {RAMB18_X4Y40:RAMB18_X6Y59}
 resize_pblock [get_pblocks pblock_qsgmii_exit] -add {RAMB36_X4Y20:RAMB36_X6Y29}
 set_property IS_SOFT FALSE [get_pblocks pblock_qsgmii_exit]
 
+create_clock -period 2.666 -name VIRTUAL_clk_qcapture_raw -waveform {0.000 1.333}
 
+set_property ASYNC_REG true [get_cells buffer/qdr/fifo/sync_rst_read/ff_0_reg]
+set_property ASYNC_REG true [get_cells buffer/qdr/fifo/sync_rst_read/rst_out_n_reg]
+set_clock_groups -asynchronous -group [get_clocks qdr_cq_p] -group [get_clocks clk_ram_ctl_raw]
 
-
-
-
-
-
-
-
-
+create_clock -period 2.666 -name VIRTUAL_clk_qcapture_raw_1 -waveform {0.000 1.333}
+set_multicycle_path -setup -from [get_clocks VIRTUAL_clk_qcapture_raw_1] -to [get_clocks clk_qcapture_raw] 2
+set_clock_groups -asynchronous -group [get_clocks clk_qcapture_raw] -group [get_clocks clk_ram_ctl_raw]
 
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
