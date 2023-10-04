@@ -299,6 +299,14 @@ module ManagementSubsystem #(
 	wire[7:0]	txfifo_wr_data;
 	wire		txfifo_wr_commit;
 
+	wire		mgmt0_link_up_txclk;
+	ThreeStageSynchronizer sync_link_up_txclk(
+		.clk_in(mgmt0_rx_clk),
+		.din(mgmt0_link_up),
+		.clk_out(mgmt0_tx_clk),
+		.dout(mgmt0_link_up_txclk)
+	);
+
 	ManagementTxFifo tx_fifo(
 		.sys_clk(sys_clk),
 
@@ -307,7 +315,7 @@ module ManagementSubsystem #(
 		.wr_commit(txfifo_wr_commit),
 
 		.tx_clk(mgmt0_tx_clk),
-		.link_up(mgmt0_link_up),
+		.link_up(mgmt0_link_up_txclk),
 		.tx_ready(mgmt0_tx_ready),
 		.tx_bus(mgmt0_tx_bus)
 	);
