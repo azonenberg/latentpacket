@@ -61,6 +61,29 @@ module IngressCDC(
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Link down flag is in the RX clock domain
+
+	//Clear if link is down, or for 16K clocks after
+	//(this allows some time for any junk sent during sync or equalizer lock to be discarded)
+	logic		rx_rst			= 0;
+	logic[15:0]	rx_rst_count	= 0;
+
+	always_ff @(posedge rx_clk) begin
+
+		if(!link_up) begin
+			rx_rst			<= 1;
+			rx_rst_count	<= 1;
+		end
+
+		else if(rx_rst_count)
+			rx_rst_count	<= rx_rst_count + 1;
+
+		else
+			rx_rst			<= 0;
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Strip VLAN tags off the inbound data stream
 
 	EthernetRxBus	rx_stripped;
@@ -91,9 +114,6 @@ module IngressCDC(
 	logic			fifo_wr_commit_next	= 0;
 	logic			fifo_wr_rollback	= 0;
 
-	logic			fifo_wr_reset		= 0;
-	logic			link_up_ff			= 0;
-
 	logic[1:0]		wr_phase			= 0;
 	logic[10:0]		wr_frame_bytelen	= 0;
 	logic			wr_dropping			= 0;
@@ -109,10 +129,6 @@ module IngressCDC(
 		fifo_wr_commit			<= 0;
 		fifo_wr_rollback		<= 0;
 		fifo_wr_commit_next		<= 0;
-
-		//Reset on link up or down
-		link_up_ff				<= link_up;
-		fifo_wr_reset			<= (link_up && !link_up_ff) || (!link_up && link_up_ff);
 
 		//Handle delayed commits
 		if(fifo_wr_commit_next)
@@ -162,6 +178,7 @@ module IngressCDC(
 			//Drop if we run out of buffer space or the frame is oversized
 			if( (fifo_wr_size < 2) || (wr_frame_bytelen >= MAX_FRAME_SIZE) )begin
 				wr_dropping			<= 1;
+				fifo_wr_en			<= 0;
 				fifo_wr_rollback	<= 1;
 			end
 
@@ -199,6 +216,17 @@ module IngressCDC(
 
 		end
 
+		//Synchronous reset
+		if(rx_rst) begin
+			fifo_wr_en			<= 0;
+			fifo_wr_data		<= 0;
+			fifo_wr_commit_next	<= 0;
+			fifo_wr_rollback	<= 0;
+			wr_dropping			<= 0;
+			wr_phase			<= 0;
+			wr_frame_bytelen	<= 0;
+		end
+
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +235,7 @@ module IngressCDC(
 	wire			fifo_rd_reset_n;
 
 	ResetSynchronizer sync_rst(
-		.rst_in_n(!fifo_wr_reset),
+		.rst_in_n(!rx_rst),
 		.clk(clk_mem),
 		.rst_out_n(fifo_rd_reset_n)
 	);
@@ -231,7 +259,7 @@ module IngressCDC(
 		.wr_en(fifo_wr_en),
 		.wr_data(fifo_wr_data),
 		.wr_size(fifo_wr_size),
-		.wr_reset(fifo_wr_reset),
+		.wr_reset(rx_rst),
 		.wr_commit(fifo_wr_commit),
 		.wr_rollback(fifo_wr_rollback),
 
@@ -268,7 +296,7 @@ module IngressCDC(
 		.wr_size(),
 		.wr_full(header_fifo_full),
 		.wr_overflow(),
-		.wr_reset(fifo_wr_reset),
+		.wr_reset(rx_rst),
 
 		.rd_clk(clk_mem),
 		.rd_en(header_rd_en),
